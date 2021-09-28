@@ -10,14 +10,12 @@ import Firebase
 import FirebaseAuth
 
 class AuthViewModel: ObservableObject {
-    @Published var userSession: FirebaseAuth.User?
     @Published var currentUser: User?
     @Published var didSendResetPasswordLink = false
     
     static let shared = AuthViewModel()
     
     init() {
-        userSession = Auth.auth().currentUser
         fetchUser()
     }
     
@@ -28,15 +26,13 @@ class AuthViewModel: ObservableObject {
                 return
             }
             
-            guard let user = result?.user else {return}
-            self.userSession = user
             self.fetchUser()
         }
     }
     
     func register(withEmail email: String, password: String, image: UIImage?, fullName: String, userName: String) {
-        guard let image = image else {return}
-        ImageUploader.uploadImage(image: image, type: .profile) { imageUrl in
+       // guard let image = image else {return}
+       // ImageUploader.uploadImage(image: image, type: .profile) { imageUrl in
             Auth.auth().createUser(withEmail: email, password: password) { result, error in
                 if let error = error {
                     print(error.localizedDescription)
@@ -45,18 +41,23 @@ class AuthViewModel: ObservableObject {
                 
                 guard let user = result?.user else {return}
                 
-                let data = ["email":email, "username":userName, "fullName":fullName, "profileImageUrl":imageUrl, "uid": user.uid]
+                let data = ["email":email,
+                            "username":userName,
+                            "fullName":fullName,
+                            "createdAt":Timestamp(date: Date()),
+                           // "profileImageUrl":imageUrl,
+                            "uid": user.uid] as [String : Any]
                 
                 COLLECTION_USERS.document(user.uid).setData(data) { _ in
-                    self.userSession = user
+                    //self.userSession = user
                     self.fetchUser()
                 }
             }
-        }
+        //}
     }
     
     func signOut() {
-        self.userSession = nil
+        self.currentUser = nil
         try? Auth.auth().signOut()
     }
 
@@ -72,10 +73,12 @@ class AuthViewModel: ObservableObject {
     }
     
     func fetchUser() {
-        guard let uid = userSession?.uid else {return}
+        guard let uid = Auth.auth().currentUser?.uid else {return}
         COLLECTION_USERS.document(uid).getDocument { snapshot, _ in
-            let user = try? snapshot?.data(as: User.self)
-            self.currentUser = user
+            if let data = snapshot?.data() {
+                let user = User(dictionary: data, id: uid)
+                self.currentUser = user
+            }
         }
     }
     

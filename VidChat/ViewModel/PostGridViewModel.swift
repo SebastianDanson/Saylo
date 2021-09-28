@@ -12,7 +12,7 @@ enum PostGridConfiguration {
 }
 
 class PostGridViewModel: ObservableObject {
-    @Published var posts = [Post]()
+    @Published var posts = [User]()
     let config: PostGridConfiguration
     
     init(config: PostGridConfiguration) {
@@ -21,25 +21,25 @@ class PostGridViewModel: ObservableObject {
     }
     
     func fetchPosts(forConfig config: PostGridConfiguration) {
-        switch config {
-        case .explore:
-            fetchExplorePagePosts()
-        case .profile(let uid):
-            fetchUserPosts(forUid: uid)
-        }
+//        switch config {
+//        case .explore:
+//            fetchExplorePagePosts()
+//        case .profile(let uid):
+//            fetchUserPosts(forUid: uid)
+//        }
     }
     
     func fetchExplorePagePosts() {
-        COLLECTION_POSTS.getDocuments { snapshot, _ in
-            guard let documents = snapshot?.documents else { return }
-            self.posts = documents.compactMap({ try? $0.data(as: Post.self) })
-        }
+//        COLLECTION_POSTS.getDocuments { snapshot, _ in
+//            guard let documents = snapshot?.documents else { return }
+//            self.posts = documents.compactMap({ try? $0.data(as: Post.self) })
+//        }
     }
     
     func fetchUserPosts(forUid uid: String) {
-        COLLECTION_POSTS.whereField("ownerUid", isEqualTo: uid).getDocuments { snapshot, _ in
-            guard let documents = snapshot?.documents else { return }
-            self.posts = documents.compactMap({ try? $0.data(as: Post.self) })
-        }
+//        COLLECTION_POSTS.whereField("ownerUid", isEqualTo: uid).getDocuments { snapshot, _ in
+//            guard let documents = snapshot?.documents else { return }
+//            self.posts = documents.compactMap({ try? $0.data(as: Post.self) })
+//        }
     }
 }

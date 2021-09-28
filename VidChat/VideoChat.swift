@@ -9,7 +9,7 @@ import SwiftUI
 import Firebase
 
 @main
-struct VideoChatApp: App {
+struct VidChat: App {
     
     init() {
         FirebaseApp.configure()
