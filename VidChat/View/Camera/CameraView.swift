@@ -10,25 +10,19 @@ import SwiftUI
 import AVFoundation
 
 struct CameraView: UIViewControllerRepresentable {
-
-  typealias UIViewControllerType = CameraViewController
-  private let cameraViewController = CameraViewController()
-  @State var videoUrl: URL? = nil
-    //   @Binding var finishedRecording: Bool
-  @EnvironmentObject var viewModel: CameraViewModel
-
-//    init(viewModel: CameraViewModel) {
-//        self.viewModel = viewModel
-//    }
     
-  func makeUIViewController(context: Context) -> CameraViewController {
-    cameraViewController.delegate = context.coordinator
-    return cameraViewController
-  }
-
-  func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
-
-  }
+    typealias UIViewControllerType = CameraViewController
+    private let cameraViewController = CameraViewController()
+    @EnvironmentObject var viewModel: CameraViewModel
+    
+    func makeUIViewController(context: Context) -> CameraViewController {
+        cameraViewController.delegate = context.coordinator
+        return cameraViewController
+    }
+    
+    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
+        
+    }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -36,9 +30,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     class Coordinator: NSObject, CameraViewControllerDelegate {
         func setVideo(withUrl url: URL) {
-            print(url, "outputFileURL")
-            self.parent.videoUrl = url
-            self.parent.viewModel.setUrl(url)
+            self.parent.viewModel.url = url
             self.parent.viewModel.setHasRecordedVideo()
         }
         
@@ -49,22 +41,17 @@ struct CameraView: UIViewControllerRepresentable {
         }
     }
     
-  public func switchCamera() {
-    cameraViewController.switchCamera()
-  }
-
-  public func startRecording() {
-    cameraViewController.captureMovie()
-  }
-
-  public func stopRecording() {
-    cameraViewController.stopRecording()
-  }
+    public func switchCamera() {
+        cameraViewController.switchCamera()
+    }
     
-  public func getVideoUrl() -> URL? {
-    print(videoUrl, "URL")
-     return videoUrl
- }
+    public func startRecording(withFlash hasFlash: Bool = false) {
+        cameraViewController.captureMovie(withFlash: hasFlash)
+    }
+    
+    public func stopRecording() {
+        cameraViewController.stopRecording()
+    }
 }
 
 

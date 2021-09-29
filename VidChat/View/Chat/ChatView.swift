@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-
+import Kingfisher
 
 enum ConversationStatus {
     case sent, received, receivedOpened, sentOpened, none
@@ -28,6 +28,7 @@ struct ChatView: View {
     
     private let items = [GridItem(), GridItem()]
     private var users: [TestUser]
+    @State private var showCamera = false
     //  @ObservedObject var viewModel: PostGridViewModel
     
     init() {
@@ -36,7 +37,14 @@ struct ChatView: View {
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.darkText]
         appearance.titleTextAttributes = [.foregroundColor: UIColor.darkText]
         appearance.backgroundColor = .white
+        appearance.shadowImage = UIImage(named: "shadow")
+        //appearance.shadowColor = .black
         //appearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterialLight)
+        UINavigationBar.appearance().layer.masksToBounds = false
+        UINavigationBar.appearance().layer.shadowColor = UIColor.black.cgColor
+        UINavigationBar.appearance().layer.shadowOpacity = 0.8
+        UINavigationBar.appearance().layer.shadowOffset = CGSize(width: 0, height: 2.0)
+        UINavigationBar.appearance().layer.shadowRadius = 2
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
@@ -53,77 +61,126 @@ struct ChatView: View {
                        TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
                        TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
                        TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook")]
-                            
+        
     }
-
+    
     
     var body: some View {
-        NavigationView {
-            ScrollView(showsIndicators: false) {
-                VStack {
-                    LazyVGrid(columns: items, spacing: 25, content: {
-                        ForEach(self.users, id: \.id) { user in
-                            ChatCell(user: user)
+        if showCamera {
+            CameraMainView(viewModel: CameraViewModel(), showCamera: $showCamera)
+                .transition(.scale)
+        } else {
+            
+            NavigationView {
+                ScrollView(showsIndicators: false) {
+                    VStack {
+                        LazyVGrid(columns: items, spacing: 24, content: {
+                            ForEach(self.users, id: \.id) { user in
+                                ChatCell(user: user)
                                     .flippedUpsideDown()
-
+                                
+                            }
                             
-                            //  NavigationLink(
-                            //    destination: FeedView(),
-                            //  label: {
-                            //KFImage(URL(string: post.imageUrl))
-                            
+                        })
+                        .padding(16)
+                        
+                    }.padding(.top, 40)
+                }
+                .flippedUpsideDown()
+                .navigationBarTitle("Conversations", displayMode: .inline)
+                .ignoresSafeArea()
+                .overlay(
+                    Button(action: {
+                        withAnimation {
+                            self.showCamera.toggle()
+                        }
+                    }, label: {
+                        ShowCameraView()
+                    })
+                    .padding(.bottom, 26)
+                    .padding(.trailing, 12)
+                    , alignment: .bottomTrailing)
+                .zIndex(1)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        HStack(spacing: 12) {
+                          //  Button(action: {}, label: {
+                                KFImage(URL(string: image1))
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 32, height: 32)
+                                    .clipShape(Circle())
                             //})
+                            
+//                            Button(action: {}, label: {
+//                                Image(systemName: "magnifyingglass.circle.fill")
+//                                    .resizable()
+//                                    .frame(width: 32, height: 32)
+//                                    .scaledToFill()
+//                                    .background(
+//                                        Circle()
+//                                            .foregroundColor(Color.init(UIColor.systemGray.cgColor))
+//                                            .frame(width: 30, height: 30)
+//
+//                                    )
+//                                    .foregroundColor(Color.init(UIColor.systemGray5.cgColor))
+//                            })
                         }
-                      
-                    })
-                    .padding(18)
-                   
-                }.padding(.top, 40)
-            }
-            .flippedUpsideDown()
-            .navigationBarTitle("Conversations", displayMode: .inline)
-            .ignoresSafeArea()
-            .overlay(
-                NavigationLink(
-                    destination: CameraMainView(viewModel: CameraViewModel()),
-                    label: {
-                        ZStack {
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        VStack {
                             Circle()
-                                .fill(
-                                    LinearGradient(gradient: Gradient(colors: [.mainBlue, .mainGreen]), startPoint: .bottom, endPoint: .top)
-                                )
-                                .frame(width: 65, height: 65)
-                                .shadow(color: Color(.init(white: 0, alpha: 0.3)),
-                                        radius: 12, x: 0, y: 12)
-                            Image("video")
-                                .resizable()
-                                .scaledToFit()
                                 .frame(width: 32, height: 32)
+                                .foregroundColor(.mainBlue)
+                                .overlay(
+                                    Image(systemName: "person.fill.badge.plus")
+                                        .resizable()
+                                        .frame(width: 18, height: 18)
+                                        .scaledToFit()
+                                        .foregroundColor(.white)
+                                        .padding(.trailing, 2)
+                                )
+              
                         }
-                        .padding(.bottom, 26)
-                        .padding(.trailing, 12)
-                    })
-               
-                , alignment: .bottomTrailing)
+                    }
+                }
+            }
         }
     }
 }
 
 struct FlippedUpsideDown: ViewModifier {
-   func body(content: Content) -> some View {
-    content
-        .rotationEffect(Angle(degrees: 180))
-        .scaleEffect(x: -1, y: 1, anchor: .center)
-   }
+    func body(content: Content) -> some View {
+        content
+            .rotationEffect(Angle(degrees: 180))
+            .scaleEffect(x: -1, y: 1, anchor: .center)
+    }
 }
 extension View{
-   func flippedUpsideDown() -> some View{
-     self.modifier(FlippedUpsideDown())
-   }
+    func flippedUpsideDown() -> some View{
+        self.modifier(FlippedUpsideDown())
+    }
 }
 
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
         ChatView()
+    }
+}
+
+struct ShowCameraView: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .foregroundColor(.mainBlue)
+                .frame(width: 65, height: 65)
+                .shadow(color: Color(.init(white: 0, alpha: 0.3)),
+                        radius: 12, x: 0, y: 12)
+            Image("video")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+        }
     }
 }

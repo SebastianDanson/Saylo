@@ -11,24 +11,23 @@ import Kingfisher
 struct ChatCell: View {
     
     let user: TestUser
-    let width = (UIScreen.main.bounds.width-66) / 2
+    let width = UIScreen.main.bounds.width/2.68
     
     var body: some View {
-        
-        VStack(alignment: .leading,
-               spacing: user.conversationStatus == .none ? -20 : -50) {
+        //  user.conversationStatus == .none ? -20 : -50
+        VStack(alignment: .center,
+               spacing: 8) {
             
             KFImage(URL(string: user.image))
                 .resizable()
                 .scaledToFill()
                 .frame(width: width, height: width)
-                .cornerRadius(16)
+                .cornerRadius(width/2)
                 .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
             
             
-            VStack(alignment: .leading,
-                   spacing: -12) {
-                
+            
+            HStack(spacing: 8) {
                 switch user.conversationStatus {
                 case .sent:
                     ConversationStatusView(image: "sent",
@@ -36,37 +35,32 @@ struct ChatCell: View {
                 case .received:
                     ConversationStatusView(image: "received",
                                            conversationStatus: user.conversationStatus)
-                case .receivedOpened:
-                    ConversationStatusView(image: "opened",
-                                           conversationStatus: user.conversationStatus)
-                case .sentOpened:
-                    ConversationStatusView(image: "seen",
-                                           conversationStatus: user.conversationStatus)
-                case .none:
+                default:
                     EmptyView()
                 }
-                NameView(firstName: user.firstname, lastName: user.lastname)
-                    .zIndex(-1)
-                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
-            }
-               }
+                
+                Text(user.firstname)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(Color(red: 144/255, green: 144/255, blue: 147/255))
+            }.padding(.trailing, user.conversationStatus == .none ? 0 : 24)
+        }
     }
 }
 
-struct NameView: View {
-    let firstName: String
-    let lastName: String
-    let width = (UIScreen.main.bounds.width-66) / 2
-    
-    var body: some View {
-        Text(firstName)
-            .font(.system(size: 15, weight: .medium))
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(Color(.init(white: 1, alpha: 1)))
-            .clipShape(Capsule())
-    }
-}
+//struct NameView: View {
+//    let firstName: String
+//    let lastName: String
+//    let width = (UIScreen.main.bounds.width-66) / 3
+//
+//    var body: some View {
+//        Text(firstName)
+//            .font(.system(size: 15, weight: .medium))
+//            .padding(.vertical, 8)
+//            .padding(.horizontal, 12)
+//            .background(Color(.init(white: 1, alpha: 1)))
+//            .clipShape(Capsule())
+//    }
+//}
 
 struct ConversationStatusView: View {
     let image: String
@@ -98,13 +92,15 @@ struct ConversationStatusView: View {
     var body: some View {
         Image(image)
             .resizable()
-            .frame(width: 44, height: 44)
+            .frame(width: 16, height: 16)
             .scaledToFit()
-            .overlay(
-                TimeView(isOpened: isOpened, isSent: isSent)
-                , alignment: .center)
-            .padding(.leading, -2)
-            .padding(.bottom, isOpened ? 4 : 0)
+            .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 6, x: 0, y: 4)
+        
+        //            .overlay(
+        //                TimeView(isOpened: isOpened, isSent: isSent)
+        //                , alignment: .center)
+        //            .padding(.leading, -2)
+        //            .padding(.bottom, isOpened ? 4 : 0)
     }
 }
 
@@ -114,21 +110,21 @@ struct TimeView: View {
     
     var body: some View {
         VStack {
-//            if isOpened {
-//                LinearGradient(gradient: Gradient(colors: [.mainGreen, .mainBlue]),
-//                               startPoint: .top,
-//                               endPoint: .bottom)
-//                    .mask(
-//                        Text("1d").padding(.trailing, isSent ? 9 : 0)
-//                            .font(.system(size: 14, weight: .bold))
-//                    )
-//
-//            } else {
-                Text("1d").padding(.trailing, isSent ? 9 : 0)
-                    .font(.system(size: 13.5, weight: .bold))
-                    .foregroundColor(isOpened ? .gray : .white)
-                
-           // }
+            //            if isOpened {
+            //                LinearGradient(gradient: Gradient(colors: [.mainGreen, .mainBlue]),
+            //                               startPoint: .top,
+            //                               endPoint: .bottom)
+            //                    .mask(
+            //                        Text("1d").padding(.trailing, isSent ? 9 : 0)
+            //                            .font(.system(size: 14, weight: .bold))
+            //                    )
+            //
+            //            } else {
+            Text("1d").padding(.trailing, isSent ? 8 : 0)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(isOpened ? .gray : .white)
+            
+            // }
         }
     }
 }
