@@ -21,7 +21,7 @@ struct TestUser {
     var conversationStatus: ConversationStatus = .none
 }
 
-struct ChatView: View {
+struct ConversationGridView: View {
     let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
     let image2 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1"
     let image3 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Slice%20102.png?alt=media&token=8f470a6e-738b-4724-8fe9-ada2305d48ef"
@@ -61,13 +61,12 @@ struct ChatView: View {
                        TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
                        TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
                        TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook")]
-        
     }
     
     
     var body: some View {
         if showCamera {
-            CameraMainView(viewModel: CameraViewModel(), showCamera: $showCamera)
+            CameraMainView()
                 .transition(.scale)
         } else {
             
@@ -76,9 +75,13 @@ struct ChatView: View {
                     VStack {
                         LazyVGrid(columns: items, spacing: 24, content: {
                             ForEach(self.users, id: \.id) { user in
-                                ChatCell(user: user)
+                                ConversationGridCell(user: user)
                                     .flippedUpsideDown()
-                                
+                                    .onLongPressGesture {
+                                        withAnimation {
+                                            self.showCamera.toggle()
+                                        }
+                                    }
                             }
                             
                         })
@@ -89,17 +92,17 @@ struct ChatView: View {
                 .flippedUpsideDown()
                 .navigationBarTitle("Conversations", displayMode: .inline)
                 .ignoresSafeArea()
-                .overlay(
-                    Button(action: {
-                        withAnimation {
-                            self.showCamera.toggle()
-                        }
-                    }, label: {
-                        ShowCameraView()
-                    })
-                    .padding(.bottom, 26)
-                    .padding(.trailing, 12)
-                    , alignment: .bottomTrailing)
+               // .overlay(
+//                    Button(action: {
+//                        withAnimation {
+//                            self.showCamera.toggle()
+//                        }
+//                    }, label: {
+//                        ShowCameraView()
+//                    })
+//                    .padding(.bottom, 26)
+//                    .padding(.trailing, 12)
+//                    , alignment: .bottomTrailing)
                 .zIndex(1)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -163,11 +166,11 @@ extension View{
     }
 }
 
-struct ChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatView()
-    }
-}
+//struct ChatView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ChatGridView()
+//    }
+//}
 
 struct ShowCameraView: View {
     var body: some View {

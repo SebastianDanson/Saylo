@@ -13,21 +13,26 @@ struct CustomTextField: View {
     let imageName: String
     
     var body: some View {
-        ZStack(alignment: .leading) {
-            if text.isEmpty {
-                placeholder.foregroundColor(Color(.init(white: 1, alpha: 0.8)))
-                    .padding(.leading, 40)
-            }
-            
-            HStack {
-                Image(systemName: imageName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(.white)
+        VStack(spacing: 16) {
+            ZStack(alignment: .leading) {
+                if text.isEmpty {
+                    placeholder.foregroundColor(Color(.init(white: 0, alpha: 0.8)))
+                        .padding(.leading, 30)
+                }
                 
-                TextField("", text: $text)
+                HStack {
+                    Image(systemName: imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.black)
+                    
+                    TextField("", text: $text)
+                }
             }
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(.lightGray)
         }
     }
 }

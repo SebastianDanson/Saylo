@@ -10,13 +10,13 @@ import AVFoundation
 import SwiftUI
 import PhotosUI
 
-protocol CameraViewControllerDelegate {
+protocol CameraViewControllerDelegate: AnyObject {
     func setVideo(withUrl url: URL)
 }
 
 class CameraViewController: UIViewController {
     
-    var delegate: CameraViewControllerDelegate?
+    weak var delegate: CameraViewControllerDelegate?
     
     let captureSession = AVCaptureSession()
     var previewLayer: AVCaptureVideoPreviewLayer!
@@ -122,30 +122,34 @@ class CameraViewController: UIViewController {
     
     func setupPreview() {
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = UIScreen.main.bounds
+        let width = UIScreen.main.bounds.width
+        let height = width * 1.25
+
+        previewLayer.frame = CGRect(x: 0, y: 0, width: width, height: height)
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         view.layer.addSublayer(previewLayer)
     }
     
     func startSession() {
-        if !captureSession.isRunning {
-            DispatchQueue.global(qos: .default).async { [weak self] in
-                self?.captureSession.startRunning()
-            }
+      if !captureSession.isRunning {
+        DispatchQueue.global(qos: .default).async { [weak self] in
+          self?.captureSession.startRunning()
         }
+      }
     }
     
     func stopSession() {
-        if captureSession.isRunning {
-            DispatchQueue.global(qos: .default).async() { [weak self] in
-                self?.captureSession.stopRunning()
-            }
+      if captureSession.isRunning {
+        DispatchQueue.global(qos: .default).async() { [weak self] in
+          self?.captureSession.stopRunning()
         }
+      }
     }
     
     public func captureMovie(withFlash hasFlash: Bool) {
         self.hasFlash = hasFlash
-        
+        print("2 OKOK")
+
         let device = activeInput.device
         do {
             try device.lockForConfiguration()
@@ -166,10 +170,14 @@ class CameraViewController: UIViewController {
 
         guard let outUrl = tempURL else { return }
         
+        print("3 OKOK")
+
         movieOutput.startRecording(to: outUrl, recordingDelegate: self)
+        
     }
     
     public func stopRecording() {
+        print("STOP")
         if movieOutput.isRecording {
             movieOutput.stopRecording()
             do {

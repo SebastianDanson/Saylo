@@ -8,7 +8,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ChatCell: View {
+struct ConversationGridCell: View {
     
     let user: TestUser
     let width = UIScreen.main.bounds.width/2.68
@@ -129,8 +129,8 @@ struct TimeView: View {
     }
 }
 
-struct ChatCell_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatCell(user: TestUser(image: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1", firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened))
-    }
-}
+//struct ChatCell_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ChatCell(user: TestUser(image: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1", firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened))
+//    }
+//}

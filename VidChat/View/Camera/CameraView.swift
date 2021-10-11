@@ -12,7 +12,7 @@ import AVFoundation
 struct CameraView: UIViewControllerRepresentable {
     
     typealias UIViewControllerType = CameraViewController
-    private let cameraViewController = CameraViewController()
+    private var cameraViewController = CameraViewController()
     @EnvironmentObject var viewModel: CameraViewModel
     
     func makeUIViewController(context: Context) -> CameraViewController {
@@ -21,7 +21,6 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
-        
     }
     
     func makeCoordinator() -> Coordinator {
@@ -31,7 +30,8 @@ struct CameraView: UIViewControllerRepresentable {
     class Coordinator: NSObject, CameraViewControllerDelegate {
         func setVideo(withUrl url: URL) {
             self.parent.viewModel.url = url
-            self.parent.viewModel.setHasRecordedVideo()
+            print(url, "URL")
+            self.parent.viewModel.hasRecordedVideo = true
         }
         
         let parent: CameraView

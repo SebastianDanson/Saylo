@@ -9,107 +9,176 @@ import SwiftUI
 
 struct CameraMainView: View {
     
-    @State var isRecording = false
     @State var isFlash = false
     
     var cameraView = CameraView()
-    @StateObject var viewModel: CameraViewModel
+    @EnvironmentObject var viewModel: CameraViewModel
     @State var hasFinishedRecording: Bool = false
-    @Binding var showCamera: Bool
-    @State private var progress = 0.0
     @State var isFrontFacing = true
+    let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+    let cameraHeight = UIScreen.main.bounds.width * 1.25
+    let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
-        VStack {
-            ZStack {
-                 if let url = viewModel.url {
+        VStack(spacing: 0) {
+            ZStack(alignment: .top) {
+                if let url = viewModel.url {
                     VideoPlayerView(url: url)
                         .background(Color.clear)
                         .zIndex(3)
                 }
-                    cameraView.ignoresSafeArea()
                 
-                if isRecording && isFrontFacing && isFlash {
+                cameraView
+                    .environmentObject(viewModel)
+                    .overlay(
+                        HStack {
+                            if !viewModel.isRecording {
+                                Button {
+                                    self.isFlash.toggle()
+                                } label: {
+                                    ActionView(image:
+                                                Image(systemName: isFlash ?
+                                                        "bolt.fill" : "bolt.slash.fill"),
+                                               imageDimension: 20, circleDimension: 36)
+                                        .padding(.leading, 4)
+                                        .padding(.top, -4)
+                                }
+                                Spacer()
+                                
+                                Button {
+                                    withAnimation {
+                                        viewModel.reset()
+                                    }
+                                } label: {
+                                    ActionView(image: Image("x"),
+                                               imageDimension: 16, circleDimension: 36)
+                                        .padding(.trailing, 4)
+                                        .padding(.top, -4)
+                                }
+                            }
+                        }, alignment: .top)
+                    .background(Color.black)
+                
+                if viewModel.isRecording && isFrontFacing && isFlash {
                     FlashView()
                 }
                 
-                VStack {
-                    HStack {
-                        if !isRecording {
-                            Button {
-                                self.isFlash.toggle()
-                            } label: {
-                                ActionView(image:
-                                            Image(systemName: isFlash ?
-                                                    "bolt.fill" : "bolt.slash.fill"),
-                                           imageDimension: 20, circleDimension: 36)
-                                    .padding(.leading, 4)
-                                    .padding(.top, -4)
-                            }
+            }
+            
+            HStack(alignment: .center) {                
+                Spacer()
+                //                Button {
+                //                    if !isRecording {
+                //                        cameraView.startRecording(withFlash: isFlash)
+                //                        progress = 1
+                //                    } else {
+                //                        cameraView.stopRecording()
+                //                        progress = 0
+                //                        hasFinishedRecording = true
+                //                    }
+                //                    withAnimation {
+                //                        isRecording.toggle()
+                //                    }
+                //                } label: {
+                //                    CameraCircle(isRecording: $isRecording,
+                //                                 progress: $progress)
+                //                }
+                
+                //                Spacer()
+                //
+                
+                if viewModel.isRecording {
+                    Button(action: {
+                        cameraView.switchCamera()
+                        isFrontFacing.toggle()
+                    }, label: {
+                        ActionView(image: Image(systemName:"arrow.triangle.2.circlepath"))
+                            .padding(.bottom, 10)
+                    })
+                }
+                
+                if viewModel.url != nil {
+                    VStack {
+//                        HStack {
+//                            Spacer()
+//
+//                            Button(action: {viewModel.url = nil}, label: {
+//                                ActionView(image: Image("x"),
+//                                           imageDimension: 16, circleDimension: 36)
+//                            })
+//
+//
+//                        }
+//                        Spacer()
+                        
+                        HStack {
+                            ActionView(image: Image(systemName: "square.and.arrow.down"),
+                                       imageDimension: 28, circleDimension: 60)
                             Spacer()
-                            
-                            Button {
-                                self.showCamera = false
-                            } label: {
-                                ActionView(image: Image("x"),
-                                           imageDimension: 16, circleDimension: 36)
-                                    .padding(.trailing, 4)
-                                    .padding(.top, -4)
-                            }
+                            Button(action: {
+                                if viewModel.url != nil {
+                                    viewModel.reset()
+                                }
+                            }, label: {
+                                HStack {
+                                    Rectangle()
+                                        .frame(width: 110, height: 40)
+                                        .foregroundColor(.white)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            HStack(spacing: 10) {
+                                                Text("Send")
+                                                    .foregroundColor(.black)
+                                                    .font(.system(size: 18, weight: .bold))
+                                                
+                                                Image(systemName: "location.north.fill")
+                                                    .resizable()
+                                                    .rotationEffect(Angle(degrees: 90))
+                                                    .foregroundColor(.black)
+                                                    .frame(width: 20, height: 20)
+                                                    .scaledToFit()
+                                            }
+                                        )
+                                }
+                                
+                            })
                         }
-                    }
-                    Spacer()
-                    HStack(alignment: .center) {
-                        Spacer()
-                        
-                        ActionView(image: Image(systemName: "photo"),
-                                   imageDimension: 30)
-                            .opacity(isRecording ? 0 : 1)
-                        
-                        Spacer()
-                        Button {
-                            if !isRecording {
-                                cameraView.startRecording(withFlash: isFlash)
-                                progress = 1
-                            } else {
-                                cameraView.stopRecording()
-                                progress = 0
-                                hasFinishedRecording = true
-                            }
-                            withAnimation {
-                                isRecording.toggle()
-                            }
-                        } label: {
-                            CameraCircle(isRecording: $isRecording,
-                                         progress: $progress)
-                        }
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            cameraView.switchCamera()
-                            isFrontFacing.toggle()
-                        }, label: {
-                            ActionView(image: Image(systemName:"arrow.triangle.2.circlepath"))
-                        })
-                        
-                        
-                        Spacer()
-                        
+                        .padding(20)
+                        .padding(.bottom, 30)
                     }
                 }
-            
             }
+            .frame(height: (screenHeight - cameraHeight)/2)
+            .background(Color.black)
+            // }
+            
+            //            Rectangle()
+            //                .frame(height: bottomPadding)
+            //                .foregroundColor(.black)
+            //             }
         }
-        .environmentObject(viewModel)
+        .background(Color.clear)
+        .onAppear(perform: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                startRecording()
+            }
+        })
+    }
+    
+    func startRecording() {
+        cameraView.startRecording()
+    }
+    
+    func stopRecording() {
+        cameraView.stopRecording()
     }
 }
 
-struct CameraMainView_Previews: PreviewProvider {
-    static var previews: some View {
-        CameraMainView(viewModel: CameraViewModel(), showCamera: .constant(true))
-    }
-}
+//struct CameraMainView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        CameraMainView(viewModel: CameraViewModel(), showCamera: .constant(true))
+//    }
+//}
 
 struct ActionView: View {
     let image: Image
@@ -126,45 +195,17 @@ struct ActionView: View {
         image
             .resizable()
             .scaledToFit()
-            .foregroundColor(.white)
+            .foregroundColor(Color(.systemGray))
             .frame(width: imageDimension, height: imageDimension)
             .padding(20)
-            .background(
-                Circle()
-                    .frame(width: circleDimension, height: circleDimension)
-                    .foregroundColor(Color(.init(white: 0, alpha: 0.3)))
-            )
+//            .background(
+//                Circle()
+//                    .frame(width: circleDimension, height: circleDimension)
+//                    .foregroundColor(Color(.init(white: 0, alpha: 0.6)))
+//            )
     }
 }
 
-struct CameraCircle: View {
-    @Binding var isRecording: Bool
-    @Binding var progress: Double
-    
-    var body: some View {
-        Circle()
-            .trim(from: 0.0, to: CGFloat(min(self.progress, 1.0)))
-            .stroke(Color.white, style: StrokeStyle(lineWidth: 6,
-                                                    lineCap: .round,
-                                                    lineJoin: .round))
-            .animation(.linear(duration: progress == 0 ? 0 : 20), value: progress)
-            .frame(width: 80, height: 80)
-            .rotationEffect(Angle(degrees: 270))
-            .overlay(
-                Circle()
-                    .strokeBorder(isRecording ? Color.clear : Color.white, lineWidth: 5)
-                    .background(
-                        VStack {                                RoundedRectangle(cornerRadius: isRecording ? 8:37)
-                            .frame(width: isRecording ? 34:64,
-                                   height: isRecording ? 34:64)
-                            .foregroundColor(isRecording ? .red : .white)
-                            .transition(.scale)
-                        }
-                    )
-                    .frame(width: 80, height: 80)
-            )
-    }
-}
 
 struct FlashView: View {
     var body: some View {

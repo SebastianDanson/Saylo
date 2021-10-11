@@ -21,7 +21,7 @@ struct ContentView: View {
              //   LoginView()
             //} else {
                // if let user = viewModel.currentUser {
-            ChatView()
+            ConversationView(viewModel: CameraViewModel())
                 //}
            // }
         }

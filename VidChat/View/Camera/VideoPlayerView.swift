@@ -25,51 +25,29 @@ struct VideoPlayerView: View {
     
     var body: some View {
         ZStack {
-            PlayerView(player: $player)
+        PlayerView(player: $player)
             .scaleEffect(x: -1, y: 1, anchor: .center)
             .ignoresSafeArea()
-            
-            VStack {
+            .overlay(
                 HStack {
-                    Spacer()
-                    
-                    Button(action: {viewModel.url = nil}, label: {
-                        ActionView(image: Image("x"),
-                                   imageDimension: 16, circleDimension: 36)
-                    })
-                   
-                        
+                    Image(systemName: "house")
+                        .clipped()
+                        .scaledToFit()
+                        .padding()
+                        .background(Color.gray)
+                        .frame(width: 28, height: 28)
+                        .clipShape(Circle())
+                    Text("Sebastian")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
                 }
-                Spacer()
-                
-                HStack {
-                    ActionView(image: Image(systemName: "square.and.arrow.down"),
-                               imageDimension: 28, circleDimension: 60)
-                    Spacer()
-                Button(action: {}, label: {
-                    HStack {
-                        Rectangle()
-                            .frame(width: 130, height: 40)
-                            .foregroundColor(.white)
-                            .clipShape(Capsule())
-                            .overlay(
-                                HStack(spacing: 10) {
-                                    Text("Send To")
-                                        .foregroundColor(.black)
-                                        .font(.system(size: 18, weight: .bold))
-                                    
-                                    Image(systemName: "location.north.fill")
-                                        .resizable()
-                                        .rotationEffect(Angle(degrees: 90))
-                                        .foregroundColor(.black)
-                                        .frame(width: 20, height: 20)
-                                        .scaledToFit()
-                                }
-                            )
-                    }
-                   
-                })
-                }.padding(20)
+                .padding(12),
+                alignment: .topLeading)
+        }.onTapGesture {
+            if player.isPlaying {
+                player.pause()
+            } else {
+                player.play()
             }
         }
     }
@@ -127,7 +105,6 @@ struct PlayerView: UIViewRepresentable {
 class PlayerUIView: UIView {
     private let playerLayer = AVPlayerLayer()
     
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -160,5 +137,11 @@ class PlayerUIView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
+    }
+}
+
+extension AVPlayer {
+    var isPlaying: Bool {
+        return rate != 0 && error == nil
     }
 }
