@@ -17,17 +17,30 @@ struct VideoPlayerView: View {
     @State var player: AVPlayer
     @EnvironmentObject var viewModel: CameraViewModel
 
-    init(url: URL) {
+     var width: CGFloat = UIScreen.main.bounds.width
+     var height: CGFloat = UIScreen.main.bounds.width
+    
+    init(url: URL, isCustomVideo: Bool = false) {
         player = AVPlayer(url: url)
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
+        
+        if !isCustomVideo, let size = resolutionForLocalVideo(url: url) {
+            print(size.width, size.height, size.height/size.width, "SIZE")
+            let ratio = size.height/size.width
+            height = height * ratio
+            print(width, height, ratio)
+        } else {
+            height = width * 1.25
+        }
+        
     }
     
     var body: some View {
         ZStack {
         PlayerView(player: $player)
             .scaleEffect(x: -1, y: 1, anchor: .center)
-            .ignoresSafeArea()
+            .frame(width: width, height: height)
             .overlay(
                 HStack {
                     Image(systemName: "house")
@@ -50,6 +63,12 @@ struct VideoPlayerView: View {
                 player.play()
             }
         }
+    }
+
+    private func resolutionForLocalVideo(url: URL) -> CGSize? {
+        guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
+        let size = track.naturalSize.applying(track.preferredTransform)
+       return CGSize(width: abs(size.width), height: abs(size.height))
     }
 }
 
@@ -92,7 +111,7 @@ struct VideoPlayer : UIViewControllerRepresentable {
 struct PlayerView: UIViewRepresentable {
     
     @Binding var player : AVPlayer
-
+    
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
     }
 
@@ -111,8 +130,6 @@ class PlayerUIView: UIView {
 
     init(frame: CGRect, player: AVPlayer) {
         super.init(frame: frame)
-        
-        
         // Setup the player
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspectFill

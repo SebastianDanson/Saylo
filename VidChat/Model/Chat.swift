@@ -53,7 +53,7 @@ struct Chat {
         
         //messages
         let messagesDic = dictionary["messages"] as? [[String:Any]] ?? [[String:Any]]()
-        messagesDic.forEach({ self.messages.append(Message(dictionary: $0)) })
+        messagesDic.forEach({ self.messages.append(Message(dictionary: $0, id: $0[id] as? String ?? "")) })
         
         //isDm
         self.isDm = chatMembers.count == 2 && chatMembers[0].token != nil

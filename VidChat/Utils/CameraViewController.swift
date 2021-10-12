@@ -36,13 +36,19 @@ class CameraViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupSession()
+       setupSession()
         setupPreview()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         startSession()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        stopSession()
+        //TOOD stop session when chat is dismissed
+       // stopSession()
     }
     
     func setupSession() {
@@ -133,22 +139,23 @@ class CameraViewController: UIViewController {
     func startSession() {
       if !captureSession.isRunning {
         DispatchQueue.global(qos: .default).async { [weak self] in
+            print("RUNNING STARTED")
           self?.captureSession.startRunning()
         }
       }
     }
     
     func stopSession() {
-      if captureSession.isRunning {
-        DispatchQueue.global(qos: .default).async() { [weak self] in
-          self?.captureSession.stopRunning()
-        }
-      }
+//      if captureSession.isRunning {
+//        DispatchQueue.global(qos: .default).async() { [weak self] in
+//          self?.captureSession.stopRunning()
+//            print("RUNNING ENDED")
+//        }
+//      }
     }
     
     public func captureMovie(withFlash hasFlash: Bool) {
         self.hasFlash = hasFlash
-        print("2 OKOK")
 
         let device = activeInput.device
         do {
@@ -170,14 +177,11 @@ class CameraViewController: UIViewController {
 
         guard let outUrl = tempURL else { return }
         
-        print("3 OKOK")
-
         movieOutput.startRecording(to: outUrl, recordingDelegate: self)
         
     }
     
     public func stopRecording() {
-        print("STOP")
         if movieOutput.isRecording {
             movieOutput.stopRecording()
             do {
@@ -199,8 +203,57 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         if let error = error {
             print("error: \(error.localizedDescription)")
         } else {
-            print("YESSIR", delegate)
-            delegate?.setVideo(withUrl: outputFileURL)
+            CameraViewModel.shared.url = outputFileURL
+
+            cropVideo(outputFileURL, completion: { croppedURL in
+                CameraViewModel.shared.croppedUrl = croppedURL
+            })
+              
+           // delegate?.setVideo(withUrl: outputFileURL)
         }
+    }
+    
+    func cropVideo( _ outputFileUrl: URL, completion: @escaping ( _ newUrl: URL ) -> () )
+       {
+           // Get input clip
+           let videoAsset: AVAsset = AVAsset( url: outputFileUrl )
+           let clipVideoTrack = videoAsset.tracks( withMediaType: AVMediaType.video ).first! as AVAssetTrack
+
+           // Make video to square
+           let videoComposition = AVMutableVideoComposition()
+           videoComposition.renderSize = CGSize( width: clipVideoTrack.naturalSize.height, height: clipVideoTrack.naturalSize.height * 1.25 )
+           videoComposition.frameDuration = CMTimeMake( value: 1, timescale: 30 )
+
+           // Rotate to portrait
+           let transformer = AVMutableVideoCompositionLayerInstruction( assetTrack: clipVideoTrack )
+           let transform1 = CGAffineTransform( translationX: clipVideoTrack.naturalSize.height, y: -( clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height * 1.25 ) / 2 )
+           let transform2 = transform1.rotated(by: .pi/2 )
+           transformer.setTransform( transform2, at: CMTime.zero)
+
+           let instruction = AVMutableVideoCompositionInstruction()
+           instruction.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: CMTimeMakeWithSeconds( 20, preferredTimescale: 30 ) )
+
+           instruction.layerInstructions = [transformer]
+           videoComposition.instructions = [instruction]
+
+           // Export
+           let croppedOutputFileUrl = URL( fileURLWithPath: getOutputPath(NSUUID().uuidString))
+           let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetHighestQuality)!
+           exporter.videoComposition = videoComposition
+           exporter.outputURL = croppedOutputFileUrl
+           exporter.outputFileType = AVFileType.mov
+
+           exporter.exportAsynchronously( completionHandler: { () -> Void in
+               DispatchQueue.main.async(execute: {
+                   completion( croppedOutputFileUrl )
+               })
+           })
+       }
+    
+    func getOutputPath( _ name: String ) -> String
+    {
+        let documentPath = NSSearchPathForDirectoriesInDomains(      .documentDirectory, .userDomainMask, true )[ 0 ] as NSString
+        let outputPath = "\(documentPath)/\(name).mov"
+        return outputPath
     }
 }

@@ -15,7 +15,7 @@ class AuthViewModel: ObservableObject {
     
     static let shared = AuthViewModel()
     
-    init() {
+    private init() {
         fetchUser()
     }
     

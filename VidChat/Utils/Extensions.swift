@@ -18,4 +18,5 @@ extension Color {
     static let mainGreen = Color(red: 0, green: 206/255, blue: 201/255)
     static let mainBlue = Color(red: 15/255, green: 188/255, blue: 249/255)
     static let lightGray = Color(red: 0.67, green: 0.67, blue: 0.67)
+    static let iconGray = Color(red: 153/255, green: 153/255, blue: 153/255)
 }

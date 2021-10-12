@@ -5,7 +5,7 @@
 //  Created by Student on 2021-09-24.
 //
 
-import FirebaseFirestoreSwift
+import FirebaseFirestore
 import Firebase
 
 enum MessageType {
@@ -28,7 +28,7 @@ enum MessageType {
     }
 }
 
-struct Message {
+struct Message: Identifiable {
     
     //ids
     let id: String
@@ -46,10 +46,10 @@ struct Message {
     //date
     let timestamp: Timestamp
     
-    init(dictionary: [String:Any]) {
+    init(dictionary: [String:Any], id: String) {
         
         //ids
-        self.id = dictionary["id"] as? String ?? ""
+        self.id = id
         self.chatId = dictionary["chatId"] as? String ?? ""
         
         //userInfo
@@ -62,5 +62,7 @@ struct Message {
         self.type = MessageType.getType(forString: dictionary["type"] as? String ?? "")
         
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())
+        
+        print( "YUUUH",self.videoUrl, self.type)
     }
 }

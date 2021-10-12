@@ -17,13 +17,13 @@ struct ContentView: View {
             //if not logged in -> show login
             //else show main interface
             
-          //  if viewModel.currentUser == nil {
-             //   LoginView()
-            //} else {
-               // if let user = viewModel.currentUser {
-            ConversationView(viewModel: CameraViewModel())
-                //}
-           // }
+//            if viewModel.currentUser == nil {
+//                LoginView()
+//            } else {
+//                if viewModel.currentUser != nil {
+                    ConversationView()
+//                }
+//            }
         }
     }
 }
