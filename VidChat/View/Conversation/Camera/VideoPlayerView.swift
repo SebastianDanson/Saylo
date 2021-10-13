@@ -56,13 +56,14 @@ struct VideoPlayerView: View {
                 }
                 .padding(12),
                 alignment: .topLeading)
-        }.onTapGesture {
-            if player.isPlaying {
-                player.pause()
-            } else {
-                player.play()
-            }
         }
+//        .onTapGesture {
+//            if player.isPlaying {
+//                player.pause()
+//            } else {
+//                player.play()
+//            }
+//        }
     }
 
     private func resolutionForLocalVideo(url: URL) -> CGSize? {

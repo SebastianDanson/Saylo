@@ -33,6 +33,18 @@ class ConversationViewModel: ObservableObject {
 
         let message = Message(dictionary: dictionary, id: NSUUID().uuidString)
         self.messages.append(message)
+        
+        let message2 = Message(dictionary: dictionary, id: NSUUID().uuidString)
+        self.messages.append(message2)
+        
+        let message3 = Message(dictionary: dictionary, id: NSUUID().uuidString)
+        self.messages.append(message3)
+        
+        let message4 = Message(dictionary: dictionary, id: NSUUID().uuidString)
+        self.messages.append(message4)
+        
+        let message5 = Message(dictionary: dictionary, id: NSUUID().uuidString)
+        self.messages.append(message5)
         print("ADDED")
         
     }
