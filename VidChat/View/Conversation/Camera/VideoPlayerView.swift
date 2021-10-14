@@ -16,60 +16,64 @@ struct VideoPlayerView: View {
     
     @State var player: AVPlayer
     @EnvironmentObject var viewModel: CameraViewModel
-
-     var width: CGFloat = UIScreen.main.bounds.width
-     var height: CGFloat = UIScreen.main.bounds.width
+    
+    var width: CGFloat = UIScreen.main.bounds.width
+    var height: CGFloat = UIScreen.main.bounds.width
     
     init(url: URL, isCustomVideo: Bool = false) {
         player = AVPlayer(url: url)
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
         
-        if !isCustomVideo, let size = resolutionForLocalVideo(url: url) {
-            print(size.width, size.height, size.height/size.width, "SIZE")
+        if let size = resolutionForLocalVideo(url: url) {
             let ratio = size.height/size.width
             height = height * ratio
             print(width, height, ratio)
-        } else {
-            height = width * 1.25
         }
+        //          else {
+        //            height = width * 1.25
+        //        }
         
     }
     
     var body: some View {
         ZStack {
-        PlayerView(player: $player)
-            .scaleEffect(x: -1, y: 1, anchor: .center)
-            .frame(width: width, height: height)
-            .overlay(
-                HStack {
-                    Image(systemName: "house")
-                        .clipped()
-                        .scaledToFit()
-                        .padding()
-                        .background(Color.gray)
-                        .frame(width: 28, height: 28)
-                        .clipShape(Circle())
-                    Text("Sebastian")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white)
-                }
-                .padding(12),
-                alignment: .topLeading)
+            PlayerView(player: $player)
+                .scaleEffect(x: -1, y: 1, anchor: .center)
+                .frame(width: width, height: height)
+                .overlay(
+                    HStack {
+                        Image(systemName: "house")
+                            .clipped()
+                            .scaledToFit()
+                            .padding()
+                            .background(Color.gray)
+                            .frame(width: 28, height: 28)
+                            .clipShape(Circle())
+                        Text("Sebastian")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                        .padding(12),
+                    alignment: .topLeading)
+                .simultaneousGesture(TapGesture().onEnded({ _ in
+                    togglePlay()
+                }))
         }
-//        .onTapGesture {
-//            if player.isPlaying {
-//                player.pause()
-//            } else {
-//                player.play()
-//            }
-//        }
     }
-
+    
+    func togglePlay() {
+        if player.isPlaying {
+            player.pause()
+        } else {
+            player.play()
+        }
+    }
+    
     private func resolutionForLocalVideo(url: URL) -> CGSize? {
         guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
         let size = track.naturalSize.applying(track.preferredTransform)
-       return CGSize(width: abs(size.width), height: abs(size.height))
+        return CGSize(width: abs(size.width), height: abs(size.height))
     }
 }
 
@@ -98,7 +102,7 @@ struct VideoPlayer : UIViewControllerRepresentable {
         controller.player = player
         
         controller.showsPlaybackControls = false
-        controller.videoGravity = .resizeAspectFill
+        controller.videoGravity = .resizeAspect
         controller.view.backgroundColor = .clear
         return controller
     }
@@ -115,7 +119,7 @@ struct PlayerView: UIViewRepresentable {
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
     }
-
+    
     func makeUIView(context: Context) -> UIView {
         let playerView = PlayerUIView(frame: .zero, player: player)
         return playerView
@@ -128,12 +132,12 @@ class PlayerUIView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     init(frame: CGRect, player: AVPlayer) {
         super.init(frame: frame)
         // Setup the player
         playerLayer.player = player
-        playerLayer.videoGravity = .resizeAspectFill
+        playerLayer.videoGravity = .resizeAspect
         layer.addSublayer(playerLayer)
         
         // Setup looping
@@ -142,7 +146,7 @@ class PlayerUIView: UIView {
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem)
-
+        
         // Start the movie
         player.play()
     }
@@ -151,7 +155,7 @@ class PlayerUIView: UIView {
     func playerItemDidReachEnd(notification: Notification) {
         playerLayer.player?.seek(to: CMTime.zero)
     }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct TextCell: View {
+    
+    let text: String
+    
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "house")
@@ -17,18 +20,19 @@ struct TextCell: View {
                 .background(Color.gray)
                 .frame(width: 28, height: 28)
                 .clipShape(Circle())
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Sebastian")
                     .font(.system(size: 14, weight: .semibold))
-                Text("Hello, World! My name is seb")
+                Text(text)
                     .font(.system(size: 16))
             }
-        }.padding(.leading, 12)
+            Spacer()
+        }.padding(.horizontal)
     }
 }
 
-struct TextCell_Previews: PreviewProvider {
-    static var previews: some View {
-        TextCell()
-    }
-}
+//struct TextCell_Previews: PreviewProvider {
+//    static var previews: some View {
+//        TextCell()
+//    }
+//}

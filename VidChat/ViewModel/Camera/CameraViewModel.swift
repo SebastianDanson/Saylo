@@ -17,7 +17,8 @@ class CameraViewModel: ObservableObject {
     @Published var isRecording = false
     @Published var showCamera = false
     @Published var cameraView = CameraMainView()
-
+    @Published var hasSentWithoutCrop = false
+    
     static let shared = CameraViewModel()
     
     private init() {}
@@ -43,7 +44,7 @@ class CameraViewModel: ObservableObject {
         self.progress = 1
         
         if addDelay {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 self.cameraView.startRecording()
             }
         } else {

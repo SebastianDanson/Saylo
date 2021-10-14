@@ -15,56 +15,33 @@ struct CameraMainView: View {
     var cameraView = CameraView()
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-    let cameraHeight = UIScreen.main.bounds.width * 1.25
+    // let cameraHeight = UIScreen.main.bounds.width * 1.25
     let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
         
-        VStack(spacing: 0) {
+        ZStack(alignment: .center) {
             
-            ZStack(alignment: .top) {
+            //video player
+            if let url = viewModel.url {
+                VideoPlayerView(url: url, isCustomVideo: true)
+                    .overlay(VideoOptions(), alignment: .bottom)
+                    .background(Color.clear)
+                    .zIndex(3)
                 
-                //video player
-                if let url = viewModel.url {
-                    VideoPlayerView(url: url, isCustomVideo: true).background(Color.clear).zIndex(3)
-                }
-                
-                //camera
-                cameraView
-                    .overlay(CameraOptions(), alignment: .top)
-                    .background(Color.black)
-                
-                //flash view if there's front facing flash
-                if viewModel.isRecording && isFrontFacing && viewModel.hasFlash {
-                    FlashView()
-                }
-    
             }
             
-            //View at the bottom of the camera and video player with various options
-            HStack(alignment: .center) {                
-                Spacer()
-       
-                if viewModel.isRecording {
-                    
-                    //Switch camera button
-                    Button(action: {
-                        cameraView.switchCamera()
-                        isFrontFacing.toggle()
-                    }, label: {
-                        ActionView(image: Image(systemName:"arrow.triangle.2.circlepath"))
-                            .padding(.bottom, 10)
-                    })
-                    
-                }
-                
-                if viewModel.url != nil {
-                    VideoOptions()
-                }
+            //camera
+            cameraView
+                .overlay(CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView), alignment: .center)
+            
+            //flash view if there's front facing flash
+            if viewModel.isRecording && isFrontFacing && viewModel.hasFlash {
+                FlashView()
             }
-            .frame(height: (screenHeight - cameraHeight)/2)
-            .background(Color.white)
+            
         }
+        .ignoresSafeArea()
         .background(Color.clear)
     }
     
@@ -94,90 +71,149 @@ struct VideoOptions: View {
         VStack {
             
             HStack {
+                Spacer()
                 
-                ActionView(image: Image(systemName: "square.and.arrow.down"),
-                           imageDimension: 28, circleDimension: 60)
+                // X button
+                Button {
+                    withAnimation {
+                        viewModel.reset()
+                    }
+                } label: {
+                    CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                }
+            }
+            
+            Spacer()
+            
+            HStack {
+                
+                CamereraOptionView(image: Image(systemName: "square.and.arrow.down"), imageDimension: 25, circleDimension: 44)
                 
                 Spacer()
                 
-                Button(action: {
-                    if let url = viewModel.croppedUrl {
-                        withAnimation {
-                            ConversationViewModel.shared.addMessage(url: url.absoluteString)
-                            viewModel.reset()
-                        }
-                    }
-                }, label: {
-                    SendButton()
-                })
+                SendButton()
             }
-            .padding(20)
-            .padding(.bottom, 30)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
         }
     }
 }
 
 struct SendButton: View {
+    @StateObject var viewModel = CameraViewModel.shared
+    
     var body: some View {
-        HStack {
-            Rectangle()
-                .frame(width: 110, height: 40)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
-                .overlay(
-                    HStack(spacing: 10) {
-                        Text("Send")
-                            .foregroundColor(.black)
-                            .font(.system(size: 18, weight: .bold))
-                        
-                        Image(systemName: "location.north.fill")
-                            .resizable()
-                            .rotationEffect(Angle(degrees: 90))
-                            .foregroundColor(.black)
-                            .frame(width: 20, height: 20)
-                            .scaledToFit()
-                    }
-                )
-        }
+        
+        Button(action: {
+            let url = viewModel.croppedUrl == nil ? viewModel.url! : viewModel.croppedUrl!
+            withAnimation {
+                ConversationViewModel.shared.addMessage(url: url)
+                viewModel.reset()
+                viewModel.hasSentWithoutCrop = viewModel.croppedUrl == nil
+            }
+        }, label: {
+            HStack {
+                Rectangle()
+                    .frame(width: 110, height: 40)
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+                    .overlay(
+                        HStack(spacing: 10) {
+                            Text("Send")
+                                .foregroundColor(.black)
+                                .font(.system(size: 18, weight: .bold))
+                            
+                            Image(systemName: "location.north.fill")
+                                .resizable()
+                                .rotationEffect(Angle(degrees: 90))
+                                .foregroundColor(.black)
+                                .frame(width: 20, height: 20)
+                                .scaledToFit()
+                        }
+                    )
+            }
+        })
     }
 }
 
 struct CameraOptions: View {
     
     @StateObject var viewModel = CameraViewModel.shared
-
+    @Binding var isFrontFacing: Bool
+    
+    //height of extra space above and below camera
+    let nonCameraHeight = UIScreen.main.bounds.height - (UIScreen.main.bounds.width * 16/9) // Camera aspect ratio is 16/9
+    
+    var cameraView: CameraView
+    
     var body: some View {
         
-        HStack {
+        VStack {
             
-            if !viewModel.isRecording {
+            HStack {
                 
                 //Flash toggle button
                 Button {
                     self.viewModel.hasFlash.toggle()
                 } label: {
-                    ActionView(image:
-                                Image(systemName: viewModel.hasFlash ?
-                                      "bolt.fill" : "bolt.slash.fill"),
-                               imageDimension: 20, circleDimension: 36, color: .white)
-                        .padding(.leading, 4)
-                        .padding(.top, -4)
+                    CamereraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
                 }
                 
                 Spacer()
                 
-                //X button
+                // X button
                 Button {
                     withAnimation {
                         viewModel.reset()
                     }
                 } label: {
-                    ActionView(image: Image("x"),
-                               imageDimension: 16, circleDimension: 36)
-                        .padding(.trailing, 4)
-                        .padding(.top, -4)
+                    CamereraOptionView(image: Image("x"), imageDimension: 14)
                 }
             }
+            
+            Spacer()
+            
+            HStack {
+                
+                Spacer()
+                
+                //Switch camera button
+                Button(action: {
+                    cameraView.switchCamera()
+                    isFrontFacing.toggle()
+                }, label: {
+                    CamereraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
+                })
+            }
         }
+        .padding(.vertical, nonCameraHeight / 2 + 4)
+        .padding(.horizontal, 6)
+    }
+}
+
+
+struct CamereraOptionView: View {
+    let image: Image
+    let imageDimension: CGFloat
+    let circleDimension: CGFloat
+    
+    init(image: Image, imageDimension: CGFloat = 20, circleDimension: CGFloat = 36) {
+        self.image = image
+        self.imageDimension = imageDimension
+        self.circleDimension = circleDimension
+    }
+    
+    var body: some View {
+        image
+            .resizable()
+            .scaledToFit()
+            .foregroundColor(.white)
+            .frame(width: imageDimension, height: imageDimension)
+            .padding(20)
+            .background(
+                Circle()
+                    .frame(width: circleDimension, height: circleDimension)
+                    .foregroundColor(Color(.init(white: 0, alpha: 0.3)))
+            )
     }
 }

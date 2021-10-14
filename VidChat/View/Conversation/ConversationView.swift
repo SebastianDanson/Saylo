@@ -6,15 +6,19 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ConversationView: View {
     
     @ObservedObject var cameraViewModel = CameraViewModel.shared
     @ObservedObject var viewModel = ConversationViewModel.shared
+    
     @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
     @State private var canScroll = true
-
+    @State private var text = ""
+    @State private var isTyping = false
+    
     private let width = UIScreen.main.bounds.width
     private let cameraHeight = UIScreen.main.bounds.width * 1.25
     private let screenHeight = UIScreen.main.bounds.height
@@ -25,184 +29,139 @@ struct ConversationView: View {
     var body: some View {
         
         
-        ZStack(alignment: .bottom) {
-            
-            //Feed
-            
-            TrackableScrollView(.vertical, showIndicators: false, contentOffset: $scrollViewContentOffset) {
-                ScrollViewReader { reader in
+        VStack() {
+            ZStack {
+                //Feed
+                
+                ScrollView(.vertical, showsIndicators: false) {
                     
-                    
-                    //Text("\(scrollViewContentOffset)")
-                    
-                    
-                    Rectangle().frame(height: 100).foregroundColor(.white)
-                    
-                    
-                    LazyVStack(spacing: 20) {
+                    ScrollViewReader { reader in
                         
-                        
-                        ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
-                            MessageCell(message: viewModel.messages[i])
-                                .offset(x: 0, y: dragOffset.height)
-                                .gesture(
-                                    DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                                        .onChanged { gesture in
-                                           // if canScroll {
-                                                print("CHANGED")
-                                                dragOffset.height = gesture.translation.height
-                                          //  }
-                                        }
-                                        .onEnded { gesture in
-                                            print(dragOffset, "DRAG OFFSET")
-                                            if abs(dragOffset.height) > 100 {
-                                                withAnimation(.easeInOut(duration: 0.3)) {
-                                                dragOffset = .zero
-                                            }
-                                            } else {
-                                                withAnimation {
-                                                    dragOffset = .zero
+                        LazyVStack(spacing: 12) {
+                            Rectangle().frame(height: 100).foregroundColor(.white).offset(x: 0, y: dragOffset.height)
+                            
+                            ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
+                                withAnimation {
+                                    MessageCell(message: viewModel.messages[i])
+                                        .transition(.move(edge: .bottom))
+                                        .offset(x: 0, y: dragOffset.height)
+                                        .simultaneousGesture(
+                                            DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                                                .onChanged { gesture in
+                                                    dragOffset.height = gesture.translation.height
                                                 }
-                                            }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                                print("YUPPP")
-                                                canScroll = true
-                                            }
-                                            if canScroll {
-                                              
-                                            print(gesture.translation, "TRAN")
-                                            if gesture.translation.height < 0 {
-                                                if i + 1 < viewModel.messages.count {
-                                                    withAnimation() {
-                                                        reader.scrollTo(viewModel.messages[i + 1].id, anchor: .center)
-                                                        canScroll = false
-                                                    }
+                                                .onEnded { gesture in
+                                                    handleOnDragEnd(translation: gesture.translation, index: i, reader: reader)
                                                 }
-                                            }
-                                            
-                                            if gesture.translation.height > 0 {
-                                                if i - 1 >= 0 {
-                                                    withAnimation() {
-                                                        reader.scrollTo(viewModel.messages[i - 1].id, anchor: .center)
-                                                        canScroll = false
-                                                    }
-                                                }
-                                            }
-
-                                            }
-                                            }
-                                ) .allowsHitTesting(canScroll)
-
-                            //                                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onEnded({ value in
-                            //                                    if value.translation.height < 0 {
-                            //                                        if i + 1 < viewModel.messages.count {
-                            //                                            withAnimation {
-                            //                                                reader.scrollTo(viewModel.messages[i + 1].id, anchor: .center)
-                            //                                            }
-                            //                                        }
-                            //                                    }
-                            //
-                            //                                    if value.translation.height > 0 {
-                            //                                        if i - 1 >= 0 {
-                            //                                            withAnimation {
-                            //                                                reader.scrollTo(viewModel.messages[i - 1].id, anchor: .center)
-                            //                                            }
-                            //                                        }
-                            //                                    }
-                            //                                })).delayTouches()
+                                        )
+                                        .allowsHitTesting(canScroll)
+                                }
+                            }
+                            
+                            if !isTyping {
+                                Rectangle().frame(height: 100).foregroundColor(.white)
+                                    .offset(x: 0, y: dragOffset.height)
+                                    .transition(.slide)
+                            }
                             
                             
-                            
-                            // .onTapGesture{}.onLongPressGesture(minimumDuration: 0) { // Setting the minimumDuration to ~0.2 reduces the delay
-                            
-                            //                                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                            //                                            .onChanged({ value in
-                            //                                    scrollViewContentOffset += value.translation.height
-                            //
-                            //                                })
-                            //                                .simultaneousGesture(LongPressGesture(minimumDuration: 1)
-                            //                                            .onEnded { _ in
-                            //                                    print("ENDED")
-                            //                                })
-                            //                                .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                            //                                            .onChanged({ value in
-                            //                                    scrollViewContentOffset += value.translation.height
-                            //
-                            //                                })
-                            //                                            .onEnded({ value in
-                            //                                    if value.translation.height < 0 {
-                            //                                        if i + 1 < viewModel.messages.count {
-                            //                                            withAnimation {
-                            //                                                reader.scrollTo(viewModel.messages[i + 1].id, anchor: .center)
-                            //                                            }
-                            //                                        }
-                            //                                    }
-                            //
-                            //                                    if value.translation.height > 0 {
-                            //                                        if i - 1 >= 0 {
-                            //                                            withAnimation {
-                            //                                                reader.scrollTo(viewModel.messages[i - 1].id, anchor: .center)
-                            //                                            }
-                            //                                        }
-                            //                                    }
-                            //                                }))
-                            //  .delayTouches()
-                            
-                            
-                        }
-                        
-                        Rectangle().frame(height: 100).foregroundColor(.white)
-                        
-                        
-                        
-                    }.flippedUpsideDown()
-                    //                        .onChange(of: scrollViewContentOffset) { V in
-                    //
-                    //                            if viewModel.messages.count > 3 {
-                    //                                value.scrollTo(viewModel.messages[3].id, anchor: .center)
-                    //                            }
-                    //                        }
+                        }.flippedUpsideDown()
+                    }
+                }.flippedUpsideDown()
+                
+                //Camera
+                if CameraViewModel.shared.showCamera {
+                    CameraViewModel.shared.cameraView
+                        .transition(.move(edge: .bottom))
                 }
-            }.flippedUpsideDown()
+            }
             
-            
-            
-            // ScrollView {
-            
-            //                ScrollViewReader { value in
-            //
-            //                   Rectangle().frame(height: 100).foregroundColor(.white)
-            //
-            //
-            //
-            //
-            //                    LazyVStack(spacing: 20) {
-            //
-            //
-            //                        ForEach(viewModel.messages) { message in
-            //                            MessageCell(message: message)
-            //                        }
-            //
-            //                          Rectangle().frame(height: 100).foregroundColor(.white)
-            //
-            //
-            //
-            //                    }.flippedUpsideDown()
-            //                }
-            
-            //  }.flippedUpsideDown()
-            
-            
-            //Camera
-            if CameraViewModel.shared.showCamera {
-                CameraViewModel.shared.cameraView
-                    .transition(.move(edge: .bottom))
-                    .frame(height: cameraHeight + (screenHeight - cameraHeight)/2)
+            if isTyping {
+                HStack(alignment: .bottom) {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "house")
+                            .clipped()
+                            .scaledToFit()
+                            .padding()
+                            .background(Color.gray)
+                            .frame(width: 28, height: 28)
+                            .clipShape(Circle())
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Sebastian")
+                                .font(.system(size: 14, weight: .semibold))
+                            MultilineTextField(text: $text) {
+                                isTyping = false
+                            }
+                        }
+                        Spacer()
+                    }.padding(.leading)
+                    
+                    Button {
+                        if !text.isEmpty {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                ConversationViewModel.shared.addMessage(text: text)
+                                text = ""
+                            }
+                        }
+                    } label: {
+                        ZStack {
+                            if text != "" {
+                                Image(systemName: "arrow.up.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 28, height: 28)
+                                    .foregroundColor(Color.mainBlue)
+                                    .transition(.move(edge: .trailing))
+                            }
+                        }
+                    }
+                    .padding(.bottom, 9)
+                    .padding(.trailing, 10)
+                    
+                }
+                
             }
             
         }
-        .overlay(OptionsView().transition(.opacity), alignment: .bottom)
-        .edgesIgnoringSafeArea(.all)
+        .overlay(
+            ZStack {
+                if !isTyping {
+                    OptionsView(isTyping: $isTyping).transition(.opacity)
+                        .transition(.opacity)
+                }
+            }
+            ,alignment: .bottom)
+        .edgesIgnoringSafeArea(.top)
+        
+    }
+    
+    func handleOnDragEnd(translation: CGSize, index i: Int, reader: ScrollViewProxy) {
+
+        withAnimation(.easeInOut(duration: 0.3)) {
+            dragOffset = .zero
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            canScroll = true
+        }
+        
+        if translation.height < 0 {
+            if i + 1 < viewModel.messages.count && viewModel.messages[i + 1].type == .Video {
+                withAnimation() {
+                    reader.scrollTo(viewModel.messages[i + 1].id, anchor: .center)
+                    canScroll = false
+                }
+            }
+        }
+        
+        if translation.height > 0 {
+            if i - 1 >= 0 && viewModel.messages[i - 1].type == .Video {
+                withAnimation() {
+                    reader.scrollTo(viewModel.messages[i - 1].id, anchor: .center)
+                    canScroll = false
+                }
+            }
+        }
     }
     
 }
@@ -213,7 +172,7 @@ struct ConversationView: View {
 struct OptionsView: View {
     
     @ObservedObject var cameraViewModel = CameraViewModel.shared
-    let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+    @Binding var isTyping: Bool
     
     var body: some View {
         HStack(spacing: 4) {
@@ -249,7 +208,11 @@ struct OptionsView: View {
                     })
                     
                     //Aa button
-                    Button(action: {}, label: {
+                    Button(action: {
+                        withAnimation {
+                            isTyping = true
+                        }
+                    }, label: {
                         ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32, circleDimension: 50)
                     })
                     
@@ -258,7 +221,7 @@ struct OptionsView: View {
         }
         .frame(height: 70)
         .clipShape(Capsule())
-        .padding(.bottom, bottomPadding + (cameraViewModel.isRecording ? 20 : 0))
+        .padding(.bottom, cameraViewModel.isRecording ? 50 : 0)
     }
 }
 
@@ -298,89 +261,19 @@ struct ActionView: View {
     let image: Image
     let imageDimension: CGFloat
     let circleDimension: CGFloat
-    let color: Color
     
-    init(image: Image, imageDimension: CGFloat = 32, circleDimension: CGFloat = 60, color: Color = Color(.systemGray)) {
+    init(image: Image, imageDimension: CGFloat = 32, circleDimension: CGFloat = 60) {
         self.image = image
         self.imageDimension = imageDimension
         self.circleDimension = circleDimension
-        self.color = color
     }
     
     var body: some View {
         image
             .resizable()
             .scaledToFit()
-            .foregroundColor(color)
+            .foregroundColor(Color(.systemGray))
             .frame(width: imageDimension, height: imageDimension)
             .padding(20)
-    }
-}
-
-struct TrackableScrollView<Content>: View where Content: View {
-    let axes: Axis.Set
-    let showIndicators: Bool
-    @Binding var contentOffset: CGFloat
-    let content: Content
-    
-    init(_ axes: Axis.Set = .vertical, showIndicators: Bool = true, contentOffset: Binding<CGFloat>, @ViewBuilder content: () -> Content) {
-        self.axes = axes
-        self.showIndicators = showIndicators
-        self._contentOffset = contentOffset
-        self.content = content()
-    }
-    
-    var body: some View {
-        GeometryReader { outsideProxy in
-            ScrollView(self.axes, showsIndicators: self.showIndicators) {
-                ZStack(alignment: self.axes == .vertical ? .top : .leading) {
-                    GeometryReader { insideProxy in
-                        Color.clear
-                            .preference(key: ScrollOffsetPreferenceKey.self, value: [self.calculateContentOffset(fromOutsideProxy: outsideProxy, insideProxy: insideProxy)])
-                        // Send value to the parent
-                    }
-                    VStack {
-                        self.content
-                    }
-                }
-            }
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                self.contentOffset = value[0]
-            }
-            // Get the value then assign to offset binding
-        }
-    }
-    
-    private func calculateContentOffset(fromOutsideProxy outsideProxy: GeometryProxy, insideProxy: GeometryProxy) -> CGFloat {
-        if axes == .vertical {
-            return outsideProxy.frame(in: .global).minY - insideProxy.frame(in: .global).minY
-        } else {
-            return outsideProxy.frame(in: .global).minX - insideProxy.frame(in: .global).minX
-        }
-    }
-}
-
-struct ScrollOffsetPreferenceKey: PreferenceKey {
-    typealias Value = [CGFloat]
-    
-    static var defaultValue: [CGFloat] = [0]
-    
-    static func reduce(value: inout [CGFloat], nextValue: () -> [CGFloat]) {
-        value.append(contentsOf: nextValue())
-    }
-}
-
-struct NoButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-    }
-}
-
-extension View {
-    func delayTouches() -> some View {
-        Button(action: {}) {
-            gesture(TapGesture())
-        }
-        .buttonStyle(NoButtonStyle())
     }
 }
