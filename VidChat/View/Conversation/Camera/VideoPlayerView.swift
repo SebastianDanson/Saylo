@@ -15,25 +15,30 @@ import SwiftUI
 struct VideoPlayerView: View {
     
     @State var player: AVPlayer
-    @EnvironmentObject var viewModel: CameraViewModel
+    @ObservedObject var viewModel: VideoPlayerViewModel
     
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.width
+    var showName: Bool
     
-    init(url: URL, isCustomVideo: Bool = false) {
-        player = AVPlayer(url: url)
+    init(url: URL, id: String? = nil, showName: Bool = true) {
+        let player = AVPlayer(url: url)
+        self.player = player
+        self.viewModel = VideoPlayerViewModel(player: player)
+        self.showName = showName
+        
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
+        
+        if let id = id {
+            ConversationViewModel.shared.players.append(MessagePlayer(player: player, messageId: id))
+        }
         
         if let size = resolutionForLocalVideo(url: url) {
             let ratio = size.height/size.width
             height = height * ratio
             print(width, height, ratio)
-        }
-        //          else {
-        //            height = width * 1.25
-        //        }
-        
+        }        
     }
     
     var body: some View {
@@ -43,6 +48,7 @@ struct VideoPlayerView: View {
                 .frame(width: width, height: height)
                 .overlay(
                     HStack {
+                        if showName {
                         Image(systemName: "house")
                             .clipped()
                             .scaledToFit()
@@ -50,25 +56,20 @@ struct VideoPlayerView: View {
                             .background(Color.gray)
                             .frame(width: 28, height: 28)
                             .clipShape(Circle())
+                        
                         Text("Sebastian")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
+                        }
                     }
                         .padding(12),
-                    alignment: .topLeading)
+                    alignment: .bottomLeading)
                 .simultaneousGesture(TapGesture().onEnded({ _ in
-                    togglePlay()
+                    viewModel.togglePlay()
                 }))
         }
     }
     
-    func togglePlay() {
-        if player.isPlaying {
-            player.pause()
-        } else {
-            player.play()
-        }
-    }
     
     private func resolutionForLocalVideo(url: URL) -> CGSize? {
         guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }

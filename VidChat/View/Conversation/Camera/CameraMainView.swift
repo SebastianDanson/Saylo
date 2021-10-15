@@ -15,7 +15,6 @@ struct CameraMainView: View {
     var cameraView = CameraView()
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-    // let cameraHeight = UIScreen.main.bounds.width * 1.25
     let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
@@ -24,11 +23,10 @@ struct CameraMainView: View {
             
             //video player
             if let url = viewModel.url {
-                VideoPlayerView(url: url, isCustomVideo: true)
+                VideoPlayerView(url: url, showName: false)
                     .overlay(VideoOptions(), alignment: .bottom)
                     .background(Color.clear)
                     .zIndex(3)
-                
             }
             
             //camera
@@ -54,7 +52,6 @@ struct CameraMainView: View {
     }
 }
 
-
 struct FlashView: View {
     var body: some View {
         Rectangle()
@@ -71,6 +68,7 @@ struct VideoOptions: View {
         VStack {
             
             HStack {
+                
                 Spacer()
                 
                 // X button
@@ -107,7 +105,7 @@ struct SendButton: View {
         Button(action: {
             let url = viewModel.croppedUrl == nil ? viewModel.url! : viewModel.croppedUrl!
             withAnimation {
-                ConversationViewModel.shared.addMessage(url: url)
+                ConversationViewModel.shared.addMessage(url: url, type: .Video)
                 viewModel.reset()
                 viewModel.hasSentWithoutCrop = viewModel.croppedUrl == nil
             }

@@ -42,13 +42,12 @@ struct Message: Identifiable {
     //Content
     let type: MessageType
     let videoUrl: String?
-    let hasCroppedVideo: Bool
     let text: String?
 
     //date
     let timestamp: Timestamp
     
-    init(dictionary: [String:Any], id: String, hasCroppedVideo: Bool = true) {
+    init(dictionary: [String:Any], id: String) {
         
         //ids
         self.id = id
@@ -65,7 +64,6 @@ struct Message: Identifiable {
         
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())
         
-        self.hasCroppedVideo = hasCroppedVideo
         self.text = dictionary["text"] as? String
     }
 }

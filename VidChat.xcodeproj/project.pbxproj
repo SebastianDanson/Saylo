@@ -24,6 +24,10 @@
 		3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1768222714A30C0049ADBA /* VideoCell.swift */; };
 		3F1768282714A8080049ADBA /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1768272714A8080049ADBA /* ConversationViewModel.swift */; };
 		3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F17682B2714AB610049ADBA /* MessageCell.swift */; };
+		3F2A7EB127188CD800179390 /* VideoPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB027188CD800179390 /* VideoPlayerViewModel.swift */; };
+		3F2A7EB32718BED400179390 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB22718BED400179390 /* AudioRecorder.swift */; };
+		3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB42718BF0B00179390 /* AudioPlayer.swift */; };
+		3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB82718C23A00179390 /* AudioCell.swift */; };
 		3F485D7B26FD453B0071532B /* VideoChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F485D7A26FD453B0071532B /* VideoChat.swift */; };
 		3F485D7F26FD453D0071532B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F485D7E26FD453D0071532B /* Assets.xcassets */; };
 		3F485D8226FD453D0071532B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F485D8126FD453D0071532B /* Preview Assets.xcassets */; };
@@ -69,6 +73,10 @@
 		3F1768222714A30C0049ADBA /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		3F1768272714A8080049ADBA /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		3F17682B2714AB610049ADBA /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		3F2A7EB027188CD800179390 /* VideoPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewModel.swift; sourceTree = "<group>"; };
+		3F2A7EB22718BED400179390 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		3F2A7EB42718BF0B00179390 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		3F2A7EB82718C23A00179390 /* AudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCell.swift; sourceTree = "<group>"; };
 		3F485D7726FD453B0071532B /* VidChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VidChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F485D7A26FD453B0071532B /* VideoChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoChat.swift; sourceTree = "<group>"; };
 		3F485D7E26FD453D0071532B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -160,6 +168,7 @@
 				3F17682B2714AB610049ADBA /* MessageCell.swift */,
 				3FB8B5D9270FB6F800355DB9 /* TextCell.swift */,
 				3F1768222714A30C0049ADBA /* VideoCell.swift */,
+				3F2A7EB82718C23A00179390 /* AudioCell.swift */,
 			);
 			path = MessageCells;
 			sourceTree = "<group>";
@@ -216,6 +225,8 @@
 				3F95F44D26FE4B0100F892B7 /* Constants.swift */,
 				3F8B027426FEBEEE00841565 /* TextArea.swift */,
 				3F8B029426FF795900841565 /* LazyView.swift */,
+				3F2A7EB22718BED400179390 /* AudioRecorder.swift */,
+				3F2A7EB42718BF0B00179390 /* AudioPlayer.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -324,6 +335,7 @@
 			isa = PBXGroup;
 			children = (
 				3F50C6F3270195B30027D080 /* CameraViewModel.swift */,
+				3F2A7EB027188CD800179390 /* VideoPlayerViewModel.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -442,7 +454,9 @@
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
 				3F08F27627017A5A009E0029 /* CameraMainView.swift in Sources */,
 				3F08F27827017D9C009E0029 /* VideoPlayerView.swift in Sources */,
+				3F2A7EB32718BED400179390 /* AudioRecorder.swift in Sources */,
 				3F485DA226FD476B0071532B /* SearchView.swift in Sources */,
+				3F2A7EB127188CD800179390 /* VideoPlayerViewModel.swift in Sources */,
 				3F485DC826FE28920071532B /* RegistrationView.swift in Sources */,
 				3FB8B5DC2710CC8300355DB9 /* ConversationService.swift in Sources */,
 				3F485DCC26FE29FB0071532B /* CustomTextField.swift in Sources */,
@@ -462,6 +476,7 @@
 				3F95F44C26FE45BC00F892B7 /* MediaUploader.swift in Sources */,
 				3F8B029B26FF7F6F00841565 /* EditProfileViewModel.swift in Sources */,
 				3F485DA626FD477B0071532B /* ProfileView.swift in Sources */,
+				3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */,
 				3F485DCE26FE2A080071532B /* CustomSecureField.swift in Sources */,
 				3FB8B5DA270FB6F800355DB9 /* TextCell.swift in Sources */,
 				3F8B027726FEC03100841565 /* Message.swift in Sources */,
@@ -477,6 +492,7 @@
 				3FB8B5D8270FAACA00355DB9 /* ConversationView.swift in Sources */,
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,
+				3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

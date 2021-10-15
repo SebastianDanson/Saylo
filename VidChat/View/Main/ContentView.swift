@@ -21,7 +21,7 @@ struct ContentView: View {
 //                LoginView()
 //            } else {
 //                if viewModel.currentUser != nil {
-                    ConversationView()
+            ConversationView(audioRecorder: AudioRecorder())
 //                }
 //            }
         }

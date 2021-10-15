@@ -7,10 +7,17 @@
 
 import Foundation
 import Firebase
+import AVFoundation
+
+struct MessagePlayer {
+    let player: AVPlayer
+    let messageId: String
+}
 
 class ConversationViewModel: ObservableObject {
     
     @Published var messages = [Message]()
+    @Published var players = [MessagePlayer]()
     @Published var chatId = "Chat"
     
     static let shared = ConversationViewModel()
@@ -19,7 +26,7 @@ class ConversationViewModel: ObservableObject {
         //    fetchMessages()
     }
     
-    func addMessage(url: URL? = nil, text: String? = nil, alreadySent: Bool = false) {
+    func addMessage(url: URL? = nil, text: String? = nil, type: MessageType) {
         
         //       guard let user = AuthViewModel.shared.currentUser else {return}
         
@@ -35,7 +42,12 @@ class ConversationViewModel: ObservableObject {
         
         if let url = url {
             dictionary["videoUrl"] = url.absoluteString
-            dictionary["type"] = "video"
+            
+            if type == .Video {
+                dictionary["type"] = "video"
+            } else {
+                dictionary["type"] = "audio"
+            }
         }
         
         if let text = text {
@@ -43,12 +55,12 @@ class ConversationViewModel: ObservableObject {
             dictionary["type"] = "text"
         }
         
-        if !alreadySent {
-            let message = Message(dictionary: dictionary, id: id, hasCroppedVideo: !CameraViewModel.shared.hasSentWithoutCrop)
+            let message = Message(dictionary: dictionary, id: id)
+
             self.messages.append(message)
-        }
+
         
-//        if !CameraViewModel.shared.hasSentWithoutCrop, let url = url {
+//        if let url = url {
 //            MediaUploader.shared.uploadVideo(url: url) { newURL in
 //                
 //                dictionary["videoUrl"] = newURL

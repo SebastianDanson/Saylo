@@ -14,7 +14,9 @@ struct MessageCell: View {
     var body: some View {
         VStack {
             if message.type == .Video, let urlString = message.videoUrl, let url = URL(string: urlString)  {
-                VideoPlayerView(url: url, isCustomVideo:!message.hasCroppedVideo)
+                VideoPlayerView(url: url, id: message.id)
+            } else if message.type == .Audio, let urlString = message.videoUrl, let url = URL(string: urlString)  {
+                AudioCell(audioURL: url)
             } else if message.type == .Text, let text = message.text {
                 TextCell(text: text).frame(width: UIScreen.main.bounds.width)
             }

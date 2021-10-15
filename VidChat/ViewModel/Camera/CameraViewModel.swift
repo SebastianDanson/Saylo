@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import SwiftUI
 
 class CameraViewModel: ObservableObject {
     
@@ -39,9 +40,12 @@ class CameraViewModel: ObservableObject {
     }
     
     func startRecording(addDelay: Bool = false) {
-        self.showCamera = true
-        self.isRecording = true
-        self.progress = 1
+       
+        withAnimation {
+            self.showCamera = true
+            self.isRecording = true
+            self.progress = 1
+        }
         
         if addDelay {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
