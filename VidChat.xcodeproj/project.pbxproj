@@ -28,6 +28,10 @@
 		3F2A7EB32718BED400179390 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB22718BED400179390 /* AudioRecorder.swift */; };
 		3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB42718BF0B00179390 /* AudioPlayer.swift */; };
 		3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB82718C23A00179390 /* AudioCell.swift */; };
+		3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */; };
+		3F2A7EBE2719CE7C00179390 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */; };
+		3F2A7EC02719E4DF00179390 /* PhotosCollectioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */; };
+		3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EC12719E53700179390 /* AssetCell.swift */; };
 		3F485D7B26FD453B0071532B /* VideoChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F485D7A26FD453B0071532B /* VideoChat.swift */; };
 		3F485D7F26FD453D0071532B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F485D7E26FD453D0071532B /* Assets.xcassets */; };
 		3F485D8226FD453D0071532B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F485D8126FD453D0071532B /* Preview Assets.xcassets */; };
@@ -77,6 +81,10 @@
 		3F2A7EB22718BED400179390 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		3F2A7EB42718BF0B00179390 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		3F2A7EB82718C23A00179390 /* AudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCell.swift; sourceTree = "<group>"; };
+		3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
+		3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosCollectioView.swift; sourceTree = "<group>"; };
+		3F2A7EC12719E53700179390 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
 		3F485D7726FD453B0071532B /* VidChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VidChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F485D7A26FD453B0071532B /* VideoChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoChat.swift; sourceTree = "<group>"; };
 		3F485D7E26FD453D0071532B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -171,6 +179,17 @@
 				3F2A7EB82718C23A00179390 /* AudioCell.swift */,
 			);
 			path = MessageCells;
+			sourceTree = "<group>";
+		};
+		3F2A7EBA2719CE1B00179390 /* Photos */ = {
+			isa = PBXGroup;
+			children = (
+				3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */,
+				3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */,
+				3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */,
+				3F2A7EC12719E53700179390 /* AssetCell.swift */,
+			);
+			path = Photos;
 			sourceTree = "<group>";
 		};
 		3F485D6E26FD453B0071532B = {
@@ -343,6 +362,7 @@
 		3F8B029F26FF90AF00841565 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
+				3F2A7EBA2719CE1B00179390 /* Photos */,
 				3FB8B5D7270FAACA00355DB9 /* ConversationView.swift */,
 				3F08F27027017A24009E0029 /* Camera */,
 				3F1768262714A5630049ADBA /* MessageCells */,
@@ -451,6 +471,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F485DAC26FD5D4D0071532B /* SearchBar.swift in Sources */,
+				3F2A7EBE2719CE7C00179390 /* PhotoCell.swift in Sources */,
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
 				3F08F27627017A5A009E0029 /* CameraMainView.swift in Sources */,
 				3F08F27827017D9C009E0029 /* VideoPlayerView.swift in Sources */,
@@ -462,6 +483,7 @@
 				3F485DCC26FE29FB0071532B /* CustomTextField.swift in Sources */,
 				3F485D9026FD45F00071532B /* ContentView.swift in Sources */,
 				3F08F27227017A36009E0029 /* CameraView.swift in Sources */,
+				3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */,
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
 				3F485D7B26FD453B0071532B /* VideoChat.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
@@ -483,6 +505,7 @@
 				3F95F46726FE4DCE00F892B7 /* SearchViewModel.swift in Sources */,
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,
+				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,
 				3F485DE626FE38990071532B /* AuthViewModel.swift in Sources */,
 				3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */,
@@ -490,6 +513,7 @@
 				3F485DC626FE28860071532B /* LoginView.swift in Sources */,
 				3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */,
 				3FB8B5D8270FAACA00355DB9 /* ConversationView.swift in Sources */,
+				3F2A7EC02719E4DF00179390 /* PhotosCollectioView.swift in Sources */,
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,
 				3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */,

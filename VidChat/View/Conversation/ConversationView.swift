@@ -80,6 +80,7 @@ struct ConversationView: View {
                 }
                 .flippedUpsideDown()
                 
+                
                 //Camera
                 if CameraViewModel.shared.showCamera {
                     CameraViewModel.shared.cameraView
@@ -87,6 +88,8 @@ struct ConversationView: View {
                 }
             }
             
+            PhotoPickerView().frame(width: width, height: width/4*3)
+
             if isTyping {
                 HStack(alignment: .bottom) {
                     HStack(alignment: .top, spacing: 10) {
@@ -218,7 +221,7 @@ struct OptionsView: View {
     @Binding var isRecordingAudio: Bool
     
     @State var audioProgress = 0.0
-    
+
     var body: some View {
         
         HStack(spacing: 4) {

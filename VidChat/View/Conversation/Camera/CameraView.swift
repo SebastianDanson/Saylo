@@ -22,23 +22,6 @@ struct CameraView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
     }
     
-//    func makeCoordinator() -> Coordinator {
-//        Coordinator(self)
-//    }
-    
-//    class Coordinator: NSObject, CameraViewControllerDelegate {
-//        func setVideo(withUrl url: URL) {
-//            print(url, "URL")
-//            self.parent.viewModel.url = url
-//        }
-//
-//        let parent: CameraView
-//
-//        init(_ parent: CameraView) {
-//            self.parent = parent
-//        }
-//    }
-    
     public func switchCamera() {
         cameraViewController.switchCamera()
     }
