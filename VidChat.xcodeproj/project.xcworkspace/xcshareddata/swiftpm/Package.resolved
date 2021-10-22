@@ -11,6 +11,24 @@
         }
       },
       {
+        "package": "AgoraRtcKit",
+        "repositoryURL": "https://github.com/AgoraIO/AgoraRtcEngine_iOS",
+        "state": {
+          "branch": "main",
+          "revision": "945008c63997517ddf5e83339e2bfee477914f14",
+          "version": null
+        }
+      },
+      {
+        "package": "AgoraRtmKit",
+        "repositoryURL": "https://github.com/AgoraIO/AgoraRtm_iOS",
+        "state": {
+          "branch": null,
+          "revision": "c1556c3b68f1b3df3efb7ac9e540457500daa7f3",
+          "version": "1.4.8"
+        }
+      },
+      {
         "package": "BoringSSL-GRPC",
         "repositoryURL": "https://github.com/firebase/boringssl-SwiftPM.git",
         "state": {

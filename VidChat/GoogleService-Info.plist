@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>515710359550-tfaua1f2905nqv4juv0odkgt8dvn8j5d.apps.googleusercontent.com</string>
+	<string>515710359550-pj5m93lo7dmegqkk81stv1nfeb8j7dfh.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.515710359550-tfaua1f2905nqv4juv0odkgt8dvn8j5d</string>
+	<string>com.googleusercontent.apps.515710359550-pj5m93lo7dmegqkk81stv1nfeb8j7dfh</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBnCESSuyh6NFUL3lhwcgbbuBla4442mng</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,22 +13,22 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.SebastianDanson.VidChat</string>
+	<string>com.SebastianDanson.VidChatApp</string>
 	<key>PROJECT_ID</key>
 	<string>vidchat-12c32</string>
 	<key>STORAGE_BUCKET</key>
 	<string>vidchat-12c32.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:515710359550:ios:31a683aacca95e945b12af</string>
+	<string>1:515710359550:ios:da6712fb01ac41e35b12af</string>
 </dict>
 </plist>

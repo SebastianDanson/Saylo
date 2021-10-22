@@ -23,6 +23,7 @@ struct ConversationView: View {
     @State private var isTyping = false
     @State private var isRecordingAudio = false
     @State private var hasScrolledToVideo = false
+    @State private var isShowingPhotos = true
     
     private let width = UIScreen.main.bounds.width
     private let cameraHeight = UIScreen.main.bounds.width * 1.25
@@ -38,7 +39,6 @@ struct ConversationView: View {
                 //Feed
                 
                 ScrollView(axes: .vertical, showsIndicators: false, offsetChanged: { point in
-                    print(point, "POINT")
                     hasScrolledToVideo = false
                 }) {
                     
@@ -88,8 +88,10 @@ struct ConversationView: View {
                 }
             }
             
-            PhotoPickerView().frame(width: width, height: width/4*3)
-
+            if isShowingPhotos{
+                PhotoPickerView().frame(width: width, height: width/4*3)
+            }
+            
             if isTyping {
                 HStack(alignment: .bottom) {
                     HStack(alignment: .top, spacing: 10) {
@@ -145,14 +147,16 @@ struct ConversationView: View {
                         
                         Spacer()
                         
-                        OptionsView(audioRecorder: audioRecorder, isTyping: $isTyping, isRecordingAudio: $isRecordingAudio)
-                            .transition(.opacity)
+                        if !isShowingPhotos {
+                            OptionsView(audioRecorder: audioRecorder, isTyping: $isTyping, isRecordingAudio: $isRecordingAudio)
+                                .transition(.opacity)
+                        }
                     }
                     
                 }
             }
             ,alignment: .bottom)
-        .edgesIgnoringSafeArea(.top)
+        .edgesIgnoringSafeArea(isShowingPhotos ? .all : .top)
     }
     
     func handleOnDragEnd(translation: CGSize, index i: Int, reader: ScrollViewProxy) {
@@ -221,7 +225,7 @@ struct OptionsView: View {
     @Binding var isRecordingAudio: Bool
     
     @State var audioProgress = 0.0
-
+    
     var body: some View {
         
         HStack(spacing: 4) {
@@ -245,14 +249,14 @@ struct OptionsView: View {
                 }
                 
                 if !isRecordingAudio {
-                //Video record circle
-                Button(action: {
-                    withAnimation {
-                        cameraViewModel.handleTap()
-                    }
-                }, label: {
-                    CameraCircle().padding(.horizontal, 10)
-                })
+                    //Video record circle
+                    Button(action: {
+                        withAnimation {
+                            cameraViewModel.handleTap()
+                        }
+                    }, label: {
+                        CameraCircle().padding(.horizontal, 10)
+                    })
                 }
                 
                 if !cameraViewModel.isRecording {
@@ -269,7 +273,7 @@ struct OptionsView: View {
                             .foregroundColor(audioRecorder.recording ? Color.mainBlue : Color(.systemGray))
                             .overlay(
                                 ZStack {
-                               // if isRecordingAudio {
+                                    // if isRecordingAudio {
                                     Circle()
                                         .trim(from: 0.0, to: CGFloat(min(audioProgress, 1.0)))
                                         .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
@@ -278,7 +282,7 @@ struct OptionsView: View {
                                         .animation(.linear(duration: audioProgress == 0 ? 0 : 20), value: audioProgress)
                                         .frame(width: 48, height: 48)
                                         .rotationEffect(Angle(degrees: 270))
-                               // }
+                                    // }
                                 }
                             )
                     })
@@ -312,8 +316,8 @@ struct CameraCircle: View {
         Circle()
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
             .stroke(Color.white, style: StrokeStyle(lineWidth: 6,
-                                                       lineCap: .round,
-                                                       lineJoin: .round))
+                                                    lineCap: .round,
+                                                    lineJoin: .round))
             .animation(.linear(duration: viewModel.progress == 0 ? 0 : 20), value: viewModel.progress)
             .frame(width: 60, height: 60)
             .rotationEffect(Angle(degrees: 270))

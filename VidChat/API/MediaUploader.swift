@@ -13,7 +13,7 @@ import Foundation
 import QuartzCore
 
 enum UploadType {
-    case profile, video
+    case profile, video, photo
     
     var filePath: StorageReference {
         let filename = NSUUID().uuidString
@@ -21,6 +21,8 @@ enum UploadType {
         switch self {
         case .video:
             return Storage.storage().reference(withPath: "/videos/\(filename)")
+        case .photo:
+            return Storage.storage().reference(withPath: "/photos/\(filename)")
         case .profile:
             return Storage.storage().reference(withPath: "/profileImages/\(filename)")
         }
@@ -47,6 +49,7 @@ class MediaUploader {
                 return
             }
             
+            //TODO compress images
             ref.downloadURL { url, error in
                 if let error = error {
                     print("DEBUG: Failed to download image URL \(error.localizedDescription)")
@@ -59,7 +62,7 @@ class MediaUploader {
         }
     }
     
-    func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
+     func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
         
         let ref = UploadType.video.filePath
         // Get source video

@@ -7,6 +7,7 @@
 
 import FirebaseFirestore
 import Firebase
+import UIKit
 
 enum MessageType {
     case Video, Audio, Text, Photo
@@ -41,8 +42,9 @@ struct Message: Identifiable {
 
     //Content
     let type: MessageType
-    let videoUrl: String?
+    let url: String?
     let text: String?
+    var image: UIImage?
 
     //date
     let timestamp: Timestamp
@@ -59,7 +61,7 @@ struct Message: Identifiable {
         self.userProfileImageUrl = dictionary["userProfileImageUrl"] as? String ?? ""
         
         //content
-        self.videoUrl = dictionary["videoUrl"] as? String
+        self.url = dictionary["url"] as? String
         self.type = MessageType.getType(forString: dictionary["type"] as? String ?? "")
         
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())

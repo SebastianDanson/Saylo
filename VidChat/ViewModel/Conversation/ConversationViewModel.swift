@@ -8,6 +8,7 @@
 import Foundation
 import Firebase
 import AVFoundation
+import UIKit
 
 struct MessagePlayer {
     let player: AVPlayer
@@ -26,7 +27,7 @@ class ConversationViewModel: ObservableObject {
         //    fetchMessages()
     }
     
-    func addMessage(url: URL? = nil, text: String? = nil, type: MessageType) {
+    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType) {
         
         //       guard let user = AuthViewModel.shared.currentUser else {return}
         
@@ -41,7 +42,7 @@ class ConversationViewModel: ObservableObject {
         ] as [String: Any]
         
         if let url = url {
-            dictionary["videoUrl"] = url.absoluteString
+            dictionary["url"] = url.absoluteString
             
             if type == .Video {
                 dictionary["type"] = "video"
@@ -50,46 +51,67 @@ class ConversationViewModel: ObservableObject {
             }
         }
         
+        if type == .Photo {
+            dictionary["type"] = "photo"
+        }
+        
         if let text = text {
             dictionary["text"] = text
             dictionary["type"] = "text"
         }
         
-            let message = Message(dictionary: dictionary, id: id)
-
-            self.messages.append(message)
-
+        var message = Message(dictionary: dictionary, id: id)
+        message.image = image
+        self.messages.append(message)
         
-//        if let url = url {
-//            MediaUploader.shared.uploadVideo(url: url) { newURL in
-//                
-//                dictionary["videoUrl"] = newURL
-//                
-//                COLLECTION_CONVERSATIONS.document("test").updateData([
-//                    "messages" : FieldValue.arrayUnion([dictionary])
-//                ]) { error in
-//                    if let error = error {
-//                        print("DEBUG: error uploading video \(error.localizedDescription)")
-//                        return
-//                    }
-//                    
-//                    print("Sent video successfully")
-//                }
-//            }
-//        }
-//        
-//        if text != nil {
-//            COLLECTION_CONVERSATIONS.document("test").updateData([
-//                "messages" : FieldValue.arrayUnion([dictionary])
-//            ]) { error in
-//                if let error = error {
-//                    print("DEBUG: error sending message \(error.localizedDescription)")
-//                    return
-//                }
-//                
-//                print("Sent message successfully")
-//            }
-//        }
+        
+        //        if let url = url {
+        //            MediaUploader.uploadVideo(url: url) { newURL in
+        //
+        //                dictionary["url"] = newURL
+        //
+        //                COLLECTION_CONVERSATIONS.document("test").updateData([
+        //                    "messages" : FieldValue.arrayUnion([dictionary])
+        //                ]) { error in
+        //                    if let error = error {
+        //                        print("DEBUG: error uploading video \(error.localizedDescription)")
+        //                        return
+        //                    }
+        //
+        //                    print("Sent video successfully")
+        //                }
+        //            }
+        //        }
+        //
+        //        if text != nil {
+        //            COLLECTION_CONVERSATIONS.document("test").updateData([
+        //                "messages" : FieldValue.arrayUnion([dictionary])
+        //            ]) { error in
+        //                if let error = error {
+        //                    print("DEBUG: error sending message \(error.localizedDescription)")
+        //                    return
+        //                }
+        //
+        //                print("Sent message successfully")
+        //            }
+        //        }
+        
+        if let image = image {
+            MediaUploader.uploadImage(image: image, type: .photo) { newURL in
+                dictionary["url"] = newURL
+                
+                COLLECTION_CONVERSATIONS.document("test").updateData([
+                    "messages" : FieldValue.arrayUnion([dictionary])
+                ]) { error in
+                    if let error = error {
+                        print("DEBUG: error uploading video \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    print("Sent Image successfully")
+                }
+            }
+        }
     }
     
     func fetchMessages() {

@@ -20,7 +20,7 @@ class PhotosCollectioView: UIView {
     private var assetsFetchResults: PHFetchResult<PHAsset>?
     private var selectedAssets: [PHAsset] = [] {
         didSet {
-            sendView.isHidden = selectedAssets.count == 0
+            sendButton.isHidden = selectedAssets.count == 0
         }
     }
     
@@ -33,17 +33,19 @@ class PhotosCollectioView: UIView {
     
     private var collectionView: UICollectionView!
     
-    private let sendView: UIImageView = {
-        let iv = UIImageView(image: UIImage(systemName: "arrow.up.circle.fill"))
-        iv.tintColor = .mainBlue
-        iv.backgroundColor = .white
-        let width: CGFloat = 60
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.heightAnchor.constraint(equalToConstant: width).isActive = true
-        iv.widthAnchor.constraint(equalToConstant: width).isActive = true
-        iv.layer.cornerRadius = width / 2
-        iv.isHidden = true
-        return iv
+    private let sendButton: UIButton = {
+        let button = UIButton()
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 64, weight: .regular, scale: .medium)
+        button.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: largeConfig), for: .normal)
+        button.tintColor = .mainBlue
+        button.backgroundColor = .white
+        let width: CGFloat = 64
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.heightAnchor.constraint(equalToConstant: width).isActive = true
+        button.widthAnchor.constraint(equalToConstant: width).isActive = true
+        button.layer.cornerRadius = width / 2
+        button.isHidden = true
+        return button
     }()
     
     private var selectedIndexes = [Int]()
@@ -84,16 +86,29 @@ class PhotosCollectioView: UIView {
         updateSelectedItems()
         fetchCollections()
         
-        addSubview(sendView)
-        sendView.rightAnchor.constraint(equalTo: rightAnchor, constant: -12).isActive = true
-        sendView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
-        bringSubviewToFront(sendView)
-        
+        addSubview(sendButton)
+        sendButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -12).isActive = true
+        sendButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
+        sendButton.addTarget(self, action: #selector(sendImages), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    //MARK: - Selectors
+    
+    @objc func sendImages() {
+        for asset in selectedAssets {
+            imageManager.requestImage(for: asset, targetSize: CGSize(width: width*2, height: width*2), contentMode: .aspectFill, options: requestOptions) { (image, metadata) in
+                let type: MessageType = asset.mediaType == .image ? .Photo : .Video
+                ConversationViewModel.shared.addMessage(image: image, type: type)
+            }
+
+        }
+    }
+    
+    //MARK: - Helpers
     
     func currentAssetAtIndex(_ index:NSInteger) -> PHAsset {
         if let fetchResult = assetsFetchResults {
@@ -204,6 +219,10 @@ extension PhotosCollectioView: UICollectionViewDataSource {
         cell.reuseCount = cell.reuseCount + 1
         let reuseCount = cell.reuseCount
         let asset = currentAssetAtIndex(indexPath.item)
+        
+        if let index = selectedIndexes.firstIndex(where: {$0 == indexPath.row}) {
+            cell.setSelectedNumber(index + 1)
+        }
         
         imageManager.requestImage(for: asset, targetSize: CGSize(width: width*2, height: width*2), contentMode: .aspectFill, options: requestOptions) { (image, metadata) in
             if reuseCount == cell.reuseCount {

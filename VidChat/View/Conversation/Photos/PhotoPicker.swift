@@ -23,25 +23,6 @@ struct PhotoPickerView: UIViewRepresentable {
     
     func updateUIView(_ uiView: PhotosCollectioView, context: Context) {
     }
-    
-    
-//    func makeCoordinator() -> Coordinator {
-//        Coordinator(self)
-//    }
-    
-//    class Coordinator: NSObject, CameraViewControllerDelegate {
-//        func setVideo(withUrl url: URL) {
-//            print(url, "URL")
-//            self.parent.viewModel.url = url
-//        }
-//
-//        let parent: CameraView
-//
-//        init(_ parent: CameraView) {
-//            self.parent = parent
-//        }
-//    }
-    
 }
 
 

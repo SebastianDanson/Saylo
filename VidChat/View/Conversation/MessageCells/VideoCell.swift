@@ -13,7 +13,7 @@ struct VideoCell: View {
     
     var body: some View {
         VStack {
-            if let urlString = message.videoUrl, let url = URL(string: urlString) {
+            if let urlString = message.url, let url = URL(string: urlString) {
                 VideoPlayerView(url: url)
             }
         }

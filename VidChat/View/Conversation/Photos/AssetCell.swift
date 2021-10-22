@@ -46,6 +46,10 @@ class AssetCell: UICollectionViewCell {
         numberLabel.layer.cornerRadius = width/2
         numberLabel.centerYAnchor.constraint(equalTo: transparentOverlay.centerYAnchor).isActive = true
         numberLabel.centerXAnchor.constraint(equalTo: transparentOverlay.centerXAnchor).isActive = true
+        
+        if let number = selectedNumber {
+            self.numberLabel.text = String(number)
+        }
     }
     
     override func prepareForReuse() {
