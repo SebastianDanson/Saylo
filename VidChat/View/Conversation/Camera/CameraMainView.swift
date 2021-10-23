@@ -194,24 +194,26 @@ struct CamereraOptionView: View {
     let image: Image
     let imageDimension: CGFloat
     let circleDimension: CGFloat
+    @Binding var color: Color
     
-    init(image: Image, imageDimension: CGFloat = 20, circleDimension: CGFloat = 36) {
+    init(image: Image, imageDimension: CGFloat = 20, circleDimension: CGFloat = 36, color: Binding<Color> = .constant(.white)) {
         self.image = image
         self.imageDimension = imageDimension
         self.circleDimension = circleDimension
+        self._color = color
     }
     
     var body: some View {
         image
             .resizable()
             .scaledToFit()
-            .foregroundColor(.white)
+            .foregroundColor(color)
             .frame(width: imageDimension, height: imageDimension)
             .padding(20)
             .background(
                 Circle()
                     .frame(width: circleDimension, height: circleDimension)
-                    .foregroundColor(Color(.init(white: 0, alpha: 0.3)))
+                    .foregroundColor(Color(.init(white: 0, alpha: 0.4)))
             )
     }
 }

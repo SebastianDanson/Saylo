@@ -20,7 +20,7 @@ class VideoCollectionViewCell: UICollectionViewCell {
         videoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         videoView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
         videoView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        videoView.backgroundColor = .red
+        videoView.backgroundColor = .white
     }
     
     required init?(coder: NSCoder) {

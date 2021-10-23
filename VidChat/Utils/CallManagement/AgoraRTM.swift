@@ -263,27 +263,27 @@ extension AgoraRtm: AgoraRtmCallDelegate {
     }
     
     func rtmCallKit(_ callKit: AgoraRtmCallKit, remoteInvitationReceived remoteInvitation: AgoraRtmRemoteInvitation) {
-        print("rtmCallKit remoteInvitationReceived")
-        
-        let rtm = AgoraRtm.shared()
-        
-        guard rtm.lastIncomingInvitation == nil else {
-            print("RETUREDN 1")
-            return
-        }
-        
-        guard let inviter = rtm.inviter else {
-            fatalError("rtm inviter nil")
-        }
-        
-        DispatchQueue.main.async { [unowned inviter, weak self] in
-            self?.lastIncomingInvitation = remoteInvitation
-            let invitation = AgoraRtmInvitation.agRemoteInvitation(remoteInvitation)
-            AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: UUID(), handle: remoteInvitation.callerId, hasVideo: false, completion: { error in
-                print("ERROR RECIEVING CALL \(error?.localizedDescription)")
-            })
-            self?.inviterDelegate?.inviter(inviter, didReceivedIncoming: invitation)
-        }
+//        print("rtmCallKit remoteInvitationReceived")
+//        
+//        let rtm = AgoraRtm.shared()
+//        
+//        guard rtm.lastIncomingInvitation == nil else {
+//            print("RETUREDN 1")
+//            return
+//        }
+//        
+//        guard let inviter = rtm.inviter else {
+//            fatalError("rtm inviter nil")
+//        }
+//        
+//        DispatchQueue.main.async { [unowned inviter, weak self] in
+//            self?.lastIncomingInvitation = remoteInvitation
+//            let invitation = AgoraRtmInvitation.agRemoteInvitation(remoteInvitation)
+//            AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: UUID(), handle: remoteInvitation.callerId, hasVideo: false, completion: { error in
+//                print("ERROR RECIEVING CALL \(error?.localizedDescription)")
+//            })
+//            self?.inviterDelegate?.inviter(inviter, didReceivedIncoming: invitation)
+//        }
     }
     
     func rtmCallKit(_ callKit: AgoraRtmCallKit, remoteInvitationCanceled remoteInvitation: AgoraRtmRemoteInvitation) {

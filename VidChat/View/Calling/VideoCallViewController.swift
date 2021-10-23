@@ -12,6 +12,9 @@ import UIKit
 
 class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    var callManger: CallManager!
+    var call: Call!
+    
     var agoraKit: AgoraRtcEngineKit?
     var agoraDelegate: AgoraRtcEngineDelegate?
     var inCall = false
@@ -21,12 +24,14 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     var remoteUserIDs: [UInt] = [] {
         didSet {
             if remoteUserIDs.count == 0 {
-                leaveChannel()
+                callManger.end(call: call)
+                callManger.removeCall(call)
             } else {
                 shrinkLocalView()
             }
         }
     }
+    
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
     private let localView = UIView()
@@ -34,12 +39,13 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     var localViewHeightAnchor: NSLayoutConstraint!
     var localViewRightAnchor: NSLayoutConstraint!
     var localViewTopAnchor: NSLayoutConstraint!
-
+    
     let localWidth = UIScreen.main.bounds.width * 0.22
     let localHeight = UIScreen.main.bounds.height * 0.22
+    var isFrontFacing = true
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -70,7 +76,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         localViewRightAnchor.isActive = true
         localViewHeightAnchor.isActive = true
         localViewWidthAnchor.isActive = true
-
+        
         localView.layer.cornerRadius = 8
         localView.clipsToBounds = true
         
@@ -82,7 +88,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.joinChannel(channelName: "testChannel")
+        self.joinChannel(channelName: call.uuid.uuidString)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -107,11 +113,11 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
             self.localView.layoutIfNeeded()
         }
     }
-
+    
     func setUpVideo() {
         getAgoraEngine().enableVideo()
         let configuration = AgoraVideoEncoderConfiguration(size:
-                            AgoraVideoDimension840x480, frameRate: .fps30, bitrate: 800,
+                                                            AgoraVideoDimension840x480, frameRate: .fps30, bitrate: 800,
                                                            orientationMode: .fixedPortrait)
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
@@ -126,24 +132,44 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
             self?.callID = uid
             self?.channelName = channelName
         }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            if self.remoteUserIDs.count == 0 {
+                self.callManger.end(call: self.call)
+                self.callManger.removeCall(self.call)
+            }
+        }
     }
     
     func leaveChannel() {
-            agoraKit?.leaveChannel(nil)
-        }
+        agoraKit?.leaveChannel(nil)
+    }
     
     func destroyInstance() {
-           AgoraRtcEngineKit.destroy()
-       }
+        AgoraRtcEngineKit.destroy()
+    }
     
-    func didClickMuteButton(isMuted: Bool) {
+    func didTapMuteButton(isMuted: Bool) {
+        print(isMuted,"MUTED")
         isMuted ? agoraKit?.muteLocalAudioStream(true) : agoraKit?.muteLocalAudioStream(false)
-      }
+    }
+    
+    func didTapVideoButton(showVideo: Bool) {
+        showVideo ? agoraKit?.enableVideo() : agoraKit?.disableVideo()
+        localView.isHidden = !showVideo
+    }
+    
+    func didTapSwitchCameraButton(isFrontFacing: Bool) {
+        if self.isFrontFacing != isFrontFacing {
+            agoraKit?.switchCamera()
+        }
+        self.isFrontFacing = isFrontFacing
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return remoteUserIDs.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
         
@@ -159,14 +185,14 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-        let numFeeds = remoteUserIDs.count + 1
-
+        
+        let numFeeds = remoteUserIDs.count
+        
         let totalWidth = collectionView.frame.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right
         let totalHeight = collectionView.frame.height - collectionView.adjustedContentInset.top - collectionView.adjustedContentInset.bottom
-
+        
         if numFeeds == 1 {
             print(totalWidth, totalHeight)
             return CGSize(width: totalWidth, height: totalHeight)
@@ -187,7 +213,7 @@ extension VideoCallViewController: AgoraRtcEngineDelegate {
         print("JOINED 1")
         callID = uid
     }
-
+    
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
         print("Joined call of uid: \(uid)")
         remoteUserIDs.append(uid)

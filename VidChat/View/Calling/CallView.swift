@@ -10,41 +10,78 @@ import SwiftUI
 struct CallView: View {
 
     @State private var isMuted: Bool = false
+    @State private var isFrontFacing: Bool = true
+    @State private var showVideo: Bool = true
     @EnvironmentObject var callsController: CallManager
     
     let call: Call
 
     var body: some View {
-        VStack() {
-            VideoCallView(isMuted: $isMuted)
-                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 16/9)
-
-            HStack {
-                Image(systemName: "mic.circle.fill")
-                    .font(.system(size:64.0))
-                    .foregroundColor(isMuted ? Color.yellow : Color.blue)
-                    .onTapGesture {
-                        isMuted ? (isMuted = false) : (isMuted = true)
-                    }
-                    .padding()
-
-
-                Image(systemName: "phone.circle.fill")
-                    .font(.system(size:64.0))
-                    .foregroundColor(.red)
-                    .padding()
-                    .onTapGesture {
-                        callsController.end(call: call)
-                        callsController.removeCall(call)
-                    }
-            }
-            .padding()
+        ZStack(alignment: .bottom) {
+            VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, call: call)
+            CallOptionsView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, call: call)
         }
     }
 }
 
-//struct CallView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CallView()
-//    }
-//}
+
+struct CallOptionsView: View {
+    
+    @State var muteColor: Color = .white
+    @State var videoColor: Color = .white
+
+    @Binding var isMuted: Bool
+    @Binding var isFrontFacing: Bool
+    @Binding var showVideo: Bool
+    
+    @EnvironmentObject var callsController: CallManager
+    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+
+    let call: Call
+    
+    var body: some View {
+        HStack {
+            
+            CamereraOptionView(image: Image(systemName: showVideo ? "video.fill" : "video.slash.fill"),
+                               imageDimension: 28, circleDimension: 60, color: $videoColor)
+                .onTapGesture {
+                    showVideo.toggle()
+                    videoColor = showVideo ? .white : Color(.systemRed)
+                }
+            
+            Spacer()
+            
+            CamereraOptionView(image: Image(systemName: "arrow.triangle.2.circlepath.camera.fill"),
+                               imageDimension: 28, circleDimension: 60)
+                .onTapGesture {isFrontFacing.toggle() }
+
+            Spacer()
+            
+            CamereraOptionView(image: Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill"),
+                               imageDimension: 28, circleDimension: 60, color: $muteColor)
+                .onTapGesture {
+                    isMuted.toggle()
+                    muteColor = isMuted ? Color(.systemRed) : .white
+                }
+            
+            Spacer()
+
+            Circle()
+                .frame(width: 60, height: 60)
+                .foregroundColor(Color(.systemRed.withAlphaComponent(0.85)))
+                .overlay(
+                    Image("x")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24),
+                    alignment: .center
+                )
+                .onTapGesture {
+                    callsController.end(call: call)
+                    callsController.removeCall(call)
+                }
+        }
+        .padding(.horizontal, 28)
+        .padding(.vertical, 12 + bottomPadding)
+    }
+}

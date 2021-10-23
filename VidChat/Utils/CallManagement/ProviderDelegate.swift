@@ -32,7 +32,8 @@ final class ProviderDelegate: NSObject {
 
     let callManager: CallManager
     let provider: CXProvider
-
+    var pendingCall: Call!
+    
     init(callManager: CallManager) {
         self.callManager = callManager
         provider = CXProvider(configuration: type(of: self).providerConfiguration)
@@ -65,9 +66,9 @@ final class ProviderDelegate: NSObject {
             if error == nil {
                 let call = Call(uuid: uuid)
                 call.handle = handle
-
-                self.callManager.addCall(call)
+                self.pendingCall = call
             }
+            print("INCOMING CALL", error?.localizedDescription, "ERROR")
             completion?(error)
         }
     }
@@ -135,11 +136,15 @@ extension ProviderDelegate: CXProviderDelegate {
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
+        self.callManager.addCall(pendingCall)
+        pendingCall = nil
+
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID.
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()
             return
         }
+
 
         /*
          Configure the audio session but do not start call audio here.
@@ -156,6 +161,9 @@ extension ProviderDelegate: CXProviderDelegate {
     }
 
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+        print("ENDEDdDD")
+        //TODO signal to user calling you that u rejected it
+        
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()
@@ -172,6 +180,7 @@ extension ProviderDelegate: CXProviderDelegate {
         action.fulfill()
 
         // Remove the ended call from the app's list of calls.
+        callManager.end(call: call)
         callManager.removeCall(call)
     }
 

@@ -93,6 +93,7 @@ extension AppDelegate: PKPushRegistryDelegate {
                       for type: PKPushType, completion: @escaping () -> Void) {
         print("RECIEVED")
         print("PAYLOAD", payload.dictionaryPayload["data"])
+        
         let data = payload.dictionaryPayload["data"] as? [String:Any] ?? [String:Any]()
         print(data, "DATA")
         defer {
@@ -122,6 +123,12 @@ extension AppDelegate: PKPushRegistryDelegate {
 //            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
 //        }
         displayIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            if self.providerDelegate?.pendingCall != nil {
+                self.providerDelegate?.provider.reportCall(with: uuid, endedAt: Date(), reason: .unanswered)
+            }
+        }
     }
 
     // MARK: - PKPushRegistryDelegate Helper
@@ -140,6 +147,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     
     func askToSendNotifications() {
         let application = UIApplication.shared
+        
         UNUserNotificationCenter.current().delegate = self
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
