@@ -108,9 +108,7 @@ struct VideoPlayer : UIViewControllerRepresentable {
         return controller
     }
     
-    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: UIViewControllerRepresentableContext<VideoPlayer>) {
-        
-        
+    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: UIViewControllerRepresentableContext<VideoPlayer>) {  
     }
 }
 

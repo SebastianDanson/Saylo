@@ -80,18 +80,20 @@ struct NewCallView: View {
     /// Creates a new call based on if the call is outgoing or incoming.
     func dialButtonAction() {
         if isOutgoing {
+//            sendInvitation(remote: remoteNumber)
             createNewOutgoingCall(with: newCallDetails)
-            print(remoteNumber, "NUMBER")
-            AgoraRtm.shared().kit?.queryPeerOnline(remoteNumber, success: { status in
-                switch status {
-                case .online:      sendInvitation(remote: remoteNumber)
-                case .offline:     print("OFFLINE")
-                case .unreachable: print("UNREACHABLE")
-                @unknown default:  fatalError("queryPeerOnline")
-                }
-            }, fail: { error in
-                print(error.localizedDescription, "FAILURE")
-            })
+//            print(remoteNumber, "NUMBER")
+//            AgoraRtm.shared().kit?.queryPeerOnline(remoteNumber, success: { status in
+//                switch status {
+//                case .online:     // sendInvitation(remote: remoteNumber)
+//                    print("ONLINE")
+//                case .offline:     print("OFFLINE")
+//                case .unreachable: print("UNREACHABLE")
+//                @unknown default:  fatalError("queryPeerOnline")
+//                }
+//            }, fail: { error in
+//                print(error.localizedDescription, "FAILURE")
+//            })
         } else {
             simulateIncomingCall(with: newCallDetails)
         }
@@ -101,30 +103,30 @@ struct NewCallView: View {
     
     // rtm send invitation
     func sendInvitation(remote: String) {
-        let channel = "\(localNumber)-\(remoteNumber)-\(Date().timeIntervalSinceReferenceDate)"
-        print("THIS WORKED")
-        AgoraRtm.shared().inviter!.sendInvitation(peer: remoteNumber, extraContent: channel, accepted: {
-          //  vc?.close(.toVideoChat)
-            print("THIS WORKED SUCCESS")
-
-            //self?.appleCallKit.setCallConnected(of: remote)
-           
-            AppDelegate.shared.callManager.setCallConnected(of: remote)
-
-            guard let remote = UInt(remoteNumber) else {
-                fatalError("string to int fail")
-            }
-            
-            var data: (channel: String, remote: UInt)
-            data.channel = channel
-            data.remote = remote
-          //  self?.performSegue(withIdentifier: "DialToVideoChat", sender: data)
-            
-        }, refused: {
-            print("REFUSED")
-        }) { (error) in
-            print("DEBUG ERROR 1 " + error.localizedDescription)
-        }
+//        let channel = "\(localNumber)-\(remoteNumber)-\(Date().timeIntervalSinceReferenceDate)"
+//        print("THIS WORKED")
+//        AgoraRtm.shared().inviter!.sendInvitation(peer: remoteNumber, extraContent: channel, accepted: {
+//          //  vc?.close(.toVideoChat)
+//            print("THIS WORKED SUCCESS")
+//
+//            //self?.appleCallKit.setCallConnected(of: remote)
+//
+//            AppDelegate.shared.callManager.setCallConnected(of: remote)
+//
+//            guard let remote = UInt(remoteNumber) else {
+//                fatalError("string to int fail")
+//            }
+//
+//            var data: (channel: String, remote: UInt)
+//            data.channel = channel
+//            data.remote = remote
+//          //  self?.performSegue(withIdentifier: "DialToVideoChat", sender: data)
+//
+//        }, refused: {
+//            print("REFUSED")
+//        }) { (error) in
+//            print("DEBUG ERROR 1 " + error.localizedDescription)
+//        }
     }
     
     /// Cancels the call and dismisses this view.

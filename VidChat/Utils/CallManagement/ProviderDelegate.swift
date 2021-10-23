@@ -68,7 +68,6 @@ final class ProviderDelegate: NSObject {
 
                 self.callManager.addCall(call)
             }
-            print("INCOMING CALL", error?.localizedDescription, "ERROR")
             completion?(error)
         }
     }

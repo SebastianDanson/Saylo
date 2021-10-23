@@ -111,6 +111,7 @@ final class CallManager: NSObject, ObservableObject {
     /// Adds a call to the array of active calls.
     /// - Parameter call: The call  to add.
     func addCall(_ call: Call) {
+        print("CALL ADDED")
         calls.append(call)
     }
 

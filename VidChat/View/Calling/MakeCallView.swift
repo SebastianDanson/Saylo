@@ -9,7 +9,7 @@ import SwiftUI
 import Firebase
 
 struct MakeCallView: View {
-
+    
     @EnvironmentObject var callsController: CallManager
     @State var isPresentingNewOutgoingCall = false
     @State var isPresentingSimulateIncomingCall = false
@@ -17,17 +17,24 @@ struct MakeCallView: View {
     @State var localNumber: String?
     
     var body: some View {
-        NavigationView {
+        VStack {
+
             Group {
                 VStack {
-                if !callsController.calls.isEmpty {
-                    CallView(call: callsController.calls.last!)
-                }
-                    Text(localNumber ?? "")
+                    if !callsController.calls.isEmpty {
+                        CallView(call: callsController.calls.last!)
+                            .edgesIgnoringSafeArea(.top)
+                    } else {
+                        newCallButtons
+                        Text(localNumber ?? "")
+                    }
+                    
+                   
                 }
             }
-        }.onAppear {
-
+        }.ignoresSafeArea()
+        .onAppear {
+            
             
             let rtm = AgoraRtm.shared()
             let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/rtm.log"
@@ -53,10 +60,10 @@ struct MakeCallView: View {
             } fail: { error in
                 print("ERROR \(error.localizedDescription)")
             }
-
+            
         }
     }
-
+    
     /// Returns an HStack containing buttons to initiate outgoing and simulated incoming calls.
     var newCallButtons: some View {
         HStack {
@@ -68,7 +75,7 @@ struct MakeCallView: View {
                     .environmentObject(self.callsController)
             }
             .padding(.trailing)
-
+            
             Button(action: { self.isPresentingSimulateIncomingCall = true }) {
                 Image(systemName: "phone.fill.arrow.down.left")
             }
@@ -79,5 +86,5 @@ struct MakeCallView: View {
             .padding(10)
         }
     }
-
+    
 }

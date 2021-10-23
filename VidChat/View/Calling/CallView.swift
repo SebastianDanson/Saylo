@@ -15,12 +15,9 @@ struct CallView: View {
     let call: Call
 
     var body: some View {
-        VStack {
-            Text("Welcome to the call!")
-                .bold()
-            Spacer()
-
+        VStack() {
             VideoCallView(isMuted: $isMuted)
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 16/9)
 
             HStack {
                 Image(systemName: "mic.circle.fill")
@@ -31,7 +28,6 @@ struct CallView: View {
                     }
                     .padding()
 
-                Spacer()
 
                 Image(systemName: "phone.circle.fill")
                     .font(.system(size:64.0))

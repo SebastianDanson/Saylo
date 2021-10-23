@@ -22,33 +22,58 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
     private let localView = UIView()
+    var localViewWidthAnchor: NSLayoutConstraint!
+    var localViewHeightAnchor: NSLayoutConstraint!
+    var localViewRightAnchor: NSLayoutConstraint!
+    var localViewTopAnchor: NSLayoutConstraint!
+
+    let localWidth = UIScreen.main.bounds.width * 0.22
+    let localHeight = UIScreen.main.bounds.height * 0.22
     
+    private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
+
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(VideoCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.backgroundColor = .blue
+        collectionView.backgroundColor = .purple
         collectionView.allowsMultipleSelection = true
         
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        collectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        collectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-
+        collectionView.frame = view.bounds
+        collectionView.insetsLayoutMarginsFromSafeArea = false
+        collectionView.contentInsetAdjustmentBehavior = .never
         getAgoraEngine().setChannelProfile(.communication)
         setUpVideo()
-        view.backgroundColor = .black
         
-//        view.addSubview(localView)
-//        localView.translatesAutoresizingMaskIntoConstraints = false
-//        localView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-//        localView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-//        localView.heightAnchor.constraint(equalToConstant: width * 16/9).isActive = true
-//        localView.widthAnchor.constraint(equalToConstant: width).isActive = true
+        view.backgroundColor = .green
+        
+        view.addSubview(localView)
+        localView.translatesAutoresizingMaskIntoConstraints = false
+        localViewTopAnchor = localView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0)
+        localViewRightAnchor = localView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0)
+        localViewHeightAnchor = localView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height)
+        localViewWidthAnchor = localView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width)
+        
+        localViewTopAnchor.isActive = true
+        localViewRightAnchor.isActive = true
+        localViewHeightAnchor.isActive = true
+        localViewWidthAnchor.isActive = true
+
+        localView.layer.cornerRadius = 8
+        localView.clipsToBounds = true
+        
+        let videoCanvas = AgoraRtcVideoCanvas()
+        videoCanvas.uid = callID
+        videoCanvas.view = localView
+        getAgoraEngine().setupLocalVideo(videoCanvas)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            self.shrinkLocalView()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,12 +92,24 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         }
         return agoraKit!
     }
+    
+    func shrinkLocalView() {
+        localView.layoutIfNeeded()
+        localViewTopAnchor.constant = 20 + topPadding
+        localViewRightAnchor.constant = -20
+        localViewHeightAnchor.constant = localHeight
+        localViewWidthAnchor.constant = localWidth
+        
+        UIView.animate(withDuration: 0.5) {
+            self.localView.layoutIfNeeded()
+        }
+    }
 
     func setUpVideo() {
         getAgoraEngine().enableVideo()
         let configuration = AgoraVideoEncoderConfiguration(size:
                             AgoraVideoDimension840x480, frameRate: .fps30, bitrate: 800,
-                            orientationMode: .fixedPortrait)
+                                                           orientationMode: .fixedPortrait)
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
     
@@ -81,7 +118,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     }
     
     func joinChannel(channelName: String) {
-        
         getAgoraEngine().joinChannel(byToken: tempToken, channelId: channelName, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
             self?.inCall = true
             self?.callID = uid
@@ -102,32 +138,22 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
       }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return remoteUserIDs.count + 1
+        return remoteUserIDs.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-
-        if indexPath.row == remoteUserIDs.count { //Put our local video last
-            if let videoCell = cell as? VideoCollectionViewCell {
-                let videoCanvas = AgoraRtcVideoCanvas()
-                videoCanvas.uid = callID
-                videoCanvas.view = videoCell.videoView
-                videoCanvas.renderMode = .fit
-                getAgoraEngine().setupLocalVideo(videoCanvas)
-            }
-        } else {
-            let remoteID = remoteUserIDs[indexPath.row]
-            if let videoCell = cell as? VideoCollectionViewCell {
-                let videoCanvas = AgoraRtcVideoCanvas()
-                videoCanvas.uid = remoteID
-                videoCanvas.view = videoCell.videoView
-                videoCanvas.renderMode = .fit
-                getAgoraEngine().setupRemoteVideo(videoCanvas)
-                print("Creating remote view of uid: \(remoteID)")
-            }
+        
+        let remoteID = remoteUserIDs[indexPath.row]
+        if let videoCell = cell as? VideoCollectionViewCell {
+            let videoCanvas = AgoraRtcVideoCanvas()
+            videoCanvas.uid = remoteID
+            videoCanvas.view = videoCell.videoView
+            
+            getAgoraEngine().setupRemoteVideo(videoCanvas)
+            print("Creating remote view of uid: \(remoteID)")
         }
-
+        
         return cell
     }
 
@@ -139,6 +165,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         let totalHeight = collectionView.frame.height - collectionView.adjustedContentInset.top - collectionView.adjustedContentInset.bottom
 
         if numFeeds == 1 {
+            print(totalWidth, totalHeight)
             return CGSize(width: totalWidth, height: totalHeight)
         } else if numFeeds == 2 {
             return CGSize(width: totalWidth, height: totalHeight / 2)
@@ -152,7 +179,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     }
 }
 
-
 extension VideoCallViewController: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
         print("JOINED 1")
@@ -165,6 +191,11 @@ extension VideoCallViewController: AgoraRtcEngineDelegate {
         collectionView.reloadData()
     }
 
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didLeaveChannelWith stats: AgoraChannelStats) {
+        print("LEFTT")
+        leaveChannel()
+    }
+    
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
         if let index = remoteUserIDs.firstIndex(where: { $0 == uid }) {
             remoteUserIDs.remove(at: index)

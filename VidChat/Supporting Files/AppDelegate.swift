@@ -113,12 +113,12 @@ extension AppDelegate: PKPushRegistryDelegate {
             else {
                 return
         }
-        let backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+        //let backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
-        AppDelegate.shared.displayIncomingCall(uuid: UUID(), handle: handle, hasVideo: hasVideo) { _ in
-            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
-        }
-       // displayIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo)
+//        AppDelegate.shared.displayIncomingCall(uuid: UUID(), handle: handle, hasVideo: hasVideo) { _ in
+//            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
+//        }
+        displayIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo)
     }
 
     // MARK: - PKPushRegistryDelegate Helper
