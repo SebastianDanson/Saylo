@@ -22,7 +22,6 @@
 		3F112B822720B32700BA2A73 /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B812720B32700BA2A73 /* CallManager.swift */; };
 		3F112B852720B34500BA2A73 /* Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B842720B34500BA2A73 /* Call.swift */; };
 		3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B952720FEB100BA2A73 /* AppDelegate.swift */; };
-		3F112BAA2721B04600BA2A73 /* NewCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112BA62721B04600BA2A73 /* NewCallView.swift */; };
 		3F112BAB2721B04600BA2A73 /* MakeCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112BA72721B04600BA2A73 /* MakeCallView.swift */; };
 		3F112C592721B4DF00BA2A73 /* NSUserActivity+StartCallConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112C562721B4DE00BA2A73 /* NSUserActivity+StartCallConvertible.swift */; };
 		3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112C572721B4DF00BA2A73 /* StartCallConvertible.swift */; };
@@ -70,6 +69,7 @@
 		3F7786B3272311E6005AF9DA /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786B2272311E6005AF9DA /* CameraController.swift */; };
 		3F7786B527231220005AF9DA /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786B427231220005AF9DA /* PhotosViewController.swift */; };
 		3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7786B727231E8A005AF9DA /* CallKit.framework */; };
+		3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */; };
 		3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */; };
 		3F8B027126FEB10E00841565 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B027026FEB10E00841565 /* UserService.swift */; };
 		3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B027426FEBEEE00841565 /* TextArea.swift */; };
@@ -107,7 +107,6 @@
 		3F112B812720B32700BA2A73 /* CallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
 		3F112B842720B34500BA2A73 /* Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Call.swift; sourceTree = "<group>"; };
 		3F112B952720FEB100BA2A73 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		3F112BA62721B04600BA2A73 /* NewCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewCallView.swift; sourceTree = "<group>"; };
 		3F112BA72721B04600BA2A73 /* MakeCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MakeCallView.swift; sourceTree = "<group>"; };
 		3F112C562721B4DE00BA2A73 /* NSUserActivity+StartCallConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUserActivity+StartCallConvertible.swift"; sourceTree = "<group>"; };
 		3F112C572721B4DF00BA2A73 /* StartCallConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartCallConvertible.swift; sourceTree = "<group>"; };
@@ -149,6 +148,7 @@
 		3F7786B2272311E6005AF9DA /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraController.swift; sourceTree = "<group>"; };
 		3F7786B427231220005AF9DA /* PhotosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
 		3F7786B727231E8A005AF9DA /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
+		3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeCallViewModel.swift; sourceTree = "<group>"; };
 		3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		3F8B027026FEB10E00841565 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		3F8B027426FEBEEE00841565 /* TextArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextArea.swift; sourceTree = "<group>"; };
@@ -344,6 +344,7 @@
 			isa = PBXGroup;
 			children = (
 				3F485D9C26FD469F0071532B /* Authentication */,
+				3F7786BE27245D86005AF9DA /* Call */,
 				3F50C6F2270195A50027D080 /* Camera */,
 				3F1768242714A3F00049ADBA /* Conversation */,
 				3F8B02A026FF914500841565 /* ConversationsList */,
@@ -452,7 +453,6 @@
 			isa = PBXGroup;
 			children = (
 				3F112B7B2720736400BA2A73 /* CallView.swift */,
-				3F112BA62721B04600BA2A73 /* NewCallView.swift */,
 				3F112BA72721B04600BA2A73 /* MakeCallView.swift */,
 				3F112B722720716300BA2A73 /* VideoCallView.swift */,
 				3F112B7027206E3800BA2A73 /* VideoCallViewController.swift */,
@@ -494,6 +494,14 @@
 				3FDEE7B32721C01600DF43C6 /* SceneDelegate.swift */,
 			);
 			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3F7786BE27245D86005AF9DA /* Call */ = {
+			isa = PBXGroup;
+			children = (
+				3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */,
+			);
+			path = Call;
 			sourceTree = "<group>";
 		};
 		3F8B029F26FF90AF00841565 /* Conversation */ = {
@@ -635,6 +643,7 @@
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
+				3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */,
 				3F8B029926FF7DC200841565 /* EditProfileView.swift in Sources */,
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
@@ -668,7 +677,6 @@
 				3F112C592721B4DF00BA2A73 /* NSUserActivity+StartCallConvertible.swift in Sources */,
 				3F485DE626FE38990071532B /* AuthViewModel.swift in Sources */,
 				3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */,
-				3F112BAA2721B04600BA2A73 /* NewCallView.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				3F485DBE26FE23AB0071532B /* ImagePicker.swift in Sources */,
 				3F485DC626FE28860071532B /* LoginView.swift in Sources */,

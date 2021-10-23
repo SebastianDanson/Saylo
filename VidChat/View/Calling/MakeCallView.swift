@@ -14,77 +14,45 @@ struct MakeCallView: View {
     @State var isPresentingNewOutgoingCall = false
     @State var isPresentingSimulateIncomingCall = false
     @State var username = ""
-    @State var localNumber: String?
+    @ObservedObject var viewModel = MakeCallViewModel()
+    // @State var localNumber: String?
     
     var body: some View {
         VStack {
-
+            
             Group {
                 VStack {
                     if !callsController.calls.isEmpty {
                         CallView(call: callsController.calls.last!)
                             .edgesIgnoringSafeArea(.top)
                     } else {
-                        newCallButtons
-                        Text(localNumber ?? "")
+                        Text("Make a call")
+                            .bold()
+                        
+                        LazyVStack(spacing: 12) {
+                            
+                            ForEach(Array(viewModel.users.enumerated()), id: \.1.id) { i, element in
+                                withAnimation {
+                                    Button {
+                                        createNewOutgoingCall(toUser: viewModel.users[i])
+                                    } label: {
+                                        Text("\(viewModel.users[i].username)")
+                                            .foregroundColor(.white)
+                                            .padding()
+                                            .background(Color.mainBlue)
+                                            .cornerRadius(5)
+                                    }
+                                }
+                            }
+                        }
                     }
-                    
-                   
                 }
             }
         }.ignoresSafeArea()
-        .onAppear {
-            
-            
-            let rtm = AgoraRtm.shared()
-            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/rtm.log"
-            rtm.setLogPath(path)
-            
-            
-            // create local number
-            let rand = arc4random_uniform(UInt32(9999 + 1 - 1000)) + 1000
-            localNumber = "\(rand)"
-            
-            // rtm login
-            guard let localNumber = localNumber else {
-                fatalError("localNumber nil")
-            }
-            
-            guard let kit = AgoraRtm.shared().kit else {
-                print("NOI KIT")
-                return
-            }
-            
-            kit.login(account: localNumber, token: nil) {
-                print("SUCCESS")
-            } fail: { error in
-                print("ERROR \(error.localizedDescription)")
-            }
-            
-        }
     }
     
-    /// Returns an HStack containing buttons to initiate outgoing and simulated incoming calls.
-    var newCallButtons: some View {
-        HStack {
-            Button(action: { self.isPresentingNewOutgoingCall = true }) {
-                Image(systemName: "phone.fill.arrow.up.right")
-            }
-            .sheet(isPresented: self.$isPresentingNewOutgoingCall) {
-                NewCallView(localNumber: localNumber!, isOutgoing: true)
-                    .environmentObject(self.callsController)
-            }
-            .padding(.trailing)
-            
-            Button(action: { self.isPresentingSimulateIncomingCall = true }) {
-                Image(systemName: "phone.fill.arrow.down.left")
-            }
-            .sheet(isPresented: self.$isPresentingSimulateIncomingCall) {
-                NewCallView(localNumber: localNumber!, isOutgoing: false)
-                    .environmentObject(self.callsController)
-            }
-            .padding(10)
-        }
+    func createNewOutgoingCall(toUser user: User) {
+        guard let currentUser = AuthViewModel.shared.currentUser else {return}
+        callsController.startOutgoingCall(of: currentUser.username, pushKitToken: user.pushKitToken)
     }
-    
 }

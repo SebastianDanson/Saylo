@@ -18,7 +18,15 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     let tempToken: String? = nil //If you have a token, put it here.
     var callID: UInt = 0 //This tells Agora to generate an id for you. We have user IDs from Firebase, but they aren't Ints, and therefore won't work with Agora.
     var channelName: String?
-    var remoteUserIDs: [UInt] = []
+    var remoteUserIDs: [UInt] = [] {
+        didSet {
+            if remoteUserIDs.count == 0 {
+                leaveChannel()
+            } else {
+                shrinkLocalView()
+            }
+        }
+    }
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
     private let localView = UIView()
@@ -38,7 +46,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(VideoCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.backgroundColor = .purple
+        collectionView.backgroundColor = .white
         collectionView.allowsMultipleSelection = true
         
         view.addSubview(collectionView)
@@ -70,10 +78,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         videoCanvas.uid = callID
         videoCanvas.view = localView
         getAgoraEngine().setupLocalVideo(videoCanvas)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            self.shrinkLocalView()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,7 +98,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     }
     
     func shrinkLocalView() {
-        localView.layoutIfNeeded()
         localViewTopAnchor.constant = 20 + topPadding
         localViewRightAnchor.constant = -20
         localViewHeightAnchor.constant = localHeight
@@ -188,12 +191,8 @@ extension VideoCallViewController: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
         print("Joined call of uid: \(uid)")
         remoteUserIDs.append(uid)
+        
         collectionView.reloadData()
-    }
-
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didLeaveChannelWith stats: AgoraChannelStats) {
-        print("LEFTT")
-        leaveChannel()
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {

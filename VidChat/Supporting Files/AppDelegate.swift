@@ -28,10 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         pushRegistry.desiredPushTypes = [.voIP]
 
         providerDelegate = ProviderDelegate(callManager: callManager)
-        print("TOKEN YESSIR")
-
+        
         FirebaseApp.configure()
-        askToSendNotifications()
 
         return true
     }
@@ -83,6 +81,11 @@ extension AppDelegate: PKPushRegistryDelegate {
     func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         let token = credentials.token.map { String(format: "%02.2hhx", $0) }.joined()
         print("voip token = \(token)")
+        let uid = Auth.auth().currentUser?.uid
+        //TODO make this run only when they don't have a pusgkit token
+        if let uid = uid  {
+            COLLECTION_USERS.document(uid).updateData(["pushKitToken" : token])
+        }
     }
 
     func pushRegistry(_ registry: PKPushRegistry,
@@ -137,7 +140,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     
     func askToSendNotifications() {
         let application = UIApplication.shared
-        
         UNUserNotificationCenter.current().delegate = self
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
@@ -154,9 +156,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
             
             let uid = Auth.auth().currentUser?.uid
-            
+
             if let uid = uid  {
-                COLLECTION_USERS.document(uid).updateData(["iOSToken" : fcmToken])
+                COLLECTION_USERS.document(uid).updateData(["fcmToken" : fcmToken])
             }
         }
     }
@@ -165,8 +167,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-
-        print("RECIEVED 2")
             completionHandler([.badge, .banner])
     }
     

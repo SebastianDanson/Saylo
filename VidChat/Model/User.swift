@@ -28,6 +28,10 @@ struct User {
     //chat
     var chats = [UserChat]()
     
+    //tokens
+    let fcmToken: String
+    let pushKitToken: String
+    
     //connections
     let connections: [String]
     
@@ -51,6 +55,10 @@ struct User {
         //connections
         self.connections = dictionary["connections"] as? [String] ?? [String]()
         
+        //tokens
+        self.fcmToken = dictionary["fcmToken"] as? String ?? ""
+        self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
+
         //chat
         let chatDic = dictionary["chats"] as? [[String:Any]] ?? [[String:Any]]()
     

@@ -1,9 +1,9 @@
-/*
-See LICENSE folder for this sample’s licensing information.
-
-Abstract:
-The scene delegate.
-*/
+//
+//  SceneDelegate.swift
+//  VidChat
+//
+//  Created by Student on 2021-10-20.
+//
 
 import UIKit
 import SwiftUI
@@ -18,8 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Use a UIHostingController as window root view controller
-        let contentView = MakeCallView()
-            .environmentObject(AppDelegate.shared.callManager)
+        let contentView = ContentView()
+            .environmentObject(AuthViewModel.shared)
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             window.rootViewController = UIHostingController(rootView: contentView)

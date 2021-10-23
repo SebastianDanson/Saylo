@@ -14,18 +14,22 @@ struct ContentView: View {
     
     var body: some View {
         
-    //    Group {
+        Group {
             //if not logged in -> show login
             //else show main interface
-            
-//            if viewModel.currentUser == nil {
+            if !viewModel.isSignedIn {
                 LoginView()
-//            } else {
-//                if viewModel.currentUser != nil {
-       // DialView().environmentObject(CallManager.shared)
-//                }
-//            }
-       // }
+            } else {
+                if viewModel.currentUser != nil {
+                    MakeCallView()
+                        .environmentObject(AppDelegate.shared.callManager)
+                        .onAppear {
+                            //TODO make this only run once
+                            AppDelegate.shared.askToSendNotifications()
+                        }
+                }
+            }
+        }
     }
 }
 

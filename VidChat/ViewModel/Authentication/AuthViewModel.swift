@@ -12,6 +12,7 @@ import FirebaseAuth
 class AuthViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var didSendResetPasswordLink = false
+    @Published var isSignedIn = Auth.auth().currentUser != nil
     
     static let shared = AuthViewModel()
     
@@ -25,14 +26,12 @@ class AuthViewModel: ObservableObject {
                 print("DEBUG: Login failed \(error.localizedDescription)")
                 return
             }
-            
+            self.isSignedIn = true
             self.fetchUser()
         }
     }
     
-    func register(withEmail email: String, password: String, image: UIImage?, fullName: String, userName: String) {
-       // guard let image = image else {return}
-       // ImageUploader.uploadImage(image: image, type: .profile) { imageUrl in
+    func register(withEmail email: String, password: String, userName: String) {
             Auth.auth().createUser(withEmail: email, password: password) { result, error in
                 if let error = error {
                     print(error.localizedDescription)
@@ -43,17 +42,16 @@ class AuthViewModel: ObservableObject {
                 
                 let data = ["email":email,
                             "username":userName,
-                            "fullName":fullName,
                             "createdAt":Timestamp(date: Date()),
-                           // "profileImageUrl":imageUrl,
                             "uid": user.uid] as [String : Any]
                 
+                self.isSignedIn = true
+
                 COLLECTION_USERS.document(user.uid).setData(data) { _ in
                     //self.userSession = user
                     self.fetchUser()
                 }
             }
-        //}
     }
     
     func signOut() {
@@ -78,8 +76,12 @@ class AuthViewModel: ObservableObject {
             if let data = snapshot?.data() {
                 let user = User(dictionary: data, id: uid)
                 self.currentUser = user
+            } else {
+               try! Auth.auth().signOut()
+                
             }
         }
     }
     
 }
+

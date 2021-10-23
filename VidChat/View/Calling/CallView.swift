@@ -34,6 +34,7 @@ struct CallView: View {
                     .foregroundColor(.red)
                     .padding()
                     .onTapGesture {
+                        callsController.end(call: call)
                         callsController.removeCall(call)
                     }
             }
