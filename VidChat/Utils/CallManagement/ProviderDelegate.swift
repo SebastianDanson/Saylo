@@ -140,7 +140,7 @@ extension ProviderDelegate: CXProviderDelegate {
         self.callManager.addCall(pendingCall)
         self.callManager.currentCall = pendingCall
         pendingCall = nil
-        
+        print(self.callManager.currentCall, "CURRENT CALL")
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID.
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()

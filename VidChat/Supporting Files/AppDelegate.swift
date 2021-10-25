@@ -124,7 +124,7 @@ extension AppDelegate: PKPushRegistryDelegate {
 //        }
         displayIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 40) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
             if self.providerDelegate?.pendingCall != nil {
                 self.providerDelegate?.provider.reportCall(with: uuid, endedAt: Date(), reason: .unanswered)
             }

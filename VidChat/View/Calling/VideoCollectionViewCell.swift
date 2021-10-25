@@ -14,13 +14,13 @@ class VideoCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-//        contentView.addSubview(videoView)
-//        videoView.translatesAutoresizingMaskIntoConstraints = false
-//        videoView.leftAnchor.constraint(equalTo: contentView.leftAnchor).isActive = true
-//        videoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
-//        videoView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
-//        videoView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-       // videoView.backgroundColor = .white
+        contentView.addSubview(videoView)
+        videoView.translatesAutoresizingMaskIntoConstraints = false
+        videoView.leftAnchor.constraint(equalTo: contentView.leftAnchor).isActive = true
+        videoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        videoView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
+        videoView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        videoView.backgroundColor = .black
     }
     
     required init?(coder: NSCoder) {

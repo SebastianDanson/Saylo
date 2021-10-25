@@ -55,7 +55,12 @@ final class CallManager: NSObject, ObservableObject {
         removeCurrentCall()
         leaveChannel()
         destroyInstance()
+        channelName = nil
+        agoraKit = nil
         self.currentCall = nil
+        self.delegate = nil
+        self.remoteUserIDs = [UInt]()
+        self.inCall = false
     }
     
     // MARK: - Actions
@@ -243,13 +248,15 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     func joinChannel() {
         if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
+            print("JOINING")
             getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
+                print(sid, uid, "JOINING")
                 self?.inCall = true
                 self?.callID = uid
                 self?.channelName = currentCall.uuid.uuidString
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 40) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
                 if self.remoteUserIDs.count == 0 {
                     self.endCalling()
                 }
@@ -258,6 +265,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     }
     
     func leaveChannel() {
+        print("LEAVING")
         agoraKit?.leaveChannel(nil)
     }
     
@@ -268,7 +276,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     func setUpVideo() {
         getAgoraEngine().enableVideo()
         let configuration = AgoraVideoEncoderConfiguration(size:
-                                                            AgoraVideoDimension840x480, frameRate: .fps30, bitrate: 800,
+                                                            AgoraVideoDimension640x480, frameRate: .fps30, bitrate: 800,
                                                            orientationMode: .fixedPortrait)
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
