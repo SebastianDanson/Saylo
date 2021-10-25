@@ -8,14 +8,58 @@
 import CallKit
 import Combine
 import Firebase
+import AgoraRtcKit
+
+protocol CallManagerDelegate: AnyObject {
+    func remoteUserIDsUpdated()
+    func remoteUserToggledVideo()
+}
 
 final class CallManager: NSObject, ObservableObject {
-
+    
     let callController = CXCallController()
     fileprivate var sessionPool = [UUID: String]()
-
+    
+    var agoraKit: AgoraRtcEngineKit?
+    var agoraDelegate: AgoraRtcEngineDelegate?
+    var inCall = false
+    let tempToken: String? = nil //If you have a token, put it here.
+    var callID: UInt = 0 //This tells Agora to generate an id for you. We have user IDs from Firebase, but they aren't Ints, and therefore won't work with Agora.
+    var channelName: String?
+    weak var delegate: CallManagerDelegate?
+    var currentCall: Call?
+    
+    var remoteUserIDs: [UInt] = [] {
+        didSet {
+            if remoteUserIDs.count == 0 {
+               endCurrentCall()
+            } else {
+                delegate?.remoteUserIDsUpdated()
+            }
+        }
+    }
+    
+    func getAgoraEngine() -> AgoraRtcEngineKit {
+        if agoraKit == nil {
+            agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: KeyCenter.AppId, delegate: self)
+        }
+        return agoraKit!
+    }
+    
+    func initializeAgoraEngine() {
+        agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: KeyCenter.AppId, delegate: agoraDelegate)
+    }
+    
+    func endCalling() {
+        endCurrentCall()
+        removeCurrentCall()
+        leaveChannel()
+        destroyInstance()
+        self.currentCall = nil
+    }
+    
     // MARK: - Actions
-
+    
     /// Starts a new call with the specified handle and indication if the call includes video.
     /// - Parameters:
     ///   - handle: The caller's phone number.
@@ -23,15 +67,15 @@ final class CallManager: NSObject, ObservableObject {
     func startCall(handle: String, video: Bool = false) {
         let handle = CXHandle(type: .phoneNumber, value: handle)
         let startCallAction = CXStartCallAction(call: UUID(), handle: handle)
-
+        
         startCallAction.isVideo = video
-
+        
         let transaction = CXTransaction()
         transaction.addAction(startCallAction)
-
+        
         requestTransaction(transaction)
     }
-
+    
     func startOutgoingCall(of session: String, pushKitToken: String) {
         let handle = CXHandle(type: .phoneNumber, value: session)
         let uuid = pairedUUID(of: session)
@@ -45,17 +89,17 @@ final class CallManager: NSObject, ObservableObject {
                 return
             }
             
-//            let uuidString = payload.dictionaryPayload["UUID"] as? String,
-//            let handle = payload.dictionaryPayload["handle"] as? String,
-//            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
-//            let uuid = UUID(uuidString: uuidString)
+            //            let uuidString = payload.dictionaryPayload["UUID"] as? String,
+            //            let handle = payload.dictionaryPayload["handle"] as? String,
+            //            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
+            //            let uuid = UUID(uuidString: uuidString)
             
             
             let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "token": pushKitToken] as [String : Any]
-                
-                Firebase.Functions.functions().httpsCallable("makeCall").call(data) { result, error in
-                    print(error?.localizedDescription, "FUNCTION ERROR")
-                }
+            
+            Firebase.Functions.functions().httpsCallable("makeCall").call(data) { result, error in
+                print(error?.localizedDescription, "FUNCTION ERROR")
+            }
         }
     }
     
@@ -65,10 +109,10 @@ final class CallManager: NSObject, ObservableObject {
         let endCallAction = CXEndCallAction(call: call.uuid)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
-
+        
         requestTransaction(transaction)
     }
-
+    
     /// Sets the specified call's on hold status.
     /// - Parameters:
     ///   - call: The call to update on hold status for.
@@ -77,10 +121,10 @@ final class CallManager: NSObject, ObservableObject {
         let setHeldCallAction = CXSetHeldCallAction(call: call.uuid, onHold: onHold)
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
-
+        
         requestTransaction(transaction)
     }
-
+    
     /// Requests that the actions in the specified transaction be asynchronously performed by the telephony provider.
     /// - Parameter transaction: A transaction that contains actions to be performed.
     private func requestTransaction(_ transaction: CXTransaction) {
@@ -92,36 +136,50 @@ final class CallManager: NSObject, ObservableObject {
             }
         }
     }
-
+    
     // MARK: - Call Management
-
+    
     /// A publisher of active calls.
     @Published private(set) var calls = [Call]()
-
+    
     /// Returns the call with the specified UUID if it exists.
     /// - Parameter uuid: The call's unique identifier.
     /// - Returns: The call with the specified UUID if it exists, otherwise `nil`.
     func callWithUUID(uuid: UUID) -> Call? {
         guard let index = calls.firstIndex(where: { $0.uuid == uuid }) else { return nil }
-
+        
         return calls[index]
     }
-
+    
     /// Adds a call to the array of active calls.
     /// - Parameter call: The call  to add.
     func addCall(_ call: Call) {
         print("CALL ADDED")
         calls.append(call)
     }
-
+    
     /// Removes a call from the array of active calls if it exists.
     /// - Parameter call: The call to remove.
     func removeCall(_ call: Call) {
         guard let index = calls.firstIndex(where: { $0 === call }) else { return }
-
+        
         calls.remove(at: index)
     }
-
+    
+    func removeCurrentCall() {
+        guard let currentCall = currentCall else {
+            return
+        }
+        
+        guard let index = calls.firstIndex(where: { $0 === currentCall }) else { return }
+        calls.remove(at: index)
+    }
+    
+    func endCurrentCall() {
+        guard let index = calls.firstIndex(where: { $0 === currentCall }) else { return }
+        end(call: calls[index])
+    }
+    
     /// Empties the array of active calls.
     func removeAllCalls() {
         calls.removeAll()
@@ -133,7 +191,7 @@ final class CallManager: NSObject, ObservableObject {
             AppDelegate.shared.providerDelegate?.provider.reportOutgoingCall(with: uuid, connectedAt: nil)
         }
     }
-
+    
 }
 
 extension CallManager {
@@ -163,4 +221,57 @@ extension CallManager {
     }
 }
 
-
+extension CallManager: AgoraRtcEngineDelegate {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
+        callID = uid
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
+        remoteUserIDs.append(uid)
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
+        if let index = remoteUserIDs.firstIndex(where: { $0 == uid }) {
+            remoteUserIDs.remove(at: index)
+        }
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didVideoEnabled enabled: Bool, byUid uid: UInt) {
+        print(uid, enabled, "VIDEO")
+    }
+    
+    
+    func joinChannel() {
+        if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
+            getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
+                self?.inCall = true
+                self?.callID = uid
+                self?.channelName = currentCall.uuid.uuidString
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 40) {
+                if self.remoteUserIDs.count == 0 {
+                    self.endCalling()
+                }
+            }
+        }
+    }
+    
+    func leaveChannel() {
+        agoraKit?.leaveChannel(nil)
+    }
+    
+    func destroyInstance() {
+        AgoraRtcEngineKit.destroy()
+    }
+    
+    func setUpVideo() {
+        getAgoraEngine().enableVideo()
+        let configuration = AgoraVideoEncoderConfiguration(size:
+                                                            AgoraVideoDimension840x480, frameRate: .fps30, bitrate: 800,
+                                                           orientationMode: .fixedPortrait)
+        getAgoraEngine().setVideoEncoderConfiguration(configuration)
+    }
+    
+    
+}

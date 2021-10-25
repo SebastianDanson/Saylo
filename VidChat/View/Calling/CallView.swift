@@ -12,14 +12,18 @@ struct CallView: View {
     @State private var isMuted: Bool = false
     @State private var isFrontFacing: Bool = true
     @State private var showVideo: Bool = true
+    @State private var showCallOptions = true
+    
     @EnvironmentObject var callsController: CallManager
     
-    let call: Call
-
     var body: some View {
         ZStack(alignment: .bottom) {
-            VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, call: call)
-            CallOptionsView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, call: call)
+            VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, showCallOptions: $showCallOptions)
+            if showCallOptions {
+                CallOptionsView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo)
+            }
+        }.onTapGesture {
+            showCallOptions.toggle()
         }
     }
 }
@@ -36,8 +40,6 @@ struct CallOptionsView: View {
     
     @EnvironmentObject var callsController: CallManager
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-
-    let call: Call
     
     var body: some View {
         HStack {
@@ -77,8 +79,7 @@ struct CallOptionsView: View {
                     alignment: .center
                 )
                 .onTapGesture {
-                    callsController.end(call: call)
-                    callsController.removeCall(call)
+                    callsController.endCalling()
                 }
         }
         .padding(.horizontal, 28)

@@ -16,15 +16,13 @@ struct VideoCallView: UIViewControllerRepresentable {
     @Binding var isMuted: Bool
     @Binding var isFrontFacing: Bool
     @Binding var showVideo: Bool
+    @Binding var showCallOptions: Bool
 
     @EnvironmentObject var callsController: CallManager
-    let call: Call
     
     func makeUIViewController(context: Context) -> VideoCallViewController {
         let agoraViewController = VideoCallViewController()
         agoraViewController.callManger = callsController
-        agoraViewController.call = call
-        agoraViewController.agoraDelegate = context.coordinator
         return agoraViewController
     }
     
@@ -32,6 +30,7 @@ struct VideoCallView: UIViewControllerRepresentable {
         uiViewController.didTapMuteButton(isMuted: isMuted)
         uiViewController.didTapSwitchCameraButton(isFrontFacing: isFrontFacing)
         uiViewController.didTapVideoButton(showVideo: showVideo)
+        uiViewController.toggleShowOptions(showOptions: showCallOptions)
     }
     
     func makeCoordinator() -> Coordinator {

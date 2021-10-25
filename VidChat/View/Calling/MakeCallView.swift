@@ -23,7 +23,7 @@ struct MakeCallView: View {
             Group {
                 VStack {
                     if !callsController.calls.isEmpty {
-                        CallView(call: callsController.calls.last!)
+                        CallView()
                             .edgesIgnoringSafeArea(.top)
                     } else {
                         Text("Make a call")

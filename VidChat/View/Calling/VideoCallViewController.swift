@@ -7,30 +7,12 @@
 
 
 import Foundation
-import AgoraRtcKit
 import UIKit
+import AgoraRtcKit
 
 class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var callManger: CallManager!
-    var call: Call!
-    
-    var agoraKit: AgoraRtcEngineKit?
-    var agoraDelegate: AgoraRtcEngineDelegate?
-    var inCall = false
-    let tempToken: String? = nil //If you have a token, put it here.
-    var callID: UInt = 0 //This tells Agora to generate an id for you. We have user IDs from Firebase, but they aren't Ints, and therefore won't work with Agora.
-    var channelName: String?
-    var remoteUserIDs: [UInt] = [] {
-        didSet {
-            if remoteUserIDs.count == 0 {
-                callManger.end(call: call)
-                callManger.removeCall(call)
-            } else {
-                shrinkLocalView()
-            }
-        }
-    }
     
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
@@ -40,11 +22,13 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     var localViewRightAnchor: NSLayoutConstraint!
     var localViewTopAnchor: NSLayoutConstraint!
     
-    let localWidth = UIScreen.main.bounds.width * 0.22
-    let localHeight = UIScreen.main.bounds.height * 0.22
     var isFrontFacing = true
+    var isShowingOptions = true
+    
+    var numFeeds = 2
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
+    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,7 +36,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(VideoCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .black
         collectionView.allowsMultipleSelection = true
         
         view.addSubview(collectionView)
@@ -60,9 +44,10 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         collectionView.frame = view.bounds
         collectionView.insetsLayoutMarginsFromSafeArea = false
         collectionView.contentInsetAdjustmentBehavior = .never
-        getAgoraEngine().setChannelProfile(.communication)
-        setUpVideo()
+        callManger.getAgoraEngine().setChannelProfile(.communication)
         
+        // callManger.setUpVideo()
+        callManger.delegate = self
         view.backgroundColor = .green
         
         view.addSubview(localView)
@@ -79,152 +64,240 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         
         localView.layer.cornerRadius = 8
         localView.clipsToBounds = true
+        localView.backgroundColor = .mainBlue
         
-        let videoCanvas = AgoraRtcVideoCanvas()
-        videoCanvas.uid = callID
-        videoCanvas.view = localView
-        getAgoraEngine().setupLocalVideo(videoCanvas)
+        shrinkLocalView()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 9) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 12) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 18) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 21) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 24) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 27) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+            self.numFeeds += 1
+            self.collectionView.reloadData()
+            self.shrinkLocalView()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.joinChannel(channelName: call.uuid.uuidString)
+        callManger.joinChannel()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        leaveChannel()
-        destroyInstance()
-    }
-    
-    private func getAgoraEngine() -> AgoraRtcEngineKit {
-        if agoraKit == nil {
-            agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: KeyCenter.AppId, delegate: self)
+    func getLocalViewDimensions() -> CGSize {
+        let width = UIScreen.main.bounds.width
+        let height = UIScreen.main.bounds.height
+        let ratio = numFeeds - 1 > 3 ? 0.15 : 0.22
+        
+        switch numFeeds - 1 {
+        case 0:
+            return CGSize(width: width, height: height)
+        case 1:
+            return CGSize(width: width * ratio, height: height * ratio)
+        case 2:
+            return CGSize(width: width * ratio, height: height/2 * ratio)
+        case 3, 4:
+            return CGSize(width: width*ratio, height: height*ratio)
+        case 5...8:
+            return CGSize(width: width*ratio, height: height/ceil(CGFloat(numFeeds/2))*ratio * 2)
+        default:
+            return CGSize(width: width*ratio, height: width*ratio)
         }
-        return agoraKit!
     }
     
     func shrinkLocalView() {
-        localViewTopAnchor.constant = 20 + topPadding
+        
+        let size = getLocalViewDimensions()
+        localViewHeightAnchor.constant = size.height
+        localViewWidthAnchor.constant = size.width
+        
+        let showOptionsPadding: CGFloat = isShowingOptions ? 112 + bottomPadding : 54
+        let addedPadding = numFeeds > 3 ? UIScreen.main.bounds.height - showOptionsPadding - size.height : topPadding
+        localViewTopAnchor.constant = 20 + addedPadding
         localViewRightAnchor.constant = -20
-        localViewHeightAnchor.constant = localHeight
-        localViewWidthAnchor.constant = localWidth
         
-        UIView.animate(withDuration: 0.5) {
-            self.localView.layoutIfNeeded()
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
-    }
-    
-    func setUpVideo() {
-        getAgoraEngine().enableVideo()
-        let configuration = AgoraVideoEncoderConfiguration(size:
-                                                            AgoraVideoDimension840x480, frameRate: .fps30, bitrate: 800,
-                                                           orientationMode: .fixedPortrait)
-        getAgoraEngine().setVideoEncoderConfiguration(configuration)
-    }
-    
-    func initializeAgoraEngine() {
-        agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: KeyCenter.AppId, delegate: agoraDelegate)
-    }
-    
-    func joinChannel(channelName: String) {
-        getAgoraEngine().joinChannel(byToken: tempToken, channelId: channelName, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
-            self?.inCall = true
-            self?.callID = uid
-            self?.channelName = channelName
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            if self.remoteUserIDs.count == 0 {
-                self.callManger.end(call: self.call)
-                self.callManger.removeCall(self.call)
-            }
-        }
-    }
-    
-    func leaveChannel() {
-        agoraKit?.leaveChannel(nil)
-    }
-    
-    func destroyInstance() {
-        AgoraRtcEngineKit.destroy()
     }
     
     func didTapMuteButton(isMuted: Bool) {
-        print(isMuted,"MUTED")
-        isMuted ? agoraKit?.muteLocalAudioStream(true) : agoraKit?.muteLocalAudioStream(false)
+        let kit = callManger.getAgoraEngine()
+        isMuted ? kit.muteLocalAudioStream(true) : kit.muteLocalAudioStream(false)
     }
     
     func didTapVideoButton(showVideo: Bool) {
-        showVideo ? agoraKit?.enableVideo() : agoraKit?.disableVideo()
+        let kit = callManger.getAgoraEngine()
+        showVideo ? kit.enableVideo() : kit.disableVideo()
         localView.isHidden = !showVideo
     }
     
     func didTapSwitchCameraButton(isFrontFacing: Bool) {
+        
         if self.isFrontFacing != isFrontFacing {
-            agoraKit?.switchCamera()
+            callManger.getAgoraEngine().switchCamera()
         }
         self.isFrontFacing = isFrontFacing
     }
     
+    func toggleShowOptions(showOptions: Bool) {
+        if numFeeds > 3 {
+            if showOptions != isShowingOptions {
+                let dif = 58 + bottomPadding
+                showOptions ? (localViewTopAnchor.constant -= dif) : (localViewTopAnchor.constant += dif)
+                UIView.animate(withDuration: 0.3) {
+                    self.view.layoutIfNeeded()
+                }
+            }
+        }
+        
+        isShowingOptions = showOptions
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return remoteUserIDs.count
+        return numFeeds - 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VideoCollectionViewCell
         
-        let remoteID = remoteUserIDs[indexPath.row]
-        if let videoCell = cell as? VideoCollectionViewCell {
-            let videoCanvas = AgoraRtcVideoCanvas()
-            videoCanvas.uid = remoteID
-            videoCanvas.view = videoCell.videoView
-            
-            getAgoraEngine().setupRemoteVideo(videoCanvas)
-            print("Creating remote view of uid: \(remoteID)")
+        //        let remoteID = callManger.remoteUserIDs[indexPath.row]
+        //        if let videoCell = cell as? VideoCollectionViewCell {
+        //            let videoCanvas = AgoraRtcVideoCanvas()
+        //            videoCanvas.uid = remoteID
+        //            videoCanvas.view = videoCell.videoView
+        //
+        //            callManger.getAgoraEngine().setupRemoteVideo(videoCanvas)
+        //
+        //            print("Creating remote view of uid: \(remoteID)")
+        //        }
+        
+        if indexPath.row == 0 {
+            cell.backgroundColor = UIColor.systemRed
+        } else if indexPath.row == 1 {
+            cell.backgroundColor = UIColor.systemOrange
+        } else if indexPath.row == 2 {
+            cell.backgroundColor = UIColor.systemPurple
+        } else if indexPath.row == 3 {
+            cell.backgroundColor = UIColor.systemGreen
+        } else if indexPath.row == 4 {
+            cell.backgroundColor = UIColor.systemYellow
+        } else if indexPath.row == 5 {
+            cell.backgroundColor = UIColor.systemOrange
+        } else if indexPath.row == 6 {
+            cell.backgroundColor = UIColor.systemPurple
+        } else if indexPath.row == 7 {
+            cell.backgroundColor = UIColor.systemGreen
+        } else if indexPath.row == 8 {
+            cell.backgroundColor = UIColor.systemYellow
+        } else if indexPath.row == 9 {
+            cell.backgroundColor = UIColor.systemOrange
+        } else if indexPath.row == 10 {
+            cell.backgroundColor = UIColor.systemPurple
+        } else if indexPath.row == 11 {
+            cell.backgroundColor = UIColor.systemGreen
+        } else if indexPath.row == 12 {
+            cell.backgroundColor = UIColor.systemYellow
+        }
+        
+        if numFeeds - 1 > 2 {
+            cell.layer.cornerRadius = 5
         }
         
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        if numFeeds - 1 > 2 {
+            return 4
+        }
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        if numFeeds - 1 > 2 {
+            return 4
+        }
+        return 0
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let numFeeds = remoteUserIDs.count
+        let offset:CGFloat = numFeeds - 1 > 2 ? 4 : 0
+        let width = UIScreen.main.bounds.width - offset
+        let height = UIScreen.main.bounds.height - offset
         
-        let totalWidth = collectionView.frame.width - collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right
-        let totalHeight = collectionView.frame.height - collectionView.adjustedContentInset.top - collectionView.adjustedContentInset.bottom
-        
-        if numFeeds == 1 {
-            print(totalWidth, totalHeight)
-            return CGSize(width: totalWidth, height: totalHeight)
-        } else if numFeeds == 2 {
-            return CGSize(width: totalWidth, height: totalHeight / 2)
-        } else {
-            if indexPath.row == numFeeds {
-                return CGSize(width: totalWidth, height: totalHeight / 2)
-            } else {
-                return CGSize(width: totalWidth / CGFloat(numFeeds - 1), height: totalHeight / 2)
-            }
+        switch numFeeds - 1 {
+        case 1:
+            return CGSize(width: width, height: height)
+        case 2:
+            return CGSize(width: width, height: height/2)
+        case 3, 4:
+            return CGSize(width: width/2, height: height/2)
+        case 5...8:
+            return CGSize(width: width/2, height: height/ceil(CGFloat(numFeeds/2)))
+        default:
+            return CGSize(width: width/2, height: width/2)
         }
     }
 }
 
-extension VideoCallViewController: AgoraRtcEngineDelegate {
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-        print("JOINED 1")
-        callID = uid
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
-        print("Joined call of uid: \(uid)")
-        remoteUserIDs.append(uid)
+extension VideoCallViewController: CallManagerDelegate {
+    func remoteUserToggledVideo() {
         
-        collectionView.reloadData()
     }
     
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-        if let index = remoteUserIDs.firstIndex(where: { $0 == uid }) {
-            remoteUserIDs.remove(at: index)
-            collectionView.reloadData()
-        }
+    func remoteUserIDsUpdated() {
+        collectionView.reloadData()
     }
 }
