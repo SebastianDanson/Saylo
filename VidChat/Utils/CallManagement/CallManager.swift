@@ -29,7 +29,7 @@ final class CallManager: NSObject, ObservableObject {
     weak var delegate: CallManagerDelegate?
     var currentCall: Call?
     
-    var remoteUserIDs: [UInt] = [] {
+    @Published var remoteUserIDs: [UInt] = [] {
         didSet {
             if remoteUserIDs.count == 0 {
                endCurrentCall()
@@ -276,7 +276,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     func setUpVideo() {
         getAgoraEngine().enableVideo()
         let configuration = AgoraVideoEncoderConfiguration(size:
-                                                            AgoraVideoDimension640x480, frameRate: .fps30, bitrate: 800,
+                                                            AgoraVideoDimension1280x720, frameRate: .fps30, bitrate: 1710,
                                                            orientationMode: .fixedPortrait)
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }

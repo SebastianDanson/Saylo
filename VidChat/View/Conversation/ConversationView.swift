@@ -23,12 +23,14 @@ struct ConversationView: View {
     @State private var isTyping = false
     @State private var isRecordingAudio = false
     @State private var hasScrolledToVideo = false
-    @State private var isShowingPhotos = true
+    @State private var isShowingPhotos = false
+    @State private var photosPickerHeight = UIScreen.main.bounds.width/4*3 + 20
     
     private let width = UIScreen.main.bounds.width
     private let cameraHeight = UIScreen.main.bounds.width * 1.25
     private let screenHeight = UIScreen.main.bounds.height
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+    private let photoPickerBaseHeight = UIScreen.main.bounds.width/4*3 + 20
     
     var body: some View {
         
@@ -59,7 +61,6 @@ struct ConversationView: View {
                                                     dragOffset.height = gesture.translation.height
                                                     hasScrolledToVideo = true
                                                     viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
-                                                    
                                                 }
                                                 .onEnded { gesture in
                                                     handleOnDragEnd(translation: gesture.translation, index: i, reader: reader)
@@ -89,7 +90,9 @@ struct ConversationView: View {
             }
             
             if isShowingPhotos{
-                PhotoPickerView().frame(width: width, height: width/4*3)
+                PhotoPickerView(baseHeight: photoPickerBaseHeight, height: $photosPickerHeight, isShowingPhotos: $isShowingPhotos)
+                    .frame(width: width, height: photosPickerHeight)
+                    .transition(.move(edge: .bottom))
             }
             
             if isTyping {
@@ -148,7 +151,7 @@ struct ConversationView: View {
                         Spacer()
                         
                         if !isShowingPhotos {
-                            OptionsView(audioRecorder: audioRecorder, isTyping: $isTyping, isRecordingAudio: $isRecordingAudio)
+                            OptionsView(audioRecorder: audioRecorder, isTyping: $isTyping, isRecordingAudio: $isRecordingAudio, isShowingPhotos: $isShowingPhotos)
                                 .transition(.opacity)
                         }
                     }
@@ -223,32 +226,45 @@ struct OptionsView: View {
     
     @Binding var isTyping: Bool
     @Binding var isRecordingAudio: Bool
+    @Binding var isShowingPhotos: Bool
     
     @State var audioProgress = 0.0
+    @State var showAudio = false
+    @State var isPlayingAudio = false
     
     var body: some View {
         
         HStack(spacing: 4) {
-            if cameraViewModel.url == nil {
-                if !cameraViewModel.isRecording {
+            
+            if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
+                
+                if !cameraViewModel.showCamera {
                     
-                    if !isRecordingAudio {
+                    if !showAudio {
                         //Camera button
-                        Button(action: {}, label: {
+                        Button(action: {
+                            withAnimation(.linear(duration: 0.15)) {
+                                cameraViewModel.isTakingPhoto = true
+                                cameraViewModel.showCamera = true
+                            }
+                        }, label: {
                             ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
                         })
                     }
                     
-                    if !isRecordingAudio {
+                    if !showAudio {
                         //Photos button
-                        Button(action: {}, label: {
+                        Button(action: {
+                            withAnimation(.linear(duration: 0.15)) {
+                                isShowingPhotos = true
+                            }
+                        }, label: {
                             ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
                         })
                     }
-                    
                 }
                 
-                if !isRecordingAudio {
+                if !showAudio {
                     //Video record circle
                     Button(action: {
                         withAnimation {
@@ -259,18 +275,27 @@ struct OptionsView: View {
                     })
                 }
                 
-                if !cameraViewModel.isRecording {
+                if !cameraViewModel.showCamera {
                     
                     //Mic button
                     Button(action: {
                         withAnimation {
-                            audioProgress = !audioRecorder.recording ? 1.0 : 0.0
-                            isRecordingAudio = !audioRecorder.recording
+                            if !showAudio {
+                                audioProgress = 1.0
+                                isRecordingAudio = true
+                            } else {
+                                audioProgress = 0.0
+                                isRecordingAudio = false
+                                isPlayingAudio.toggle()
+                            }
+                            showAudio = true
                         }
                         audioRecorder.recording ? audioRecorder.stopRecording() : audioRecorder.startRecording()
                     }, label: {
-                        ActionView(image: Image(systemName: "mic.fill"), imageDimension: 27, isActive: $isRecordingAudio)
-                            .foregroundColor(audioRecorder.recording ? Color.mainBlue : Color(.systemGray))
+                        ActionView(image: Image(systemName: isRecordingAudio || !showAudio ? "mic.fill" :
+                                                    isPlayingAudio ? "pause.circle.fill" : "play.circle.fill"),
+                                   imageDimension: 27, isActive: $isRecordingAudio)
+                            .foregroundColor(showAudio ? Color.mainBlue : Color(.systemGray))
                             .overlay(
                                 ZStack {
                                     // if isRecordingAudio {
@@ -287,7 +312,7 @@ struct OptionsView: View {
                             )
                     })
                     
-                    if !isRecordingAudio {
+                    if !showAudio {
                         //Aa button
                         Button(action: {
                             withAnimation {
@@ -303,7 +328,7 @@ struct OptionsView: View {
         }
         .frame(height: 70)
         .clipShape(Capsule())
-        .padding(.bottom, cameraViewModel.isRecording ? 50 : -2)
+        .padding(.bottom, cameraViewModel.showCamera ? 50 : -2)
     }
 }
 
@@ -323,14 +348,17 @@ struct CameraCircle: View {
             .rotationEffect(Angle(degrees: 270))
             .overlay(
                 Circle()
-                    .strokeBorder(viewModel.isRecording ? Color.clear : Color(.systemGray), lineWidth: viewModel.isRecording ? 3 : 6)
+                    .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isTakingPhoto ? .white : Color(.systemGray)),
+                                  lineWidth: viewModel.isRecording ? 3 : 6)
                     .background(
                         VStack {
-                            RoundedRectangle(cornerRadius: viewModel.isRecording ? 6:28)
-                                .frame(width: viewModel.isRecording ? 28:0,
-                                       height: viewModel.isRecording ? 28:0)
-                                .foregroundColor(Color(.systemRed))
-                                .transition(.scale)
+                            if viewModel.isRecording {
+                                RoundedRectangle(cornerRadius: 6)
+                                    .frame(width: 28,
+                                           height: 28)
+                                    .foregroundColor(Color(.systemRed))
+                                    .transition(.scale)
+                            }
                         }
                     )
                     .frame(width: 60, height: 60)

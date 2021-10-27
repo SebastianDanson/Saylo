@@ -9,11 +9,13 @@
 import Foundation
 import UIKit
 import AgoraRtcKit
+import AVFoundation
 
 class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var callManger: CallManager!
     
+    private var player: AVAudioPlayer?
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
     private let localView = UIView()
@@ -66,11 +68,33 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         videoCanvas.uid = callManger.callID
         videoCanvas.view = localView
         callManger.getAgoraEngine().setupLocalVideo(videoCanvas)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+            self.callManger.remoteUserIDs.append(3)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         callManger.joinChannel()
+        if callManger.remoteUserIDs.count == 0 {
+            playRingTone()
+        }
+    }
+    
+    func playRingTone() {
+        let path = Bundle.main.path(forResource: "ringtone.wav", ofType:nil)!
+        let url = URL(fileURLWithPath: path)
+        print(url,"URL")
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.numberOfLoops = 2
+            player?.play()
+        } catch {
+            print("COULD NOT PLAY")
+            // couldn't load file :(
+        }
     }
     
     func getLocalViewDimensions() -> CGSize {
@@ -212,5 +236,9 @@ extension VideoCallViewController: CallManagerDelegate {
     func remoteUserIDsUpdated() {
         self.collectionView.reloadData()
         self.shrinkLocalView()
+        
+        if callManger.remoteUserIDs.count > 0 {
+            self.player?.pause()
+        }
     }
 }

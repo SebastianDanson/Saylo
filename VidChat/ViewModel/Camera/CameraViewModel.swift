@@ -11,11 +11,12 @@ import SwiftUI
 
 class CameraViewModel: ObservableObject {
     
-    @Published var url: URL?
-    @Published var croppedUrl: URL?
+    @Published var videoUrl: URL?
+    @Published var photo: UIImage?
     @Published var hasFlash = false
     @Published var progress = 0.0
     @Published var isRecording = false
+    @Published var isTakingPhoto = false
     @Published var showCamera = false
     @Published var cameraView = CameraMainView()
     @Published var hasSentWithoutCrop = false
@@ -25,18 +26,18 @@ class CameraViewModel: ObservableObject {
     private init() {}
     
     func removeVideo() {
-        url = nil
+        videoUrl = nil
         progress = 0.0
         isRecording = false
-        croppedUrl = nil
     }
     
     func reset() {
-        url = nil
-        croppedUrl = nil
+        videoUrl = nil
         progress = 0.0
         isRecording = false
         showCamera = false
+        isTakingPhoto = false
+        photo = nil
     }
     
     func startRecording(addDelay: Bool = false) {
@@ -64,13 +65,17 @@ class CameraViewModel: ObservableObject {
     
     func handleTap() {
         if showCamera {
-            if isRecording {
-               stopRecording()
+            if CameraViewModel.shared.isTakingPhoto {
+                takePhoto()
             } else {
-                startRecording()
+                isRecording ? stopRecording() : startRecording()
             }
         } else {
             startRecording(addDelay: true)
         }
+    }
+    
+    func takePhoto() {
+        self.cameraView.takePhoto()
     }
 }

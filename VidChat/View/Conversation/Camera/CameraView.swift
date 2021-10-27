@@ -12,10 +12,12 @@ import AVFoundation
 struct CameraView: UIViewControllerRepresentable {
     
     typealias UIViewControllerType = CameraViewController
-    private var cameraViewController = CameraViewController()
+        
+    var cameraViewController = CameraViewController()
     
     func makeUIViewController(context: Context) -> CameraViewController {
       //  cameraViewController.delegate = context.coordinator
+        cameraViewController.isVideo = CameraViewModel.shared.isRecording
         return cameraViewController
     }
     
@@ -32,6 +34,10 @@ struct CameraView: UIViewControllerRepresentable {
     
     public func stopRecording() {
         cameraViewController.stopRecording()
+    }
+    
+    public func takephoto() {
+        cameraViewController.takePhoto()
     }
 }
 

@@ -27,7 +27,6 @@
 		3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112C572721B4DF00BA2A73 /* StartCallConvertible.swift */; };
 		3F112C5B2721B4DF00BA2A73 /* URL+StartCallConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112C582721B4DF00BA2A73 /* URL+StartCallConvertible.swift */; };
 		3F112C5E2721B75700BA2A73 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3F112C5C2721B75600BA2A73 /* Localizable.strings */; };
-		3F112C5F2721B75700BA2A73 /* Ringtone.aif in Resources */ = {isa = PBXBuildFile; fileRef = 3F112C5D2721B75700BA2A73 /* Ringtone.aif */; };
 		3F17680E2713ED550049ADBA /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 3F17680D2713ED550049ADBA /* FirebaseAnalytics */; };
 		3F1768102713ED550049ADBA /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3F17680F2713ED550049ADBA /* FirebaseAuth */; };
 		3F1768122713ED550049ADBA /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 3F1768112713ED550049ADBA /* FirebaseCrashlytics */; };
@@ -66,8 +65,6 @@
 		3F485DE626FE38990071532B /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F485DE526FE38990071532B /* AuthViewModel.swift */; };
 		3F50C6F4270195B30027D080 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F50C6F3270195B30027D080 /* CameraViewModel.swift */; };
 		3F7786B127230DB5005AF9DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */; };
-		3F7786B3272311E6005AF9DA /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786B2272311E6005AF9DA /* CameraController.swift */; };
-		3F7786B527231220005AF9DA /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786B427231220005AF9DA /* PhotosViewController.swift */; };
 		3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7786B727231E8A005AF9DA /* CallKit.framework */; };
 		3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */; };
 		3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */; };
@@ -90,6 +87,7 @@
 		3FDEE7B92721C3E200DF43C6 /* AgoraRTM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7B82721C3E200DF43C6 /* AgoraRTM.swift */; };
 		3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7BA2721C41300DF43C6 /* AGEERROR.swift */; };
 		3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7BC2721C43D00DF43C6 /* KeyCenter.swift */; };
+		3FF944042727052200E3C05D /* ringtone.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3FF944032727052200E3C05D /* ringtone.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -112,7 +110,6 @@
 		3F112C572721B4DF00BA2A73 /* StartCallConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartCallConvertible.swift; sourceTree = "<group>"; };
 		3F112C582721B4DF00BA2A73 /* URL+StartCallConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+StartCallConvertible.swift"; sourceTree = "<group>"; };
 		3F112C5C2721B75600BA2A73 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
-		3F112C5D2721B75700BA2A73 /* Ringtone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ringtone.aif; sourceTree = "<group>"; };
 		3F1768222714A30C0049ADBA /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		3F1768272714A8080049ADBA /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		3F17682B2714AB610049ADBA /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
@@ -145,8 +142,6 @@
 		3F50C6F3270195B30027D080 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		3F7786AF27225958005AF9DA /* VidChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VidChat.entitlements; sourceTree = "<group>"; };
 		3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		3F7786B2272311E6005AF9DA /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraController.swift; sourceTree = "<group>"; };
-		3F7786B427231220005AF9DA /* PhotosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
 		3F7786B727231E8A005AF9DA /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeCallViewModel.swift; sourceTree = "<group>"; };
 		3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
@@ -168,6 +163,7 @@
 		3FDEE7B82721C3E200DF43C6 /* AgoraRTM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgoraRTM.swift; sourceTree = "<group>"; };
 		3FDEE7BA2721C41300DF43C6 /* AGEERROR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AGEERROR.swift; sourceTree = "<group>"; };
 		3FDEE7BC2721C43D00DF43C6 /* KeyCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCenter.swift; sourceTree = "<group>"; };
+		3FF944032727052200E3C05D /* ringtone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone.wav; path = ../../../../../ringtone.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -264,7 +260,6 @@
 				3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */,
 				3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */,
 				3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */,
-				3F7786B427231220005AF9DA /* PhotosViewController.swift */,
 			);
 			path = Photos;
 			sourceTree = "<group>";
@@ -318,7 +313,6 @@
 				3F7786BB27234E4B005AF9DA /* AudioMessaging */,
 				3F7786BA27234E17005AF9DA /* CallInfo */,
 				3F112B832720B33A00BA2A73 /* CallManagement */,
-				3F7786BC27234EAB005AF9DA /* Camera */,
 				3F112C552721B4D500BA2A73 /* Start Call Handling */,
 				3F95F44D26FE4B0100F892B7 /* Constants.swift */,
 				3F485DCD26FE2A080071532B /* CustomSecureField.swift */,
@@ -464,7 +458,7 @@
 		3F7786BA27234E17005AF9DA /* CallInfo */ = {
 			isa = PBXGroup;
 			children = (
-				3F112C5D2721B75700BA2A73 /* Ringtone.aif */,
+				3FF944032727052200E3C05D /* ringtone.wav */,
 				3F112C5C2721B75600BA2A73 /* Localizable.strings */,
 			);
 			path = CallInfo;
@@ -477,14 +471,6 @@
 				3F2A7EB22718BED400179390 /* AudioRecorder.swift */,
 			);
 			path = AudioMessaging;
-			sourceTree = "<group>";
-		};
-		3F7786BC27234EAB005AF9DA /* Camera */ = {
-			isa = PBXGroup;
-			children = (
-				3F7786B2272311E6005AF9DA /* CameraController.swift */,
-			);
-			path = Camera;
 			sourceTree = "<group>";
 		};
 		3F7786BD27234F26005AF9DA /* Supporting Files */ = {
@@ -507,10 +493,10 @@
 		3F8B029F26FF90AF00841565 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
+				3FB8B5D7270FAACA00355DB9 /* ConversationView.swift */,
 				3F08F27027017A24009E0029 /* Camera */,
 				3F1768262714A5630049ADBA /* MessageCells */,
 				3F2A7EBA2719CE1B00179390 /* Photos */,
-				3FB8B5D7270FAACA00355DB9 /* ConversationView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -609,7 +595,7 @@
 			files = (
 				3F7786B127230DB5005AF9DA /* GoogleService-Info.plist in Resources */,
 				3F485D8226FD453D0071532B /* Preview Assets.xcassets in Resources */,
-				3F112C5F2721B75700BA2A73 /* Ringtone.aif in Resources */,
+				3FF944042727052200E3C05D /* ringtone.wav in Resources */,
 				3F112C5E2721B75700BA2A73 /* Localizable.strings in Resources */,
 				3F485D7F26FD453D0071532B /* Assets.xcassets in Resources */,
 			);
@@ -639,7 +625,6 @@
 				3F08F27227017A36009E0029 /* CameraView.swift in Sources */,
 				3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */,
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
-				3F7786B3272311E6005AF9DA /* CameraController.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
@@ -652,7 +637,6 @@
 				3F1768282714A8080049ADBA /* ConversationViewModel.swift in Sources */,
 				3F8B027126FEB10E00841565 /* UserService.swift in Sources */,
 				3F112B802720B1C200BA2A73 /* ProviderDelegate.swift in Sources */,
-				3F7786B527231220005AF9DA /* PhotosViewController.swift in Sources */,
 				3F50C6F4270195B30027D080 /* CameraViewModel.swift in Sources */,
 				3F95F44C26FE45BC00F892B7 /* MediaUploader.swift in Sources */,
 				3F8B029B26FF7F6F00841565 /* EditProfileViewModel.swift in Sources */,

@@ -10,9 +10,23 @@ import UIKit
 class AssetCell: UICollectionViewCell {
     
     private var imageView = UIImageView()
-    private var numberLabel = UILabel()
-    private var transparentOverlay = UIView()
     private var selectedNumber: Int?
+    private lazy var numberLabel = UILabel()
+    private lazy var transparentOverlay = UIView()
+    
+    private lazy var videoLengthLabel: UILabel = {
+       let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        let height: CGFloat = 20
+        label.setDimensions(height: height, width: 44)
+        label.layer.cornerRadius = height/2
+        label.textAlignment = .center
+        label.textColor = .white
+        label.backgroundColor = UIColor(white: 0, alpha: 0.4)
+        label.clipsToBounds = true
+        label.isHidden = true
+        return label
+    }()
     
     var reuseCount: Int = 0
     
@@ -24,6 +38,10 @@ class AssetCell: UICollectionViewCell {
         imageView.frame = contentView.bounds
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
+        
+        contentView.addSubview(videoLengthLabel)
+        videoLengthLabel.anchor(bottom: contentView.bottomAnchor, right: contentView.rightAnchor,
+                                paddingBottom: 8, paddingRight: 8)
         
         contentView.addSubview(transparentOverlay)
         transparentOverlay.frame = contentView.bounds
@@ -37,15 +55,13 @@ class AssetCell: UICollectionViewCell {
         numberLabel.clipsToBounds = true
         numberLabel.tintColor = .white
         numberLabel.textAlignment = .center
-        numberLabel.translatesAutoresizingMaskIntoConstraints = false
         numberLabel.textColor = .white
         
         let width: CGFloat = 28
-        numberLabel.heightAnchor.constraint(equalToConstant: width).isActive = true
-        numberLabel.widthAnchor.constraint(equalToConstant: width).isActive = true
+        numberLabel.setDimensions(height: width, width: width)
         numberLabel.layer.cornerRadius = width/2
-        numberLabel.centerYAnchor.constraint(equalTo: transparentOverlay.centerYAnchor).isActive = true
-        numberLabel.centerXAnchor.constraint(equalTo: transparentOverlay.centerXAnchor).isActive = true
+        numberLabel.centerY(inView: transparentOverlay)
+        numberLabel.centerX(inView: transparentOverlay)
         
         if let number = selectedNumber {
             self.numberLabel.text = String(number)
@@ -56,6 +72,7 @@ class AssetCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.image = nil
         transparentOverlay.isHidden = !isSelected
+        videoLengthLabel.isHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -64,6 +81,11 @@ class AssetCell: UICollectionViewCell {
     
     func setImage(_ image: UIImage?) {
         self.imageView.image = image
+    }
+    
+    func setVideoLengthString(_ videoLengthString: String) {
+        videoLengthLabel.isHidden = false
+        videoLengthLabel.text = videoLengthString
     }
     
     func setSelectedNumber(_ number: Int?) {

@@ -22,7 +22,10 @@ class CameraViewController: UIViewController {
     var previewLayer: AVCaptureVideoPreviewLayer!
     var activeInput: AVCaptureDeviceInput!
     let movieOutput = AVCaptureMovieFileOutput()
+    let photoOutput = AVCapturePhotoOutput()
     var hasFlash = false
+    
+    var isVideo: Bool!
     
     var tempURL: URL? {
         let directory = NSTemporaryDirectory() as NSString
@@ -32,7 +35,6 @@ class CameraViewController: UIViewController {
         }
         return nil
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,9 +76,9 @@ class CameraViewController: UIViewController {
             print("Error setting device input: \(error)")
             return
         }
-        captureSession.addOutput(movieOutput)
-        captureSession.commitConfiguration()
         
+        isVideo ? captureSession.addOutput(movieOutput): captureSession.addOutput(photoOutput)
+        captureSession.commitConfiguration()
     }
     
     func camera(for position: AVCaptureDevice.Position) -> AVCaptureDevice? {
@@ -178,7 +180,13 @@ class CameraViewController: UIViewController {
         guard let outUrl = tempURL else { return }
         
         movieOutput.startRecording(to: outUrl, recordingDelegate: self)
-        
+    }
+    
+    public func takePhoto() {
+        let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
+//        photoSettings.isHighResolutionPhotoEnabled = true
+        photoSettings.flashMode = self.hasFlash ? .on : .off
+        self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
     public func stopRecording() {
@@ -203,19 +211,7 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         if let error = error {
             print("error: \(error.localizedDescription)")
         } else {
-            CameraViewModel.shared.url = outputFileURL
-            CameraViewModel.shared.croppedUrl = outputFileURL
-            
-            //            cropVideo(outputFileURL, completion: { croppedURL in
-            //                CameraViewModel.shared.croppedUrl = croppedURL
-            //
-            //                if CameraViewModel.shared.hasSentWithoutCrop {
-            //                    CameraViewModel.shared.hasSentWithoutCrop = false
-            //                    ConversationViewModel.shared.addMessage(url: croppedURL, alreadySent: true)
-            //                }
-            //            })
-            
-            // delegate?.setVideo(withUrl: outputFileURL)
+            CameraViewModel.shared.videoUrl = outputFileURL
         }
     }
     
@@ -261,5 +257,15 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         let documentPath = NSSearchPathForDirectoriesInDomains(      .documentDirectory, .userDomainMask, true )[ 0 ] as NSString
         let outputPath = "\(documentPath)/\(name).mov"
         return outputPath
+    }
+}
+
+extension CameraViewController: AVCapturePhotoCaptureDelegate {
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let imageData = photo.fileDataRepresentation() {
+            if let uiImage = UIImage(data: imageData){
+                CameraViewModel.shared.photo = uiImage
+            }
+        }
     }
 }

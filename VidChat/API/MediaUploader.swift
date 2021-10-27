@@ -39,7 +39,22 @@ class MediaUploader {
     }
     
     static func uploadImage(image: UIImage, type: UploadType, completion: @escaping(String) -> Void) {
-        guard let imageData = image.jpegData(compressionQuality: 0.5) else {return}
+        
+        var width = image.size.width
+        var height = image.size.height
+        if height > 700 || width > 700 {
+            if width > height {
+                let const = 700/width
+                width *= const
+                height *= const
+            } else {
+                let const = 700/height
+                width *= const
+                height *= const
+            }
+        }
+        
+        guard let imageData = shared.resizedImageWith(image: image, targetSize: CGSize(width: width, height: height))?.jpegData(compressionQuality: 0.5) else {return}
         
         let ref = type.filePath
         
@@ -112,6 +127,31 @@ class MediaUploader {
         // To cancel compression, set cancel flag to true and wait for handler invoke
         //   cancelable.cancel = true
         
+    }
+    
+    func resizedImageWith(image: UIImage, targetSize: CGSize) -> UIImage? {
+        
+        let imageSize = image.size
+        let newWidth  = targetSize.width  / image.size.width
+        let newHeight = targetSize.height / image.size.height
+        var newSize: CGSize
+        
+        if(newWidth > newHeight) {
+            newSize = CGSize(width: imageSize.width * newHeight, height: imageSize.height * newHeight)
+        } else {
+            newSize = CGSize(width: imageSize.width * newWidth,  height: imageSize.height * newWidth)
+        }
+        
+        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        
+        image.draw(in: rect)
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }
 

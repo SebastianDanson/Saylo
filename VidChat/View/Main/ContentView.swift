@@ -17,18 +17,19 @@ struct ContentView: View {
         Group {
             //if not logged in -> show login
             //else show main interface
-            if !viewModel.isSignedIn {
-                LoginView()
-            } else {
-                if viewModel.currentUser != nil {
-                    MakeCallView()
-                        .environmentObject(AppDelegate.shared.callManager)
-                        .onAppear {
-                            //TODO make this only run once
-                            AppDelegate.shared.askToSendNotifications()
-                        }
-                }
-            }
+//            if !viewModel.isSignedIn {
+//                LoginView()
+//            } else {
+//                if viewModel.currentUser != nil {
+                    ConversationView(audioRecorder: AudioRecorder())
+//                    MakeCallView()
+//                        .environmentObject(AppDelegate.shared.callManager)
+//                        .onAppear {
+//                            //TODO make this only run once
+//                            AppDelegate.shared.askToSendNotifications()
+//                        }
+                //}
+            //}
         }
     }
 }

@@ -7,14 +7,18 @@
 
 import UIKit
 import Photos
+import SwiftUI
 
-protocol SelectedAssetsDelegate {
-    func updateSelectedAssets(_ assets: [PHAsset])
+protocol PhotosCollectioViewDelegate: AnyObject {
+    func setHeightOffset(offset: CGFloat)
+    func resetHeight()
+    func hidePhotoPicker()
 }
 
 class PhotosCollectioView: UIView {
     
-    private var selectedAssetsDelegate: SelectedAssetsDelegate?
+    weak var delegate: PhotosCollectioViewDelegate?
+    
     private let AssetCollectionViewCellReuseIdentifier = "AssetCell"
     
     private var assetsFetchResults: PHFetchResult<PHAsset>?
@@ -30,7 +34,7 @@ class PhotosCollectioView: UIView {
     private var lastCacheFrameCenter: CGFloat = 0
     private var cacheQueue = DispatchQueue(label: "cache_queue")
     private let width = (UIScreen.main.bounds.width - 3) / 4
-    
+    private var initialCenter:CGPoint!
     private var collectionView: UICollectionView!
     
     private let sendButton: UIButton = {
@@ -40,9 +44,7 @@ class PhotosCollectioView: UIView {
         button.tintColor = .mainBlue
         button.backgroundColor = .white
         let width: CGFloat = 64
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.heightAnchor.constraint(equalToConstant: width).isActive = true
-        button.widthAnchor.constraint(equalToConstant: width).isActive = true
+        button.setDimensions(height: width, width: width)
         button.layer.cornerRadius = width / 2
         button.isHidden = true
         return button
@@ -58,11 +60,28 @@ class PhotosCollectioView: UIView {
         return o
     }()
     
+    private let dragView: UIView = {
+       let view = UIView()
+        view.setDimensions(height: 20, width: UIScreen.main.bounds.width)
+        view.backgroundColor = .systemGray6
+        
+        let lineView = UIView()
+        lineView.backgroundColor = .systemGray4
+        lineView.setDimensions(height: 5, width: 40)
+        lineView.layer.cornerRadius = 2.5
+        
+        view.addSubview(lineView)
+        lineView.centerX(inView: view)
+        lineView.centerY(inView: view)
+        
+        return view
+    }()
+    
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-
+        
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 1
         layout.minimumLineSpacing = 1
@@ -70,26 +89,35 @@ class PhotosCollectioView: UIView {
         
         layout.itemSize = CGSize(width: width, height: width)
         
-        collectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(AssetCell.self, forCellWithReuseIdentifier: AssetCollectionViewCellReuseIdentifier)
         collectionView.backgroundColor = .white
         collectionView.allowsMultipleSelection = true
-        
         addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width/4 * 3).isActive = true
-        collectionView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 20)
+        collectionView.setDimensions(height: UIScreen.main.bounds.width/4 * 3, width: UIScreen.main.bounds.width)
         
         resetCache()
         updateSelectedItems()
         fetchCollections()
         
         addSubview(sendButton)
-        sendButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -12).isActive = true
-        sendButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
+        sendButton.anchor(bottom: bottomAnchor, right: rightAnchor, paddingBottom: 12, paddingRight: 12)
         sendButton.addTarget(self, action: #selector(sendImages), for: .touchUpInside)
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+        pan.delegate = self
+        self.collectionView.addGestureRecognizer(pan)
+        
+        addSubview(dragView)
+        dragView.anchor(top: topAnchor)
+        dragView.centerX(inView: self)
+        
+        let dragPan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+        dragPan.delegate = self
+        self.dragView.addGestureRecognizer(dragPan)
     }
     
     required init?(coder: NSCoder) {
@@ -100,12 +128,13 @@ class PhotosCollectioView: UIView {
     
     @objc func sendImages() {
         for asset in selectedAssets {
-            imageManager.requestImage(for: asset, targetSize: CGSize(width: width*2, height: width*2), contentMode: .aspectFill, options: requestOptions) { (image, metadata) in
+            
+            imageManager.requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: requestOptions) { (image, metadata) in
                 let type: MessageType = asset.mediaType == .image ? .Photo : .Video
                 ConversationViewModel.shared.addMessage(image: image, type: type)
             }
-
         }
+        delegate?.hidePhotoPicker()
     }
     
     //MARK: - Helpers
@@ -205,8 +234,9 @@ extension PhotosCollectioView: UICollectionViewDelegate {
 
 extension PhotosCollectioView: UICollectionViewDataSource {
     
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int  {
-
+        
         if let fetchResult = assetsFetchResults {
             return fetchResult.count
         } else {
@@ -224,7 +254,12 @@ extension PhotosCollectioView: UICollectionViewDataSource {
             cell.setSelectedNumber(index + 1)
         }
         
+        if asset.mediaType == .video {
+            cell.setVideoLengthString(asset.duration.minuteSecond)
+        }
+        
         imageManager.requestImage(for: asset, targetSize: CGSize(width: width*2, height: width*2), contentMode: .aspectFill, options: requestOptions) { (image, metadata) in
+            
             if reuseCount == cell.reuseCount {
                 cell.setImage(image)
             }
@@ -293,11 +328,47 @@ extension PhotosCollectioView {
 // MARK: - UIScrollViewDelegate
 
 extension PhotosCollectioView {
+    
+    @objc private func didPan(_ sender: UIPanGestureRecognizer) {
+        let translation = sender.translation(in: self)
+        let velocity = sender.velocity(in: self)
+        
+        guard collectionView.contentOffset.y == 0 || velocity.y < 0 || sender.view == dragView else {return}
+        
+        
+        switch sender.state {
+        case .began, .changed:
+            if translation.y >= 0 {
+                delegate?.setHeightOffset(offset: translation.y)
+            }
+        case .ended:
+            if translation.y > self.frame.height / 2.5 {
+                delegate?.hidePhotoPicker()
+            } else  {
+                delegate?.resetHeight()
+            }
+        default:
+            break
+        }
+    }
+    
+    
+    //TODO
+    //1. show video leng if it's a vide0
+    //2. add drag down bar
+    
+    
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y < 0 {
+            scrollView.contentOffset.y = 0
+        }
+        
         cacheQueue.sync {
             self.updateCache()
         }
     }
+    
 }
 
 // MARK: - PHPhotoLibraryChangeObserver
@@ -305,5 +376,11 @@ extension PhotosCollectioView {
 extension PhotosCollectioView: PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange)  {
         
+    }
+}
+
+extension PhotosCollectioView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }

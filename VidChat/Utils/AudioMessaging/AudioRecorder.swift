@@ -60,6 +60,9 @@ class AudioRecorder: NSObject,ObservableObject {
     func stopRecording() {
         audioRecorder.stop()
         recording = false
+    }
+    
+    func sendRecording() {
         ConversationViewModel.shared.addMessage(url: audioUrl, text: nil, type: .Audio)
     }
 }

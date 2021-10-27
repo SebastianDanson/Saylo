@@ -97,6 +97,7 @@ class ConversationViewModel: ObservableObject {
         //        }
         
         if let image = image {
+            
             MediaUploader.uploadImage(image: image, type: .photo) { newURL in
                 dictionary["url"] = newURL
                 

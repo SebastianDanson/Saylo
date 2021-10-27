@@ -17,7 +17,7 @@ struct VideoCallView: UIViewControllerRepresentable {
     @Binding var isFrontFacing: Bool
     @Binding var showVideo: Bool
     @Binding var showCallOptions: Bool
-
+    
     @EnvironmentObject var callsController: CallManager
     
     func makeUIViewController(context: Context) -> VideoCallViewController {

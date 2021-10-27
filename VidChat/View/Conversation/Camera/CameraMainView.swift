@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CameraMainView: View {
     
     @StateObject var viewModel = CameraViewModel.shared
     @State var isFrontFacing = true
-    
     var cameraView = CameraView()
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
@@ -22,11 +22,22 @@ struct CameraMainView: View {
         ZStack(alignment: .center) {
             
             //video player
-            if let url = viewModel.url {
-                VideoPlayerView(url: url, showName: false)
-                    .overlay(VideoOptions(), alignment: .bottom)
+            if let videoUrl = viewModel.videoUrl {
+                VideoPlayerView(url: videoUrl, showName: false)
+                    .overlay(MediaOptions(), alignment: .bottom)
                     .background(Color.clear)
                     .zIndex(3)
+            }
+            
+            if let photo = viewModel.photo {
+                Image(uiImage: photo)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: UIScreen.main.bounds.width)
+                    .scaleEffect(x: isFrontFacing ? -1 : 1, y: 1, anchor: .center)
+                    .overlay(MediaOptions(), alignment: .bottom)
+                    .zIndex(3)
+                    
             }
             
             //camera
@@ -50,6 +61,10 @@ struct CameraMainView: View {
     func stopRecording() {
         cameraView.stopRecording()
     }
+    
+    func takePhoto() {
+        cameraView.takephoto()
+    }
 }
 
 struct FlashView: View {
@@ -61,7 +76,7 @@ struct FlashView: View {
     }
 }
 
-struct VideoOptions: View {
+struct MediaOptions: View {
     @StateObject var viewModel = CameraViewModel.shared
 
     var body: some View {
@@ -73,7 +88,7 @@ struct VideoOptions: View {
                 
                 // X button
                 Button {
-                    withAnimation {
+                    withAnimation(.linear(duration: 0.15)) {
                         viewModel.reset()
                     }
                 } label: {
@@ -103,11 +118,10 @@ struct SendButton: View {
     var body: some View {
         
         Button(action: {
-            let url = viewModel.croppedUrl == nil ? viewModel.url! : viewModel.croppedUrl!
             withAnimation {
-                ConversationViewModel.shared.addMessage(url: url, type: .Video)
+                ConversationViewModel.shared.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
+                                                        type: viewModel.videoUrl == nil ? .Photo : .Video)
                 viewModel.reset()
-                viewModel.hasSentWithoutCrop = viewModel.croppedUrl == nil
             }
         }, label: {
             HStack {
