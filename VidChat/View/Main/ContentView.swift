@@ -21,7 +21,7 @@ struct ContentView: View {
 //                LoginView()
 //            } else {
 //                if viewModel.currentUser != nil {
-                    ConversationView(audioRecorder: AudioRecorder())
+                    ConversationView()
 //                    MakeCallView()
 //                        .environmentObject(AppDelegate.shared.callManager)
 //                        .onAppear {

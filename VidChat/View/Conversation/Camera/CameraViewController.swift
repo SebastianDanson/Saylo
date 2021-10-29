@@ -16,6 +16,13 @@ protocol CameraViewControllerDelegate: AnyObject {
 
 class CameraViewController: UIViewController {
     
+    private struct Recording {
+        let asset: AVURLAsset
+        let isFrontFacing:Bool
+    }
+    
+    private var recordings = [AVURLAsset]()
+    
     weak var delegate: CameraViewControllerDelegate?
     
     let captureSession = AVCaptureSession()
@@ -24,35 +31,39 @@ class CameraViewController: UIViewController {
     let movieOutput = AVCaptureMovieFileOutput()
     let photoOutput = AVCapturePhotoOutput()
     var hasFlash = false
-    
+    var hasSwitchedCamera = false
     var isVideo: Bool!
     
-    var tempURL: URL? {
-        let directory = NSTemporaryDirectory() as NSString
-        if directory != "" {
-            let path = directory.appendingPathComponent("video.mov")
-            return URL(fileURLWithPath: path)
-        }
-        return nil
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupSession()
-        setupPreview()        
-    }
+    //    override func viewDidLoad() {
+    //        super.viewDidLoad()
+    //        setupSession()
+    //        setupPreview()
+    //    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        startSession()
+        // startSession()
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         //TOOD stop session when chat is dismissed
         // stopSession()
+        self.recordings = [AVURLAsset]()
+        
+    }
+    
+    func getTempUrl() -> URL? {
+        let directory = NSTemporaryDirectory() as NSString
+        if directory != "" {
+            let path = directory.appendingPathComponent("video\(UUID().uuidString).mov")
+            return URL(fileURLWithPath: path)
+        }
+        return nil
     }
     
     func setupSession() {
+        
         captureSession.beginConfiguration()
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             return
@@ -60,7 +71,6 @@ class CameraViewController: UIViewController {
         guard let mic = AVCaptureDevice.default(for: .audio) else {
             return
         }
-        
         
         do {
             let videoInput = try AVCaptureDeviceInput(device: camera)
@@ -77,7 +87,9 @@ class CameraViewController: UIViewController {
             return
         }
         
-        isVideo ? captureSession.addOutput(movieOutput): captureSession.addOutput(photoOutput)
+        
+        captureSession.addOutput(movieOutput)
+        captureSession.addOutput(photoOutput)
         captureSession.commitConfiguration()
     }
     
@@ -91,22 +103,24 @@ class CameraViewController: UIViewController {
     
     public func switchCamera() {
         if movieOutput.isRecording {
+            hasSwitchedCamera = true
             stopRecording()
             return
         }
+        
         let position: AVCaptureDevice.Position = (activeInput.device.position == .back) ? .front : .back
         
         guard let device = camera(for: position) else {
             return
         }
+        
         captureSession.beginConfiguration()
         captureSession.removeInput(activeInput)
         
         do {
             activeInput = try AVCaptureDeviceInput(device: device)
-            
         } catch {
-            print("error: \(error.localizedDescription)")
+            print("error switchCamera: \(error.localizedDescription)")
             return
         }
         
@@ -125,16 +139,18 @@ class CameraViewController: UIViewController {
                 
             }
         }
+        
+        if hasSwitchedCamera {
+            print("CAPTURING MOVIE")
+            captureMovie(withFlash: self.hasFlash)
+        }
+        
     }
     
     func setupPreview() {
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        // let width = UIScreen.main.bounds.width
-        // let height = width * 1.25
-        
         previewLayer.frame = view.bounds
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-        
         view.layer.addSublayer(previewLayer)
     }
     
@@ -174,17 +190,19 @@ class CameraViewController: UIViewController {
             device.unlockForConfiguration()
             
         } catch {
-            print("error: \(error)")
+            print("error captureMovie: \(error)")
         }
         
-        guard let outUrl = tempURL else { return }
+        guard let outUrl = getTempUrl() else { return }
         
+        guard let connection = movieOutput.connection(with: .video) else { return }
+        connection.isVideoMirrored = activeInput.device.position == .front
         movieOutput.startRecording(to: outUrl, recordingDelegate: self)
     }
     
     public func takePhoto() {
         let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
-//        photoSettings.isHighResolutionPhotoEnabled = true
+        //        photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.flashMode = self.hasFlash ? .on : .off
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
@@ -209,54 +227,176 @@ class CameraViewController: UIViewController {
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         if let error = error {
-            print("error: \(error.localizedDescription)")
+            print("error fileOutput: \(error.localizedDescription)")
         } else {
-            CameraViewModel.shared.videoUrl = outputFileURL
+            let recording = AVURLAsset(url: outputFileURL)
+            recordings.append(recording)
+            
+            if hasSwitchedCamera {
+                switchCamera()
+            } else {
+                if recordings.count == 1 {
+                    CameraViewModel.shared.videoUrl = outputFileURL
+                } else {
+                    mergeVideos { url in
+                        CameraViewModel.shared.videoUrl = url
+                    }
+                }
+                self.recordings = [AVURLAsset]()
+            }
+            
+            hasSwitchedCamera = false
+            
         }
     }
     
-    func cropVideo( _ outputFileUrl: URL, completion: @escaping ( _ newUrl: URL ) -> () )
-    {
-        // Get input clip
-        let videoAsset: AVAsset = AVAsset( url: outputFileUrl )
-        let clipVideoTrack = videoAsset.tracks( withMediaType: AVMediaType.video ).first! as AVAssetTrack
+    func mergeVideos(handler: @escaping (_ url: URL)->()) {
+        // 1 - Create AVMutableComposition object. This object
+        // will hold your AVMutableCompositionTrack instances.
+        let mixComposition = AVMutableComposition()
+        let firstAsset = recordings[0]
+        let secondAsset = recordings[1]
         
-        // Make video to square
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.renderSize = CGSize( width: clipVideoTrack.naturalSize.height, height: clipVideoTrack.naturalSize.height * 1.25 )
-        videoComposition.frameDuration = CMTimeMake( value: 1, timescale: 30 )
+        // 2 - Create two video tracks
+        guard
+            let firstTrack = mixComposition.addMutableTrack(
+                withMediaType: .video,
+                preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+        else { return }
         
-        // Rotate to portrait
-        let transformer = AVMutableVideoCompositionLayerInstruction( assetTrack: clipVideoTrack )
-        let transform1 = CGAffineTransform( translationX: clipVideoTrack.naturalSize.height, y: -( clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height * 1.25 ) / 2 )
-        let transform2 = transform1.rotated(by: .pi/2 )
-        transformer.setTransform( transform2, at: CMTime.zero)
+        do {
+            try firstTrack.insertTimeRange(
+                CMTimeRangeMake(start: .zero, duration: firstAsset.duration),
+                of: firstAsset.tracks(withMediaType: .video)[0],
+                at: .zero)
+        } catch {
+            print("Failed to load first track")
+            return
+        }
         
-        let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: CMTimeMakeWithSeconds( 20, preferredTimescale: 30 ) )
+        guard
+            let secondTrack = mixComposition.addMutableTrack(
+                withMediaType: .video,
+                preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+        else { return }
         
-        instruction.layerInstructions = [transformer]
-        videoComposition.instructions = [instruction]
+        do {
+            try secondTrack.insertTimeRange(
+                CMTimeRangeMake(start: .zero, duration: secondAsset.duration),
+                of: secondAsset.tracks(withMediaType: .video)[0],
+                at: firstAsset.duration)
+        } catch {
+            print("Failed to load second track")
+            return
+        }
         
-        // Export
-        let croppedOutputFileUrl = URL( fileURLWithPath: getOutputPath(NSUUID().uuidString))
-        let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetHighestQuality)!
-        exporter.videoComposition = videoComposition
-        exporter.outputURL = croppedOutputFileUrl
+        // 3 - Composition Instructions
+        let mainInstruction = AVMutableVideoCompositionInstruction()
+        mainInstruction.timeRange = CMTimeRangeMake(
+            start: .zero,
+            duration: CMTimeAdd(firstAsset.duration, secondAsset.duration))
+        
+        // 4 - Set up the instructions — one for each asset
+        let firstInstruction = VideoHelper.videoCompositionInstruction(
+            firstTrack,
+            asset: firstAsset)
+        firstInstruction.setOpacity(0.0, at: firstAsset.duration)
+        let secondInstruction = VideoHelper.videoCompositionInstruction(
+            secondTrack,
+            asset: secondAsset)
+        
+        // 5 - Add all instructions together and create a mutable video composition
+        mainInstruction.layerInstructions = [firstInstruction, secondInstruction]
+        let mainComposition = AVMutableVideoComposition()
+        mainComposition.instructions = [mainInstruction]
+        mainComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
+        mainComposition.renderSize = CGSize(
+            width: UIScreen.main.bounds.width,
+            height: UIScreen.main.bounds.width * 16/9)
+        
+        // 6 - Audio track
+        //            if let loadedAudioAsset = audioAsset {
+        //                let audioTrack = mixComposition.addMutableTrack(
+        //                    withMediaType: .audio,
+        //                    preferredTrackID: 0)
+        //                do {
+        //                    try audioTrack?.insertTimeRange(
+        //                        CMTimeRangeMake(
+        //                            start: CMTime.zero,
+        //                            duration: CMTimeAdd(
+        //                                firstAsset.duration,
+        //                                secondAsset.duration)),
+        //                        of: loadedAudioAsset.tracks(withMediaType: .audio)[0],
+        //                        at: .zero)
+        //                } catch {
+        //                    print("Failed to load Audio track")
+        //                }
+        //            }
+        
+        // 7 - Get path
+        guard
+            let documentDirectory = FileManager.default.urls(
+                for: .documentDirectory,
+                   in: .userDomainMask).first
+        else { return }
+
+        let url = documentDirectory.appendingPathComponent("mergeVideo-\(UUID().uuidString).mov")
+        
+        // 8 - Create Exporter
+        guard let exporter = AVAssetExportSession(
+            asset: mixComposition,
+            presetName: AVAssetExportPresetHighestQuality)
+        else { return }
+        exporter.outputURL = url
         exporter.outputFileType = AVFileType.mov
+        exporter.shouldOptimizeForNetworkUse = true
+        exporter.videoComposition = mainComposition
         
-        exporter.exportAsynchronously( completionHandler: { () -> Void in
-            DispatchQueue.main.async(execute: {
-                completion( croppedOutputFileUrl )
-            })
-        })
+        // 9 - Perform the Export
+        exporter.exportAsynchronously {
+            DispatchQueue.main.async {
+                handler(exporter.outputURL!)
+            }
+        }
     }
     
-    func getOutputPath( _ name: String ) -> String
-    {
-        let documentPath = NSSearchPathForDirectoriesInDomains(      .documentDirectory, .userDomainMask, true )[ 0 ] as NSString
-        let outputPath = "\(documentPath)/\(name).mov"
-        return outputPath
+    func mergeVideos(handler: @escaping (_ asset: AVAssetExportSession)->()) {
+        let videoComposition = AVMutableComposition()
+        var lastTime: CMTime = .zero
+        
+        guard let videoCompositionTrack = videoComposition.addMutableTrack(withMediaType: .video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
+        guard let audioCompositionTrack = videoComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
+        
+        
+        for video in self.recordings {
+            
+            //add audio/video
+            do {
+                try videoCompositionTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: video.duration), of: video.tracks(withMediaType: .video)[0], at: lastTime)
+                try audioCompositionTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: video.duration), of: video.tracks(withMediaType: .audio)[0], at: lastTime)
+                
+            } catch {
+                print("Failed to insert audio or video track")
+                return
+            }
+            
+            //update time
+            lastTime = CMTimeAdd(lastTime, video.duration)
+        }
+        
+        //create url
+        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let url = documentDirectory.appendingPathComponent("mergeVideo-\(UUID().uuidString).mov")
+        
+        videoCompositionTrack.preferredTransform = CGAffineTransform(rotationAngle: .pi/2)
+        
+        //export
+        guard let exporter = AVAssetExportSession(asset: videoComposition, presetName: AVAssetExportPresetHighestQuality) else { return }
+        exporter.outputURL = url
+        exporter.outputFileType = AVFileType.mp4
+        exporter.shouldOptimizeForNetworkUse = true
+        
+        handler(exporter)
     }
 }
 
@@ -269,3 +409,4 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         }
     }
 }
+

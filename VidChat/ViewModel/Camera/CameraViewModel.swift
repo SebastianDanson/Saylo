@@ -20,10 +20,13 @@ class CameraViewModel: ObservableObject {
     @Published var showCamera = false
     @Published var cameraView = CameraMainView()
     @Published var hasSentWithoutCrop = false
+    @Published var isPlaying = false
     
     static let shared = CameraViewModel()
     
-    private init() {}
+    private init() {
+        cameraView.setupSession()
+    }
     
     func removeVideo() {
         videoUrl = nil

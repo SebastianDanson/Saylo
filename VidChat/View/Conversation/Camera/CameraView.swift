@@ -39,6 +39,12 @@ struct CameraView: UIViewControllerRepresentable {
     public func takephoto() {
         cameraViewController.takePhoto()
     }
+    
+    public func setupSession() {
+        cameraViewController.setupSession()
+        cameraViewController.setupPreview()
+        cameraViewController.startSession()
+    }
 }
 
 

@@ -17,6 +17,12 @@ class AudioRecorder: NSObject,ObservableObject {
     let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
     
     var audioRecorder: AVAudioRecorder!
+    @Published var audioPlayer = AudioPlayer()
+    @Published var isPlaying = false {
+        didSet {
+            print(isPlaying, "ISPLAYING2")
+        }
+    }
     
     var audioUrl: URL!
     
@@ -50,7 +56,7 @@ class AudioRecorder: NSObject,ObservableObject {
             
             audioRecorder = try AVAudioRecorder(url: audioUrl, settings: settings)
             audioRecorder.record()
-
+            
             recording = true
         } catch {
             print("Could not start recording")
@@ -60,9 +66,30 @@ class AudioRecorder: NSObject,ObservableObject {
     func stopRecording() {
         audioRecorder.stop()
         recording = false
+        
+        audioPlayer.startPlayback(audio: audioUrl)
+        print("STOPPING RECORDING")
     }
     
     func sendRecording() {
-        ConversationViewModel.shared.addMessage(url: audioUrl, text: nil, type: .Audio)
+        withAnimation(.easeInOut(duration: 0.2)) {
+            ConversationViewModel.shared.addMessage(url: audioUrl, text: nil, type: .Audio)
+        }
+    }
+    
+    func playRecording() {
+        print("PLAYING")
+        isPlaying = true
+        audioPlayer.resume()
+    }
+    
+    func pauseRecording() {
+        print("PAUSED")
+        audioPlayer.pause()
+        isPlaying = false
+    }
+    
+    func stopPlayback() {
+        audioPlayer.stopPlayback()
     }
 }

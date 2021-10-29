@@ -26,9 +26,9 @@ struct AudioCell: View {
                     .font(.system(size: 14, weight: .semibold))
                 Button {
                     if !audioPlayer.isPlaying {
-                        self.audioPlayer.startPlayback(audio: self.audioURL)
+                        audioPlayer.hasFinished ? audioPlayer.startPlayback(audio: self.audioURL) : audioPlayer.resume()
                     } else {
-                        self.audioPlayer.stopPlayback()
+                        audioPlayer.pause()
                     }
                 } label: {
                     Image(systemName: audioPlayer.isPlaying ?

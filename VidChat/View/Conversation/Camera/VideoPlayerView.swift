@@ -44,7 +44,6 @@ struct VideoPlayerView: View {
     var body: some View {
         ZStack {
             PlayerView(player: $player)
-                .scaleEffect(x: -1, y: 1, anchor: .center)
                 .frame(width: width, height: height)
                 .overlay(
                     HStack {

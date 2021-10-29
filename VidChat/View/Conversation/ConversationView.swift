@@ -12,10 +12,11 @@ import Kingfisher
 
 struct ConversationView: View {
     
+    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+
     @ObservedObject var cameraViewModel = CameraViewModel.shared
     @ObservedObject var viewModel = ConversationViewModel.shared
-    @ObservedObject var audioRecorder: AudioRecorder
-    
+
     @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
     @State private var canScroll = true
@@ -29,12 +30,11 @@ struct ConversationView: View {
     private let width = UIScreen.main.bounds.width
     private let cameraHeight = UIScreen.main.bounds.width * 1.25
     private let screenHeight = UIScreen.main.bounds.height
-    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     private let photoPickerBaseHeight = UIScreen.main.bounds.width/4*3 + 20
     
     var body: some View {
         
-        VStack() {
+        VStack {
             
             ZStack {
                 
@@ -47,13 +47,15 @@ struct ConversationView: View {
                     ScrollViewReader { reader in
                         
                         LazyVStack(spacing: 12) {
-                            Rectangle().frame(height: 100).foregroundColor(.white).offset(x: 0, y: dragOffset.height - 8)
                             
                             ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
+                                
                                 withAnimation {
                                     MessageCell(message: viewModel.messages[i])
                                         .transition(.move(edge: .bottom))
                                         .offset(x: 0, y: dragOffset.height - 8)
+                                        .padding(.bottom, i == viewModel.messages.count - 1 && !isTyping ? 60 + bottomPadding : 0)
+                                        .padding(.top, i == 0 ? 60 : 0)
                                         .simultaneousGesture(
                                             viewModel.messages[i].type == .Video ?
                                             DragGesture(minimumDistance: 0, coordinateSpace: .local)
@@ -68,14 +70,6 @@ struct ConversationView: View {
                                         )
                                 }
                             }
-                            
-                            if !isTyping {
-                                Rectangle().frame(height: 100).foregroundColor(.white)
-                                    .offset(x: 0, y: dragOffset.height - 8)
-                                    .transition(.slide)
-                            }
-                            
-                            
                         }.flippedUpsideDown()
                     }
                 }
@@ -88,6 +82,7 @@ struct ConversationView: View {
                         .transition(.move(edge: .bottom))
                 }
             }
+
             
             if isShowingPhotos{
                 PhotoPickerView(baseHeight: photoPickerBaseHeight, height: $photosPickerHeight, isShowingPhotos: $isShowingPhotos)
@@ -136,7 +131,7 @@ struct ConversationView: View {
                     }
                     .padding(.bottom, 9)
                     .padding(.trailing, 10)
-                }.transition(.move(edge: .bottom))
+                }
             }
         }
         .overlay(
@@ -151,7 +146,7 @@ struct ConversationView: View {
                         Spacer()
                         
                         if !isShowingPhotos {
-                            OptionsView(audioRecorder: audioRecorder, isTyping: $isTyping, isRecordingAudio: $isRecordingAudio, isShowingPhotos: $isShowingPhotos)
+                            OptionsView(isTyping: $isTyping, isRecordingAudio: $isRecordingAudio, isShowingPhotos: $isShowingPhotos)
                                 .transition(.opacity)
                         }
                     }
@@ -159,7 +154,7 @@ struct ConversationView: View {
                 }
             }
             ,alignment: .bottom)
-        .edgesIgnoringSafeArea(isShowingPhotos ? .all : .top)
+        .edgesIgnoringSafeArea(isTyping ? .top : .all)
     }
     
     func handleOnDragEnd(translation: CGSize, index i: Int, reader: ScrollViewProxy) {
@@ -221,16 +216,17 @@ struct ConversationView: View {
 
 struct OptionsView: View {
     
+    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+
     @ObservedObject var cameraViewModel = CameraViewModel.shared
-    @ObservedObject var audioRecorder: AudioRecorder
     
     @Binding var isTyping: Bool
     @Binding var isRecordingAudio: Bool
     @Binding var isShowingPhotos: Bool
     
+    @State var audioRecorder = AudioRecorder()
     @State var audioProgress = 0.0
     @State var showAudio = false
-    @State var isPlayingAudio = false
     
     var body: some View {
         
@@ -249,7 +245,7 @@ struct OptionsView: View {
                             }
                         }, label: {
                             ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
-                        })
+                        }).transition(.scale)
                     }
                     
                     if !showAudio {
@@ -260,7 +256,7 @@ struct OptionsView: View {
                             }
                         }, label: {
                             ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
-                        })
+                        }).transition(.scale)
                     }
                 }
                 
@@ -272,7 +268,7 @@ struct OptionsView: View {
                         }
                     }, label: {
                         CameraCircle().padding(.horizontal, 10)
-                    })
+                    }).transition(.scale)
                 }
                 
                 if !cameraViewModel.showCamera {
@@ -283,18 +279,27 @@ struct OptionsView: View {
                             if !showAudio {
                                 audioProgress = 1.0
                                 isRecordingAudio = true
+                                audioRecorder.startRecording()
                             } else {
                                 audioProgress = 0.0
+                                
+                                if !isRecordingAudio {
+                                    print(audioRecorder.isPlaying, "ISPLAYING")
+                                    audioRecorder.audioPlayer.isPlaying ?
+                                    audioRecorder.pauseRecording() : audioRecorder.playRecording()
+                                } else {
+                                    audioRecorder.stopRecording()
+                                }
+                                
                                 isRecordingAudio = false
-                                isPlayingAudio.toggle()
                             }
                             showAudio = true
                         }
-                        audioRecorder.recording ? audioRecorder.stopRecording() : audioRecorder.startRecording()
                     }, label: {
                         ActionView(image: Image(systemName: isRecordingAudio || !showAudio ? "mic.fill" :
-                                                    isPlayingAudio ? "pause.circle.fill" : "play.circle.fill"),
-                                   imageDimension: 27, isActive: $isRecordingAudio)
+                                                    cameraViewModel.isPlaying ?
+                                                "pause.circle.fill" : "play.circle.fill"),
+                                   imageDimension: isRecordingAudio || !showAudio ? 27 : 60, isActive: $showAudio)
                             .foregroundColor(showAudio ? Color.mainBlue : Color(.systemGray))
                             .overlay(
                                 ZStack {
@@ -320,15 +325,16 @@ struct OptionsView: View {
                             }
                         }, label: {
                             ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
-                        })
+                        }).transition(.scale)
                     }
                     
                 }
             }
         }
-        .frame(height: 70)
+        .frame(width: UIScreen.main.bounds.width, height: 70)
         .clipShape(Capsule())
-        .padding(.bottom, cameraViewModel.showCamera ? 50 : -2)
+        .padding(.bottom, cameraViewModel.showCamera ? 50 + bottomPadding : bottomPadding)
+        .overlay(AudioOptions(isRecordingAudio: $isRecordingAudio, showAudio: $showAudio, audioRecorder: $audioRecorder))
     }
 }
 
@@ -424,6 +430,54 @@ struct ActionView: View {
 }
 
 
+struct AudioOptions: View {
+    
+    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+
+    @Binding var isRecordingAudio: Bool
+    @Binding var showAudio: Bool
+    @Binding var audioRecorder: AudioRecorder
+
+    var body: some View {
+        HStack{
+            
+            if !isRecordingAudio && showAudio {
+                
+                Button {
+                    audioRecorder.stopPlayback()
+                    withAnimation {
+                        showAudio = false
+                    }
+                } label: {
+                    Image(systemName: "x.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 44, height: 44)
+                        .foregroundColor(Color(.systemGray))
+                        .padding(32)
+                }.transition(.move(edge: .leading))
+                
+                Spacer()
+                
+                Button {
+                    audioRecorder.sendRecording()
+                    audioRecorder.stopPlayback()
+                    withAnimation {
+                        showAudio = false
+                    }
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 44, height: 44)
+                        .foregroundColor(Color.mainBlue)
+                        .padding(32)
+                }.transition(.move(edge: .trailing))
+            }
+        }.padding(.bottom, bottomPadding)
+    }
+}
+
 private struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGPoint = .zero
     
@@ -462,3 +516,5 @@ struct ScrollView<Content: View>: View {
         .onPreferenceChange(ScrollOffsetPreferenceKey.self, perform: offsetChanged)
     }
 }
+
+

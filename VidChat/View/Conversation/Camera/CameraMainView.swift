@@ -51,7 +51,7 @@ struct CameraMainView: View {
             
         }
         .ignoresSafeArea()
-        .background(Color.clear)
+        .background(Color(white: 0, opacity: 1))
     }
     
     func startRecording() {
@@ -64,6 +64,11 @@ struct CameraMainView: View {
     
     func takePhoto() {
         cameraView.takephoto()
+    }
+    
+    func setupSession() {
+        print("SETTING UP SESSION")
+        cameraView.setupSession()
     }
 }
 

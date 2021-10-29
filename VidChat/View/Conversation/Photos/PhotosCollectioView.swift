@@ -61,7 +61,7 @@ class PhotosCollectioView: UIView {
     }()
     
     private let dragView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.setDimensions(height: 20, width: UIScreen.main.bounds.width)
         view.backgroundColor = .systemGray6
         
@@ -129,9 +129,21 @@ class PhotosCollectioView: UIView {
     @objc func sendImages() {
         for asset in selectedAssets {
             
+            if asset.mediaType == .image {
             imageManager.requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: requestOptions) { (image, metadata) in
                 let type: MessageType = asset.mediaType == .image ? .Photo : .Video
-                ConversationViewModel.shared.addMessage(image: image, type: type)
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    ConversationViewModel.shared.addMessage(image: image, type: type)
+                }
+            }
+            } else {
+                imageManager.requestAVAsset(forVideo: asset, options: nil) { asset, mix, _  in
+                    guard let asset = asset as? AVURLAsset else { return }
+                    
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        ConversationViewModel.shared.addMessage(url: asset.url, type: .Video)
+                    }
+                }
             }
         }
         delegate?.hidePhotoPicker()

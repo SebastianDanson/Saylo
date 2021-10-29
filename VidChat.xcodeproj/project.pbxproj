@@ -88,6 +88,7 @@
 		3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7BA2721C41300DF43C6 /* AGEERROR.swift */; };
 		3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7BC2721C43D00DF43C6 /* KeyCenter.swift */; };
 		3FF944042727052200E3C05D /* ringtone.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3FF944032727052200E3C05D /* ringtone.wav */; };
+		3FFD034B272CAE6A000BEADE /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FFD034A272CAE6A000BEADE /* VideoHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -164,6 +165,7 @@
 		3FDEE7BA2721C41300DF43C6 /* AGEERROR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AGEERROR.swift; sourceTree = "<group>"; };
 		3FDEE7BC2721C43D00DF43C6 /* KeyCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCenter.swift; sourceTree = "<group>"; };
 		3FF944032727052200E3C05D /* ringtone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone.wav; path = ../../../../../ringtone.wav; sourceTree = "<group>"; };
+		3FFD034A272CAE6A000BEADE /* VideoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 				3F08F27527017A5A009E0029 /* CameraMainView.swift */,
 				3F08F27327017A3D009E0029 /* CameraViewController.swift */,
 				3F08F27727017D9C009E0029 /* VideoPlayerView.swift */,
+				3FFD034A272CAE6A000BEADE /* VideoHelper.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -671,6 +674,7 @@
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,
 				3F112B7E27207AFE00BA2A73 /* VideoCollectionViewCell.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,
+				3FFD034B272CAE6A000BEADE /* VideoHelper.swift in Sources */,
 				3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
