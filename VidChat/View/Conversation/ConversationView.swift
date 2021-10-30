@@ -14,17 +14,14 @@ struct ConversationView: View {
     
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
 
-    @ObservedObject var cameraViewModel = CameraViewModel.shared
-    @ObservedObject var viewModel = ConversationViewModel.shared
+    @StateObject var cameraViewModel = CameraViewModel.shared
+    @StateObject var viewModel = ConversationViewModel.shared
 
     @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
     @State private var canScroll = true
     @State private var text = ""
-    @State private var isTyping = false
-    @State private var isRecordingAudio = false
     @State private var hasScrolledToVideo = false
-    @State private var isShowingPhotos = false
     @State private var photosPickerHeight = UIScreen.main.bounds.width/4*3 + 20
     
     private let width = UIScreen.main.bounds.width
@@ -54,7 +51,7 @@ struct ConversationView: View {
                                     MessageCell(message: viewModel.messages[i])
                                         .transition(.move(edge: .bottom))
                                         .offset(x: 0, y: dragOffset.height - 8)
-                                        .padding(.bottom, i == viewModel.messages.count - 1 && !isTyping ? 60 + bottomPadding : 0)
+                                        .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + bottomPadding : 0)
                                         .padding(.top, i == 0 ? 60 : 0)
                                         .simultaneousGesture(
                                             viewModel.messages[i].type == .Video ?
@@ -77,20 +74,20 @@ struct ConversationView: View {
                 
                 
                 //Camera
-                if CameraViewModel.shared.showCamera {
+                if viewModel.showCamera {
                     CameraViewModel.shared.cameraView
                         .transition(.move(edge: .bottom))
                 }
             }
 
             
-            if isShowingPhotos{
-                PhotoPickerView(baseHeight: photoPickerBaseHeight, height: $photosPickerHeight, isShowingPhotos: $isShowingPhotos)
+            if viewModel.showPhotos {
+                PhotoPickerView(baseHeight: photoPickerBaseHeight, height: $photosPickerHeight)
                     .frame(width: width, height: photosPickerHeight)
                     .transition(.move(edge: .bottom))
             }
             
-            if isTyping {
+            if viewModel.showKeyboard {
                 HStack(alignment: .bottom) {
                     HStack(alignment: .top, spacing: 10) {
                         Image(systemName: "house")
@@ -104,7 +101,7 @@ struct ConversationView: View {
                             Text("Sebastian")
                                 .font(.system(size: 14, weight: .semibold))
                             MultilineTextField(text: $text) {
-                                isTyping = false
+                                viewModel.showKeyboard = false
                             }
                         }
                         Spacer()
@@ -113,7 +110,7 @@ struct ConversationView: View {
                     Button {
                         if !text.isEmpty {
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                ConversationViewModel.shared.addMessage(text: text, type: .Text)
+                                viewModel.addMessage(text: text, type: .Text)
                                 text = ""
                             }
                         }
@@ -136,17 +133,17 @@ struct ConversationView: View {
         }
         .overlay(
             ZStack {
-                if !isTyping {
+                if !viewModel.showKeyboard {
                     VStack {
                         
-                        if !cameraViewModel.showCamera {
+                        if !viewModel.showCamera {
                             ChatOptions()
                         }
                         
                         Spacer()
                         
-                        if !isShowingPhotos {
-                            OptionsView(isTyping: $isTyping, isRecordingAudio: $isRecordingAudio, isShowingPhotos: $isShowingPhotos)
+                        if !viewModel.showPhotos {
+                            OptionsView()
                                 .transition(.opacity)
                         }
                     }
@@ -154,7 +151,7 @@ struct ConversationView: View {
                 }
             }
             ,alignment: .bottom)
-        .edgesIgnoringSafeArea(isTyping ? .top : .all)
+        .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
     
     func handleOnDragEnd(translation: CGSize, index i: Int, reader: ScrollViewProxy) {
@@ -218,15 +215,12 @@ struct OptionsView: View {
     
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
 
-    @ObservedObject var cameraViewModel = CameraViewModel.shared
-    
-    @Binding var isTyping: Bool
-    @Binding var isRecordingAudio: Bool
-    @Binding var isShowingPhotos: Bool
+    @StateObject var cameraViewModel = CameraViewModel.shared
+    @StateObject var viewModel = ConversationViewModel.shared
     
     @State var audioRecorder = AudioRecorder()
     @State var audioProgress = 0.0
-    @State var showAudio = false
+    @State var isRecordingAudio = false
     
     var body: some View {
         
@@ -234,25 +228,25 @@ struct OptionsView: View {
             
             if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
                 
-                if !cameraViewModel.showCamera {
+                if !viewModel.showCamera {
                     
-                    if !showAudio {
+                    if !isRecordingAudio {
                         //Camera button
                         Button(action: {
                             withAnimation(.linear(duration: 0.15)) {
                                 cameraViewModel.isTakingPhoto = true
-                                cameraViewModel.showCamera = true
+                                viewModel.showCamera = true
                             }
                         }, label: {
                             ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
                         }).transition(.scale)
                     }
                     
-                    if !showAudio {
+                    if !isRecordingAudio {
                         //Photos button
                         Button(action: {
                             withAnimation(.linear(duration: 0.15)) {
-                                isShowingPhotos = true
+                                viewModel.showPhotos = true
                             }
                         }, label: {
                             ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
@@ -260,30 +254,31 @@ struct OptionsView: View {
                     }
                 }
                 
-                if !showAudio {
+                if !isRecordingAudio {
                     //Video record circle
                     Button(action: {
                         withAnimation {
                             cameraViewModel.handleTap()
+                            viewModel.showCamera = true
                         }
                     }, label: {
                         CameraCircle().padding(.horizontal, 10)
                     }).transition(.scale)
                 }
                 
-                if !cameraViewModel.showCamera {
+                if !viewModel.showCamera {
                     
                     //Mic button
                     Button(action: {
                         withAnimation {
-                            if !showAudio {
+                            if !isRecordingAudio {
                                 audioProgress = 1.0
-                                isRecordingAudio = true
+                                viewModel.showAudio = true
                                 audioRecorder.startRecording()
                             } else {
                                 audioProgress = 0.0
                                 
-                                if !isRecordingAudio {
+                                if !viewModel.showAudio {
                                     print(audioRecorder.isPlaying, "ISPLAYING")
                                     audioRecorder.audioPlayer.isPlaying ?
                                     audioRecorder.pauseRecording() : audioRecorder.playRecording()
@@ -291,16 +286,16 @@ struct OptionsView: View {
                                     audioRecorder.stopRecording()
                                 }
                                 
-                                isRecordingAudio = false
+                                viewModel.showAudio = false
                             }
-                            showAudio = true
+                            isRecordingAudio = true
                         }
                     }, label: {
-                        ActionView(image: Image(systemName: isRecordingAudio || !showAudio ? "mic.fill" :
+                        ActionView(image: Image(systemName: viewModel.showAudio || !isRecordingAudio ? "mic.fill" :
                                                     cameraViewModel.isPlaying ?
                                                 "pause.circle.fill" : "play.circle.fill"),
-                                   imageDimension: isRecordingAudio || !showAudio ? 27 : 60, isActive: $showAudio)
-                            .foregroundColor(showAudio ? Color.mainBlue : Color(.systemGray))
+                                   imageDimension: viewModel.showAudio || !isRecordingAudio ? 27 : 60, isActive: $isRecordingAudio)
+                            .foregroundColor(isRecordingAudio ? Color.mainBlue : Color(.systemGray))
                             .overlay(
                                 ZStack {
                                     // if isRecordingAudio {
@@ -317,11 +312,11 @@ struct OptionsView: View {
                             )
                     })
                     
-                    if !showAudio {
+                    if !isRecordingAudio {
                         //Aa button
                         Button(action: {
                             withAnimation {
-                                isTyping = true
+                                viewModel.showKeyboard = true
                             }
                         }, label: {
                             ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
@@ -333,8 +328,8 @@ struct OptionsView: View {
         }
         .frame(width: UIScreen.main.bounds.width, height: 70)
         .clipShape(Capsule())
-        .padding(.bottom, cameraViewModel.showCamera ? 50 + bottomPadding : bottomPadding)
-        .overlay(AudioOptions(isRecordingAudio: $isRecordingAudio, showAudio: $showAudio, audioRecorder: $audioRecorder))
+        .padding(.bottom, viewModel.showCamera ? 50 + bottomPadding : bottomPadding)
+        .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
     }
 }
 
@@ -433,20 +428,20 @@ struct ActionView: View {
 struct AudioOptions: View {
     
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-
-    @Binding var isRecordingAudio: Bool
-    @Binding var showAudio: Bool
+    @StateObject var viewModel = ConversationViewModel.shared
+    
     @Binding var audioRecorder: AudioRecorder
+    @Binding var isRecordingAudio: Bool
 
     var body: some View {
         HStack{
             
-            if !isRecordingAudio && showAudio {
+            if !viewModel.showAudio && isRecordingAudio {
                 
                 Button {
                     audioRecorder.stopPlayback()
                     withAnimation {
-                        showAudio = false
+                        isRecordingAudio = false
                     }
                 } label: {
                     Image(systemName: "x.circle.fill")
@@ -463,7 +458,7 @@ struct AudioOptions: View {
                     audioRecorder.sendRecording()
                     audioRecorder.stopPlayback()
                     withAnimation {
-                        showAudio = false
+                        isRecordingAudio = false
                     }
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")

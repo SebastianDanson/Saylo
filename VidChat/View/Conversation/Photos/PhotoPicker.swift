@@ -16,7 +16,6 @@ struct PhotoPickerView: UIViewRepresentable {
     var photosCollectioView = PhotosCollectioView()
     let baseHeight: CGFloat
     @Binding var height: CGFloat
-    @Binding var isShowingPhotos: Bool
     
     func makeUIView(context: Context) -> PhotosCollectioView {
         photosCollectioView.delegate = context.coordinator
@@ -40,7 +39,7 @@ struct PhotoPickerView: UIViewRepresentable {
         
         func hidePhotoPicker() {
             withAnimation(.linear(duration: 0.1)) {
-                self.parent.isShowingPhotos = false
+                ConversationViewModel.shared.showPhotos = false
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

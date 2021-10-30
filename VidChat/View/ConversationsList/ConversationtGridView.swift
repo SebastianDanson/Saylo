@@ -26,10 +26,11 @@ struct ConversationGridView: View {
     let image2 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1"
     let image3 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Slice%20102.png?alt=media&token=8f470a6e-738b-4724-8fe9-ada2305d48ef"
     
-    private let items = [GridItem(), GridItem()]
+    private let items = [GridItem(), GridItem(), GridItem()]
     private var users: [TestUser]
     @State private var showCamera = false
     //  @ObservedObject var viewModel: PostGridViewModel
+    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     
     init() {
         let appearance = UINavigationBarAppearance()
@@ -49,106 +50,98 @@ struct ConversationGridView: View {
         UINavigationBar.appearance().compactAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
         
-        self.users =  [TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .received),
-                       TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sent),
-                       TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-                       TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
-                       TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sentOpened),
-                       TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-                       TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened),
-                       TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-                       TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-                       TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
-                       TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-                       TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook")]
+        self.users =  [
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .received),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sent),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sentOpened),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook")
+        ]
     }
     
     
     var body: some View {
-        if showCamera {
-            CameraMainView()
-                .transition(.scale)
-        } else {
-            
-            NavigationView {
+        
+        NavigationView {
+            ZStack {
                 ScrollView(showsIndicators: false) {
                     VStack {
-                        LazyVGrid(columns: items, spacing: 24, content: {
+                        LazyVGrid(columns: items, spacing: 14, content: {
                             ForEach(self.users, id: \.id) { user in
                                 ConversationGridCell(user: user)
                                     .flippedUpsideDown()
+                                    .onTapGesture {  }
                                     .onLongPressGesture {
                                         withAnimation {
                                             self.showCamera.toggle()
                                         }
                                     }
                             }
-                            
                         })
-                        .padding(16)
+                            .padding(.horizontal, 12)
                         
-                    }.padding(.top, 40)
+                    }.padding(.top, bottomPadding + 72)
                 }
                 .flippedUpsideDown()
                 .navigationBarTitle("Conversations", displayMode: .inline)
                 .ignoresSafeArea()
-               // .overlay(
-//                    Button(action: {
-//                        withAnimation {
-//                            self.showCamera.toggle()
-//                        }
-//                    }, label: {
-//                        ShowCameraView()
-//                    })
-//                    .padding(.bottom, 26)
-//                    .padding(.trailing, 12)
-//                    , alignment: .bottomTrailing)
-                .zIndex(1)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        HStack(spacing: 12) {
-                          //  Button(action: {}, label: {
-                                KFImage(URL(string: image1))
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 32, height: 32)
-                                    .clipShape(Circle())
-                            //})
-                            
-//                            Button(action: {}, label: {
-//                                Image(systemName: "magnifyingglass.circle.fill")
-//                                    .resizable()
-//                                    .frame(width: 32, height: 32)
-//                                    .scaledToFill()
-//                                    .background(
-//                                        Circle()
-//                                            .foregroundColor(Color.init(UIColor.systemGray.cgColor))
-//                                            .frame(width: 30, height: 30)
-//
-//                                    )
-//                                    .foregroundColor(Color.init(UIColor.systemGray5.cgColor))
-//                            })
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        VStack {
-                            Circle()
-                                .frame(width: 32, height: 32)
-                                .foregroundColor(.mainBlue)
-                                .overlay(
-                                    Image(systemName: "person.fill.badge.plus")
-                                        .resizable()
-                                        .frame(width: 18, height: 18)
-                                        .scaledToFit()
-                                        .foregroundColor(.white)
-                                        .padding(.trailing, 2)
-                                )
-              
-                        }
-                    }
+                
+                VStack {
+                    Spacer()
+                    OptionsView()
                 }
             }
+            .zIndex(1)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack(spacing: 8) {
+                        Button(action: {}, label: {
+                            KFImage(URL(string: image1))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 32, height: 32)
+                                .clipShape(Circle())
+                        })
+                        
+                        Button(action: {}, label: {
+                            Image(systemName: "magnifyingglass.circle.fill")
+                                .resizable()
+                                .frame(width: 32, height: 32)
+                                .scaledToFill()
+                                .background(
+                                    Circle()
+                                        .foregroundColor(Color.init(UIColor.systemGray.cgColor))
+                                        .frame(width: 30, height: 30)
+                                    
+                                )
+                                .foregroundColor(Color.init(UIColor.systemGray5.cgColor))
+                        })
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    VStack {
+                        Circle()
+                            .frame(width: 32, height: 32)
+                            .foregroundColor(.mainBlue)
+                            .overlay(
+                                Image(systemName: "person.fill.badge.plus")
+                                    .resizable()
+                                    .frame(width: 18, height: 18)
+                                    .scaledToFit()
+                                    .foregroundColor(.white)
+                                    .padding(.trailing, 2)
+                            )
+                    }
+                }
+            }.ignoresSafeArea()
         }
     }
 }
@@ -166,11 +159,11 @@ extension View{
     }
 }
 
-//struct ChatView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ChatGridView()
-//    }
-//}
+struct ConversationGridView_Previews: PreviewProvider {
+    static var previews: some View {
+        ConversationGridView()
+    }
+}
 
 struct ShowCameraView: View {
     var body: some View {
@@ -187,3 +180,4 @@ struct ShowCameraView: View {
         }
     }
 }
+

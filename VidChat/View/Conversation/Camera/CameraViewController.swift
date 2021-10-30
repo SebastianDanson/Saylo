@@ -254,59 +254,45 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         // 1 - Create AVMutableComposition object. This object
         // will hold your AVMutableCompositionTrack instances.
         let mixComposition = AVMutableComposition()
-        let firstAsset = recordings[0]
-        let secondAsset = recordings[1]
+        let mainInstruction = AVMutableVideoCompositionInstruction()
+        var lastTime: CMTime = .zero
+        var instructions = [AVMutableVideoCompositionLayerInstruction]()
         
-        // 2 - Create two video tracks
-        guard
-            let firstTrack = mixComposition.addMutableTrack(
-                withMediaType: .video,
-                preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
-        else { return }
-        
-        do {
-            try firstTrack.insertTimeRange(
-                CMTimeRangeMake(start: .zero, duration: firstAsset.duration),
-                of: firstAsset.tracks(withMediaType: .video)[0],
-                at: .zero)
-        } catch {
-            print("Failed to load first track")
-            return
+        for recording in recordings {
+            guard
+                let track = mixComposition.addMutableTrack(
+                    withMediaType: .video,
+                    preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
+            else { return }
+            
+            do {
+                try track.insertTimeRange(
+                    CMTimeRangeMake(start: .zero, duration: recording.duration),
+                    of: recording.tracks(withMediaType: .video)[0],
+                    at: lastTime)
+            } catch {
+                print("Failed to load first track")
+                return
+            }
+            
+            let instruction = VideoHelper.videoCompositionInstruction(
+                track,
+                asset: recording)
+            
+            lastTime = CMTimeAdd(lastTime, recording.duration)
+            instruction.setOpacity(0.0, at: lastTime)
+            instructions.append(instruction)
         }
         
-        guard
-            let secondTrack = mixComposition.addMutableTrack(
-                withMediaType: .video,
-                preferredTrackID: Int32(kCMPersistentTrackID_Invalid))
-        else { return }
-        
-        do {
-            try secondTrack.insertTimeRange(
-                CMTimeRangeMake(start: .zero, duration: secondAsset.duration),
-                of: secondAsset.tracks(withMediaType: .video)[0],
-                at: firstAsset.duration)
-        } catch {
-            print("Failed to load second track")
-            return
-        }
         
         // 3 - Composition Instructions
-        let mainInstruction = AVMutableVideoCompositionInstruction()
         mainInstruction.timeRange = CMTimeRangeMake(
             start: .zero,
-            duration: CMTimeAdd(firstAsset.duration, secondAsset.duration))
+            duration: lastTime)
         
-        // 4 - Set up the instructions — one for each asset
-        let firstInstruction = VideoHelper.videoCompositionInstruction(
-            firstTrack,
-            asset: firstAsset)
-        firstInstruction.setOpacity(0.0, at: firstAsset.duration)
-        let secondInstruction = VideoHelper.videoCompositionInstruction(
-            secondTrack,
-            asset: secondAsset)
         
         // 5 - Add all instructions together and create a mutable video composition
-        mainInstruction.layerInstructions = [firstInstruction, secondInstruction]
+        mainInstruction.layerInstructions = instructions
         let mainComposition = AVMutableVideoComposition()
         mainComposition.instructions = [mainInstruction]
         mainComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
@@ -339,7 +325,7 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
                 for: .documentDirectory,
                    in: .userDomainMask).first
         else { return }
-
+        
         let url = documentDirectory.appendingPathComponent("mergeVideo-\(UUID().uuidString).mov")
         
         // 8 - Create Exporter
@@ -358,45 +344,6 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
                 handler(exporter.outputURL!)
             }
         }
-    }
-    
-    func mergeVideos(handler: @escaping (_ asset: AVAssetExportSession)->()) {
-        let videoComposition = AVMutableComposition()
-        var lastTime: CMTime = .zero
-        
-        guard let videoCompositionTrack = videoComposition.addMutableTrack(withMediaType: .video, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
-        guard let audioCompositionTrack = videoComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) else { return }
-        
-        
-        for video in self.recordings {
-            
-            //add audio/video
-            do {
-                try videoCompositionTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: video.duration), of: video.tracks(withMediaType: .video)[0], at: lastTime)
-                try audioCompositionTrack.insertTimeRange(CMTimeRangeMake(start: .zero, duration: video.duration), of: video.tracks(withMediaType: .audio)[0], at: lastTime)
-                
-            } catch {
-                print("Failed to insert audio or video track")
-                return
-            }
-            
-            //update time
-            lastTime = CMTimeAdd(lastTime, video.duration)
-        }
-        
-        //create url
-        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
-        let url = documentDirectory.appendingPathComponent("mergeVideo-\(UUID().uuidString).mov")
-        
-        videoCompositionTrack.preferredTransform = CGAffineTransform(rotationAngle: .pi/2)
-        
-        //export
-        guard let exporter = AVAssetExportSession(asset: videoComposition, presetName: AVAssetExportPresetHighestQuality) else { return }
-        exporter.outputURL = url
-        exporter.outputFileType = AVFileType.mp4
-        exporter.shouldOptimizeForNetworkUse = true
-        
-        handler(exporter)
     }
 }
 

@@ -11,38 +11,26 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     let user: TestUser
-    let width = UIScreen.main.bounds.width/2.68
-    
+    let width = UIScreen.main.bounds.width/4.2
+    let textColor = Color(red: 136/255, green: 137/255, blue: 141/255)
+
     var body: some View {
         //  user.conversationStatus == .none ? -20 : -50
         VStack(alignment: .center,
-               spacing: 8) {
+               spacing: 6) {
             
             KFImage(URL(string: user.image))
                 .resizable()
                 .scaledToFill()
+                .background(Color(.systemGray))
                 .frame(width: width, height: width)
                 .cornerRadius(width/2)
                 .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
             
             
-            
-            HStack(spacing: 8) {
-                switch user.conversationStatus {
-                case .sent:
-                    ConversationStatusView(image: "sent",
-                                           conversationStatus: user.conversationStatus)
-                case .received:
-                    ConversationStatusView(image: "received",
-                                           conversationStatus: user.conversationStatus)
-                default:
-                    EmptyView()
-                }
-                
-                Text(user.firstname)
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(Color(red: 144/255, green: 144/255, blue: 147/255))
-            }.padding(.trailing, user.conversationStatus == .none ? 0 : 24)
+            Text(user.firstname)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(textColor)
         }
     }
 }

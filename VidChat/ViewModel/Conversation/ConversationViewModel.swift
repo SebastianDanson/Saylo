@@ -21,6 +21,22 @@ class ConversationViewModel: ObservableObject {
     @Published var players = [MessagePlayer]()
     @Published var chatId = "Chat"
     
+    //Texting
+    @Published var showKeyboard = false
+    
+    //Audio
+    @Published var showAudio = false
+
+    //Photos
+    @Published var showPhotos = false
+
+    //Camera
+    @Published var showCamera = false
+
+    //Calling
+    @Published var showCall = false
+    
+    
     static let shared = ConversationViewModel()
     
     init() {
