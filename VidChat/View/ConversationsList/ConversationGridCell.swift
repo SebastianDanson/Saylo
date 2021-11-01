@@ -16,21 +16,27 @@ struct ConversationGridCell: View {
 
     var body: some View {
         //  user.conversationStatus == .none ? -20 : -50
-        VStack(alignment: .center,
-               spacing: 6) {
+        ZStack(alignment:.top) {
+            VStack(alignment: .center,
+                   spacing: 6) {
+                
+                KFImage(URL(string: user.image))
+                    .resizable()
+                    .scaledToFill()
+                    .background(Color(.systemGray))
+                    .frame(width: width, height: width)
+                    .cornerRadius(width/2)
+                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
+                
+                
+                Text(user.firstname)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(textColor)
+            }
             
-            KFImage(URL(string: user.image))
-                .resizable()
-                .scaledToFill()
-                .background(Color(.systemGray))
-                .frame(width: width, height: width)
-                .cornerRadius(width/2)
-                .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
-            
-            
-            Text(user.firstname)
-                .font(.system(size: 13, weight: .regular))
-                .foregroundColor(textColor)
+//            Circle()
+//                .foregroundColor(.white)
+//                .corn
         }
     }
 }

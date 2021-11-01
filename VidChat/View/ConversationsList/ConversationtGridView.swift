@@ -62,6 +62,18 @@ struct ConversationGridView: View {
             TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
             TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
             TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .received),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sent),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sentOpened),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
+            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
+            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
+            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
             TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook")
         ]
     }
@@ -70,7 +82,9 @@ struct ConversationGridView: View {
     var body: some View {
         
         NavigationView {
-            ZStack {
+            ZStack(alignment: .top) {
+                NavView()
+                
                 ScrollView(showsIndicators: false) {
                     VStack {
                         LazyVGrid(columns: items, spacing: 14, content: {
@@ -98,50 +112,9 @@ struct ConversationGridView: View {
                     OptionsView()
                 }
             }
+            .navigationBarHidden(true)
             .zIndex(1)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    HStack(spacing: 8) {
-                        Button(action: {}, label: {
-                            KFImage(URL(string: image1))
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 32, height: 32)
-                                .clipShape(Circle())
-                        })
-                        
-                        Button(action: {}, label: {
-                            Image(systemName: "magnifyingglass.circle.fill")
-                                .resizable()
-                                .frame(width: 32, height: 32)
-                                .scaledToFill()
-                                .background(
-                                    Circle()
-                                        .foregroundColor(Color.init(UIColor.systemGray.cgColor))
-                                        .frame(width: 30, height: 30)
-                                    
-                                )
-                                .foregroundColor(Color.init(UIColor.systemGray5.cgColor))
-                        })
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    VStack {
-                        Circle()
-                            .frame(width: 32, height: 32)
-                            .foregroundColor(.mainBlue)
-                            .overlay(
-                                Image(systemName: "person.fill.badge.plus")
-                                    .resizable()
-                                    .frame(width: 18, height: 18)
-                                    .scaledToFit()
-                                    .foregroundColor(.white)
-                                    .padding(.trailing, 2)
-                            )
-                    }
-                }
-            }.ignoresSafeArea()
+            .ignoresSafeArea()
         }
     }
 }
@@ -178,6 +151,78 @@ struct ShowCameraView: View {
                 .scaledToFit()
                 .frame(width: 32, height: 32)
         }
+    }
+}
+
+struct NavView: View {
+    
+    private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
+    private let toolBarWidth: CGFloat = 40
+    let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
+    
+    var body: some View {
+        ZStack(alignment: .center) {
+            Rectangle()
+                .frame(width: UIScreen.main.bounds.width, height: topPadding + 54)
+                .foregroundColor(.white)
+                .shadow(color: Color(white: 0, opacity: 0.1), radius: 4, x: 0, y: 2)
+            
+            HStack {
+                HStack(spacing: 12) {
+                    Button(action: {}, label: {
+                        KFImage(URL(string: image1))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: toolBarWidth, height: toolBarWidth)
+                            .clipShape(Circle())
+                    })
+                    
+                    Button(action: {}, label: {
+                        Image(systemName: "magnifyingglass.circle.fill")
+                            .resizable()
+                            .frame(width: toolBarWidth, height: toolBarWidth)
+                            .scaledToFill()
+                            .background(
+                                Circle()
+                                    .foregroundColor(Color(.systemGray))
+                                    .frame(width: toolBarWidth - 4, height: toolBarWidth - 4)
+                                
+                            )
+                            .foregroundColor(Color(.systemGray5))
+                    })
+                }
+                
+                Spacer()
+                HStack(spacing: 12) {
+                    Circle()
+                        .frame(width: toolBarWidth, height: toolBarWidth)
+                        .foregroundColor(Color(.systemGray5))
+                        .overlay(
+                            Image(systemName: "person.fill.badge.plus")
+                                .resizable()
+                                .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
+                                .scaledToFit()
+                                .foregroundColor(Color(.systemGray))
+                                .padding(.trailing, 2)
+                                .padding(.top, 1)
+                        )
+                    
+                    Circle()
+                        .frame(width: toolBarWidth, height: toolBarWidth)
+                        .foregroundColor(Color(.systemGray5))
+                        .overlay(
+                            Image(systemName: "plus.message.fill")
+                                .resizable()
+                                .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
+                                .scaledToFit()
+                                .foregroundColor(Color(.systemGray))
+                                .padding(.top, 1)
+                        )
+                }
+            }.padding(.horizontal)
+                .padding(.top, topPadding)
+        }.zIndex(2)
+            .ignoresSafeArea()
     }
 }
 
