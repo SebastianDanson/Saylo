@@ -13,21 +13,18 @@ import Kingfisher
 struct ConversationView: View {
     
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-
+    
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
-
+    
     @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
     @State private var canScroll = true
     @State private var text = ""
     @State private var hasScrolledToVideo = false
-    @State private var photosPickerHeight = UIScreen.main.bounds.width/4*3 + 20
+    @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     
-    private let width = UIScreen.main.bounds.width
-    private let cameraHeight = UIScreen.main.bounds.width * 1.25
-    private let screenHeight = UIScreen.main.bounds.height
-    private let photoPickerBaseHeight = UIScreen.main.bounds.width/4*3 + 20
+    private let cameraHeight = SCREEN_WIDTH * 1.25
     
     var body: some View {
         
@@ -79,56 +76,16 @@ struct ConversationView: View {
                         .transition(.move(edge: .bottom))
                 }
             }
-
+            
             
             if viewModel.showPhotos {
-                PhotoPickerView(baseHeight: photoPickerBaseHeight, height: $photosPickerHeight)
-                    .frame(width: width, height: photosPickerHeight)
+                PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
+                    .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
                     .transition(.move(edge: .bottom))
             }
             
             if viewModel.showKeyboard {
-                HStack(alignment: .bottom) {
-                    HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: "house")
-                            .clipped()
-                            .scaledToFit()
-                            .padding()
-                            .background(Color.gray)
-                            .frame(width: 28, height: 28)
-                            .clipShape(Circle())
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Sebastian")
-                                .font(.system(size: 14, weight: .semibold))
-                            MultilineTextField(text: $text) {
-                                viewModel.showKeyboard = false
-                            }
-                        }
-                        Spacer()
-                    }.padding(.leading)
-                    
-                    Button {
-                        if !text.isEmpty {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                viewModel.addMessage(text: text, type: .Text)
-                                text = ""
-                            }
-                        }
-                    } label: {
-                        ZStack {
-                            if text != "" {
-                                Image(systemName: "arrow.up.circle.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 28, height: 28)
-                                    .foregroundColor(Color.mainBlue)
-                                    .transition(.move(edge: .trailing))
-                            }
-                        }
-                    }
-                    .padding(.bottom, 9)
-                    .padding(.trailing, 10)
-                }
+                KeyboardView(text: $text)
             }
         }
         .overlay(
@@ -142,10 +99,7 @@ struct ConversationView: View {
                         
                         Spacer()
                         
-                        if !viewModel.showPhotos {
                             OptionsView()
-                                .transition(.opacity)
-                        }
                     }
                     
                 }
@@ -214,7 +168,7 @@ struct ConversationView: View {
 struct OptionsView: View {
     
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-
+    
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     
@@ -225,7 +179,8 @@ struct OptionsView: View {
     var body: some View {
         
         HStack(spacing: 4) {
-            
+            if !viewModel.showPhotos && !viewModel.showKeyboard{
+
             if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
                 
                 if !viewModel.showCamera {
@@ -325,11 +280,14 @@ struct OptionsView: View {
                     
                 }
             }
+            }
         }
         .frame(width: UIScreen.main.bounds.width, height: 70)
         .clipShape(Capsule())
         .padding(.bottom, viewModel.showCamera ? 50 + bottomPadding : bottomPadding)
         .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
+        .transition(.opacity)
+
     }
 }
 
@@ -432,7 +390,7 @@ struct AudioOptions: View {
     
     @Binding var audioRecorder: AudioRecorder
     @Binding var isRecordingAudio: Bool
-
+    
     var body: some View {
         HStack{
             
@@ -513,3 +471,53 @@ struct ScrollView<Content: View>: View {
 }
 
 
+struct KeyboardView: View {
+    
+    @StateObject var viewModel = ConversationViewModel.shared
+    @Binding var text: String
+    
+    var body: some View {
+        
+        HStack(alignment: .bottom) {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "house")
+                    .clipped()
+                    .scaledToFit()
+                    .padding()
+                    .background(Color.gray)
+                    .frame(width: 28, height: 28)
+                    .clipShape(Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Sebastian")
+                        .font(.system(size: 14, weight: .semibold))
+                    MultilineTextField(text: $text) {
+                        viewModel.showKeyboard = false
+                    }
+                }
+                Spacer()
+            }.padding(.leading)
+            
+            Button {
+                if !text.isEmpty {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        viewModel.addMessage(text: text, type: .Text)
+                        text = ""
+                    }
+                }
+            } label: {
+                ZStack {
+                    if text != "" {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 28, height: 28)
+                            .foregroundColor(Color.mainBlue)
+                            .transition(.move(edge: .trailing))
+                    }
+                }
+            }
+            .padding(.bottom, 9)
+            .padding(.trailing, 10)
+        }
+    }
+}

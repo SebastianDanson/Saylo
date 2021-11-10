@@ -29,8 +29,12 @@ struct ConversationGridView: View {
     private let items = [GridItem(), GridItem(), GridItem()]
     private var users: [TestUser]
     @State private var showCamera = false
+    @State private var text = ""
+    @State var isSelectingUsers = true
     //  @ObservedObject var viewModel: PostGridViewModel
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
+    @StateObject private var conversationViewModel = ConversationViewModel.shared
+    @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     
     init() {
         let appearance = UINavigationBarAppearance()
@@ -83,38 +87,72 @@ struct ConversationGridView: View {
         
         NavigationView {
             ZStack(alignment: .top) {
-                NavView()
                 
-                ScrollView(showsIndicators: false) {
-                    VStack {
-                        LazyVGrid(columns: items, spacing: 14, content: {
-                            ForEach(self.users, id: \.id) { user in
-                                ConversationGridCell(user: user)
-                                    .flippedUpsideDown()
-                                    .onTapGesture {  }
-                                    .onLongPressGesture {
-                                        withAnimation {
-                                            self.showCamera.toggle()
-                                        }
-                                    }
-                            }
-                        })
-                            .padding(.horizontal, 12)
-                        
-                    }.padding(.top, bottomPadding + 72)
+                if !conversationViewModel.showCamera {
+                    NavView(isSelectingUsers: $isSelectingUsers)
                 }
-                .flippedUpsideDown()
-                .navigationBarTitle("Conversations", displayMode: .inline)
-                .ignoresSafeArea()
                 
                 VStack {
-                    Spacer()
-                    OptionsView()
+                    ZStack(alignment: .top) {
+                        ScrollView(showsIndicators: false) {
+                            VStack {
+                                LazyVGrid(columns: items, spacing: 14, content: {
+                                    ForEach(self.users, id: \.id) { user in
+                                        ConversationGridCell(user: user)
+                                            .flippedUpsideDown()
+                                            .onTapGesture {  }
+                                            .onLongPressGesture {
+                                                withAnimation {
+                                                    self.showCamera.toggle()
+                                                }
+                                            }
+                                    }
+                                })
+                                    .padding(.horizontal, 12)
+                                
+                            }.padding(.top,
+                                      !conversationViewModel.showKeyboard &&
+                                      !conversationViewModel.showPhotos &&
+                                      !isSelectingUsers ?
+                                      bottomPadding + 72 : isSelectingUsers ? 24 : 4)
+                        }
+                        .flippedUpsideDown()
+                        .navigationBarTitle("Conversations", displayMode: .inline)
+                        .ignoresSafeArea()
+                        
+                        VStack {
+                            Spacer()
+                            if !isSelectingUsers {
+                            OptionsView()
+                            }
+                        }.zIndex(3)
+                        
+                        if conversationViewModel.showCamera {
+                            CameraViewModel.shared.cameraView
+                                .transition(.move(edge: .bottom))
+                        }
+                    }
+                    if conversationViewModel.showPhotos {
+                        PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
+                            .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
+                            .transition(.move(edge: .bottom))
+                    }
+                    
+                    if conversationViewModel.showKeyboard {
+                        KeyboardView(text: $text)
+                    }
+                    
+                    if isSelectingUsers {
+                        Rectangle()
+                            .frame(width: SCREEN_WIDTH, height: bottomPadding + 50)
+                            .foregroundColor(.mainBlue)
+                    }
                 }
             }
             .navigationBarHidden(true)
             .zIndex(1)
-            .ignoresSafeArea()
+            .edgesIgnoringSafeArea(conversationViewModel.showKeyboard ? .top : .all)
+            
         }
     }
 }
@@ -160,6 +198,8 @@ struct NavView: View {
     private let toolBarWidth: CGFloat = 40
     let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
     
+    @Binding var isSelectingUsers: Bool
+    
     var body: some View {
         ZStack(alignment: .center) {
             Rectangle()
@@ -167,7 +207,10 @@ struct NavView: View {
                 .foregroundColor(.white)
                 .shadow(color: Color(white: 0, opacity: 0.1), radius: 4, x: 0, y: 2)
             
+            
             HStack {
+                if !isSelectingUsers {
+
                 HStack(spacing: 12) {
                     Button(action: {}, label: {
                         KFImage(URL(string: image1))
@@ -219,8 +262,25 @@ struct NavView: View {
                                 .padding(.top, 1)
                         )
                 }
-            }.padding(.horizontal)
-                .padding(.top, topPadding)
+                } else {
+                    ZStack {
+                    Text("Send To...")
+                        .font(.headline)
+                        HStack {
+                            Image(systemName: "x.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: toolBarWidth - 10, height: toolBarWidth - 10)
+                                .foregroundColor(Color(.systemGray))
+                                .padding(.leading, 8)
+                            Spacer()
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, topPadding)
+            
         }.zIndex(2)
             .ignoresSafeArea()
     }
