@@ -46,7 +46,6 @@ struct CallOptionsView: View {
     @Binding var showVideo: Bool
     
     @EnvironmentObject var callsController: CallManager
-    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     
     var body: some View {
         HStack {
@@ -90,7 +89,7 @@ struct CallOptionsView: View {
                 }
         }
         .padding(.horizontal, 28)
-        .padding(.vertical, 12 + bottomPadding)
+        .padding(.vertical, 12 + BOTTOM_PADDING)
     }
 }
 

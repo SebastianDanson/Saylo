@@ -45,7 +45,7 @@
 		3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EB82718C23A00179390 /* AudioCell.swift */; };
 		3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */; };
 		3F2A7EBE2719CE7C00179390 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */; };
-		3F2A7EC02719E4DF00179390 /* PhotosCollectioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */; };
+		3F2A7EC02719E4DF00179390 /* PhotosCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EBF2719E4DF00179390 /* PhotosCollectionView.swift */; };
 		3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2A7EC12719E53700179390 /* AssetCell.swift */; };
 		3F3D50E9272204DB0048F5BF /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3D50E8272204DB0048F5BF /* Audio.swift */; };
 		3F485D7F26FD453D0071532B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F485D7E26FD453D0071532B /* Assets.xcassets */; };
@@ -67,6 +67,7 @@
 		3F7786B127230DB5005AF9DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */; };
 		3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7786B727231E8A005AF9DA /* CallKit.framework */; };
 		3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */; };
+		3F8A7DE3273C72B500A1BDF6 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8A7DE2273C72B500A1BDF6 /* CacheManager.swift */; };
 		3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */; };
 		3F8B027126FEB10E00841565 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B027026FEB10E00841565 /* UserService.swift */; };
 		3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8B027426FEBEEE00841565 /* TextArea.swift */; };
@@ -120,7 +121,7 @@
 		3F2A7EB82718C23A00179390 /* AudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCell.swift; sourceTree = "<group>"; };
 		3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
-		3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosCollectioView.swift; sourceTree = "<group>"; };
+		3F2A7EBF2719E4DF00179390 /* PhotosCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosCollectionView.swift; sourceTree = "<group>"; };
 		3F2A7EC12719E53700179390 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
 		3F3D50E8272204DB0048F5BF /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
 		3F485D7726FD453B0071532B /* VidChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VidChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,6 +146,7 @@
 		3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3F7786B727231E8A005AF9DA /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeCallViewModel.swift; sourceTree = "<group>"; };
+		3F8A7DE2273C72B500A1BDF6 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		3F8B027026FEB10E00841565 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		3F8B027426FEBEEE00841565 /* TextArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextArea.swift; sourceTree = "<group>"; };
@@ -261,7 +263,7 @@
 			children = (
 				3F2A7EC12719E53700179390 /* AssetCell.swift */,
 				3F2A7EBD2719CE7C00179390 /* PhotoCell.swift */,
-				3F2A7EBF2719E4DF00179390 /* PhotosCollectioView.swift */,
+				3F2A7EBF2719E4DF00179390 /* PhotosCollectionView.swift */,
 				3F2A7EBB2719CE3F00179390 /* PhotoPicker.swift */,
 			);
 			path = Photos;
@@ -324,6 +326,7 @@
 				3F485DBD26FE23AB0071532B /* ImagePicker.swift */,
 				3F8B029426FF795900841565 /* LazyView.swift */,
 				3F8B027426FEBEEE00841565 /* TextArea.swift */,
+				3F8A7DE2273C72B500A1BDF6 /* CacheManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -639,6 +642,7 @@
 				3F112B822720B32700BA2A73 /* CallManager.swift in Sources */,
 				3F1768282714A8080049ADBA /* ConversationViewModel.swift in Sources */,
 				3F8B027126FEB10E00841565 /* UserService.swift in Sources */,
+				3F8A7DE3273C72B500A1BDF6 /* CacheManager.swift in Sources */,
 				3F112B802720B1C200BA2A73 /* ProviderDelegate.swift in Sources */,
 				3F50C6F4270195B30027D080 /* CameraViewModel.swift in Sources */,
 				3F95F44C26FE45BC00F892B7 /* MediaUploader.swift in Sources */,
@@ -670,7 +674,7 @@
 				3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */,
 				3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */,
 				3FB8B5D8270FAACA00355DB9 /* ConversationView.swift in Sources */,
-				3F2A7EC02719E4DF00179390 /* PhotosCollectioView.swift in Sources */,
+				3F2A7EC02719E4DF00179390 /* PhotosCollectionView.swift in Sources */,
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,
 				3F112B7E27207AFE00BA2A73 /* VideoCollectionViewCell.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,

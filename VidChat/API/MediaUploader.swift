@@ -13,12 +13,14 @@ import Foundation
 import QuartzCore
 
 enum UploadType {
-    case profile, video, photo
+    case profile, video, photo, audio
     
     var filePath: StorageReference {
         let filename = NSUUID().uuidString
         
         switch self {
+        case .audio:
+            return Storage.storage().reference(withPath: "/audioRecordings/\(filename)")
         case .video:
             return Storage.storage().reference(withPath: "/videos/\(filename)")
         case .photo:
@@ -77,8 +79,29 @@ class MediaUploader {
         }
     }
     
-     func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
-        
+    func uploadAudio(url: URL, completion: @escaping(String) -> Void) {
+        let ref = UploadType.audio.filePath
+
+        ref.putFile(from: url, metadata: nil) { _, error in
+            if let error = error {
+                print("DEBUG: Failed to upload audio \(error.localizedDescription)")
+                return
+            }
+            
+            ref.downloadURL { url, error in
+                if let error = error {
+                    print("DEBUG: Failed to download audio URL \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let audioUrl = url?.absoluteString else {return}
+                completion(audioUrl)
+            }
+        }
+    }
+    
+    func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
+        print("VIDEO")
         let ref = UploadType.video.filePath
         // Get source video
         let videoToCompress = url
@@ -98,7 +121,7 @@ class MediaUploader {
             completionHandler: { [weak self] path in
                 MediaUploader.shared.checkFileSize(sizeUrl: url, message: "BEFORE SIZE")
                 MediaUploader.shared.checkFileSize(sizeUrl: path, message: "AFTER SIZE")
-                                
+                
                 ref.putFile(from: path, metadata: nil) { _, error in
                     if let error = error {
                         print("DEBUG: Failed to upload video \(error.localizedDescription)")
@@ -218,8 +241,8 @@ func compressh264VideoInBackground(videoToCompress: URL, destinationPath: URL, s
     func getCVPixelBuffer(_ i: CGImage?, compressionContext: CompressionContext) -> CVPixelBuffer? {
         // Allocate Temporary Pixel Buffer to Store Drawn Image
         weak var image = i!
-        let imageWidth = image!.width
-        let imageHeight = image!.height
+        let imageWidth = image!.height
+        let imageHeight = image!.width
         
         let attributes : [AnyHashable: Any] = [
             kCVPixelBufferCGImageCompatibilityKey : true as AnyObject,
@@ -240,7 +263,7 @@ func compressh264VideoInBackground(videoToCompress: URL, destinationPath: URL, s
             let flags = CVPixelBufferLockFlags(rawValue: 0)
             CVPixelBufferLockBaseAddress(_pxbuffer, flags)
             let pxdata = CVPixelBufferGetBaseAddress(_pxbuffer)
-            
+                        
             if compressionContext.cgContext == nil {
                 compressionContext.cgContext = CGContext(data: pxdata,
                                                          width: imageWidth,
@@ -285,9 +308,10 @@ func compressh264VideoInBackground(videoToCompress: URL, destinationPath: URL, s
             AVVideoProfileLevelKey : compressionConfig.avVideoProfileLevel
         ]
         
+        
         let videoOutputSettings: Dictionary<String, Any> = [
-            AVVideoWidthKey : size == nil ? videoTrack.naturalSize.width : size!.width,
-            AVVideoHeightKey : size == nil ? videoTrack.naturalSize.height : size!.height,
+            AVVideoWidthKey : size == nil ? videoTrack.naturalSize.height : size!.width,
+            AVVideoHeightKey : size == nil ? videoTrack.naturalSize.width : size!.height,
             AVVideoCodecKey : AVVideoCodecType.h264,
             AVVideoCompressionPropertiesKey : videoCompressionProps
         ]
@@ -361,14 +385,16 @@ func compressh264VideoInBackground(videoToCompress: URL, destinationPath: URL, s
         
         // Orientation Fix for Videos Taken by Device Camera
         var appliedTransform: CGAffineTransform
-        switch compressionTransform {
-        case .fixForFrontCamera:
-            appliedTransform = CGAffineTransform(rotationAngle: 90.degreesToRadiansCGFloat).scaledBy(x:-1.0, y:1.0)
-        case .fixForBackCamera:
-            appliedTransform = CGAffineTransform(rotationAngle: 270.degreesToRadiansCGFloat)
-        case .keepSame:
-            appliedTransform = CGAffineTransform.identity
-        }
+        //        switch compressionTransform {
+        //        case .fixForFrontCamera:
+        //            appliedTransform = CGAffineTransform(rotationAngle: 90.degreesToRadiansCGFloat).scaledBy(x:-1.0, y:1.0)
+        //        case .fixForBackCamera:
+        //            appliedTransform = CGAffineTransform(rotationAngle: 270.degreesToRadiansCGFloat)
+        //        case .keepSame:
+        //            appliedTransform = CGAffineTransform.identity
+        //        }
+        
+        appliedTransform = CGAffineTransform(rotationAngle: 270.degreesToRadiansCGFloat)
         
         // Begin Compression
         reader.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: avAsset.duration)
@@ -489,3 +515,92 @@ func compressh264VideoInBackground(videoToCompress: URL, destinationPath: URL, s
         return CancelableCompression()
     }
 }
+
+//func isStorageAvailable() -> Bool {
+//    let fileURL = URL(fileURLWithPath: NSHomeDirectory() as String)
+//    do {
+//        let values = try fileURL.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey, .volumeTotalCapacityKey])
+//        guard let totalSpace = values.volumeTotalCapacity,
+//              let freeSpace = values.volumeAvailableCapacityForImportantUsage else {
+//                  return false
+//              }
+//        if freeSpace > minimumSpaceRequired {
+//            return true
+//        } else {
+//            // Capacity is unavailable
+//            return false
+//        }
+//        catch {}
+//        return false
+//    }
+//    
+//    func cleanExpiredVideos() {
+//        let currentTimeStamp = Date().timeIntervalSince1970
+//        var expiredKeys: [String] = []
+//        for videoData in videosDict where currentTimeStamp - videoData.value.timeStamp >= expiryTime {
+//            // video is expired. delete
+//            if let _ = popupVideosDict[videoData.key] {
+//                expiredKeys.append(videoData.key)
+//            }
+//        }
+//        for key in expiredKeys {
+//            if let _ = popupVideosDict[key] {
+//                popupVideosDict.removeValue(forKey: key)
+//                deleteVideo(ForVideoId: key)
+//            }
+//        }
+//    }
+//    
+//    func removeVideoIfMaxNumberOfVideosReached() {
+//        if popupVideosDict.count >= maxVideosAllowed {
+//            // remove the least recently used video
+//            let sortedDict = popupVideosDict.keysSortedByValue { (v1, v2) -> Bool in
+//                v1.timeStamp < v2.timeStamp
+//            }
+//            guard let videoId = sortedDict.first else {
+//                return
+//            }
+//            popupVideosDict.removeValue(forKey: videoId)
+//            deleteVideo(ForVideoId: videoId)
+//        }
+//    }
+//    
+//    static func findCachedVideoURL(forVideoId id: String) -> URL? {
+//        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
+//        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+//        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+//        if let dirPath = paths.first {
+//            let fileURL = URL(fileURLWithPath: dirPath).appendingPathComponent(folderPath).appendingPathComponent(id + ".mp4")
+//            let filePath = fileURL.path
+//            let fileManager = FileManager.default
+//            if fileManager.fileExists(atPath: filePath) {
+//                NewRelicService.sendCustomEvent(with: NewRelicEventType.statusCodes,
+//                                                eventName: NewRelicEventName.videoCacheHit,
+//                                                attributes: [NewRelicAttributeKey.videoSize: fileURL.fileSizeString])
+//                return fileURL
+//            } else {
+//                return nil
+//            }
+//        }
+//        return nil
+//    }
+//    
+//    
+//    extension URL {
+//        var attributes: [FileAttributeKey : Any]? {
+//            do {
+//                return try FileManager.default.attributesOfItem(atPath: path)
+//            } catch let error as NSError {
+//                print("FileAttribute error: \(error)")
+//            }
+//            return nil
+//        }
+//        
+//        var fileSize: UInt64 {
+//            return attributes?[.size] as? UInt64 ?? UInt64(0)
+//        }
+//        
+//        var fileSizeString: String {
+//            return ByteCountFormatter.string(fromByteCount: Int64(fileSize), countStyle: .file)
+//        }
+//    }

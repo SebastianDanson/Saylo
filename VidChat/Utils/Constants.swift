@@ -22,11 +22,14 @@ let PHOTO_PICKER_BASE_HEIGHT = UIScreen.main.bounds.width/4*3 + 20
 //height of extra space above and below camera
 let NON_CAMERA_HEIGHT = UIScreen.main.bounds.height - (UIScreen.main.bounds.width * 16/9) // Camera aspect ratio is 16/9
 
-
 //Call
 let TIMEOUT_DURATION = 5
 
 //Screen
 let SCREEN_WIDTH = UIScreen.main.bounds.width
 let SCREEN_HEIGHT = UIScreen.main.bounds.height
+
+let BOTTOM_PADDING = UIApplication.shared.windows[0].safeAreaInsets.bottom
+let TOP_PADDING = UIApplication.shared.windows[0].safeAreaInsets.top
+
 

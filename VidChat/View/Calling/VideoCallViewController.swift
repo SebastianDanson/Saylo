@@ -27,9 +27,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     var isFrontFacing = true
     var isShowingOptions = true
     
-    private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
-    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-    
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -125,8 +123,8 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         localViewHeightAnchor.constant = size.height
         localViewWidthAnchor.constant = size.width
         
-        let showOptionsPadding: CGFloat = isShowingOptions ? 112 + bottomPadding : 54
-        let addedPadding = callManger.remoteUserIDs.count > 2 ? UIScreen.main.bounds.height - showOptionsPadding - size.height : topPadding
+        let showOptionsPadding: CGFloat = isShowingOptions ? 112 + BOTTOM_PADDING : 54
+        let addedPadding = callManger.remoteUserIDs.count > 2 ? UIScreen.main.bounds.height - showOptionsPadding - size.height : TOP_PADDING
         localViewTopAnchor.constant = 20 + addedPadding
         localViewRightAnchor.constant = -20
         
@@ -157,7 +155,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     func toggleShowOptions(showOptions: Bool) {
         if callManger.remoteUserIDs.count > 2 {
             if showOptions != isShowingOptions {
-                let dif = 58 + bottomPadding
+                let dif = 58 + BOTTOM_PADDING
                 showOptions ? (localViewTopAnchor.constant -= dif) : (localViewTopAnchor.constant += dif)
                 UIView.animate(withDuration: 0.3) {
                     self.view.layoutIfNeeded()

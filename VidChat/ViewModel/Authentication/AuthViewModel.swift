@@ -10,6 +10,7 @@ import Firebase
 import FirebaseAuth
 
 class AuthViewModel: ObservableObject {
+    
     @Published var currentUser: User?
     @Published var didSendResetPasswordLink = false
     @Published var isSignedIn = Auth.auth().currentUser != nil

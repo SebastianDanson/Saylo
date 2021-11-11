@@ -15,7 +15,7 @@ protocol PhotosCollectioViewDelegate: AnyObject {
     func hidePhotoPicker()
 }
 
-class PhotosCollectioView: UIView {
+class PhotosCollectionView: UIView {
     
     weak var delegate: PhotosCollectioViewDelegate?
     
@@ -204,7 +204,7 @@ class PhotosCollectioView: UIView {
 
 // MARK: - UICollectionViewDelegate
 
-extension PhotosCollectioView: UICollectionViewDelegate {
+extension PhotosCollectionView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let asset = currentAssetAtIndex(indexPath.item)
@@ -244,7 +244,7 @@ extension PhotosCollectioView: UICollectionViewDelegate {
 
 // MARK: - UICollectionViewDataSource
 
-extension PhotosCollectioView: UICollectionViewDataSource {
+extension PhotosCollectionView: UICollectionViewDataSource {
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int  {
@@ -284,7 +284,7 @@ extension PhotosCollectioView: UICollectionViewDataSource {
 
 // MARK: - Caching
 
-extension PhotosCollectioView {
+extension PhotosCollectionView {
     
     func updateCache() {
         let currentFrameCenter = bounds.minY
@@ -339,7 +339,7 @@ extension PhotosCollectioView {
 
 // MARK: - UIScrollViewDelegate
 
-extension PhotosCollectioView {
+extension PhotosCollectionView {
     
     @objc private func didPan(_ sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: self)
@@ -385,13 +385,13 @@ extension PhotosCollectioView {
 
 // MARK: - PHPhotoLibraryChangeObserver
 
-extension PhotosCollectioView: PHPhotoLibraryChangeObserver {
+extension PhotosCollectionView: PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange)  {
         
     }
 }
 
-extension PhotosCollectioView: UIGestureRecognizerDelegate {
+extension PhotosCollectionView: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }

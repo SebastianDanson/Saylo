@@ -10,10 +10,10 @@ import Kingfisher
 
 struct ConversationGridCell: View {
     
-    let user: TestUser
+    @ObservedObject var user: TestUser
     let width = UIScreen.main.bounds.width/4.2
     let textColor = Color(red: 136/255, green: 137/255, blue: 141/255)
-
+    
     var body: some View {
         //  user.conversationStatus == .none ? -20 : -50
         ZStack(alignment:.top) {
@@ -32,11 +32,22 @@ struct ConversationGridCell: View {
                 Text(user.firstname)
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(textColor)
-            }
-            
-//            Circle()
-//                .foregroundColor(.white)
-//                .corn
+            }.overlay(
+                ZStack {
+                    if user.isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                            .background(Circle().frame(width: 30, height: 30).foregroundColor(.white))
+                            .scaledToFit()
+                            .foregroundColor(.mainBlue)
+                            .transition(.scale)
+                        //                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
+                    }
+                }
+                , alignment: .topLeading
+                
+            )
         }
     }
 }

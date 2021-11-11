@@ -8,6 +8,7 @@
 import FirebaseFirestore
 import Firebase
 import UIKit
+import AVFoundation
 
 enum MessageType {
     case Video, Audio, Text, Photo
@@ -29,7 +30,7 @@ enum MessageType {
     }
 }
 
-struct Message: Identifiable {
+class Message: Identifiable {
     
     //ids
     let id: String
@@ -39,13 +40,14 @@ struct Message: Identifiable {
     let username: String
     let userId: String
     let userProfileImageUrl: String
-
+    
     //Content
     let type: MessageType
-    let url: String?
+    var url: String?
+    var asset: AVURLAsset?
     let text: String?
     var image: UIImage?
-
+    
     //date
     let timestamp: Timestamp
     
@@ -67,5 +69,12 @@ struct Message: Identifiable {
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())
         
         self.text = dictionary["text"] as? String
+        
+        //checkCache
+        if let urlString = url, let url = URL(string: urlString) {
+            self.url = CacheManager.getCachedUrl(url, isVideo: type == .Video).absoluteString
+        }
     }
 }
+
+

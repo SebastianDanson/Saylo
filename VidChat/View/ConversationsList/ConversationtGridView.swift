@@ -13,12 +13,21 @@ enum ConversationStatus {
     case sent, received, receivedOpened, sentOpened, none
 }
 
-struct TestUser {
+class TestUser: ObservableObject {
+    
+    @Published var isSelected = false
     let image: String
     let firstname: String
     let lastname: String
     let id = UUID()
     var conversationStatus: ConversationStatus = .none
+    
+    init(image: String, firstname: String, lastname: String, conversationStatus: ConversationStatus = .none) {
+        self.image = image
+        self.firstname = firstname
+        self.lastname = lastname
+        self.conversationStatus = conversationStatus
+    }
 }
 
 struct ConversationGridView: View {
@@ -30,11 +39,11 @@ struct ConversationGridView: View {
     private var users: [TestUser]
     @State private var showCamera = false
     @State private var text = ""
-    @State var isSelectingUsers = true
+    @State var isSelectingUsers = false
     //  @ObservedObject var viewModel: PostGridViewModel
-    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
+    @State private var selectedUsers = [TestUser]()
     
     init() {
         let appearance = UINavigationBarAppearance()
@@ -100,10 +109,20 @@ struct ConversationGridView: View {
                                     ForEach(self.users, id: \.id) { user in
                                         ConversationGridCell(user: user)
                                             .flippedUpsideDown()
-                                            .onTapGesture {  }
+                                            .onTapGesture {
+                                                withAnimation(.linear(duration: 0.15)) {
+                                                    user.isSelected = !user.isSelected
+                                                    if let index = selectedUsers.firstIndex(where: {$0.id == user.id}) {
+                                                        selectedUsers.remove(at: index)
+                                                    } else {
+                                                        selectedUsers.append(user)
+                                                    }
+                                                }
+                                            }
                                             .onLongPressGesture {
                                                 withAnimation {
-                                                    self.showCamera.toggle()
+                                                    CameraViewModel.shared.handleTap()
+                                                    conversationViewModel.showCamera = true
                                                 }
                                             }
                                     }
@@ -114,7 +133,7 @@ struct ConversationGridView: View {
                                       !conversationViewModel.showKeyboard &&
                                       !conversationViewModel.showPhotos &&
                                       !isSelectingUsers ?
-                                      bottomPadding + 72 : isSelectingUsers ? 24 : 4)
+                                      BOTTOM_PADDING + 72 : isSelectingUsers ? 12 : 4)
                         }
                         .flippedUpsideDown()
                         .navigationBarTitle("Conversations", displayMode: .inline)
@@ -123,7 +142,7 @@ struct ConversationGridView: View {
                         VStack {
                             Spacer()
                             if !isSelectingUsers {
-                            OptionsView()
+                                OptionsView()
                             }
                         }.zIndex(3)
                         
@@ -142,10 +161,8 @@ struct ConversationGridView: View {
                         KeyboardView(text: $text)
                     }
                     
-                    if isSelectingUsers {
-                        Rectangle()
-                            .frame(width: SCREEN_WIDTH, height: bottomPadding + 50)
-                            .foregroundColor(.mainBlue)
+                    if selectedUsers.count > 0 {
+                        SelectedUsersView(users: $selectedUsers)
                     }
                 }
             }
@@ -210,62 +227,73 @@ struct NavView: View {
             
             HStack {
                 if !isSelectingUsers {
+                    
+                    HStack(spacing: 12) {
+//                        Button(action: {}, label: {
+//                            KFImage(URL(string: image1))
+//                                .resizable()
+//                                .scaledToFill()
+//                                .frame(width: toolBarWidth, height: toolBarWidth)
+//                                .clipShape(Circle())
+//                        })
+                        
+                        NavigationLink {
+                            ConversationView()
+                        } label: {
+                            KFImage(URL(string: image1))
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: toolBarWidth, height: toolBarWidth)
+                                .clipShape(Circle())
+                        }
 
-                HStack(spacing: 12) {
-                    Button(action: {}, label: {
-                        KFImage(URL(string: image1))
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: toolBarWidth, height: toolBarWidth)
-                            .clipShape(Circle())
-                    })
+                        
+                        Button(action: {}, label: {
+                            Image(systemName: "magnifyingglass.circle.fill")
+                                .resizable()
+                                .frame(width: toolBarWidth, height: toolBarWidth)
+                                .scaledToFill()
+                                .background(
+                                    Circle()
+                                        .foregroundColor(Color(.systemGray))
+                                        .frame(width: toolBarWidth - 4, height: toolBarWidth - 4)
+                                    
+                                )
+                                .foregroundColor(Color(.systemGray5))
+                        })
+                    }
                     
-                    Button(action: {}, label: {
-                        Image(systemName: "magnifyingglass.circle.fill")
-                            .resizable()
+                    Spacer()
+                    HStack(spacing: 12) {
+                        Circle()
                             .frame(width: toolBarWidth, height: toolBarWidth)
-                            .scaledToFill()
-                            .background(
-                                Circle()
-                                    .foregroundColor(Color(.systemGray))
-                                    .frame(width: toolBarWidth - 4, height: toolBarWidth - 4)
-                                
-                            )
                             .foregroundColor(Color(.systemGray5))
-                    })
-                }
-                
-                Spacer()
-                HStack(spacing: 12) {
-                    Circle()
-                        .frame(width: toolBarWidth, height: toolBarWidth)
-                        .foregroundColor(Color(.systemGray5))
-                        .overlay(
-                            Image(systemName: "person.fill.badge.plus")
-                                .resizable()
-                                .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
-                                .scaledToFit()
-                                .foregroundColor(Color(.systemGray))
-                                .padding(.trailing, 2)
-                                .padding(.top, 1)
-                        )
-                    
-                    Circle()
-                        .frame(width: toolBarWidth, height: toolBarWidth)
-                        .foregroundColor(Color(.systemGray5))
-                        .overlay(
-                            Image(systemName: "plus.message.fill")
-                                .resizable()
-                                .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
-                                .scaledToFit()
-                                .foregroundColor(Color(.systemGray))
-                                .padding(.top, 1)
-                        )
-                }
+                            .overlay(
+                                Image(systemName: "person.fill.badge.plus")
+                                    .resizable()
+                                    .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
+                                    .scaledToFit()
+                                    .foregroundColor(Color(.systemGray))
+                                    .padding(.trailing, 2)
+                                    .padding(.top, 1)
+                            )
+                        
+                        Circle()
+                            .frame(width: toolBarWidth, height: toolBarWidth)
+                            .foregroundColor(Color(.systemGray5))
+                            .overlay(
+                                Image(systemName: "plus.message.fill")
+                                    .resizable()
+                                    .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
+                                    .scaledToFit()
+                                    .foregroundColor(Color(.systemGray))
+                                    .padding(.top, 1)
+                            )
+                    }
                 } else {
                     ZStack {
-                    Text("Send To...")
-                        .font(.headline)
+                        Text("Send To...")
+                            .font(.headline)
                         HStack {
                             Image(systemName: "x.circle.fill")
                                 .resizable()
@@ -286,3 +314,97 @@ struct NavView: View {
     }
 }
 
+struct SelectedUsersView: View {
+    
+    @Binding var users: [TestUser]
+    
+    var body: some View {
+        ZStack {
+            
+            ZStack() {
+                ScrollView(axes: .horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(Array(users.enumerated()), id: \.1.id) { i, user in
+                            SelectedUserView(user: user, users: $users)
+                                .padding(.leading, i == 0 ? 20 : 4)
+                                .padding(.trailing, i == users.count - 1 ? 80 : 4)
+                                .transition(.scale)
+                            
+                        }
+                    }.padding(.bottom, BOTTOM_PADDING)
+                }.frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 80)
+                
+                
+                HStack {
+                    Spacer()
+                    
+                    Image(systemName: "location.circle.fill")
+                        .resizable()
+                        .rotationEffect(Angle(degrees: 45))
+                        .foregroundColor(Color(.systemGray))
+                        .frame(width: 50, height: 50)
+                        .background(Circle().frame(width: 40, height: 40).foregroundColor(.white))
+                        .scaledToFit()
+                        .padding(.horizontal)
+                }.padding(.bottom, BOTTOM_PADDING)
+            }
+            
+        }
+        .transition(.identity)
+    }
+}
+
+struct SelectedUserView: View {
+    
+    let user: TestUser
+    @Binding var users: [TestUser]
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .center, spacing: 4) {
+                
+                KFImage(URL(string: user.image))
+                    .resizable()
+                    .scaledToFill()
+                    .background(Color(.systemGray))
+                    .frame(width: 44, height: 44)
+                    .cornerRadius(44/2)
+                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
+                
+                
+                Text(user.firstname)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
+                    .frame(maxWidth: 44)
+            }
+            
+            Button {
+                if let index = users.firstIndex(where: {$0.id == user.id}) {
+                    withAnimation {
+                        users[index].isSelected = !users[index].isSelected
+                        users.removeAll(where: {$0.id == user.id})
+                    }
+                }
+            } label: {
+                ZStack {
+                    Circle()
+                        .foregroundColor(Color(.systemGray5))
+                        .frame(width: 20, height: 20)
+                    
+                    Image("x")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(Color(white: 0.4, opacity: 1))
+                        .scaledToFit()
+                        .frame(width: 10, height: 10)
+
+                }
+                .padding(.top, -6)
+                .padding(.trailing, -6)
+            }
+
+          
+                
+        }
+    }
+}

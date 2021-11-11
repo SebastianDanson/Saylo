@@ -12,17 +12,17 @@ import AVFoundation
 
 struct PhotoPickerView: UIViewRepresentable {
     
-    typealias UIViewType = PhotosCollectioView
-    var photosCollectioView = PhotosCollectioView()
+    typealias UIViewType = PhotosCollectionView
+    var photosCollectioView = PhotosCollectionView()
     let baseHeight: CGFloat
     @Binding var height: CGFloat
     
-    func makeUIView(context: Context) -> PhotosCollectioView {
+    func makeUIView(context: Context) -> PhotosCollectionView {
         photosCollectioView.delegate = context.coordinator
         return photosCollectioView
     }
     
-    func updateUIView(_ uiView: PhotosCollectioView, context: Context) {
+    func updateUIView(_ uiView: PhotosCollectionView, context: Context) {
     }
     
     func makeCoordinator() -> Coordinator {

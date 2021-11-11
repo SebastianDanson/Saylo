@@ -12,8 +12,8 @@ import Kingfisher
 
 struct ConversationView: View {
     
-    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-    
+    @Environment(\.presentationMode) var mode
+
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     
@@ -48,18 +48,30 @@ struct ConversationView: View {
                                     MessageCell(message: viewModel.messages[i])
                                         .transition(.move(edge: .bottom))
                                         .offset(x: 0, y: dragOffset.height - 8)
-                                        .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + bottomPadding : 0)
+                                        .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : 0)
                                         .padding(.top, i == 0 ? 60 : 0)
                                         .simultaneousGesture(
                                             viewModel.messages[i].type == .Video ?
                                             DragGesture(minimumDistance: 0, coordinateSpace: .local)
                                                 .onChanged { gesture in
+                                                    
                                                     dragOffset.height = gesture.translation.height
                                                     hasScrolledToVideo = true
                                                     viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
                                                 }
                                                 .onEnded { gesture in
-                                                    handleOnDragEnd(translation: gesture.translation, index: i, reader: reader)
+//                                                    let velocity = CGSize(
+//                                                            width:  gesture.predictedEndLocation.x - gesture.location.x,
+//                                                            height:
+//                                                        )
+//
+//                                                    print(velocity, "VELOCITY")
+//                                                    print(gesture.velocity)
+                                                    handleOnDragEnd(translation: gesture.translation,
+                                                                    velocity: gesture.predictedEndLocation.y -
+                                                                                gesture.location.y,
+                                                                    index: i,
+                                                                    reader: reader)
                                                 } : nil
                                         )
                                 }
@@ -99,7 +111,7 @@ struct ConversationView: View {
                         
                         Spacer()
                         
-                            OptionsView()
+                        OptionsView()
                     }
                     
                 }
@@ -108,8 +120,9 @@ struct ConversationView: View {
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
     
-    func handleOnDragEnd(translation: CGSize, index i: Int, reader: ScrollViewProxy) {
+    func handleOnDragEnd(translation: CGSize, velocity: CGFloat, index i: Int, reader: ScrollViewProxy) {
         
+               
         withAnimation(.easeInOut(duration: 0.3)) {
             dragOffset = .zero
         }
@@ -131,7 +144,9 @@ struct ConversationView: View {
         }
         
         func handleOnDragEndScroll(currentIndex: Int, nextIndex: Int) {
-            if hasScrolledToVideo {
+          //  if hasScrolledToVideo {
+           // print(dragOffset.height , "HEIGHT")
+            if abs(velocity) > 180 {
                 if let currentMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[currentIndex].id }) {
                     currentMessagePlayer.player.pause()
                 }
@@ -146,17 +161,24 @@ struct ConversationView: View {
                     canScroll = false
                 }
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    hasScrolledToVideo = true
-                }
-                
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    hasScrolledToVideo = true
+                
+                withAnimation() {
+                    reader.scrollTo(viewModel.messages[currentIndex].id, anchor: .center)
+                    canScroll = false
                 }
+             //   DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                 //   hasScrolledToVideo = true
+               // }
+                
+           // } else {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//                    hasScrolledToVideo = true
+//                }
             }
             
-            hasScrolledToVideo = true
+           
+//            hasScrolledToVideo = true
         }
     }
 }
@@ -167,7 +189,6 @@ struct ConversationView: View {
 
 struct OptionsView: View {
     
-    private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
@@ -180,114 +201,113 @@ struct OptionsView: View {
         
         HStack(spacing: 4) {
             if !viewModel.showPhotos && !viewModel.showKeyboard{
-
-            if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
                 
-                if !viewModel.showCamera {
+                if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
+                    
+                    if !viewModel.showCamera {
+                        
+                        if !isRecordingAudio {
+                            //Camera button
+                            Button(action: {
+                                withAnimation(.linear(duration: 0.15)) {
+                                    cameraViewModel.isTakingPhoto = true
+                                    viewModel.showCamera = true
+                                }
+                            }, label: {
+                                ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
+                            }).transition(.scale)
+                        }
+                        
+                        if !isRecordingAudio {
+                            //Photos button
+                            Button(action: {
+                                withAnimation(.linear(duration: 0.15)) {
+                                    viewModel.showPhotos = true
+                                }
+                            }, label: {
+                                ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
+                            }).transition(.scale)
+                        }
+                    }
                     
                     if !isRecordingAudio {
-                        //Camera button
+                        //Video record circle
                         Button(action: {
-                            withAnimation(.linear(duration: 0.15)) {
-                                cameraViewModel.isTakingPhoto = true
+                            withAnimation {
+                                cameraViewModel.handleTap()
                                 viewModel.showCamera = true
                             }
                         }, label: {
-                            ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
+                            CameraCircle().padding(.horizontal, 10)
                         }).transition(.scale)
                     }
                     
-                    if !isRecordingAudio {
-                        //Photos button
-                        Button(action: {
-                            withAnimation(.linear(duration: 0.15)) {
-                                viewModel.showPhotos = true
-                            }
-                        }, label: {
-                            ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
-                        }).transition(.scale)
-                    }
-                }
-                
-                if !isRecordingAudio {
-                    //Video record circle
-                    Button(action: {
-                        withAnimation {
-                            cameraViewModel.handleTap()
-                            viewModel.showCamera = true
-                        }
-                    }, label: {
-                        CameraCircle().padding(.horizontal, 10)
-                    }).transition(.scale)
-                }
-                
-                if !viewModel.showCamera {
-                    
-                    //Mic button
-                    Button(action: {
-                        withAnimation {
-                            if !isRecordingAudio {
-                                audioProgress = 1.0
-                                viewModel.showAudio = true
-                                audioRecorder.startRecording()
-                            } else {
-                                audioProgress = 0.0
-                                
-                                if !viewModel.showAudio {
-                                    print(audioRecorder.isPlaying, "ISPLAYING")
-                                    audioRecorder.audioPlayer.isPlaying ?
-                                    audioRecorder.pauseRecording() : audioRecorder.playRecording()
-                                } else {
-                                    audioRecorder.stopRecording()
-                                }
-                                
-                                viewModel.showAudio = false
-                            }
-                            isRecordingAudio = true
-                        }
-                    }, label: {
-                        ActionView(image: Image(systemName: viewModel.showAudio || !isRecordingAudio ? "mic.fill" :
-                                                    cameraViewModel.isPlaying ?
-                                                "pause.circle.fill" : "play.circle.fill"),
-                                   imageDimension: viewModel.showAudio || !isRecordingAudio ? 27 : 60, isActive: $isRecordingAudio)
-                            .foregroundColor(isRecordingAudio ? Color.mainBlue : Color(.systemGray))
-                            .overlay(
-                                ZStack {
-                                    // if isRecordingAudio {
-                                    Circle()
-                                        .trim(from: 0.0, to: CGFloat(min(audioProgress, 1.0)))
-                                        .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
-                                                                                   lineCap: .round,
-                                                                                   lineJoin: .round))
-                                        .animation(.linear(duration: audioProgress == 0 ? 0 : 20), value: audioProgress)
-                                        .frame(width: 48, height: 48)
-                                        .rotationEffect(Angle(degrees: 270))
-                                    // }
-                                }
-                            )
-                    })
-                    
-                    if !isRecordingAudio {
-                        //Aa button
+                    if !viewModel.showCamera {
+                        
+                        //Mic button
                         Button(action: {
                             withAnimation {
-                                viewModel.showKeyboard = true
+                                if !isRecordingAudio {
+                                    audioProgress = 1.0
+                                    viewModel.showAudio = true
+                                    audioRecorder.startRecording()
+                                } else {
+                                    audioProgress = 0.0
+                                    
+                                    if !viewModel.showAudio {
+                                        audioRecorder.audioPlayer.isPlaying ?
+                                        audioRecorder.pauseRecording() : audioRecorder.playRecording()
+                                    } else {
+                                        audioRecorder.stopRecording()
+                                    }
+                                    
+                                    viewModel.showAudio = false
+                                }
+                                isRecordingAudio = true
                             }
                         }, label: {
-                            ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
-                        }).transition(.scale)
+                            ActionView(image: Image(systemName: viewModel.showAudio || !isRecordingAudio ? "mic.fill" :
+                                                        cameraViewModel.isPlaying ?
+                                                    "pause.circle.fill" : "play.circle.fill"),
+                                       imageDimension: viewModel.showAudio || !isRecordingAudio ? 27 : 60, isActive: $isRecordingAudio)
+                                .foregroundColor(isRecordingAudio ? Color.mainBlue : Color(.systemGray))
+                                .overlay(
+                                    ZStack {
+                                        // if isRecordingAudio {
+                                        Circle()
+                                            .trim(from: 0.0, to: CGFloat(min(audioProgress, 1.0)))
+                                            .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
+                                                                                       lineCap: .round,
+                                                                                       lineJoin: .round))
+                                            .animation(.linear(duration: audioProgress == 0 ? 0 : 20), value: audioProgress)
+                                            .frame(width: 48, height: 48)
+                                            .rotationEffect(Angle(degrees: 270))
+                                        // }
+                                    }
+                                )
+                        })
+                        
+                        if !isRecordingAudio {
+                            //Aa button
+                            Button(action: {
+                                withAnimation {
+                                    viewModel.showKeyboard = true
+                                }
+                            }, label: {
+                                ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
+                            }).transition(.scale)
+                        }
+                        
                     }
-                    
                 }
-            }
             }
         }
         .frame(width: UIScreen.main.bounds.width, height: 70)
         .clipShape(Capsule())
-        .padding(.bottom, viewModel.showCamera ? 50 + bottomPadding : bottomPadding)
+        .padding(.bottom, viewModel.showCamera ? 50 + BOTTOM_PADDING : BOTTOM_PADDING)
         .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
         .transition(.opacity)
-
+        
     }
 }
 
@@ -328,20 +348,27 @@ struct CameraCircle: View {
 /* The top right buttons */
 
 struct ChatOptions: View {
-    
+    @Environment(\.presentationMode) var mode
+
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
     var body: some View {
         
         HStack(spacing: 0) {
             
-            Image(systemName: "chevron.left.circle.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(Color(.systemGray2))
-                .background(Circle().foregroundColor(.white).frame(width: 28, height: 28))
-                .frame(width: 30, height: 30)
-                .padding(.vertical, 10)
+            Button {
+                mode.wrappedValue.dismiss()
+            } label: {
+                Image(systemName: "chevron.left.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(Color(.systemGray2))
+                    .background(Circle().foregroundColor(.white).frame(width: 28, height: 28))
+                    .frame(width: 30, height: 30)
+                    .padding(.vertical, 10)
+            }
+
+            
             
             Spacer()
             

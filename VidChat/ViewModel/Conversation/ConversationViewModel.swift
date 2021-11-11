@@ -26,13 +26,13 @@ class ConversationViewModel: ObservableObject {
     
     //Audio
     @Published var showAudio = false
-
+    
     //Photos
     @Published var showPhotos = false
-
+    
     //Camera
     @Published var showCamera = false
-
+    
     //Calling
     @Published var showCall = false
     
@@ -40,7 +40,8 @@ class ConversationViewModel: ObservableObject {
     static let shared = ConversationViewModel()
     
     init() {
-        //    fetchMessages()
+        fetchMessages()
+        CacheManager.removeOldFiles()
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType) {
@@ -81,36 +82,54 @@ class ConversationViewModel: ObservableObject {
         self.messages.append(message)
         
         
-        //        if let url = url {
-        //            MediaUploader.uploadVideo(url: url) { newURL in
-        //
-        //                dictionary["url"] = newURL
-        //
-        //                COLLECTION_CONVERSATIONS.document("test").updateData([
-        //                    "messages" : FieldValue.arrayUnion([dictionary])
-        //                ]) { error in
-        //                    if let error = error {
-        //                        print("DEBUG: error uploading video \(error.localizedDescription)")
-        //                        return
-        //                    }
-        //
-        //                    print("Sent video successfully")
-        //                }
-        //            }
-        //        }
-        //
-        //        if text != nil {
-        //            COLLECTION_CONVERSATIONS.document("test").updateData([
-        //                "messages" : FieldValue.arrayUnion([dictionary])
-        //            ]) { error in
-        //                if let error = error {
-        //                    print("DEBUG: error sending message \(error.localizedDescription)")
-        //                    return
-        //                }
-        //
-        //                print("Sent message successfully")
-        //            }
-        //        }
+        if let url = url {
+            if type == .Video {
+                MediaUploader.shared.uploadVideo(url: url) { newURL in
+                    
+                    dictionary["url"] = newURL
+                    
+                    COLLECTION_CONVERSATIONS.document("test").updateData([
+                        "messages" : FieldValue.arrayUnion([dictionary])
+                    ]) { error in
+                        if let error = error {
+                            print("DEBUG: error uploading video \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        print("Sent video successfully")
+                    }
+                }
+            } else {
+                MediaUploader.shared.uploadAudio(url: url) { newUrl in
+                    dictionary["url"] = newUrl
+
+                    COLLECTION_CONVERSATIONS.document("test").updateData([
+                        "messages" : FieldValue.arrayUnion([dictionary])
+                    ]) { error in
+                        if let error = error {
+                            print("DEBUG: error uploading video \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        print("Sent Audio successfully")
+                    }
+                }
+            }
+            
+        }
+        
+        if text != nil {
+            COLLECTION_CONVERSATIONS.document("test").updateData([
+                "messages" : FieldValue.arrayUnion([dictionary])
+            ]) { error in
+                if let error = error {
+                    print("DEBUG: error sending message \(error.localizedDescription)")
+                    return
+                }
+                
+                print("Sent message successfully")
+            }
+        }
         
         if let image = image {
             

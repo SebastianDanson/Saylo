@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Kingfisher
+import AVFoundation
 
 struct CameraMainView: View {
     

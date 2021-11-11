@@ -16,12 +16,15 @@ struct VideoPlayerView: View {
     
     @State var player: AVPlayer
     @ObservedObject var viewModel: VideoPlayerViewModel
-    
+    private var exporter: AVAssetExportSession?
+
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.width
     var showName: Bool
     
     init(url: URL, id: String? = nil, showName: Bool = true) {
+      
+
         let player = AVPlayer(url: url)
         self.player = player
         self.viewModel = VideoPlayerViewModel(player: player)
@@ -38,8 +41,12 @@ struct VideoPlayerView: View {
             let ratio = size.height/size.width
             height = height * ratio
             print(width, height, ratio)
-        }        
+        }
+        
     }
+    
+    //TODO asynchornously load videos
+    //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
     
     var body: some View {
         ZStack {
@@ -63,7 +70,7 @@ struct VideoPlayerView: View {
                     }
                         .padding(12),
                     alignment: .bottomLeading)
-                .simultaneousGesture(TapGesture().onEnded({ _ in
+                .gesture(TapGesture().onEnded({ _ in
                     viewModel.togglePlay()
                 }))
         }
@@ -75,6 +82,7 @@ struct VideoPlayerView: View {
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
+    
 }
 
 //struct VideoPlayerView_Previews: PreviewProvider {
@@ -126,7 +134,8 @@ struct PlayerView: UIViewRepresentable {
 
 class PlayerUIView: UIView {
     private let playerLayer = AVPlayerLayer()
-    
+    private var exporter: AVAssetExportSession?
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -147,6 +156,7 @@ class PlayerUIView: UIView {
         
         // Start the movie
         player.play()
+        
     }
     
     @objc
@@ -158,6 +168,7 @@ class PlayerUIView: UIView {
         super.layoutSubviews()
         playerLayer.frame = bounds
     }
+    
 }
 
 extension AVPlayer {
@@ -165,3 +176,4 @@ extension AVPlayer {
         return rate != 0 && error == nil
     }
 }
+

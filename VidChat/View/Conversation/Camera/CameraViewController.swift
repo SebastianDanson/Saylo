@@ -56,7 +56,7 @@ class CameraViewController: UIViewController {
     func getTempUrl() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
         if directory != "" {
-            let path = directory.appendingPathComponent("video\(UUID().uuidString).mov")
+            let path = directory.appendingPathComponent("\(UUID().uuidString).mov")
             return URL(fileURLWithPath: path)
         }
         return nil
@@ -226,6 +226,7 @@ class CameraViewController: UIViewController {
 
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        print(outputFileURL, "URL")
         if let error = error {
             print("error fileOutput: \(error.localizedDescription)")
         } else {
@@ -341,6 +342,7 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         // 9 - Perform the Export
         exporter.exportAsynchronously {
             DispatchQueue.main.async {
+                print(exporter.outputURL, "OOOOO")
                 handler(exporter.outputURL!)
             }
         }
