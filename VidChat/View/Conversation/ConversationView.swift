@@ -33,40 +33,36 @@ struct ConversationView: View {
             ZStack {
                 
                 //Feed
-                
-                ScrollView(axes: .vertical, showsIndicators: false, offsetChanged: { point in
-                    hasScrolledToVideo = false
-                }) {
+//                LazyVStack(spacing: 12) {
+
+                ScrollView(.vertical, showsIndicators: false) {
                     
                     ScrollViewReader { reader in
                         
-                        LazyVStack(spacing: 12) {
                             
                             ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
                                 
-                                withAnimation {
                                     MessageCell(message: viewModel.messages[i])
-                                        .transition(.move(edge: .bottom))
-                                        .offset(x: 0, y: dragOffset.height - 8)
+                                    .transition(.move(edge: .bottom))
+                                    .offset(x: 0, y: dragOffset.height - 8)
                                         .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : 0)
-                                        .padding(.top, i == 0 ? 60 : 0)
+                                        .padding(.top, i == 0 ? 100 : 0)
+                                        .onAppear {
+                                            if i != viewModel.messages.count - 1 {
+                                                viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
+                                            }
+                                            reader.scrollTo(viewModel.messages.last!.id, anchor: .bottom)
+                                        }
+                                
                                         .simultaneousGesture(
-                                            viewModel.messages[i].type == .Video ?
+                                            canScroll(atIndex: i)  ?
                                             DragGesture(minimumDistance: 0, coordinateSpace: .local)
                                                 .onChanged { gesture in
-                                                    
                                                     dragOffset.height = gesture.translation.height
                                                     hasScrolledToVideo = true
                                                     viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
                                                 }
                                                 .onEnded { gesture in
-//                                                    let velocity = CGSize(
-//                                                            width:  gesture.predictedEndLocation.x - gesture.location.x,
-//                                                            height:
-//                                                        )
-//
-//                                                    print(velocity, "VELOCITY")
-//                                                    print(gesture.velocity)
                                                     handleOnDragEnd(translation: gesture.translation,
                                                                     velocity: gesture.predictedEndLocation.y -
                                                                                 gesture.location.y,
@@ -74,9 +70,10 @@ struct ConversationView: View {
                                                                     reader: reader)
                                                 } : nil
                                         )
-                                }
-                            }
-                        }.flippedUpsideDown()
+                                
+                            //}
+                        }
+                        .flippedUpsideDown()
                     }
                 }
                 .flippedUpsideDown()
@@ -85,7 +82,7 @@ struct ConversationView: View {
                 //Camera
                 if viewModel.showCamera {
                     CameraViewModel.shared.cameraView
-                        .transition(.move(edge: .bottom))
+                        .transition(.opacity)
                 }
             }
             
@@ -120,17 +117,34 @@ struct ConversationView: View {
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
     
+    func canScroll(atIndex i: Int) -> Bool {
+         isScrollType(index: i) && isPrevScrollable(index: i) && isNextScrollable(index: i)
+    }
+    
+    func isScrollType(index i: Int) -> Bool {
+        viewModel.messages[i].type == .Video || viewModel.messages[i].type == .Photo
+    }
+    
+    func isPrevScrollable(index i: Int) -> Bool {
+       (i > 0 && isScrollType(index: i - 1)) || i == 0
+    }
+    
+    func isNextScrollable(index i: Int) -> Bool {
+        (i < viewModel.messages.count - 1 && isScrollType(index: i + 1)) || (i == viewModel.messages.count - 1)
+    }
+    
+    
     func handleOnDragEnd(translation: CGSize, velocity: CGFloat, index i: Int, reader: ScrollViewProxy) {
         
-               
-        withAnimation(.easeInOut(duration: 0.3)) {
-            dragOffset = .zero
-        }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             canScroll = true
         }
         
+        withAnimation(.easeInOut(duration: 0.3)) {
+            dragOffset = .zero
+        }
+
         if translation.height < 0 {
             if viewModel.messages.count > i + 1 {
                 handleOnDragEndScroll(currentIndex: i, nextIndex: i+1)
@@ -145,7 +159,6 @@ struct ConversationView: View {
         
         func handleOnDragEndScroll(currentIndex: Int, nextIndex: Int) {
           //  if hasScrolledToVideo {
-           // print(dragOffset.height , "HEIGHT")
             if abs(velocity) > 180 {
                 if let currentMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[currentIndex].id }) {
                     currentMessagePlayer.player.pause()
@@ -236,6 +249,7 @@ struct OptionsView: View {
                             withAnimation {
                                 cameraViewModel.handleTap()
                                 viewModel.showCamera = true
+                                viewModel.players.forEach({ $0.player.pause() })
                             }
                         }, label: {
                             CameraCircle().padding(.horizontal, 10)
@@ -368,9 +382,7 @@ struct ChatOptions: View {
                     .padding(.vertical, 10)
             }
 
-            
-            
-            Spacer()
+           Spacer()
             
             KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
                 .resizable()
@@ -458,44 +470,44 @@ struct AudioOptions: View {
     }
 }
 
-private struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGPoint = .zero
-    
-    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {}
-}
+//private struct ScrollOffsetPreferenceKey: PreferenceKey {
+//    static var defaultValue: CGPoint = .zero
+//
+//    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {}
+//}
 
-struct ScrollView<Content: View>: View {
-    let axes: Axis.Set
-    let showsIndicators: Bool
-    let offsetChanged: (CGPoint) -> Void
-    let content: Content
-    
-    init(
-        axes: Axis.Set = .vertical,
-        showsIndicators: Bool = true,
-        offsetChanged: @escaping (CGPoint) -> Void = { _ in },
-        @ViewBuilder content: () -> Content
-    ) {
-        self.axes = axes
-        self.showsIndicators = showsIndicators
-        self.offsetChanged = offsetChanged
-        self.content = content()
-    }
-    
-    var body: some View {
-        SwiftUI.ScrollView(axes, showsIndicators: showsIndicators) {
-            GeometryReader { geometry in
-                Color.clear.preference(
-                    key: ScrollOffsetPreferenceKey.self,
-                    value: geometry.frame(in: .named("scrollView")).origin
-                )
-            }.frame(width: 0, height: 0)
-            content
-        }
-        .coordinateSpace(name: "scrollView")
-        .onPreferenceChange(ScrollOffsetPreferenceKey.self, perform: offsetChanged)
-    }
-}
+//struct ScrollView<Content: View>: View {
+//    let axes: Axis.Set
+//    let showsIndicators: Bool
+//    let offsetChanged: (CGPoint) -> Void
+//    let content: Content
+//
+//    init(
+//        axes: Axis.Set = .vertical,
+//        showsIndicators: Bool = true,
+//        offsetChanged: @escaping (CGPoint) -> Void = { _ in },
+//        @ViewBuilder content: () -> Content
+//    ) {
+//        self.axes = axes
+//        self.showsIndicators = showsIndicators
+//        self.offsetChanged = offsetChanged
+//        self.content = content()
+//    }
+//
+//    var body: some View {
+//        SwiftUI.ScrollView(axes, showsIndicators: showsIndicators) {
+//            GeometryReader { geometry in
+//                Color.clear.preference(
+//                    key: ScrollOffsetPreferenceKey.self,
+//                    value: geometry.frame(in: .named("scrollView")).origin
+//                )
+//            }.frame(width: 0, height: 0)
+//            content
+//        }
+//        .coordinateSpace(name: "scrollView")
+//        .onPreferenceChange(ScrollOffsetPreferenceKey.self, perform: offsetChanged)
+//    }
+//}
 
 
 struct KeyboardView: View {
@@ -526,7 +538,7 @@ struct KeyboardView: View {
             
             Button {
                 if !text.isEmpty {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    withAnimation(.linear(duration: 0.15)) {
                         viewModel.addMessage(text: text, type: .Text)
                         text = ""
                     }

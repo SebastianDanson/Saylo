@@ -40,7 +40,6 @@ struct VideoPlayerView: View {
         if let size = resolutionForLocalVideo(url: url) {
             let ratio = size.height/size.width
             height = height * ratio
-            print(width, height, ratio)
         }
         
     }
@@ -49,8 +48,7 @@ struct VideoPlayerView: View {
     //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
     
     var body: some View {
-        ZStack {
-            PlayerView(player: $player)
+        PlayerView(player: $player)
                 .frame(width: width, height: height)
                 .overlay(
                     HStack {
@@ -68,12 +66,12 @@ struct VideoPlayerView: View {
                             .foregroundColor(.white)
                         }
                     }
-                        .padding(12),
+                        .padding(16),
                     alignment: .bottomLeading)
                 .gesture(TapGesture().onEnded({ _ in
                     viewModel.togglePlay()
                 }))
-        }
+
     }
     
     
@@ -84,13 +82,6 @@ struct VideoPlayerView: View {
     }
     
 }
-
-//struct VideoPlayerView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        VideoPlayerView()
-//    }
-//}
-
 
 class Host : UIHostingController<VideoPlayerView>{
     
@@ -142,6 +133,7 @@ class PlayerUIView: UIView {
     
     init(frame: CGRect, player: AVPlayer) {
         super.init(frame: frame)
+        
         // Setup the player
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspect
@@ -154,9 +146,8 @@ class PlayerUIView: UIView {
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem)
         
-        // Start the movie
+       
         player.play()
-        
     }
     
     @objc

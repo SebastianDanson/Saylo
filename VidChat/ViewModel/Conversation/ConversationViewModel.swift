@@ -44,7 +44,7 @@ class ConversationViewModel: ObservableObject {
         CacheManager.removeOldFiles()
     }
     
-    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType) {
+    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, shouldExport: Bool = true) {
         
         //       guard let user = AuthViewModel.shared.currentUser else {return}
         
@@ -77,10 +77,9 @@ class ConversationViewModel: ObservableObject {
             dictionary["type"] = "text"
         }
         
-        var message = Message(dictionary: dictionary, id: id)
+        let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
         message.image = image
         self.messages.append(message)
-        
         
         if let url = url {
             if type == .Video {

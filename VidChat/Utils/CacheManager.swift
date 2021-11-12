@@ -12,11 +12,8 @@ class CacheManager {
     
     static func getCachedUrl(_ url: URL, isVideo: Bool) -> URL {
         if fileExists(forUrl: url, isVideo: isVideo) {
-            print("EXOSTS")
             return createNewPath(lastPath: url.lastPathComponent.appending(isVideo ? ".mov" : ".m4a"))
         } else {
-            print("NO EXOSTS")
-
             isVideo ? (exportSession(forUrl: url)) : (exportAudio(forUrl: url))
             return url
         }

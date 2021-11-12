@@ -52,7 +52,7 @@ struct CameraMainView: View {
             
         }
         .ignoresSafeArea()
-        .background(Color(white: 0, opacity: 1))
+        .background(Color(white: 0, opacity: 0.5))
     }
     
     func startRecording() {
@@ -124,9 +124,10 @@ struct SendButton: View {
     var body: some View {
         
         Button(action: {
-            withAnimation {
+            withAnimation(.linear(duration: 0.2)) {
                 ConversationViewModel.shared.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
-                                                        type: viewModel.videoUrl == nil ? .Photo : .Video)
+                                                        type: viewModel.videoUrl == nil ? .Photo : .Video,
+                                                        shouldExport: false)
                 viewModel.reset()
             }
         }, label: {

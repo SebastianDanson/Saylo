@@ -51,7 +51,7 @@ class Message: Identifiable {
     //date
     let timestamp: Timestamp
     
-    init(dictionary: [String:Any], id: String) {
+    init(dictionary: [String:Any], id: String, exportVideo: Bool = true) {
         
         //ids
         self.id = id
@@ -71,7 +71,7 @@ class Message: Identifiable {
         self.text = dictionary["text"] as? String
         
         //checkCache
-        if let urlString = url, let url = URL(string: urlString) {
+        if exportVideo, let urlString = url, let url = URL(string: urlString) {
             self.url = CacheManager.getCachedUrl(url, isVideo: type == .Video).absoluteString
         }
     }

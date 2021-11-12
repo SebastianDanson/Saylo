@@ -322,7 +322,7 @@ struct SelectedUsersView: View {
         ZStack {
             
             ZStack() {
-                ScrollView(axes: .horizontal, showsIndicators: false) {
+                ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(Array(users.enumerated()), id: \.1.id) { i, user in
                             SelectedUserView(user: user, users: $users)
