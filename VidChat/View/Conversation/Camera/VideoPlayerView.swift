@@ -23,7 +23,6 @@ struct VideoPlayerView: View {
     var showName: Bool
     
     init(url: URL, id: String? = nil, showName: Bool = true) {
-      
 
         let player = AVPlayer(url: url)
         self.player = player

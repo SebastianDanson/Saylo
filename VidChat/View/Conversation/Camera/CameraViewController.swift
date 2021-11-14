@@ -21,6 +21,13 @@ class CameraViewController: UIViewController {
         let isFrontFacing:Bool
     }
     
+    //TODO flash on photo
+    
+    //Zoom propertis
+    let minimumZoom: CGFloat = 1.0
+    let maximumZoom: CGFloat = 5.0
+    var lastZoomFactor: CGFloat = 1.0
+    
     private var recordings = [AVURLAsset]()
     
     weak var delegate: CameraViewControllerDelegate?
@@ -152,6 +159,9 @@ class CameraViewController: UIViewController {
         previewLayer.frame = view.bounds
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
         view.layer.addSublayer(previewLayer)
+        
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
+        self.view.addGestureRecognizer(pinchRecognizer)
     }
     
     func startSession() {
@@ -200,10 +210,14 @@ class CameraViewController: UIViewController {
         movieOutput.startRecording(to: outUrl, recordingDelegate: self)
     }
     
-    public func takePhoto() {
+    public func takePhoto(withFlash hasFlash: Bool) {
         let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
         //        photoSettings.isHighResolutionPhotoEnabled = true
-        photoSettings.flashMode = self.hasFlash ? .on : .off
+        photoSettings.flashMode = hasFlash ? .on : .off
+        print(hasFlash, "HAS FLASH")
+        guard let connection = photoOutput.connection(with: .video) else { return }
+        connection.isVideoMirrored = activeInput.device.position == .front
+        
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
@@ -222,6 +236,36 @@ class CameraViewController: UIViewController {
             }
         }
     }
+    
+    @objc func pinch(_ pinch: UIPinchGestureRecognizer) {
+            let device = activeInput.device
+
+            // Return zoom value between the minimum and maximum zoom values
+            func minMaxZoom(_ factor: CGFloat) -> CGFloat {
+                return min(min(max(factor, minimumZoom), maximumZoom), device.activeFormat.videoMaxZoomFactor)
+            }
+
+            func update(scale factor: CGFloat) {
+                do {
+                    try device.lockForConfiguration()
+                    defer { device.unlockForConfiguration() }
+                    device.videoZoomFactor = factor
+                } catch {
+                    print("\(error.localizedDescription)")
+                }
+            }
+
+            let newScaleFactor = minMaxZoom(pinch.scale * lastZoomFactor)
+
+            switch pinch.state {
+            case .began: fallthrough
+            case .changed: update(scale: newScaleFactor)
+            case .ended:
+                lastZoomFactor = minMaxZoom(newScaleFactor)
+                update(scale: lastZoomFactor)
+            default: break
+            }
+        }
 }
 
 extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
@@ -342,7 +386,6 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
         // 9 - Perform the Export
         exporter.exportAsynchronously {
             DispatchQueue.main.async {
-                print(exporter.outputURL, "OOOOO")
                 handler(exporter.outputURL!)
             }
         }
@@ -351,6 +394,7 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        CameraViewModel.shared.isTakingPhoto = false
         if let imageData = photo.fileDataRepresentation() {
             if let uiImage = UIImage(data: imageData){
                 CameraViewModel.shared.photo = uiImage

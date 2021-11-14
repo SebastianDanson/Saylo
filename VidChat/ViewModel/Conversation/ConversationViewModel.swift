@@ -36,6 +36,8 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
+    private var uploadQueue = [[String:Any]]()
+    private var isUploadingMessage = false
     
     static let shared = ConversationViewModel()
     
@@ -80,85 +82,69 @@ class ConversationViewModel: ObservableObject {
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
         message.image = image
         self.messages.append(message)
-        
+        uploadQueue.append(dictionary)
+
         if let url = url {
             if type == .Video {
                 MediaUploader.shared.uploadVideo(url: url) { newURL in
-                    
-                    dictionary["url"] = newURL
-                    
-                    COLLECTION_CONVERSATIONS.document("test").updateData([
-                        "messages" : FieldValue.arrayUnion([dictionary])
-                    ]) { error in
-                        if let error = error {
-                            print("DEBUG: error uploading video \(error.localizedDescription)")
-                            return
-                        }
-                        
-                        print("Sent video successfully")
-                    }
+                    self.mediaFinishedUploading(id: id, newUrl: newURL)
                 }
             } else {
-                MediaUploader.shared.uploadAudio(url: url) { newUrl in
-                    dictionary["url"] = newUrl
-
-                    COLLECTION_CONVERSATIONS.document("test").updateData([
-                        "messages" : FieldValue.arrayUnion([dictionary])
-                    ]) { error in
-                        if let error = error {
-                            print("DEBUG: error uploading video \(error.localizedDescription)")
-                            return
-                        }
-                        
-                        print("Sent Audio successfully")
-                    }
+                MediaUploader.shared.uploadAudio(url: url) { newURL in
+                    self.mediaFinishedUploading(id: id, newUrl: newURL)
                 }
             }
-            
-        }
-        
-        if text != nil {
-            COLLECTION_CONVERSATIONS.document("test").updateData([
-                "messages" : FieldValue.arrayUnion([dictionary])
-            ]) { error in
-                if let error = error {
-                    print("DEBUG: error sending message \(error.localizedDescription)")
-                    return
-                }
-                
-                print("Sent message successfully")
-            }
-        }
-        
-        if let image = image {
-            
+        } else if text != nil {
+            self.atomicallyUploadMessage(toDocWithId: "test", messageId: id)
+        } else if let image = image {
             MediaUploader.uploadImage(image: image, type: .photo) { newURL in
-                dictionary["url"] = newURL
+                self.mediaFinishedUploading(id: id, newUrl: newURL)
+            }
+        }
+    }
+    
+    func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
+        let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
+        if index == 0 {
+            uploadMessage(toDocWithId: id)
+            return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.atomicallyUploadMessage(toDocWithId: id, messageId: messageId)
+        }
+    }
+    
+    func mediaFinishedUploading(id: String, newUrl: String) {
+        let index = uploadQueue.firstIndex(where:{$0["id"] as? String == id})
+        self.uploadQueue[index!]["url"] = newUrl
+        self.atomicallyUploadMessage(toDocWithId: "test", messageId: id)
+    }
+    
+    func uploadMessage(toDocWithId docId: String) {
+        if !isUploadingMessage {
+            self.isUploadingMessage = true
+            let data = uploadQueue[0]
+            ConversationService.uploadMessage(toDocWithId: docId, data: data) { error in
+                if let error = error {
+                    print("ERROR uploading message \(error.localizedDescription)")
+                } else {
+                    print("Message uploaded successfully")
+                }
                 
-                COLLECTION_CONVERSATIONS.document("test").updateData([
-                    "messages" : FieldValue.arrayUnion([dictionary])
-                ]) { error in
-                    if let error = error {
-                        print("DEBUG: error uploading video \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    print("Sent Image successfully")
+                self.isUploadingMessage = false
+                self.uploadQueue.remove(at: 0)
+                
+                if self.uploadQueue.count > 0 {
+                    self.uploadMessage(toDocWithId: docId)
                 }
             }
         }
     }
     
     func fetchMessages() {
-        COLLECTION_CONVERSATIONS.document("test").getDocument { snapshot, _ in
-            if let data = snapshot?.data() {
-                let messages = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
-                
-                messages.forEach { message in
-                    let id = message["id"] as? String ?? ""
-                    self.messages.append(Message(dictionary: message, id: id))
-                }
-            }
+        ConversationService.fetchMessages(forDocWithId: "test") { messages in
+            self.messages = messages
         }
     }
 }

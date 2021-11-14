@@ -16,6 +16,7 @@ class CameraViewModel: ObservableObject {
     @Published var hasFlash = false
     @Published var progress = 0.0
     @Published var isRecording = false
+    @Published var isShowingPhotoCamera = false
     @Published var isTakingPhoto = false
     @Published var cameraView = CameraMainView()
     @Published var hasSentWithoutCrop = false
@@ -37,7 +38,7 @@ class CameraViewModel: ObservableObject {
         videoUrl = nil
         progress = 0.0
         isRecording = false
-        isTakingPhoto = false
+        isShowingPhotoCamera = false
         photo = nil
         ConversationViewModel.shared.showCamera = false
     }
@@ -67,7 +68,7 @@ class CameraViewModel: ObservableObject {
     
     func handleTap() {
         if ConversationViewModel.shared.showCamera {
-            if CameraViewModel.shared.isTakingPhoto {
+            if CameraViewModel.shared.isShowingPhotoCamera {
                 takePhoto()
             } else {
                 isRecording ? stopRecording() : startRecording()

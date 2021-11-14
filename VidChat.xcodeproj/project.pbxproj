@@ -63,6 +63,7 @@
 		3F485DCC26FE29FB0071532B /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F485DCB26FE29FB0071532B /* CustomTextField.swift */; };
 		3F485DCE26FE2A080071532B /* CustomSecureField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F485DCD26FE2A080071532B /* CustomSecureField.swift */; };
 		3F485DE626FE38990071532B /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F485DE526FE38990071532B /* AuthViewModel.swift */; };
+		3F4C618127402A09003EE726 /* ConversationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4C618027402A09003EE726 /* ConversationService.swift */; };
 		3F50C6F4270195B30027D080 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F50C6F3270195B30027D080 /* CameraViewModel.swift */; };
 		3F7786B127230DB5005AF9DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */; };
 		3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7786B727231E8A005AF9DA /* CallKit.framework */; };
@@ -141,6 +142,7 @@
 		3F485DCB26FE29FB0071532B /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		3F485DCD26FE2A080071532B /* CustomSecureField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSecureField.swift; sourceTree = "<group>"; };
 		3F485DE526FE38990071532B /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		3F4C618027402A09003EE726 /* ConversationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationService.swift; sourceTree = "<group>"; };
 		3F50C6F3270195B30027D080 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		3F7786AF27225958005AF9DA /* VidChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VidChat.entitlements; sourceTree = "<group>"; };
 		3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -334,6 +336,7 @@
 		3F485D8A26FD457E0071532B /* API */ = {
 			isa = PBXGroup;
 			children = (
+				3F4C618027402A09003EE726 /* ConversationService.swift */,
 				3F95F44B26FE45BC00F892B7 /* MediaUploader.swift */,
 				3F8B027026FEB10E00841565 /* UserService.swift */,
 			);
@@ -636,6 +639,7 @@
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
 				3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */,
 				3F8B029926FF7DC200841565 /* EditProfileView.swift in Sources */,
+				3F4C618127402A09003EE726 /* ConversationService.swift in Sources */,
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
 				3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */,

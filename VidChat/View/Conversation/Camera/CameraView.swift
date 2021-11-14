@@ -36,8 +36,8 @@ struct CameraView: UIViewControllerRepresentable {
         cameraViewController.stopRecording()
     }
     
-    public func takephoto() {
-        cameraViewController.takePhoto()
+    public func takephoto(withFlash hasFlash: Bool) {
+        cameraViewController.takePhoto(withFlash: hasFlash)
     }
     
     public func setupSession() {

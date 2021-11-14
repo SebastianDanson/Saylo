@@ -223,7 +223,7 @@ struct OptionsView: View {
                             //Camera button
                             Button(action: {
                                 withAnimation(.linear(duration: 0.15)) {
-                                    cameraViewModel.isTakingPhoto = true
+                                    cameraViewModel.isShowingPhotoCamera = true
                                     viewModel.showCamera = true
                                 }
                             }, label: {
@@ -341,7 +341,7 @@ struct CameraCircle: View {
             .rotationEffect(Angle(degrees: 270))
             .overlay(
                 Circle()
-                    .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isTakingPhoto ? .white : Color(.systemGray)),
+                    .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isShowingPhotoCamera ? .white : Color(.systemGray)),
                                   lineWidth: viewModel.isRecording ? 3 : 6)
                     .background(
                         VStack {

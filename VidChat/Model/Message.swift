@@ -73,6 +73,7 @@ class Message: Identifiable {
         //checkCache
         if exportVideo, let urlString = url, let url = URL(string: urlString) {
             self.url = CacheManager.getCachedUrl(url, isVideo: type == .Video).absoluteString
+            print(self.url, "SELF>URL")
         }
     }
 }

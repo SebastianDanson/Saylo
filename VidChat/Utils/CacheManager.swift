@@ -8,6 +8,9 @@
 import Foundation
 import AVFoundation
 
+//TODO try saving to temp directory not cache
+
+
 class CacheManager {
     
     static func getCachedUrl(_ url: URL, isVideo: Bool) -> URL {
@@ -20,8 +23,9 @@ class CacheManager {
     }
     
     static func createNewPath(lastPath: String) -> URL {
-        let cachesDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!
-        
+       // let cachesDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!
+        let cachesDirectory = NSTemporaryDirectory()
+
         let destination = URL(fileURLWithPath: String(format: "%@/%@", cachesDirectory, lastPath))
         return destination
     }
@@ -54,25 +58,26 @@ class CacheManager {
          let fileName = asset.url.lastPathComponent
          
          // let outputURL = documentsDirectory.appendingPathComponent(fileName)
-         guard
-             let cacheDirectory = FileManager.default.urls(
-                 for: .cachesDirectory,
-                    in: .userDomainMask).first
-         else { return }
+//         guard
+//             let cacheDirectory = FileManager.default.urls(
+//                 for: .cachesDirectory,
+//                    in: .userDomainMask).first
+//         else { return }
          
+        let cacheDirectory = NSTemporaryDirectory() as NSString
+
          let outputURL = cacheDirectory.appendingPathComponent("\(fileName).m4a")
          print("File path: \(outputURL)")
          
-         if FileManager.default.fileExists(atPath: outputURL.path) {
+         if FileManager.default.fileExists(atPath: outputURL) {
              do {
-                 print("REMOVING", outputURL.lastPathComponent)
-                  try FileManager.default.removeItem(at: outputURL)
+                  try FileManager.default.removeItem(at: URL(string: outputURL)!)
              } catch let error {
                  print("Failed to delete file with error: \(error)")
              }
          }
          
-         exporter.outputURL = outputURL
+         exporter.outputURL = URL(fileURLWithPath: outputURL)
          exporter.outputFileType = AVFileType.m4a
          
          exporter.exportAsynchronously {
@@ -93,6 +98,7 @@ class CacheManager {
         
         if let compositionVideoTrack = composition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: CMPersistentTrackID(kCMPersistentTrackID_Invalid)),
            let sourceVideoTrack = asset.tracks(withMediaType: .video).first {
+            compositionVideoTrack.preferredTransform = sourceVideoTrack.preferredTransform
             do {
                 try compositionVideoTrack.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: sourceVideoTrack, at: CMTime.zero)
             } catch {
@@ -100,6 +106,7 @@ class CacheManager {
                 return
             }
         }
+       
         if let compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: CMPersistentTrackID(kCMPersistentTrackID_Invalid)),
            let sourceAudioTrack = asset.tracks(withMediaType: .audio).first {
             do {
@@ -120,27 +127,29 @@ class CacheManager {
         let fileName = asset.url.lastPathComponent
         
         // let outputURL = documentsDirectory.appendingPathComponent(fileName)
-        guard
-            let cacheDirectory = FileManager.default.urls(
-                for: .cachesDirectory,
-                   in: .userDomainMask).first
-        else { return }
+//        guard
+//            let cacheDirectory = FileManager.default.urls(
+//                for: .cachesDirectory,
+//                   in: .userDomainMask).first
+//        else { return }
+       let cacheDirectory = NSTemporaryDirectory() as NSString
+
         
         let outputURL = cacheDirectory.appendingPathComponent("\(fileName).mov")
         print("File path: \(outputURL)")
         
-        if FileManager.default.fileExists(atPath: outputURL.path) {
+        if FileManager.default.fileExists(atPath: outputURL) {
             do {
-                print("REMOVING", outputURL.lastPathComponent)
+//                print("REMOVING", outputURL.lastPathComponent)
                 // try FileManager.default.removeItem(at: outputURL)
             } catch let error {
                 print("Failed to delete file with error: \(error)")
             }
         }
         
-        exporter.outputURL = outputURL
+        exporter.outputURL = URL(fileURLWithPath: outputURL)
         exporter.outputFileType = AVFileType.mp4
-        
+       
         exporter.exportAsynchronously {
             print("Exporter did finish")
             if let error = exporter.error {
@@ -153,16 +162,19 @@ class CacheManager {
         let fileName = url.lastPathComponent
         
         // let outputURL = documentsDirectory.appendingPathComponent(fileName)
-        guard
-            let cacheDirectory = FileManager.default.urls(
-                for: .cachesDirectory,
-                   in: .userDomainMask).first
-        else { return false }
+//        guard
+//            let cacheDirectory = FileManager.default.urls(
+//                for: .cachesDirectory,
+//                   in: .userDomainMask).first
+//        else { return false }
+        let cacheDirectory = NSTemporaryDirectory() as NSString
+
         
         let pathComp = isVideo ? "\(fileName).mov" : "\(fileName).m4a"
         let outputURL = cacheDirectory.appendingPathComponent(pathComp)
         
-        return FileManager.default.fileExists(atPath: outputURL.path)
+        print(FileManager.default.fileExists(atPath: outputURL), "FILE EXISTS")
+        return FileManager.default.fileExists(atPath: outputURL)
     }
     
     static func removeOldFiles() {

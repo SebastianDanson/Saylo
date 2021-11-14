@@ -101,28 +101,17 @@ class MediaUploader {
     }
     
     func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
-        print("VIDEO")
         let ref = UploadType.video.filePath
-        // Get source video
-        let videoToCompress = url
-        
-        // Declare destination path and remove anything exists in it
-        let destinationPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("compressed.mp4")
-        try? FileManager.default.removeItem(at: destinationPath)
         
         // Compress
-        let cancelable = compressh264VideoInBackground(
-            videoToCompress: videoToCompress,
-            destinationPath: destinationPath,
-            size: nil, // nil preserves original,
-            //size: CompressionSize(width: Int(UIScreen.main.bounds.width), height: Int(UIScreen.main.bounds.width * 1.2)),
-            compressionTransform: .keepSame,
-            compressionConfig: .defaultConfig,
-            completionHandler: { [weak self] path in
-                MediaUploader.shared.checkFileSize(sizeUrl: url, message: "BEFORE SIZE")
-                MediaUploader.shared.checkFileSize(sizeUrl: path, message: "AFTER SIZE")
+        compressFile(url) { (compressedURL) in
+
+           // remove activity indicator
+           // do something with the compressedURL such as sending to Firebase or playing it in a player on the *main queue*
+                //MediaUploader.shared.checkFileSize(sizeUrl: url, message: "BEFORE SIZE")
+                //MediaUploader.shared.checkFileSize(sizeUrl: path, message: "AFTER SIZE")
                 
-                ref.putFile(from: path, metadata: nil) { _, error in
+                ref.putFile(from: compressedURL, metadata: nil) { _, error in
                     if let error = error {
                         print("DEBUG: Failed to upload video \(error.localizedDescription)")
                         return
@@ -138,18 +127,181 @@ class MediaUploader {
                         completion(videoUrl)
                     }
                 }
-            },
-            errorHandler: { e in
-                print("Error: ", e)
-            },
-            cancelHandler: {
-                print("Canceled.")
             }
-        )
+//            errorHandler: { e in
+//                print("Error: ", e)
+//            },
+//            cancelHandler: {
+//                print("Canceled.")
+//            }
+       // )
         
         // To cancel compression, set cancel flag to true and wait for handler invoke
         //   cancelable.cancel = true
         
+    }
+    
+    func compressFile(_ urlToCompress: URL, completion:@escaping (URL)->Void) {
+        var assetWriter: AVAssetWriter!
+        var assetReader: AVAssetReader?
+        let bitrate: NSNumber = NSNumber(value: 1024 * 1024 * 4)
+        var audioFinished = false
+        var videoFinished = false
+        checkFileSize(sizeUrl: urlToCompress, message: "BEFORE SIZE")
+        
+        let asset = AVAsset(url: urlToCompress)
+        
+        //create asset reader
+        do {
+            assetReader = try AVAssetReader(asset: asset)
+        } catch {
+            assetReader = nil
+        }
+        
+        guard let reader = assetReader else {
+            print("Could not iniitalize asset reader probably failed its try catch")
+            // show user error message/alert
+            return
+        }
+        
+        guard let videoTrack = asset.tracks(withMediaType: AVMediaType.video).first else { return }
+        let videoReaderSettings: [String:Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32ARGB]
+        
+        let assetReaderVideoOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: videoReaderSettings)
+        
+        var assetReaderAudioOutput: AVAssetReaderTrackOutput?
+        if let audioTrack = asset.tracks(withMediaType: AVMediaType.audio).first {
+            
+            let audioReaderSettings: [String : Any] = [
+                AVFormatIDKey: kAudioFormatLinearPCM,
+                AVSampleRateKey: 44100,
+                AVNumberOfChannelsKey: 2
+            ]
+            
+            assetReaderAudioOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: audioReaderSettings)
+            
+            if reader.canAdd(assetReaderAudioOutput!) {
+                reader.add(assetReaderAudioOutput!)
+            } else {
+                print("Couldn't add audio output reader")
+                // show user error message/alert
+                return
+            }
+        }
+        
+        if reader.canAdd(assetReaderVideoOutput) {
+            reader.add(assetReaderVideoOutput)
+        } else {
+            print("Couldn't add video output reader")
+            // show user error message/alert
+            return
+        }
+        
+        let videoSettings:[String:Any] = [
+            AVVideoCompressionPropertiesKey: [AVVideoAverageBitRateKey: bitrate],
+            AVVideoCodecKey: AVVideoCodecType.h264,
+            AVVideoHeightKey: videoTrack.naturalSize.height,
+            AVVideoWidthKey: videoTrack.naturalSize.width,
+            AVVideoScalingModeKey: AVVideoScalingModeResizeAspectFill
+        ]
+        
+        let audioSettings: [String:Any] = [AVFormatIDKey : kAudioFormatMPEG4AAC,
+                                           AVNumberOfChannelsKey : 2,
+                                           AVSampleRateKey : 44100.0,
+                                           AVEncoderBitRateKey: 128000
+        ]
+        
+        let audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioSettings)
+        let videoInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
+        videoInput.transform = videoTrack.preferredTransform
+        
+        let videoInputQueue = DispatchQueue(label: "videoQueue")
+        let audioInputQueue = DispatchQueue.global(qos: .userInteractive)
+        
+        do {
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
+            let date = Date()
+            let tempDir = NSTemporaryDirectory()
+            let outputPath = "\(tempDir)/\(formatter.string(from: date)).mp4"
+            let outputURL = URL(fileURLWithPath: outputPath)
+            
+            assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: AVFileType.mp4)
+            
+        } catch {
+            assetWriter = nil
+        }
+        guard let writer = assetWriter else {
+            print("assetWriter was nil")
+            // show user error message/alert
+            return
+        }
+        
+        writer.shouldOptimizeForNetworkUse = true
+        writer.add(videoInput)
+        writer.add(audioInput)
+        
+        writer.startWriting()
+        reader.startReading()
+        writer.startSession(atSourceTime: CMTime.zero)
+        
+        let closeWriter:()->Void = {
+            if (audioFinished && videoFinished) {
+                assetWriter?.finishWriting(completionHandler: { [weak self] in
+                    
+                    if let assetWriter = assetWriter {
+                        do {
+                            let data = try Data(contentsOf: assetWriter.outputURL)
+                            print("compressFile -file size after compression: \(Double(data.count / 1048576)) mb")
+                        } catch let err as NSError {
+                            print("compressFile Error: \(err.localizedDescription)")
+                        }
+                    }
+                    
+                  //  if let safeSelf = self, let assetWriter = safeSelf.assetWriter {
+                        completion(assetWriter.outputURL)
+                   // }
+                })
+                
+                assetReader?.cancelReading()
+            }
+        }
+        
+        audioInput.requestMediaDataWhenReady(on: audioInputQueue) {
+            while(audioInput.isReadyForMoreMediaData) {
+                if let cmSampleBuffer = assetReaderAudioOutput?.copyNextSampleBuffer() {
+                    
+                    audioInput.append(cmSampleBuffer)
+                    
+                } else {
+                    audioInput.markAsFinished()
+                    DispatchQueue.main.async {
+                        audioFinished = true
+                        closeWriter()
+                    }
+                    break;
+                }
+            }
+        }
+        
+        videoInput.requestMediaDataWhenReady(on: videoInputQueue) {
+            // request data here
+
+            while(videoInput.isReadyForMoreMediaData) {
+                if let cmSampleBuffer = assetReaderVideoOutput.copyNextSampleBuffer() {
+                    videoInput.append(cmSampleBuffer)
+                    
+                } else {
+                    videoInput.markAsFinished()
+                    DispatchQueue.main.async {
+                        videoFinished = true
+                        closeWriter()
+                    }
+                    break;
+                }
+            }
+        }
     }
     
     func resizedImageWith(image: UIImage, targetSize: CGSize) -> UIImage? {
@@ -178,429 +330,8 @@ class MediaUploader {
     }
 }
 
-// Global Queue for All Compressions
-fileprivate let compressQueue = DispatchQueue.global(qos: .userInteractive)
-
 // Angle Conversion Utility
 extension Int {
-    fileprivate var degreesToRadiansCGFloat: CGFloat { return CGFloat(Double(self) * Double.pi / 180) }
+     var degreesToRadiansCGFloat: CGFloat { return CGFloat(Double(self) * Double.pi / 180) }
 }
 
-// Compression Interruption Wrapper
-class CancelableCompression {
-    var cancel = false
-}
-
-// Compression Error Messages
-struct CompressionError: LocalizedError {
-    let title: String
-    let code: Int
-    
-    init(title: String = "Compression Error", code: Int = -1) {
-        self.title = title
-        self.code = code
-    }
-}
-
-// Compression Transformation Configuration
-enum CompressionTransform {
-    case keepSame
-    case fixForBackCamera
-    case fixForFrontCamera
-}
-
-// Compression Encode Parameters
-struct CompressionConfig {
-    let videoBitrate: Int
-    let avVideoProfileLevel: String
-    let audioSampleRate: Int
-    let audioBitrate: Int
-    
-    static let defaultConfig = CompressionConfig(
-        videoBitrate: Int(1024 * 1024 * 3),
-        avVideoProfileLevel: AVVideoProfileLevelH264High41,
-        audioSampleRate: 22050,
-        audioBitrate: 80000
-    )
-}
-
-// Video Size
-typealias CompressionSize = (width: Int, height: Int)
-
-// Compression Operation (just call this)
-func compressh264VideoInBackground(videoToCompress: URL, destinationPath: URL, size: CompressionSize?, compressionTransform: CompressionTransform, compressionConfig: CompressionConfig, completionHandler: @escaping (URL)->(), errorHandler: @escaping (Error)->(), cancelHandler: @escaping ()->()) -> CancelableCompression {
-    
-    // Globals to store during compression
-    class CompressionContext {
-        var cgContext: CGContext?
-        var pxbuffer: CVPixelBuffer?
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-    }
-    
-    // Draw Single Video Frame in Memory (will be used to loop for each video frame)
-    func getCVPixelBuffer(_ i: CGImage?, compressionContext: CompressionContext) -> CVPixelBuffer? {
-        // Allocate Temporary Pixel Buffer to Store Drawn Image
-        weak var image = i!
-        let imageWidth = image!.height
-        let imageHeight = image!.width
-        
-        let attributes : [AnyHashable: Any] = [
-            kCVPixelBufferCGImageCompatibilityKey : true as AnyObject,
-            kCVPixelBufferCGBitmapContextCompatibilityKey : true as AnyObject
-        ]
-        
-        if compressionContext.pxbuffer == nil {
-            CVPixelBufferCreate(kCFAllocatorSystemDefault,
-                                imageWidth,
-                                imageHeight,
-                                kCVPixelFormatType_32ARGB,
-                                attributes as CFDictionary?,
-                                &compressionContext.pxbuffer)
-        }
-        
-        // Draw Frame to Newly Allocated Buffer
-        if let _pxbuffer = compressionContext.pxbuffer {
-            let flags = CVPixelBufferLockFlags(rawValue: 0)
-            CVPixelBufferLockBaseAddress(_pxbuffer, flags)
-            let pxdata = CVPixelBufferGetBaseAddress(_pxbuffer)
-                        
-            if compressionContext.cgContext == nil {
-                compressionContext.cgContext = CGContext(data: pxdata,
-                                                         width: imageWidth,
-                                                         height: imageHeight,
-                                                         bitsPerComponent: 8,
-                                                         bytesPerRow: CVPixelBufferGetBytesPerRow(_pxbuffer),
-                                                         space: compressionContext.colorSpace,
-                                                         bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)
-            }
-            
-            if let _context = compressionContext.cgContext, let image = image {
-                _context.draw(image, in: CGRect(x: 0, y: 0, width: imageWidth, height: imageHeight))
-            }
-            else {
-                CVPixelBufferUnlockBaseAddress(_pxbuffer, flags);
-                return nil
-            }
-            
-            CVPixelBufferUnlockBaseAddress(_pxbuffer, flags);
-            return _pxbuffer;
-        }
-        
-        return nil
-    }
-    
-    // Asset, Output File
-    let avAsset = AVURLAsset(url: videoToCompress)
-    let filePath = destinationPath
-    
-    do {
-        // Reader and Writer
-        let writer = try AVAssetWriter(outputURL: filePath, fileType: AVFileType.mp4)
-        let reader = try AVAssetReader(asset: avAsset)
-        
-        // Tracks
-        let videoTrack = avAsset.tracks(withMediaType: AVMediaType.video).first!
-        let audioTrack = avAsset.tracks(withMediaType: AVMediaType.audio).first!
-        
-        // Video Output Configuration
-        let videoCompressionProps: Dictionary<String, Any> = [
-            AVVideoAverageBitRateKey : compressionConfig.videoBitrate,
-            AVVideoProfileLevelKey : compressionConfig.avVideoProfileLevel
-        ]
-        
-        
-        let videoOutputSettings: Dictionary<String, Any> = [
-            AVVideoWidthKey : size == nil ? videoTrack.naturalSize.height : size!.width,
-            AVVideoHeightKey : size == nil ? videoTrack.naturalSize.width : size!.height,
-            AVVideoCodecKey : AVVideoCodecType.h264,
-            AVVideoCompressionPropertiesKey : videoCompressionProps
-        ]
-        let videoInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoOutputSettings)
-        videoInput.expectsMediaDataInRealTime = false
-        
-        let sourcePixelBufferAttributesDictionary: Dictionary<String, Any> = [
-            String(kCVPixelBufferPixelFormatTypeKey) : Int(kCVPixelFormatType_32RGBA),
-            String(kCVPixelFormatOpenGLESCompatibility) : kCFBooleanTrue ?? false
-        ]
-        let pixelBufferAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: videoInput, sourcePixelBufferAttributes: sourcePixelBufferAttributesDictionary)
-        
-        videoInput.performsMultiPassEncodingIfSupported = true
-        guard writer.canAdd(videoInput) else {
-            errorHandler(CompressionError(title: "Cannot add video input"))
-            return CancelableCompression()
-        }
-        writer.add(videoInput)
-        
-        // Audio Output Configuration
-        var acl = AudioChannelLayout()
-        acl.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo
-        acl.mChannelBitmap = AudioChannelBitmap(rawValue: UInt32(0))
-        acl.mNumberChannelDescriptions = UInt32(0)
-        
-        let acll = MemoryLayout<AudioChannelLayout>.size
-        let audioOutputSettings: Dictionary<String, Any> = [
-            AVFormatIDKey : UInt(kAudioFormatMPEG4AAC),
-            AVNumberOfChannelsKey : UInt(2),
-            AVSampleRateKey : compressionConfig.audioSampleRate,
-            AVEncoderBitRateKey : compressionConfig.audioBitrate,
-            AVChannelLayoutKey : NSData(bytes:&acl, length: acll)
-        ]
-        let audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
-        audioInput.expectsMediaDataInRealTime = false
-        
-        guard writer.canAdd(audioInput) else {
-            errorHandler(CompressionError(title: "Cannot add audio input"))
-            return CancelableCompression()
-        }
-        writer.add(audioInput)
-        
-        // Video Input Configuration
-        let videoOptions: Dictionary<String, Any> = [
-            kCVPixelBufferPixelFormatTypeKey as String : UInt(kCVPixelFormatType_422YpCbCr8_yuvs),
-            kCVPixelBufferIOSurfacePropertiesKey as String : [:]
-        ]
-        let readerVideoTrackOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: videoOptions)
-        
-        readerVideoTrackOutput.alwaysCopiesSampleData = true
-        
-        guard reader.canAdd(readerVideoTrackOutput) else {
-            errorHandler(CompressionError(title: "Cannot add video output"))
-            return CancelableCompression()
-        }
-        reader.add(readerVideoTrackOutput)
-        
-        // Audio Input Configuration
-        let decompressionAudioSettings: Dictionary<String, Any> = [
-            AVFormatIDKey: UInt(kAudioFormatLinearPCM)
-        ]
-        let readerAudioTrackOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: decompressionAudioSettings)
-        
-        readerAudioTrackOutput.alwaysCopiesSampleData = true
-        
-        guard reader.canAdd(readerAudioTrackOutput) else {
-            errorHandler(CompressionError(title: "Cannot add video output"))
-            return CancelableCompression()
-        }
-        reader.add(readerAudioTrackOutput)
-        
-        // Orientation Fix for Videos Taken by Device Camera
-        var appliedTransform: CGAffineTransform
-        //        switch compressionTransform {
-        //        case .fixForFrontCamera:
-        //            appliedTransform = CGAffineTransform(rotationAngle: 90.degreesToRadiansCGFloat).scaledBy(x:-1.0, y:1.0)
-        //        case .fixForBackCamera:
-        //            appliedTransform = CGAffineTransform(rotationAngle: 270.degreesToRadiansCGFloat)
-        //        case .keepSame:
-        //            appliedTransform = CGAffineTransform.identity
-        //        }
-        
-        appliedTransform = CGAffineTransform(rotationAngle: 270.degreesToRadiansCGFloat)
-        
-        // Begin Compression
-        reader.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: avAsset.duration)
-        writer.shouldOptimizeForNetworkUse = true
-        reader.startReading()
-        writer.startWriting()
-        writer.startSession(atSourceTime: CMTime.zero)
-        
-        // Compress in Background
-        let cancelable = CancelableCompression()
-        compressQueue.async {
-            // Allocate OpenGL Context to Draw and Transform Video Frames
-            let glContext = EAGLContext(api: .openGLES2)!
-            let context = CIContext(eaglContext: glContext)
-            let compressionContext = CompressionContext()
-            
-            // Loop Video Frames
-            var frameCount = 0
-            var videoDone = false
-            var audioDone = false
-            
-            while !videoDone || !audioDone {
-                // Check for Writer Errors (out of storage etc.)
-                if writer.status == AVAssetWriter.Status.failed {
-                    reader.cancelReading()
-                    writer.cancelWriting()
-                    compressionContext.pxbuffer = nil
-                    compressionContext.cgContext = nil
-                    
-                    if let e = writer.error {
-                        errorHandler(e)
-                        return
-                    }
-                }
-                
-                // Check for Reader Errors (source file corruption etc.)
-                if reader.status == AVAssetReader.Status.failed {
-                    reader.cancelReading()
-                    writer.cancelWriting()
-                    compressionContext.pxbuffer = nil
-                    compressionContext.cgContext = nil
-                    
-                    if let e = reader.error {
-                        errorHandler(e)
-                        return
-                    }
-                }
-                
-                // Check for Cancel
-                if cancelable.cancel {
-                    reader.cancelReading()
-                    writer.cancelWriting()
-                    compressionContext.pxbuffer = nil
-                    compressionContext.cgContext = nil
-                    cancelHandler()
-                    return
-                }
-                
-                // Check if enough data is ready for encoding a single frame
-                if videoInput.isReadyForMoreMediaData {
-                    // Copy a single frame from source to destination with applied transforms
-                    if let vBuffer = readerVideoTrackOutput.copyNextSampleBuffer(), CMSampleBufferDataIsReady(vBuffer) {
-                        frameCount += 1
-                        
-                        autoreleasepool {
-                            let presentationTime = CMSampleBufferGetPresentationTimeStamp(vBuffer)
-                            let pixelBuffer = CMSampleBufferGetImageBuffer(vBuffer)!
-                            
-                            CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue:0))
-                            
-                            let transformedFrame = CIImage(cvPixelBuffer: pixelBuffer).transformed(by: appliedTransform)
-                            let frameImage = context.createCGImage(transformedFrame, from: transformedFrame.extent)
-                            let frameBuffer = getCVPixelBuffer(frameImage, compressionContext: compressionContext)
-                            
-                            CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
-                            
-                            _ = pixelBufferAdaptor.append(frameBuffer!, withPresentationTime: presentationTime)
-                        }
-                    } else {
-                        // Video source is depleted, mark as finished
-                        if !videoDone {
-                            videoInput.markAsFinished()
-                        }
-                        videoDone = true
-                    }
-                }
-                
-                if audioInput.isReadyForMoreMediaData {
-                    // Copy a single audio sample from source to destination
-                    if let aBuffer = readerAudioTrackOutput.copyNextSampleBuffer(), CMSampleBufferDataIsReady(aBuffer) {
-                        _ = audioInput.append(aBuffer)
-                    } else {
-                        // Audio source is depleted, mark as finished
-                        if !audioDone {
-                            audioInput.markAsFinished()
-                        }
-                        audioDone = true
-                    }
-                }
-                
-                // Let background thread rest for a while
-                Thread.sleep(forTimeInterval: 0.001)
-            }
-            
-            // Write everything to output file
-            writer.finishWriting(completionHandler: {
-                compressionContext.pxbuffer = nil
-                compressionContext.cgContext = nil
-                completionHandler(filePath)
-            })
-        }
-        
-        // Return a cancel wrapper for users to let them interrupt the compression
-        return cancelable
-    } catch {
-        // Error During Reader or Writer Creation
-        errorHandler(error)
-        return CancelableCompression()
-    }
-}
-
-//func isStorageAvailable() -> Bool {
-//    let fileURL = URL(fileURLWithPath: NSHomeDirectory() as String)
-//    do {
-//        let values = try fileURL.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey, .volumeTotalCapacityKey])
-//        guard let totalSpace = values.volumeTotalCapacity,
-//              let freeSpace = values.volumeAvailableCapacityForImportantUsage else {
-//                  return false
-//              }
-//        if freeSpace > minimumSpaceRequired {
-//            return true
-//        } else {
-//            // Capacity is unavailable
-//            return false
-//        }
-//        catch {}
-//        return false
-//    }
-//    
-//    func cleanExpiredVideos() {
-//        let currentTimeStamp = Date().timeIntervalSince1970
-//        var expiredKeys: [String] = []
-//        for videoData in videosDict where currentTimeStamp - videoData.value.timeStamp >= expiryTime {
-//            // video is expired. delete
-//            if let _ = popupVideosDict[videoData.key] {
-//                expiredKeys.append(videoData.key)
-//            }
-//        }
-//        for key in expiredKeys {
-//            if let _ = popupVideosDict[key] {
-//                popupVideosDict.removeValue(forKey: key)
-//                deleteVideo(ForVideoId: key)
-//            }
-//        }
-//    }
-//    
-//    func removeVideoIfMaxNumberOfVideosReached() {
-//        if popupVideosDict.count >= maxVideosAllowed {
-//            // remove the least recently used video
-//            let sortedDict = popupVideosDict.keysSortedByValue { (v1, v2) -> Bool in
-//                v1.timeStamp < v2.timeStamp
-//            }
-//            guard let videoId = sortedDict.first else {
-//                return
-//            }
-//            popupVideosDict.removeValue(forKey: videoId)
-//            deleteVideo(ForVideoId: videoId)
-//        }
-//    }
-//    
-//    static func findCachedVideoURL(forVideoId id: String) -> URL? {
-//        let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-//        let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-//        let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-//        if let dirPath = paths.first {
-//            let fileURL = URL(fileURLWithPath: dirPath).appendingPathComponent(folderPath).appendingPathComponent(id + ".mp4")
-//            let filePath = fileURL.path
-//            let fileManager = FileManager.default
-//            if fileManager.fileExists(atPath: filePath) {
-//                NewRelicService.sendCustomEvent(with: NewRelicEventType.statusCodes,
-//                                                eventName: NewRelicEventName.videoCacheHit,
-//                                                attributes: [NewRelicAttributeKey.videoSize: fileURL.fileSizeString])
-//                return fileURL
-//            } else {
-//                return nil
-//            }
-//        }
-//        return nil
-//    }
-//    
-//    
-//    extension URL {
-//        var attributes: [FileAttributeKey : Any]? {
-//            do {
-//                return try FileManager.default.attributesOfItem(atPath: path)
-//            } catch let error as NSError {
-//                print("FileAttribute error: \(error)")
-//            }
-//            return nil
-//        }
-//        
-//        var fileSize: UInt64 {
-//            return attributes?[.size] as? UInt64 ?? UInt64(0)
-//        }
-//        
-//        var fileSizeString: String {
-//            return ByteCountFormatter.string(fromByteCount: Int64(fileSize), countStyle: .file)
-//        }
-//    }

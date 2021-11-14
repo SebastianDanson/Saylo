@@ -35,10 +35,8 @@ struct CameraMainView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: UIScreen.main.bounds.width)
-                    .scaleEffect(x: isFrontFacing ? -1 : 1, y: 1, anchor: .center)
                     .overlay(MediaOptions(), alignment: .bottom)
-                    .zIndex(3)
-                    
+                    .zIndex(3)                    
             }
             
             //camera
@@ -46,7 +44,7 @@ struct CameraMainView: View {
                 .overlay(CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView), alignment: .center)
             
             //flash view if there's front facing flash
-            if viewModel.isRecording && isFrontFacing && viewModel.hasFlash {
+            if (viewModel.isRecording || viewModel.isTakingPhoto) && isFrontFacing && viewModel.hasFlash {
                 FlashView()
             }
             
@@ -64,7 +62,9 @@ struct CameraMainView: View {
     }
     
     func takePhoto() {
-        cameraView.takephoto()
+        viewModel.isTakingPhoto = true
+        let hasFlash = viewModel.hasFlash
+        cameraView.takephoto(withFlash: hasFlash)
     }
     
     func setupSession() {
