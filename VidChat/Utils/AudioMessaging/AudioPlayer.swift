@@ -30,11 +30,11 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         
         let playbackSession = AVAudioSession.sharedInstance()
         
-        do {
-            try playbackSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-        } catch {
-            print("Playing over the device's speakers failed")
-        }
+//        do {
+//            try playbackSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+//        } catch {
+//            print("Playing over the device's speakers failed")
+//        }
         
         do {
             self.audio = audio

@@ -28,7 +28,7 @@ struct CameraMainView: View {
                     .overlay(MediaOptions(), alignment: .bottom)
                     .background(Color.clear)
                     .zIndex(3)
-            }
+            } 
             
             if let photo = viewModel.photo {
                 Image(uiImage: photo)
@@ -59,6 +59,10 @@ struct CameraMainView: View {
     
     func stopRecording() {
         cameraView.stopRecording()
+    }
+    
+    func addAudio() {
+        cameraView.addAudio()
     }
     
     func takePhoto() {

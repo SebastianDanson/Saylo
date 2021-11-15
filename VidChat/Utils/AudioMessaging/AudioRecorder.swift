@@ -33,17 +33,24 @@ class AudioRecorder: NSObject,ObservableObject {
     }
     
     func startRecording() {
-        let recordingSession = AVAudioSession.sharedInstance()
+//        let recordingSession = AVAudioSession.sharedInstance()
+//        
+//        do {
+//            try recordingSession.setCategory(.playAndRecord, mode: .default, options: .mixWithOthers)
+//            try recordingSession.setActive(true)
+//        } catch {
+//            print("Failed to set up recording session")
+//        }
         
-        do {
-            try recordingSession.setCategory(.playAndRecord, mode: .default)
-            try recordingSession.setActive(true)
-        } catch {
-            print("Failed to set up recording session")
-        }
+        try! AVAudioSession.sharedInstance().setActive(false)
+        try! AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord,
+                                                        options: [.mixWithOthers,
+                                                                  .allowBluetoothA2DP,
+                                                                  .defaultToSpeaker,
+                                                                  .allowAirPlay])
         
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        audioUrl = documentPath.appendingPathComponent(UUID().uuidString + ".m4a")
+        let documentPath = NSTemporaryDirectory() + UUID().uuidString + ".m4a"
+        audioUrl = URL(fileURLWithPath: documentPath)
         
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -65,6 +72,8 @@ class AudioRecorder: NSObject,ObservableObject {
     
     func stopRecording() {
         audioRecorder.stop()
+       // try! AVAudioSession.sharedInstance().setCategory(.ambient)
+       // try! AVAudioSession.sharedInstance().setActive(false)
         recording = false
         
         audioPlayer.startPlayback(audio: audioUrl)

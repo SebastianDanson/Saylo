@@ -22,6 +22,8 @@ class CameraViewModel: ObservableObject {
     @Published var hasSentWithoutCrop = false
     @Published var isPlaying = false
     
+    var isFirstLoad = true
+    
     static let shared = CameraViewModel()
     
     private init() {
@@ -48,11 +50,24 @@ class CameraViewModel: ObservableObject {
         withAnimation {
             ConversationViewModel.shared.showCamera = false
             self.isRecording = true
-            self.progress = 1
+            
+            if isFirstLoad {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.progress = 1
+                self.isFirstLoad = false
+            }
+                
+            } else {
+                self.progress = 1
+            }
         }
         
+        
+      //  self.cameraView.addAudio()
+        
         if addDelay {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.cameraView.startRecording()
             }
         } else {
@@ -74,6 +89,7 @@ class CameraViewModel: ObservableObject {
                 isRecording ? stopRecording() : startRecording()
             }
         } else {
+            cameraView.addAudio()
             startRecording(addDelay: true)
         }
     }

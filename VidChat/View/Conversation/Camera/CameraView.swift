@@ -40,10 +40,15 @@ struct CameraView: UIViewControllerRepresentable {
         cameraViewController.takePhoto(withFlash: hasFlash)
     }
     
+    public func addAudio() {
+        cameraViewController.addAudio()
+    }
+    
     public func setupSession() {
         cameraViewController.setupSession()
         cameraViewController.setupPreview()
         cameraViewController.startSession()
+       // cameraViewController.setupAudio()
     }
 }
 

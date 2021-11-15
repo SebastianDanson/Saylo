@@ -13,7 +13,7 @@ import Kingfisher
 struct ConversationView: View {
     
     @Environment(\.presentationMode) var mode
-
+    
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     
@@ -24,6 +24,7 @@ struct ConversationView: View {
     @State private var hasScrolledToVideo = false
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     
+    private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
     
     var body: some View {
@@ -33,44 +34,48 @@ struct ConversationView: View {
             ZStack {
                 
                 //Feed
-//                LazyVStack(spacing: 12) {
-
+                //                LazyVStack(spacing: 12) {
+                
                 ScrollView(.vertical, showsIndicators: false) {
                     
                     ScrollViewReader { reader in
                         
+                        ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
                             
-                            ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
-                                
-                                    MessageCell(message: viewModel.messages[i])
-                                    .transition(.move(edge: .bottom))
-                                    .offset(x: 0, y: dragOffset.height - 8)
-                                        .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : 0)
-                                        .padding(.top, i == 0 ? 100 : 0)
-                                        .onAppear {
-                                            if i != viewModel.messages.count - 1 {
-                                                viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
-                                            }
-                                            reader.scrollTo(viewModel.messages.last!.id, anchor: .bottom)
+                            MessageCell(message: viewModel.messages[i])
+                                .transition(.move(edge: .bottom))
+                                .offset(x: 0, y: dragOffset.height - 8)
+                                .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : 0)
+                                .padding(.top, i == 0 ? 100 : 0)
+                                .onAppear {
+                                    if i != viewModel.messages.count - 1 {
+                                        viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
+                                    }
+                                    
+                                    //TODO don't scroll if you're high up and ur not the one sending
+                                    //AKA ur watching an older vid and ur buddy send u don't wanna scroll
+                                    if !isFirstLoad {
+                                        reader.scrollTo(viewModel.messages.last!.id, anchor: .bottom)
+                                    }
+                                }
+                            
+                                .simultaneousGesture(
+                                    canScroll(atIndex: i)  ?
+                                    DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                                        .onChanged { gesture in
+                                            dragOffset.height = gesture.translation.height
+                                            hasScrolledToVideo = true
+                                            viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
                                         }
-                                
-                                        .simultaneousGesture(
-                                            canScroll(atIndex: i)  ?
-                                            DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                                                .onChanged { gesture in
-                                                    dragOffset.height = gesture.translation.height
-                                                    hasScrolledToVideo = true
-                                                    viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
-                                                }
-                                                .onEnded { gesture in
-                                                    handleOnDragEnd(translation: gesture.translation,
-                                                                    velocity: gesture.predictedEndLocation.y -
-                                                                                gesture.location.y,
-                                                                    index: i,
-                                                                    reader: reader)
-                                                } : nil
-                                        )
-                                
+                                        .onEnded { gesture in
+                                            handleOnDragEnd(translation: gesture.translation,
+                                                            velocity: gesture.predictedEndLocation.y -
+                                                            gesture.location.y,
+                                                            index: i,
+                                                            reader: reader)
+                                        } : nil
+                                )
+                            
                             //}
                         }
                         .flippedUpsideDown()
@@ -118,7 +123,7 @@ struct ConversationView: View {
     }
     
     func canScroll(atIndex i: Int) -> Bool {
-         isScrollType(index: i) && isPrevScrollable(index: i) && isNextScrollable(index: i)
+        isScrollType(index: i) && isPrevScrollable(index: i) && isNextScrollable(index: i)
     }
     
     func isScrollType(index i: Int) -> Bool {
@@ -126,7 +131,7 @@ struct ConversationView: View {
     }
     
     func isPrevScrollable(index i: Int) -> Bool {
-       (i > 0 && isScrollType(index: i - 1)) || i == 0
+        (i > 0 && isScrollType(index: i - 1)) || i == 0
     }
     
     func isNextScrollable(index i: Int) -> Bool {
@@ -144,7 +149,7 @@ struct ConversationView: View {
         withAnimation(.easeInOut(duration: 0.3)) {
             dragOffset = .zero
         }
-
+        
         if translation.height < 0 {
             if viewModel.messages.count > i + 1 {
                 handleOnDragEndScroll(currentIndex: i, nextIndex: i+1)
@@ -158,7 +163,7 @@ struct ConversationView: View {
         }
         
         func handleOnDragEndScroll(currentIndex: Int, nextIndex: Int) {
-          //  if hasScrolledToVideo {
+            //  if hasScrolledToVideo {
             if abs(velocity) > 180 {
                 if let currentMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[currentIndex].id }) {
                     currentMessagePlayer.player.pause()
@@ -180,18 +185,18 @@ struct ConversationView: View {
                     reader.scrollTo(viewModel.messages[currentIndex].id, anchor: .center)
                     canScroll = false
                 }
-             //   DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                 //   hasScrolledToVideo = true
-               // }
+                //   DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                //   hasScrolledToVideo = true
+                // }
                 
-           // } else {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-//                    hasScrolledToVideo = true
-//                }
+                // } else {
+                //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                //                    hasScrolledToVideo = true
+                //                }
             }
             
-           
-//            hasScrolledToVideo = true
+            
+            //            hasScrolledToVideo = true
         }
     }
 }
@@ -363,7 +368,7 @@ struct CameraCircle: View {
 
 struct ChatOptions: View {
     @Environment(\.presentationMode) var mode
-
+    
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
     var body: some View {
@@ -381,8 +386,8 @@ struct ChatOptions: View {
                     .frame(width: 30, height: 30)
                     .padding(.vertical, 10)
             }
-
-           Spacer()
+            
+            Spacer()
             
             KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
                 .resizable()

@@ -8,6 +8,7 @@
 import UIKit
 import PushKit
 import Firebase
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,7 +31,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         providerDelegate = ProviderDelegate(callManager: callManager)
         
         FirebaseApp.configure()
-
+        
+//        try? AVAudioSession.sharedInstance().setCategory(
+//          AVAudioSession.Category.ambient,
+//          mode: AVAudioSession.Mode.moviePlayback,
+//          options: [.mixWithOthers, .defaultToSpeaker, .allowAirPlay, .allowBluetoothA2DP])
+        
+//        let audioSession = AVAudioSession.sharedInstance()
+//            do {
+//                // Set the audio session category, mode, and options.
+//                try audioSession.setCategory(.playAndRecord,  options: [.mixWithOthers,.defaultToSpeaker,.allowBluetooth])
+//                try audioSession.setActive(true)
+//            } catch {
+//                print("Failed to set audio session category.")
+//            }
+        
+        print("OKOK")
+        
         return true
     }
 

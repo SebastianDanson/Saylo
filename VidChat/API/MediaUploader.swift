@@ -260,6 +260,7 @@ class MediaUploader {
                     }
                     
                   //  if let safeSelf = self, let assetWriter = safeSelf.assetWriter {
+                    print("DONE COMPRESSING")
                         completion(assetWriter.outputURL)
                    // }
                 })
@@ -269,7 +270,9 @@ class MediaUploader {
         }
         
         audioInput.requestMediaDataWhenReady(on: audioInputQueue) {
+
             while(audioInput.isReadyForMoreMediaData) {
+
                 if let cmSampleBuffer = assetReaderAudioOutput?.copyNextSampleBuffer() {
                     
                     audioInput.append(cmSampleBuffer)

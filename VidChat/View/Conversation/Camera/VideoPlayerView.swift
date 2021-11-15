@@ -43,6 +43,8 @@ struct VideoPlayerView: View {
         
     }
     
+    
+    
     //TODO asynchornously load videos
     //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
     
@@ -132,11 +134,12 @@ class PlayerUIView: UIView {
     
     init(frame: CGRect, player: AVPlayer) {
         super.init(frame: frame)
-        
+                
         // Setup the player
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspect
         layer.addSublayer(playerLayer)
+        playerLayer.backgroundColor = UIColor.black.cgColor
         
         // Setup looping
         player.actionAtItemEnd = .none
@@ -144,8 +147,7 @@ class PlayerUIView: UIView {
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem)
-        
-       
+            
         player.play()
     }
     
