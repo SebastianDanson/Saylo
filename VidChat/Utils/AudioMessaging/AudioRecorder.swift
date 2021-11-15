@@ -42,12 +42,12 @@ class AudioRecorder: NSObject,ObservableObject {
 //            print("Failed to set up recording session")
 //        }
         
-        try! AVAudioSession.sharedInstance().setActive(false)
-        try! AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord,
-                                                        options: [.mixWithOthers,
-                                                                  .allowBluetoothA2DP,
-                                                                  .defaultToSpeaker,
-                                                                  .allowAirPlay])
+//        try! AVAudioSession.sharedInstance().setActive(false)
+//        try! AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord,
+//                                                        options: [.mixWithOthers,
+//                                                                  .allowBluetoothA2DP,
+//                                                                  .defaultToSpeaker,
+//                                                                  .allowAirPlay])
         
         let documentPath = NSTemporaryDirectory() + UUID().uuidString + ".m4a"
         audioUrl = URL(fileURLWithPath: documentPath)

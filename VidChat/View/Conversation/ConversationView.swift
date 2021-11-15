@@ -60,7 +60,7 @@ struct ConversationView: View {
                                 }
                             
                                 .simultaneousGesture(
-                                    canScroll(atIndex: i)  ?
+                                    canScroll(atIndex: i) && canScroll  ?
                                     DragGesture(minimumDistance: 0, coordinateSpace: .local)
                                         .onChanged { gesture in
                                             dragOffset.height = gesture.translation.height
@@ -168,11 +168,14 @@ struct ConversationView: View {
                 if let currentMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[currentIndex].id }) {
                     currentMessagePlayer.player.pause()
                 }
-                
-                if let nextMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[nextIndex].id }) {
-                    nextMessagePlayer.player.seek(to: CMTime.zero)
-                    nextMessagePlayer.player.play()
+//
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    if let nextMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[nextIndex].id }) {
+                        nextMessagePlayer.player.seek(to: CMTime.zero)
+                        nextMessagePlayer.player.play()
+                    }
                 }
+                
                 
                 withAnimation() {
                     reader.scrollTo(viewModel.messages[nextIndex].id, anchor: .center)

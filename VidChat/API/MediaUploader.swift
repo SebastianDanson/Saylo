@@ -104,14 +104,14 @@ class MediaUploader {
         let ref = UploadType.video.filePath
         
         // Compress
-        compressFile(url) { (compressedURL) in
+     //   compressFile(url) { (compressedURL) in
 
            // remove activity indicator
            // do something with the compressedURL such as sending to Firebase or playing it in a player on the *main queue*
                 //MediaUploader.shared.checkFileSize(sizeUrl: url, message: "BEFORE SIZE")
                 //MediaUploader.shared.checkFileSize(sizeUrl: path, message: "AFTER SIZE")
                 
-                ref.putFile(from: compressedURL, metadata: nil) { _, error in
+                ref.putFile(from: url, metadata: nil) { _, error in
                     if let error = error {
                         print("DEBUG: Failed to upload video \(error.localizedDescription)")
                         return
@@ -127,7 +127,7 @@ class MediaUploader {
                         completion(videoUrl)
                     }
                 }
-            }
+       ///     }
 //            errorHandler: { e in
 //                print("Error: ", e)
 //            },

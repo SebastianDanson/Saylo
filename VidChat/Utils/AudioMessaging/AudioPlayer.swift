@@ -28,7 +28,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     func startPlayback (audio: URL) {
         
-        let playbackSession = AVAudioSession.sharedInstance()
+      //  let playbackSession = AVAudioSession.sharedInstance()
         
 //        do {
 //            try playbackSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)

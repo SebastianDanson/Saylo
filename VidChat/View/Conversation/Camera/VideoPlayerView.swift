@@ -148,6 +148,13 @@ class PlayerUIView: UIView {
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem)
             
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, options: .mixWithOthers)
+           } catch(let error) {
+               print(error.localizedDescription)
+           }
+        
         player.play()
     }
     

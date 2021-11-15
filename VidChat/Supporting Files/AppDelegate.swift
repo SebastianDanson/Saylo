@@ -32,10 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
-//        try? AVAudioSession.sharedInstance().setCategory(
-//          AVAudioSession.Category.ambient,
-//          mode: AVAudioSession.Mode.moviePlayback,
-//          options: [.mixWithOthers, .defaultToSpeaker, .allowAirPlay, .allowBluetoothA2DP])
+  
         
 //        let audioSession = AVAudioSession.sharedInstance()
 //            do {

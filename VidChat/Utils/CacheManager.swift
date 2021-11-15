@@ -145,7 +145,7 @@ class CacheManager {
         }
         
         exporter.outputURL = URL(fileURLWithPath: outputURL)
-        exporter.outputFileType = AVFileType.mp4
+        exporter.outputFileType = AVFileType.mov
         
         exporter.exportAsynchronously {
             print("Exporter did finish")
