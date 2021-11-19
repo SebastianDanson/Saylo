@@ -66,10 +66,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         videoCanvas.uid = callManger.callID
         videoCanvas.view = localView
         callManger.getAgoraEngine().setupLocalVideo(videoCanvas)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
-            self.callManger.remoteUserIDs.append(3)
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

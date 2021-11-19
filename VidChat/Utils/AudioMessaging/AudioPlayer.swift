@@ -1,10 +1,3 @@
-//
-//  AudioPlayer.swift
-//  VidChat
-//
-//  Created by Student on 2021-10-14.
-//
-
 import Foundation
 import SwiftUI
 import Combine
@@ -28,13 +21,13 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     func startPlayback (audio: URL) {
         
-      //  let playbackSession = AVAudioSession.sharedInstance()
+        let playbackSession = AVAudioSession.sharedInstance()
         
-//        do {
-//            try playbackSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-//        } catch {
-//            print("Playing over the device's speakers failed")
-//        }
+        do {
+            try playbackSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+        } catch {
+            print("Playing over the device's speakers failed")
+        }
         
         do {
             self.audio = audio

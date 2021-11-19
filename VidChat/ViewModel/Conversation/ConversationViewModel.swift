@@ -43,7 +43,9 @@ class ConversationViewModel: ObservableObject {
     
     init() {
         fetchMessages()
-        CacheManager.removeOldFiles()
+        //CacheManager.removeOldFiles()
+        
+        //TODO test removeing old files
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, shouldExport: Bool = true) {
@@ -105,6 +107,7 @@ class ConversationViewModel: ObservableObject {
     
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
+        print(index, "INDEX")
         if index == 0 {
             uploadMessage(toDocWithId: id)
             return

@@ -60,12 +60,14 @@ class MediaUploader {
         
         let ref = type.filePath
         
+        print("MANNN")
         ref.putData(imageData, metadata: nil) { _, error in
             if let error = error {
                 print("DEBUG: Failed to upload image \(error.localizedDescription)")
                 return
             }
             
+            print("MANNN 2")
             //TODO compress images
             ref.downloadURL { url, error in
                 if let error = error {
@@ -73,6 +75,8 @@ class MediaUploader {
                     return
                 }
                 
+                print("MANNN 3")
+
                 guard let imageUrl = url?.absoluteString else {return}
                 completion(imageUrl)
             }
@@ -103,13 +107,6 @@ class MediaUploader {
     func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
         let ref = UploadType.video.filePath
         
-        // Compress
-     //   compressFile(url) { (compressedURL) in
-
-           // remove activity indicator
-           // do something with the compressedURL such as sending to Firebase or playing it in a player on the *main queue*
-                //MediaUploader.shared.checkFileSize(sizeUrl: url, message: "BEFORE SIZE")
-                //MediaUploader.shared.checkFileSize(sizeUrl: path, message: "AFTER SIZE")
                 
                 ref.putFile(from: url, metadata: nil) { _, error in
                     if let error = error {
@@ -127,185 +124,9 @@ class MediaUploader {
                         completion(videoUrl)
                     }
                 }
-       ///     }
-//            errorHandler: { e in
-//                print("Error: ", e)
-//            },
-//            cancelHandler: {
-//                print("Canceled.")
-//            }
-       // )
-        
-        // To cancel compression, set cancel flag to true and wait for handler invoke
-        //   cancelable.cancel = true
         
     }
     
-    func compressFile(_ urlToCompress: URL, completion:@escaping (URL)->Void) {
-        var assetWriter: AVAssetWriter!
-        var assetReader: AVAssetReader?
-        let bitrate: NSNumber = NSNumber(value: 1024 * 1024 * 4)
-        var audioFinished = false
-        var videoFinished = false
-        checkFileSize(sizeUrl: urlToCompress, message: "BEFORE SIZE")
-        
-        let asset = AVAsset(url: urlToCompress)
-        
-        //create asset reader
-        do {
-            assetReader = try AVAssetReader(asset: asset)
-        } catch {
-            assetReader = nil
-        }
-        
-        guard let reader = assetReader else {
-            print("Could not iniitalize asset reader probably failed its try catch")
-            // show user error message/alert
-            return
-        }
-        
-        guard let videoTrack = asset.tracks(withMediaType: AVMediaType.video).first else { return }
-        let videoReaderSettings: [String:Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32ARGB]
-        
-        let assetReaderVideoOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: videoReaderSettings)
-        
-        var assetReaderAudioOutput: AVAssetReaderTrackOutput?
-        if let audioTrack = asset.tracks(withMediaType: AVMediaType.audio).first {
-            
-            let audioReaderSettings: [String : Any] = [
-                AVFormatIDKey: kAudioFormatLinearPCM,
-                AVSampleRateKey: 44100,
-                AVNumberOfChannelsKey: 2
-            ]
-            
-            assetReaderAudioOutput = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: audioReaderSettings)
-            
-            if reader.canAdd(assetReaderAudioOutput!) {
-                reader.add(assetReaderAudioOutput!)
-            } else {
-                print("Couldn't add audio output reader")
-                // show user error message/alert
-                return
-            }
-        }
-        
-        if reader.canAdd(assetReaderVideoOutput) {
-            reader.add(assetReaderVideoOutput)
-        } else {
-            print("Couldn't add video output reader")
-            // show user error message/alert
-            return
-        }
-        
-        let videoSettings:[String:Any] = [
-            AVVideoCompressionPropertiesKey: [AVVideoAverageBitRateKey: bitrate],
-            AVVideoCodecKey: AVVideoCodecType.h264,
-            AVVideoHeightKey: videoTrack.naturalSize.height,
-            AVVideoWidthKey: videoTrack.naturalSize.width,
-            AVVideoScalingModeKey: AVVideoScalingModeResizeAspectFill
-        ]
-        
-        let audioSettings: [String:Any] = [AVFormatIDKey : kAudioFormatMPEG4AAC,
-                                           AVNumberOfChannelsKey : 2,
-                                           AVSampleRateKey : 44100.0,
-                                           AVEncoderBitRateKey: 128000
-        ]
-        
-        let audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioSettings)
-        let videoInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
-        videoInput.transform = videoTrack.preferredTransform
-        
-        let videoInputQueue = DispatchQueue(label: "videoQueue")
-        let audioInputQueue = DispatchQueue.global(qos: .userInteractive)
-        
-        do {
-            
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
-            let date = Date()
-            let tempDir = NSTemporaryDirectory()
-            let outputPath = "\(tempDir)/\(formatter.string(from: date)).mp4"
-            let outputURL = URL(fileURLWithPath: outputPath)
-            
-            assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: AVFileType.mp4)
-            
-        } catch {
-            assetWriter = nil
-        }
-        guard let writer = assetWriter else {
-            print("assetWriter was nil")
-            // show user error message/alert
-            return
-        }
-        
-        writer.shouldOptimizeForNetworkUse = true
-        writer.add(videoInput)
-        writer.add(audioInput)
-        
-        writer.startWriting()
-        reader.startReading()
-        writer.startSession(atSourceTime: CMTime.zero)
-        
-        let closeWriter:()->Void = {
-            if (audioFinished && videoFinished) {
-                assetWriter?.finishWriting(completionHandler: { [weak self] in
-                    
-                    if let assetWriter = assetWriter {
-                        do {
-                            let data = try Data(contentsOf: assetWriter.outputURL)
-                            print("compressFile -file size after compression: \(Double(data.count / 1048576)) mb")
-                        } catch let err as NSError {
-                            print("compressFile Error: \(err.localizedDescription)")
-                        }
-                    }
-                    
-                  //  if let safeSelf = self, let assetWriter = safeSelf.assetWriter {
-                    print("DONE COMPRESSING")
-                        completion(assetWriter.outputURL)
-                   // }
-                })
-                
-                assetReader?.cancelReading()
-            }
-        }
-        
-        audioInput.requestMediaDataWhenReady(on: audioInputQueue) {
-
-            while(audioInput.isReadyForMoreMediaData) {
-
-                if let cmSampleBuffer = assetReaderAudioOutput?.copyNextSampleBuffer() {
-                    
-                    audioInput.append(cmSampleBuffer)
-                    
-                } else {
-                    audioInput.markAsFinished()
-                    DispatchQueue.main.async {
-                        audioFinished = true
-                        closeWriter()
-                    }
-                    break;
-                }
-            }
-        }
-        
-        videoInput.requestMediaDataWhenReady(on: videoInputQueue) {
-            // request data here
-
-            while(videoInput.isReadyForMoreMediaData) {
-                if let cmSampleBuffer = assetReaderVideoOutput.copyNextSampleBuffer() {
-                    videoInput.append(cmSampleBuffer)
-                    
-                } else {
-                    videoInput.markAsFinished()
-                    DispatchQueue.main.async {
-                        videoFinished = true
-                        closeWriter()
-                    }
-                    break;
-                }
-            }
-        }
-    }
     
     func resizedImageWith(image: UIImage, targetSize: CGSize) -> UIImage? {
         

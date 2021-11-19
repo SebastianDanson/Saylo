@@ -50,7 +50,7 @@ struct CameraMainView: View {
             
         }
         .ignoresSafeArea()
-        .background(Color(white: 0, opacity: 0.5))
+        .background(Color(white: 0, opacity: 1))
     }
     
     func startRecording() {
@@ -66,8 +66,8 @@ struct CameraMainView: View {
     }
     
     func takePhoto() {
-        viewModel.isTakingPhoto = true
-        let hasFlash = viewModel.hasFlash
+        CameraViewModel.shared.isTakingPhoto = true
+        let hasFlash = CameraViewModel.shared.hasFlash
         cameraView.takephoto(withFlash: hasFlash)
     }
     
@@ -123,7 +123,7 @@ struct MediaOptions: View {
 }
 
 struct SendButton: View {
-    @StateObject var viewModel = CameraViewModel.shared
+    var viewModel = CameraViewModel.shared
     
     var body: some View {
         

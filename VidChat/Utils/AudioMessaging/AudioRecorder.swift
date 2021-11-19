@@ -4,7 +4,6 @@
 //
 //  Created by Student on 2021-10-14.
 //
-
 import Foundation
 
 import Foundation
@@ -33,24 +32,17 @@ class AudioRecorder: NSObject,ObservableObject {
     }
     
     func startRecording() {
-//        let recordingSession = AVAudioSession.sharedInstance()
-//        
-//        do {
-//            try recordingSession.setCategory(.playAndRecord, mode: .default, options: .mixWithOthers)
-//            try recordingSession.setActive(true)
-//        } catch {
-//            print("Failed to set up recording session")
-//        }
+        let recordingSession = AVAudioSession.sharedInstance()
         
-//        try! AVAudioSession.sharedInstance().setActive(false)
-//        try! AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord,
-//                                                        options: [.mixWithOthers,
-//                                                                  .allowBluetoothA2DP,
-//                                                                  .defaultToSpeaker,
-//                                                                  .allowAirPlay])
+        do {
+            try recordingSession.setCategory(.playAndRecord, mode: .default)
+            try recordingSession.setActive(true)
+        } catch {
+            print("Failed to set up recording session")
+        }
         
-        let documentPath = NSTemporaryDirectory() + UUID().uuidString + ".m4a"
-        audioUrl = URL(fileURLWithPath: documentPath)
+        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        audioUrl = documentPath.appendingPathComponent(UUID().uuidString + ".m4a")
         
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -72,8 +64,6 @@ class AudioRecorder: NSObject,ObservableObject {
     
     func stopRecording() {
         audioRecorder.stop()
-       // try! AVAudioSession.sharedInstance().setCategory(.ambient)
-       // try! AVAudioSession.sharedInstance().setActive(false)
         recording = false
         
         audioPlayer.startPlayback(audio: audioUrl)

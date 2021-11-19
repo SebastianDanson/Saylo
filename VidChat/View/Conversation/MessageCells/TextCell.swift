@@ -10,6 +10,8 @@ import SwiftUI
 struct TextCell: View {
     
     let text: String
+    let messageId: String
+    @State var isSaved: Bool
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -27,12 +29,34 @@ struct TextCell: View {
                     .font(.system(size: 16))
             }
             Spacer()
-        }.padding(.horizontal)
+        }
+        .background(Color.white)
+        .padding(.horizontal)
+        .padding(.vertical, 2)
+        .onTapGesture {}
+        .onLongPressGesture(perform: {
+            withAnimation {
+                if let i = ConversationViewModel.shared.messages
+                    .firstIndex(where: {$0.id == messageId}) {
+                    ConversationViewModel.shared.messages[i].isSaved.toggle()
+                    isSaved.toggle()
+                }
+            }
+        })
+        .frame(width: SCREEN_WIDTH)
+        .overlay(
+            ZStack {
+                if isSaved {
+                    Image(systemName: "bookmark.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.mainBlue)
+                        .frame(width: 36, height: 24)
+                        .padding(.leading, 8)
+                        .transition(.scale)
+                }
+            }
+            ,alignment: .topTrailing)
     }
 }
 
-//struct TextCell_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TextCell()
-//    }
-//}

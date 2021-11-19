@@ -18,6 +18,7 @@ class VideoPlayerViewModel: ObservableObject {
     }
     
     func togglePlay() {
+        print(player.isPlaying, "ISPLAYING")
         if player.isPlaying {
             player.pause()
         } else {

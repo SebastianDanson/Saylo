@@ -16,14 +16,19 @@ struct VideoPlayerView: View {
     
     @State var player: AVPlayer
     @ObservedObject var viewModel: VideoPlayerViewModel
+    @State var isSaved: Bool
+    
+    var messageId: String?
+    
     private var exporter: AVAssetExportSession?
-
+    
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.width
     var showName: Bool
     
-    init(url: URL, id: String? = nil, showName: Bool = true) {
-
+    init(url: URL, id: String? = nil, isSaved: Bool = false, showName: Bool = true) {
+        self.messageId = id
+        self.isSaved = isSaved
         let player = AVPlayer(url: url)
         self.player = player
         self.viewModel = VideoPlayerViewModel(player: player)
@@ -50,10 +55,10 @@ struct VideoPlayerView: View {
     
     var body: some View {
         PlayerView(player: $player)
-                .frame(width: width, height: height)
-                .overlay(
-                    HStack {
-                        if showName {
+            .frame(width: width, height: height)
+            .overlay(
+                HStack {
+                    if showName {
                         Image(systemName: "house")
                             .clipped()
                             .scaledToFit()
@@ -65,14 +70,39 @@ struct VideoPlayerView: View {
                         Text("Sebastian")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
-                        }
                     }
-                        .padding(16),
-                    alignment: .bottomLeading)
-                .gesture(TapGesture().onEnded({ _ in
-                    viewModel.togglePlay()
-                }))
-
+                }
+                    .padding(16),
+                alignment: .bottomLeading)
+            .simultaneousGesture(
+                LongPressGesture()
+                    .onEnded { _ in
+                            withAnimation {
+                                if let i = ConversationViewModel.shared.messages
+                                    .firstIndex(where: {$0.id == messageId}) {
+                                  ConversationViewModel.shared.messages[i].isSaved.toggle()
+                                  isSaved.toggle()
+                                }
+                            }
+                    }
+            )
+            .highPriorityGesture(TapGesture()
+                                    .onEnded { _ in
+                viewModel.togglePlay()
+            })
+            .overlay(
+                ZStack {
+                    if isSaved {
+                        Image(systemName: "bookmark.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.mainBlue)
+                            .frame(width: 36, height: 24)
+                            .padding(.leading, 8)
+                            .transition(.scale)
+                    }
+                }
+                ,alignment: .topTrailing)
     }
     
     
@@ -107,7 +137,7 @@ struct VideoPlayer : UIViewControllerRepresentable {
         return controller
     }
     
-    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: UIViewControllerRepresentableContext<VideoPlayer>) {  
+    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: UIViewControllerRepresentableContext<VideoPlayer>) {
     }
 }
 
@@ -127,19 +157,18 @@ struct PlayerView: UIViewRepresentable {
 class PlayerUIView: UIView {
     private let playerLayer = AVPlayerLayer()
     private var exporter: AVAssetExportSession?
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     init(frame: CGRect, player: AVPlayer) {
         super.init(frame: frame)
-                
         // Setup the player
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspect
+        
         layer.addSublayer(playerLayer)
-        playerLayer.backgroundColor = UIColor.black.cgColor
         
         // Setup looping
         player.actionAtItemEnd = .none
@@ -147,13 +176,13 @@ class PlayerUIView: UIView {
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem)
-            
+        
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, options: .mixWithOthers)
-           } catch(let error) {
-               print(error.localizedDescription)
-           }
+        } catch(let error) {
+            print(error.localizedDescription)
+        }
         
         player.play()
     }

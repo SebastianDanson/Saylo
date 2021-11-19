@@ -23,13 +23,15 @@ struct ConversationView: View {
     @State private var text = ""
     @State private var hasScrolledToVideo = false
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
+    @State private var showSettings = false
     
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
     
+    
     var body: some View {
         
-        VStack {
+        VStack(spacing: 0) {
             
             ZStack {
                 
@@ -39,45 +41,48 @@ struct ConversationView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     
                     ScrollViewReader { reader in
-                        
-                        ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
+                        VStack(spacing: 5) {
                             
-                            MessageCell(message: viewModel.messages[i])
-                                .transition(.move(edge: .bottom))
-                                .offset(x: 0, y: dragOffset.height - 8)
-                                .padding(.bottom, i == viewModel.messages.count - 1 && !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : 0)
-                                .padding(.top, i == 0 ? 100 : 0)
-                                .onAppear {
-                                    if i != viewModel.messages.count - 1 {
-                                        viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
-                                    }
-                                    
-                                    //TODO don't scroll if you're high up and ur not the one sending
-                                    //AKA ur watching an older vid and ur buddy send u don't wanna scroll
-                                    if !isFirstLoad {
-                                        reader.scrollTo(viewModel.messages.last!.id, anchor: .bottom)
-                                    }
-                                }
-                            
-                                .simultaneousGesture(
-                                    canScroll(atIndex: i) && canScroll  ?
-                                    DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                                        .onChanged { gesture in
-                                            dragOffset.height = gesture.translation.height
-                                            hasScrolledToVideo = true
-                                            viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
+                            ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
+                                
+                                MessageCell(message: viewModel.messages[i])
+                                    .transition(.move(edge: .bottom))
+                                    .offset(x: 0, y: dragOffset.height - 20)
+                                    .onAppear {
+                                        if i != viewModel.messages.count - 1 {
+                                            viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
                                         }
-                                        .onEnded { gesture in
-                                            handleOnDragEnd(translation: gesture.translation,
-                                                            velocity: gesture.predictedEndLocation.y -
-                                                            gesture.location.y,
-                                                            index: i,
-                                                            reader: reader)
-                                        } : nil
-                                )
+                                        
+                                        //TODO don't scroll if you're high up and ur not the one sending
+                                        //AKA ur watching an older vid and ur buddy send u don't wanna scroll
+                                        // if !isFirstLoad {
+                                        reader.scrollTo(viewModel.messages.last!.id, anchor: .center)
+                                        //}
+                                    }
+                                
+                                    .simultaneousGesture(
+                                        canScroll(atIndex: i) && canScroll  ?
+                                        DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                                            .onChanged { gesture in
+                                                dragOffset.height = gesture.translation.height
+                                                hasScrolledToVideo = true
+                                                viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.play()
+                                            }
+                                            .onEnded { gesture in
+                                                handleOnDragEnd(translation: gesture.translation,
+                                                                velocity: gesture.predictedEndLocation.y -
+                                                                gesture.location.y,
+                                                                index: i,
+                                                                reader: reader)
+                                            } : nil
+                                    )
+                                
+                                //}
+                            }
                             
-                            //}
                         }
+                        .padding(.bottom, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -8)
+                        .padding(.top, 100)
                         .flippedUpsideDown()
                     }
                 }
@@ -89,6 +94,8 @@ struct ConversationView: View {
                     CameraViewModel.shared.cameraView
                         .transition(.opacity)
                 }
+                
+                
             }
             
             
@@ -101,14 +108,27 @@ struct ConversationView: View {
             if viewModel.showKeyboard {
                 KeyboardView(text: $text)
             }
+            
+            if showSettings {
+                Button {
+                    withAnimation(.linear(duration: 0.1)) {
+                        showSettings = false
+                    }
+                } label: {
+                    Rectangle()
+                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                        .foregroundColor(.clear)
+                }.zIndex(4)
+            }
         }
         .overlay(
             ZStack {
                 if !viewModel.showKeyboard {
+                    
                     VStack {
                         
                         if !viewModel.showCamera {
-                            ChatOptions()
+                            ChatOptions(showSettings: $showSettings)
                         }
                         
                         Spacer()
@@ -119,6 +139,7 @@ struct ConversationView: View {
                 }
             }
             ,alignment: .bottom)
+        
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
     
@@ -168,7 +189,7 @@ struct ConversationView: View {
                 if let currentMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[currentIndex].id }) {
                     currentMessagePlayer.player.pause()
                 }
-//
+                //
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     if let nextMessagePlayer = viewModel.players.first(where: { $0.messageId == viewModel.messages[nextIndex].id }) {
                         nextMessagePlayer.player.seek(to: CMTime.zero)
@@ -371,33 +392,51 @@ struct CameraCircle: View {
 
 struct ChatOptions: View {
     @Environment(\.presentationMode) var mode
+    @Binding var showSettings: Bool
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
     var body: some View {
         
-        HStack(spacing: 0) {
-            
-            Button {
-                mode.wrappedValue.dismiss()
-            } label: {
-                Image(systemName: "chevron.left.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(Color(.systemGray2))
-                    .background(Circle().foregroundColor(.white).frame(width: 28, height: 28))
-                    .frame(width: 30, height: 30)
-                    .padding(.vertical, 10)
+        VStack {
+            HStack(spacing: 0) {
+                
+                Button {
+                    mode.wrappedValue.dismiss()
+                } label: {
+                    Image(systemName: "chevron.left.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color(.systemGray2))
+                        .background(Circle().foregroundColor(.white).frame(width: 32, height: 32))
+                        .frame(width: 36, height: 36)
+                        .padding(.vertical, 10)
+                }
+                
+                Spacer()
+                
+                Button {
+                    withAnimation(.linear(duration: 0.1)) {
+                        showSettings.toggle()
+                    }
+                } label: {
+                    KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 36, height: 36)
+                        .clipShape(Circle())
+                        .padding(.vertical, 10)
+                }
+                
+                
+                
+            }
+            if showSettings {
+                ChatSettingsView()
+                    .zIndex(5)
+                    .transition(.opacity)
             }
             
-            Spacer()
-            
-            KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .clipShape(Circle())
-                .padding(.vertical, 10)
         }
         .padding(.horizontal, 16)
         .padding(.top, topPadding + 4)
@@ -566,5 +605,76 @@ struct KeyboardView: View {
             .padding(.bottom, 9)
             .padding(.trailing, 10)
         }
+    }
+}
+
+struct ChatSettingsView: View {
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            
+            HStack(alignment: .center) {
+                HStack(spacing: 12) {
+                    KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 36, height: 36)
+                        .clipShape(Circle())
+                    
+                    Text("Sebastian Danson")
+                        .lineLimit(1)
+                        .font(.system(size: 18, weight: .semibold))
+                }
+                
+                Spacer()
+                
+                Image(systemName: "video.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(Color(.systemBlue))
+                    .frame(width: 40, height: 20)
+                    .padding(.trailing)
+                
+            }
+            .padding(.leading)
+            .padding(.top)
+            
+            
+            
+            HStack(alignment: .center) {
+                HStack(spacing: 4) {
+                    
+                    Image(systemName: "bookmark.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.black)
+                        .frame(width: 36, height: 20)
+                        .padding(.leading, 8)
+                    
+                    Text("View saved Posts")
+                        .lineLimit(1)
+                        .font(.system(size: 16, weight: .medium))
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(Color(.systemGray2))
+                    .frame(width: 40, height: 20)
+                    .padding(.trailing, 2)
+            }
+            .padding(.vertical)
+            .background(Color.white)
+            .cornerRadius(12)
+            .padding(.horizontal)
+    
+        }
+        .padding(.vertical)
+        .background(Color(.systemGray6))
+        .cornerRadius(20)
+        .padding(.leading)
+        .shadow(color: Color(.init(white: 0, alpha: 0.2)), radius: 16, x: 0, y: 8)
     }
 }

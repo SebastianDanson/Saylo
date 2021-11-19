@@ -172,7 +172,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //
         if hasSwitchedCamera {
             print("CAPTURING MOVIE")
-            captureMovie(withFlash: self.hasFlash)
+            //captureMovie(withFlash: self.hasFlash)
         }
         
     }
@@ -277,15 +277,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 print("no input added")
             }
             
-            let audioReaderSettings: [String : Any] = [
-                AVFormatIDKey: kAudioFormatLinearPCM,
-                AVSampleRateKey: 44100,
-                AVLinearPCMBitDepthKey: 16,
-                AVLinearPCMIsBigEndianKey: 0,
-                AVLinearPCMIsFloatKey: 0,
-                AVNumberOfChannelsKey: 2,
-                AVLinearPCMIsNonInterleaved: 0,
-            ]
+       
             
             // add audio input
             audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
@@ -384,13 +376,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 
     }
     
+    //TODO saved videos that you record in video playback I.e start recording vide and then make download button work when done
+    
     func addAudio() {
+        
+        let isFirstLoad = CameraViewModel.shared.isFirstLoad
         
         DispatchQueue.global(qos: .userInteractive).async {
            
             
-        if CameraViewModel.shared.isFirstLoad {
-        
+        if isFirstLoad {
 
             self.audioCaptureSession.beginConfiguration()
         
@@ -423,6 +418,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 
         }
         }
+        CameraViewModel.shared.isFirstLoad = false
+
     }
     
     public func takePhoto(withFlash hasFlash: Bool) {

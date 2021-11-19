@@ -48,6 +48,9 @@ class Message: Identifiable {
     let text: String?
     var image: UIImage?
     
+    //data
+    var isSaved = false
+    
     //date
     let timestamp: Timestamp
     
@@ -71,9 +74,8 @@ class Message: Identifiable {
         self.text = dictionary["text"] as? String
         
         //checkCache
-        if exportVideo, let urlString = url, let url = URL(string: urlString) {
+        if type == .Video, exportVideo, let urlString = url, let url = URL(string: urlString) {
             self.url = CacheManager.getCachedUrl(url, isVideo: type == .Video).absoluteString
-            print(self.url, "SELF>URL")
         }
     }
 }
