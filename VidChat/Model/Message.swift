@@ -50,6 +50,7 @@ class Message: Identifiable {
     
     //data
     var isSaved = false
+    var isSameIdAsPrevMessage = false
     
     //date
     let timestamp: Timestamp
@@ -74,8 +75,9 @@ class Message: Identifiable {
         self.text = dictionary["text"] as? String
         
         //checkCache
-        if type == .Video, exportVideo, let urlString = url, let url = URL(string: urlString) {
-            self.url = CacheManager.getCachedUrl(url, isVideo: type == .Video).absoluteString
+        if type == .Video || type == .Audio, exportVideo, let urlString = url, let url = URL(string: urlString) {
+            let storedUrl = dictionary["userStoredUrl"] as? String ?? ""
+            self.url = CacheManager.getCachedUrl(url, userStoredURL: URL(string: storedUrl), isVideo: type == .Video).absoluteString
         }
     }
 }

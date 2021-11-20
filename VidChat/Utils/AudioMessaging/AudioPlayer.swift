@@ -9,7 +9,6 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     var audio: URL!
     var hasFinished = true
-    
     @Published var isPlaying = false {
         didSet {
             CameraViewModel.shared.isPlaying = isPlaying
@@ -17,10 +16,11 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         }
     }
     
-    var audioPlayer: AVAudioPlayer!
+    var audioPlayer: AVPlayer!
+    
     
     func startPlayback (audio: URL) {
-        
+
         let playbackSession = AVAudioSession.sharedInstance()
         
         do {
@@ -29,20 +29,27 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
             print("Playing over the device's speakers failed")
         }
         
-        do {
+       // do {
             self.audio = audio
-            audioPlayer = try AVAudioPlayer(contentsOf: audio)
-            audioPlayer.delegate = self
+            let playerItem = AVPlayerItem(url: audio)
+
+            audioPlayer = AVPlayer(playerItem: playerItem)
+           // audioPlayer.delegate = self
             audioPlayer.play()
             hasFinished = false
             isPlaying = true
-        } catch {
-            print("Playback failed.")
-        }
+//        } catch let e {
+//            print("Playback failed. \(e.localizedDescription)")
+//        }
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(playerItemDidReachEnd(notification:)),
+                                               name: .AVPlayerItemDidPlayToEndTime,
+                                               object: audioPlayer.currentItem)
     }
     
     func stopPlayback() {
-        audioPlayer.stop()
+        audioPlayer.seek(to: .zero)
         hasFinished = false
         isPlaying = false
     }
@@ -59,6 +66,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
         } else {
             startPlayback(audio: audio)
         }
+        
         isPlaying = true
     }
     
@@ -67,5 +75,10 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
             print("STOPPED")
             stopPlayback()
         }
+    }
+    
+    @objc
+    func playerItemDidReachEnd(notification: Notification) {
+        stopPlayback()
     }
 }

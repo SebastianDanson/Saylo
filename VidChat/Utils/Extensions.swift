@@ -19,18 +19,82 @@ extension Color {
     static let mainBlue = Color(red: 15/255, green: 188/255, blue: 249/255)
     static let lightGray = Color(red: 0.67, green: 0.67, blue: 0.67)
     static let iconGray = Color(red: 153/255, green: 153/255, blue: 153/255)
+    static let mainGray = Color(red: 83/255, green: 92/255, blue: 104/255)
+}
+
+extension UIImage {
+    /// Average color of the image, nil if it cannot be found
+    var averageColor: UIColor? {
+        // convert our image to a Core Image Image
+        guard let inputImage = CIImage(image: self) else { return nil }
+
+        // Create an extent vector (a frame with width and height of our current input image)
+        let extentVector = CIVector(x: inputImage.extent.origin.x,
+                                    y: inputImage.extent.origin.y,
+                                    z: inputImage.extent.size.width,
+                                    w: inputImage.extent.size.height)
+
+        // create a CIAreaAverage filter, this will allow us to pull the average color from the image later on
+        guard let filter = CIFilter(name: "CIAreaAverage",
+                                  parameters: [kCIInputImageKey: inputImage, kCIInputExtentKey: extentVector]) else { return nil }
+        guard let outputImage = filter.outputImage else { return nil }
+
+        // A bitmap consisting of (r, g, b, a) value
+        var bitmap = [UInt8](repeating: 0, count: 4)
+        let context = CIContext(options: [.workingColorSpace: kCFNull!])
+
+        // Render our output image into a 1 by 1 image supplying it our bitmap to update the values of (i.e the rgba of the 1 by 1 image will fill out bitmap array
+        context.render(outputImage,
+                       toBitmap: &bitmap,
+                       rowBytes: 4,
+                       bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBA8,
+                       colorSpace: nil)
+
+        // Convert our bitmap images of r, g, b, a to a UIColor
+        return UIColor(red: CGFloat(bitmap[0]) / 255,
+                       green: CGFloat(bitmap[1]) / 255,
+                       blue: CGFloat(bitmap[2]) / 255,
+                       alpha: CGFloat(bitmap[3]) / 255)
+    }
 }
 
 extension UIColor {
     static let mainBlue = UIColor(red: 15/255, green: 188/255, blue: 249/255, alpha: 1)
+    
+    var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        
+        getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        return (red, green, blue, alpha)
+    }
+    
+    func contrastColor() -> UIColor {
+        let rgbArray = [rgba.red, rgba.green, rgba.blue]
+        
+        let luminanceArray = rgbArray.map({ value -> (CGFloat) in
+            if value < 0.03928 {
+                return (value / 12.92)
+            } else {
+                return (pow( (value + 0.55) / 1.055, 2.4) )
+            }
+        })
+        
+        let luminance = 0.2126 * luminanceArray[0] +
+        0.7152 * luminanceArray[1] +
+        0.0722 * luminanceArray[2]
+        
+        return luminance > 0.179 ? UIColor.black : UIColor.white
+    }
 }
 
 extension UIView {
-
-     func listSubViews() -> [UIView] {
-            return subviews + subviews.flatMap { $0.listSubViews() }
-      }
-
+    
+    func listSubViews() -> [UIView] {
+        return subviews + subviews.flatMap { $0.listSubViews() }
+    }
+    
     func anchor(top: NSLayoutYAxisAnchor? = nil,
                 left: NSLayoutXAxisAnchor? = nil,
                 bottom: NSLayoutYAxisAnchor? = nil,
@@ -114,5 +178,13 @@ extension TimeInterval {
     }
     var second: Int {
         Int(truncatingRemainder(dividingBy: 60))
+    }
+}
+
+extension Date {
+    func getFormattedDate() -> String {
+        let dateformat = DateFormatter()
+        dateformat.dateFormat = "h:mm a"
+        return dateformat.string(from: self)
     }
 }

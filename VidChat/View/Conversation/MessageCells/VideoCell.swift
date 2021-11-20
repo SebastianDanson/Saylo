@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+//TODO fix issue when you close camera and u see the whit background of text cell i.e have textcell on screen and open and close camera
+
 struct VideoCell: View {
     
     @State var message: Message

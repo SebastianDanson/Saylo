@@ -98,9 +98,9 @@ struct MediaOptions: View {
                 
                 // X button
                 Button {
-                    withAnimation(.linear(duration: 0.15)) {
+                  //  withAnimation(.linear(duration: 0.15)) {
                         viewModel.reset()
-                    }
+                    //}
                 } label: {
                     CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
                 }
@@ -186,9 +186,9 @@ struct CameraOptions: View {
                 
                 // X button
                 Button {
-                    withAnimation {
+                  //  withAnimation {
                         viewModel.reset()
-                    }
+                    //}
                 } label: {
                     CamereraOptionView(image: Image("x"), imageDimension: 14)
                 }

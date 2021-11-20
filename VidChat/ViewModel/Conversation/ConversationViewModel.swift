@@ -66,6 +66,7 @@ class ConversationViewModel: ObservableObject {
             dictionary["url"] = url.absoluteString
             
             if type == .Video {
+                dictionary["userStoredUrl"] = url.absoluteString
                 dictionary["type"] = "video"
             } else {
                 dictionary["type"] = "audio"
@@ -83,6 +84,10 @@ class ConversationViewModel: ObservableObject {
         
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
         message.image = image
+        
+        if let lastMessage = messages.last {
+            message.isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: lastMessage, nextMessage: message)
+        }
         self.messages.append(message)
         uploadQueue.append(dictionary)
 
@@ -107,7 +112,6 @@ class ConversationViewModel: ObservableObject {
     
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
-        print(index, "INDEX")
         if index == 0 {
             uploadMessage(toDocWithId: id)
             return
@@ -147,7 +151,21 @@ class ConversationViewModel: ObservableObject {
     
     func fetchMessages() {
         ConversationService.fetchMessages(forDocWithId: "test") { messages in
+            self.setIsSameAsPrevId(messages: messages)
             self.messages = messages
         }
+    }
+    
+    func setIsSameAsPrevId(messages: [Message]) {
+        guard messages.count > 1 else {return}
+        for i in 1..<messages.count  {
+            messages[i].isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: messages[i - 1],
+                                                                  nextMessage: messages[i])
+        }
+    }
+    
+    func getIsSameAsPrevId(prevMessage: Message, nextMessage: Message) -> Bool {
+        return prevMessage.type == .Text && nextMessage.type == .Text
+        && prevMessage.userId == nextMessage.userId
     }
 }

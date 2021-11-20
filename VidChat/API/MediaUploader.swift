@@ -60,14 +60,12 @@ class MediaUploader {
         
         let ref = type.filePath
         
-        print("MANNN")
         ref.putData(imageData, metadata: nil) { _, error in
             if let error = error {
                 print("DEBUG: Failed to upload image \(error.localizedDescription)")
                 return
             }
             
-            print("MANNN 2")
             //TODO compress images
             ref.downloadURL { url, error in
                 if let error = error {
@@ -75,8 +73,6 @@ class MediaUploader {
                     return
                 }
                 
-                print("MANNN 3")
-
                 guard let imageUrl = url?.absoluteString else {return}
                 completion(imageUrl)
             }
@@ -106,27 +102,25 @@ class MediaUploader {
     
     func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
         let ref = UploadType.video.filePath
-        
                 
-                ref.putFile(from: url, metadata: nil) { _, error in
-                    if let error = error {
-                        print("DEBUG: Failed to upload video \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    ref.downloadURL { url, error in
-                        if let error = error {
-                            print("DEBUG: Failed to download video URL \(error.localizedDescription)")
-                            return
-                        }
-                        
-                        guard let videoUrl = url?.absoluteString else {return}
-                        completion(videoUrl)
-                    }
+        ref.putFile(from: url, metadata: nil) { _, error in
+           
+            if let error = error {
+                print("DEBUG: Failed to upload video \(error.localizedDescription)")
+                return
+            }
+            
+            ref.downloadURL { url, error in
+                if let error = error {
+                    print("DEBUG: Failed to download video URL \(error.localizedDescription)")
+                    return
                 }
-        
+                
+                guard let videoUrl = url?.absoluteString else {return}
+                completion(videoUrl)
+            }
+        }
     }
-    
     
     func resizedImageWith(image: UIImage, targetSize: CGSize) -> UIImage? {
         

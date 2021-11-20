@@ -13,12 +13,14 @@ class VideoPlayerViewModel: ObservableObject {
     
     @Published var player: AVPlayer
     
-    init(player: AVPlayer) {
+    var date: Date?
+    
+    init(player: AVPlayer, date: Date? = nil) {
         self.player = player
+        self.date = date
     }
     
     func togglePlay() {
-        print(player.isPlaying, "ISPLAYING")
         if player.isPlaying {
             player.pause()
         } else {

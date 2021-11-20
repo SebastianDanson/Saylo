@@ -16,24 +16,24 @@ struct VideoPlayerView: View {
     
     @State var player: AVPlayer
     @ObservedObject var viewModel: VideoPlayerViewModel
-    @State var isSaved: Bool
+    @State var isSaved: Bool = false
     
     var messageId: String?
-    
+
     private var exporter: AVAssetExportSession?
     
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.width
-    var showName: Bool
-    
-    init(url: URL, id: String? = nil, isSaved: Bool = false, showName: Bool = true) {
-        self.messageId = id
-        self.isSaved = isSaved
+    var showName: Bool = false
+
+    init(url: URL, id: String? = nil, isSaved: Bool = false, showName: Bool = true, date: Date? = nil) {
         let player = AVPlayer(url: url)
         self.player = player
-        self.viewModel = VideoPlayerViewModel(player: player)
+        self.isSaved = isSaved
+        self.messageId = id
+        self.viewModel = VideoPlayerViewModel(player: player, date: date)
         self.showName = showName
-        
+
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
         
@@ -45,10 +45,7 @@ struct VideoPlayerView: View {
             let ratio = size.height/size.width
             height = height * ratio
         }
-        
     }
-    
-    
     
     //TODO asynchornously load videos
     //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
@@ -64,15 +61,17 @@ struct VideoPlayerView: View {
                             .scaledToFit()
                             .padding()
                             .background(Color.gray)
-                            .frame(width: 28, height: 28)
+                            .frame(width: 30, height: 30)
                             .clipShape(Circle())
-                        
                         Text("Sebastian")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
+                        + Text(" • \((viewModel.date ?? Date()).getFormattedDate())")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(Color.white)
                     }
                 }
-                    .padding(16),
+                    .padding(12),
                 alignment: .bottomLeading)
             .simultaneousGesture(
                 LongPressGesture()

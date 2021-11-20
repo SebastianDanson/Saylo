@@ -6,33 +6,55 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct TextCell: View {
     
     let text: String
     let messageId: String
-    @State var isSaved: Bool
+    let isSameIdAsPrevMessage: Bool
+    let date: Date
+    @State var isSaved: Bool = false
+    
+    init(message: Message) {
+        self.text = message.text ?? ""
+        self.messageId = message.id
+        self.isSameIdAsPrevMessage = message.isSameIdAsPrevMessage
+        self.date = message.timestamp.dateValue()
+        self.isSaved = message.isSaved
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "house")
-                .clipped()
-                .scaledToFit()
-                .padding()
-                .background(Color.gray)
-                .frame(width: 28, height: 28)
-                .clipShape(Circle())
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Sebastian")
-                    .font(.system(size: 14, weight: .semibold))
+            if !isSameIdAsPrevMessage {
+                Image(systemName: "house")
+                    .clipped()
+                    .scaledToFit()
+                    .padding()
+                    .background(Color.gray)
+                    .frame(width: 30, height: 30)
+                    .clipShape(Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Sebastian")
+                        .font(.system(size: 14, weight: .semibold))
+                    + Text(" • \(date.getFormattedDate())")
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.mainGray)
+                    
+                    Text(text)
+                        .font(.system(size: 16))
+                }
+            } else {
                 Text(text)
                     .font(.system(size: 16))
+                    .padding(.leading, 30 + 10)
             }
+            
             Spacer()
         }
         .background(Color.white)
-        .padding(.horizontal)
-        .padding(.vertical, 2)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
         .onTapGesture {}
         .onLongPressGesture(perform: {
             withAnimation {

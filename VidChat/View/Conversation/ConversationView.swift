@@ -47,7 +47,7 @@ struct ConversationView: View {
                                 
                                 MessageCell(message: viewModel.messages[i])
                                     .transition(.move(edge: .bottom))
-                                    .offset(x: 0, y: dragOffset.height - 20)
+                                    .offset(x: 0, y: dragOffset.height - 25)
                                     .onAppear {
                                         if i != viewModel.messages.count - 1 {
                                             viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
@@ -59,7 +59,6 @@ struct ConversationView: View {
                                         reader.scrollTo(viewModel.messages.last!.id, anchor: .center)
                                         //}
                                     }
-                                
                                     .simultaneousGesture(
                                         canScroll(atIndex: i) && canScroll  ?
                                         DragGesture(minimumDistance: 0, coordinateSpace: .local)
@@ -81,10 +80,9 @@ struct ConversationView: View {
                             }
                             
                         }
-                        .padding(.bottom, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -8)
-                        .padding(.top, 100)
                         .flippedUpsideDown()
-                    }
+                    } .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -20)
+                    .padding(.bottom, 100)
                 }
                 .flippedUpsideDown()
                 
@@ -95,9 +93,18 @@ struct ConversationView: View {
                         .transition(.opacity)
                 }
                 
-                
+                if showSettings {
+                    Button {
+                        withAnimation(.linear(duration: 0.1)) {
+                            showSettings = false
+                        }
+                    } label: {
+                        Rectangle()
+                            .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                            .foregroundColor(.clear)
+                    }
+                }
             }
-            
             
             if viewModel.showPhotos {
                 PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
@@ -107,18 +114,6 @@ struct ConversationView: View {
             
             if viewModel.showKeyboard {
                 KeyboardView(text: $text)
-            }
-            
-            if showSettings {
-                Button {
-                    withAnimation(.linear(duration: 0.1)) {
-                        showSettings = false
-                    }
-                } label: {
-                    Rectangle()
-                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                        .foregroundColor(.clear)
-                }.zIndex(4)
             }
         }
         .overlay(
@@ -148,7 +143,7 @@ struct ConversationView: View {
     }
     
     func isScrollType(index i: Int) -> Bool {
-        viewModel.messages[i].type == .Video || viewModel.messages[i].type == .Photo
+        viewModel.messages[i].type == .Video
     }
     
     func isPrevScrollable(index i: Int) -> Bool {
@@ -204,23 +199,11 @@ struct ConversationView: View {
                 }
                 
             } else {
-                
                 withAnimation() {
                     reader.scrollTo(viewModel.messages[currentIndex].id, anchor: .center)
                     canScroll = false
                 }
-                //   DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                //   hasScrolledToVideo = true
-                // }
-                
-                // } else {
-                //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                //                    hasScrolledToVideo = true
-                //                }
             }
-            
-            
-            //            hasScrolledToVideo = true
         }
     }
 }
@@ -362,16 +345,14 @@ struct CameraCircle: View {
     var body: some View {
         Circle()
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
-            .stroke(Color.white, style: StrokeStyle(lineWidth: 6,
-                                                    lineCap: .round,
-                                                    lineJoin: .round))
+            .stroke(Color.white, style: StrokeStyle(lineWidth: 5.7, lineCap: .round, lineJoin: .round))
             .animation(.linear(duration: viewModel.progress == 0 ? 0 : 20), value: viewModel.progress)
             .frame(width: 60, height: 60)
             .rotationEffect(Angle(degrees: 270))
             .overlay(
                 Circle()
                     .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isShowingPhotoCamera ? .white : Color(.systemGray)),
-                                  lineWidth: viewModel.isRecording ? 3 : 6)
+                                  lineWidth: viewModel.isRecording ? 3 : 5.7)
                     .background(
                         VStack {
                             if viewModel.isRecording {
@@ -571,7 +552,7 @@ struct KeyboardView: View {
                     .scaledToFit()
                     .padding()
                     .background(Color.gray)
-                    .frame(width: 28, height: 28)
+                    .frame(width: 30, height: 30)
                     .clipShape(Circle())
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Sebastian")
@@ -580,8 +561,11 @@ struct KeyboardView: View {
                         viewModel.showKeyboard = false
                     }
                 }
+                
                 Spacer()
-            }.padding(.leading)
+            }
+            .padding(.leading, 12)
+            .padding(.top, 4)
             
             Button {
                 if !text.isEmpty {

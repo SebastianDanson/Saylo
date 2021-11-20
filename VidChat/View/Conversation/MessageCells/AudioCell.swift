@@ -10,6 +10,7 @@ import SwiftUI
 struct AudioCell: View {
     
     var audioURL: URL
+    var date: Date
     @ObservedObject var audioPlayer = AudioPlayer()
     
     var body: some View {
@@ -19,11 +20,14 @@ struct AudioCell: View {
                 .scaledToFit()
                 .padding()
                 .background(Color.gray)
-                .frame(width: 28, height: 28)
+                .frame(width: 30, height: 30)
                 .clipShape(Circle())
             VStack(alignment: .leading, spacing: 2) {
                 Text("Sebastian")
                     .font(.system(size: 14, weight: .semibold))
+                + Text(" • \(date.getFormattedDate())")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.mainGray)
                 Button {
                     if !audioPlayer.isPlaying {
                         audioPlayer.hasFinished ? audioPlayer.startPlayback(audio: self.audioURL) : audioPlayer.resume()
@@ -40,8 +44,11 @@ struct AudioCell: View {
                         .padding(.top, 8)
                 }
             }
+            
             Spacer()
-        }.padding(.horizontal)
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 4)
     }
 }
 

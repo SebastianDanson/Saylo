@@ -8,11 +8,15 @@
 import Foundation
 import AVFoundation
 
+//TODO cache audio URLs
+//TODO actually cut off after 20s
 class CacheManager {
     
-    static func getCachedUrl(_ url: URL, isVideo: Bool) -> URL {
+    static func getCachedUrl(_ url: URL, userStoredURL: URL?, isVideo: Bool) -> URL {
         if fileExists(forUrl: url, isVideo: isVideo) {
             return createNewPath(lastPath: url.lastPathComponent.appending(isVideo ? ".mov" : ".m4a"))
+        } else if let url = userStoredURL, fileExists(forUrl: url, isVideo: isVideo, addComp: false) {
+            return createNewPath(lastPath: url.lastPathComponent)
         } else {
             isVideo ? (exportSession(forUrl: url)) : (exportAudio(forUrl: url))
             return url
@@ -155,7 +159,7 @@ class CacheManager {
         }
     }
     
-    static func fileExists(forUrl url: URL, isVideo: Bool) -> Bool {
+    static func fileExists(forUrl url: URL, isVideo: Bool, addComp: Bool = true) -> Bool {
         let fileName = url.lastPathComponent
         
         // let outputURL = documentsDirectory.appendingPathComponent(fileName)
@@ -167,10 +171,10 @@ class CacheManager {
         let cacheDirectory = NSTemporaryDirectory() as NSString
         
         
-        let pathComp = isVideo ? "\(fileName).mov" : "\(fileName).m4a"
+        let pathComp = isVideo && addComp ? "\(fileName).mov" : "\(fileName).m4a"
         let outputURL = cacheDirectory.appendingPathComponent(pathComp)
         
-        print(FileManager.default.fileExists(atPath: outputURL), "FILE EXISTS")
+        print(fileName, FileManager.default.fileExists(atPath: outputURL), "FILE EXISTS")
         return FileManager.default.fileExists(atPath: outputURL)
     }
     
