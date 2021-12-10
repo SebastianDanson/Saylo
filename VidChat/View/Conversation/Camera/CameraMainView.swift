@@ -24,19 +24,28 @@ struct CameraMainView: View {
             
             //video player
             if let videoUrl = viewModel.videoUrl {
-                VideoPlayerView(url: videoUrl, showName: false)
-                    .overlay(MediaOptions(), alignment: .bottom)
-                    .background(Color.clear)
-                    .zIndex(3)
-            } 
+                
+                VStack {
+                    VideoPlayerView(url: videoUrl, showName: false)
+                        .overlay(MediaOptions(), alignment: .bottom)
+                        .background(Color.clear)
+                        
+                        .padding(.top, TOP_PADDING)
+                    Spacer()
+                }.zIndex(3)
+            }
             
             if let photo = viewModel.photo {
-                Image(uiImage: photo)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: UIScreen.main.bounds.width)
+                VStack{
+                    
+                    Image(uiImage: photo)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
                     .overlay(MediaOptions(), alignment: .bottom)
-                    .zIndex(3)                    
+                    .padding(.top, TOP_PADDING)
+                    Spacer()
+                }.zIndex(3)
             }
             
             //camera
@@ -48,7 +57,28 @@ struct CameraMainView: View {
                 FlashView()
             }
             
+//            ZStack(alignment: .top) {
+            
+           
+//            }
         }
+//        .overlay( VStack {
+//            Capsule(style: .continuous)
+//                .stroke(Color.red, lineWidth: 20)
+//                .foregroundColor(.clear)
+//                .frame(width: SCREEN_WIDTH - 20, height: SCREEN_WIDTH * 1.85)
+//                .cornerRadius(20)
+//                .padding(.top, TOP_PADDING)
+//            Spacer()
+//        })
+        .overlay(
+            VStack{
+            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                .frame(width: SCREEN_WIDTH + 18, height: SCREEN_WIDTH * 16/9 + 20)
+                .padding(.top, TOP_PADDING - 10)
+                Spacer()
+            }
+        )
         .ignoresSafeArea()
         .background(Color(white: 0, opacity: 1))
     }
@@ -165,7 +195,7 @@ struct CameraOptions: View {
     @Binding var isFrontFacing: Bool
     
     //height of extra space above and below camera
-    let nonCameraHeight = UIScreen.main.bounds.height - (UIScreen.main.bounds.width * 16/9) // Camera aspect ratio is 16/9
+    let nonCameraHeight = SCREEN_HEIGHT - (SCREEN_WIDTH * 16/9) // Camera aspect ratio is 16/9
     
     var cameraView: CameraView
     
@@ -209,7 +239,8 @@ struct CameraOptions: View {
                 })
             }
         }
-        .padding(.vertical, nonCameraHeight / 2 + 4)
+        .padding(.top, TOP_PADDING + 4)
+        .padding(.bottom, BOTTOM_PADDING + 75)
         .padding(.horizontal, 6)
     }
 }

@@ -41,7 +41,7 @@ struct ConversationView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     
                     ScrollViewReader { reader in
-                        VStack(spacing: 5) {
+                        VStack(spacing: 0) {
                             
                             ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
                                 
@@ -134,7 +134,7 @@ struct ConversationView: View {
                 }
             }
             ,alignment: .bottom)
-        
+        .background(Color.white)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
     
@@ -224,7 +224,9 @@ struct OptionsView: View {
     
     var body: some View {
         
+        VStack {
         HStack(spacing: 4) {
+            
             if !viewModel.showPhotos && !viewModel.showKeyboard{
                 
                 if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
@@ -232,6 +234,19 @@ struct OptionsView: View {
                     if !viewModel.showCamera {
                         
                         if !isRecordingAudio {
+                            Button(action: {
+                                withAnimation(.linear(duration: 0.15)) {
+                                    viewModel.showPhotos = true
+                                }
+                            }, label: {
+                                ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
+                            }).transition(.scale)
+                            
+                            //Photos button
+                        }
+                        
+                        if !isRecordingAudio {
+                            
                             //Camera button
                             Button(action: {
                                 withAnimation(.linear(duration: 0.15)) {
@@ -240,17 +255,6 @@ struct OptionsView: View {
                                 }
                             }, label: {
                                 ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
-                            }).transition(.scale)
-                        }
-                        
-                        if !isRecordingAudio {
-                            //Photos button
-                            Button(action: {
-                                withAnimation(.linear(duration: 0.15)) {
-                                    viewModel.showPhotos = true
-                                }
-                            }, label: {
-                                ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
                             }).transition(.scale)
                         }
                     }
@@ -330,9 +334,15 @@ struct OptionsView: View {
         }
         .frame(width: UIScreen.main.bounds.width, height: 70)
         .clipShape(Capsule())
-        .padding(.bottom, viewModel.showCamera ? 50 + BOTTOM_PADDING : BOTTOM_PADDING)
+        .padding(.bottom, viewModel.showCamera ? 160 + BOTTOM_PADDING : BOTTOM_PADDING)
         .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
         .transition(.opacity)
+            
+        }
+        
+        
+        .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 75)
+        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? Color.white : Color.clear)
         
     }
 }
@@ -420,7 +430,7 @@ struct ChatOptions: View {
             
         }
         .padding(.horizontal, 16)
-        .padding(.top, topPadding + 4)
+        .padding(.top, topPadding)
     }
 }
 

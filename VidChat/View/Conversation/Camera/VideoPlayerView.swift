@@ -19,13 +19,13 @@ struct VideoPlayerView: View {
     @State var isSaved: Bool = false
     
     var messageId: String?
-
+    
     private var exporter: AVAssetExportSession?
     
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.width
     var showName: Bool = false
-
+    
     init(url: URL, id: String? = nil, isSaved: Bool = false, showName: Bool = true, date: Date? = nil) {
         let player = AVPlayer(url: url)
         self.player = player
@@ -33,7 +33,7 @@ struct VideoPlayerView: View {
         self.messageId = id
         self.viewModel = VideoPlayerViewModel(player: player, date: date)
         self.showName = showName
-
+        
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
         
@@ -51,57 +51,72 @@ struct VideoPlayerView: View {
     //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
     
     var body: some View {
-        PlayerView(player: $player)
-            .frame(width: width, height: height)
-            .overlay(
-                HStack {
-                    if showName {
-                        Image(systemName: "house")
-                            .clipped()
-                            .scaledToFit()
-                            .padding()
-                            .background(Color.gray)
-                            .frame(width: 30, height: 30)
-                            .clipShape(Circle())
-                        Text("Sebastian")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                        + Text(" • \((viewModel.date ?? Date()).getFormattedDate())")
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(Color.white)
+        
+        ZStack {
+            PlayerView(player: $player)
+                .padding(.vertical, -6)
+                .frame(width: width, height: height)
+                .overlay(
+                    HStack {
+                        if showName {
+                            Image(systemName: "house")
+                                .clipped()
+                                .scaledToFit()
+                                .padding()
+                                .background(Color.gray)
+                                .frame(width: 30, height: 30)
+                                .clipShape(Circle())
+                            Text("Sebastian")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.white)
+                            + Text(" • \((viewModel.date ?? Date()).getFormattedDate())")
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(Color.white)
+                        }
                     }
-                }
-                    .padding(12),
-                alignment: .bottomLeading)
-            .simultaneousGesture(
-                LongPressGesture()
-                    .onEnded { _ in
+                        .padding(12),
+                    alignment: .bottomLeading)
+                .simultaneousGesture(
+                    LongPressGesture()
+                        .onEnded { _ in
                             withAnimation {
                                 if let i = ConversationViewModel.shared.messages
                                     .firstIndex(where: {$0.id == messageId}) {
-                                  ConversationViewModel.shared.messages[i].isSaved.toggle()
-                                  isSaved.toggle()
+                                    ConversationViewModel.shared.messages[i].isSaved.toggle()
+                                    isSaved.toggle()
                                 }
                             }
+                        }
+                )
+                .highPriorityGesture(TapGesture()
+                                        .onEnded { _ in
+                    viewModel.togglePlay()
+                })
+                .overlay(
+                    
+                    
+                    
+                    HStack {
+                        Spacer()
+                        if isSaved {
+                            Image(systemName: "bookmark.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.mainBlue)
+                                .frame(width: 36, height: 24)
+                                .padding(.leading, 8)
+                                .transition(.scale)
+                        }
+                        
+                        
                     }
-            )
-            .highPriorityGesture(TapGesture()
-                                    .onEnded { _ in
-                viewModel.togglePlay()
-            })
-            .overlay(
-                ZStack {
-                    if isSaved {
-                        Image(systemName: "bookmark.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.mainBlue)
-                            .frame(width: 36, height: 24)
-                            .padding(.leading, 8)
-                            .transition(.scale)
-                    }
-                }
-                ,alignment: .topTrailing)
+                    ,alignment: .center)
+        }
+        
+        
+        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white, style: StrokeStyle(lineWidth: 10))
+            .frame(width: width + 10, height: height + 20)
+            
     }
     
     

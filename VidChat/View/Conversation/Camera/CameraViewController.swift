@@ -178,9 +178,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func setupPreview() {
+        
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = view.bounds
-        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+        previewLayer.frame = CGRect(x: 5, y: TOP_PADDING, width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+        
+        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         view.layer.addSublayer(previewLayer)
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
@@ -189,6 +191,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let doubleTapRecognizer = UITapGestureRecognizer(target: self, action:#selector(pinch(_:)))
         doubleTapRecognizer.numberOfTapsRequired = 2
         self.view.addGestureRecognizer(pinchRecognizer)
+        
+        
+//        let croppedLayer = CAShapeLayer()
+//        croppedLayer.path = UIBezierPath(roundedRect: CGRect(x: -9, y: -10 + TOP_PADDING, width: SCREEN_WIDTH + 20, height: SCREEN_WIDTH * 1.85 + 18), cornerRadius: 30).cgPath
+//        croppedLayer.position = CGPoint(x: 0, y: 0)
+//        croppedLayer.fillColor = UIColor.clear.cgColor
+//        croppedLayer.strokeColor = UIColor.black.cgColor
+//        croppedLayer.lineWidth = 20
+//        view.layer.insertSublayer(croppedLayer, above: previewLayer)
     }
     
     func startSession() {
@@ -421,7 +432,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func takePhoto(withFlash hasFlash: Bool) {
-        let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
+        let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
         connection.isVideoMirrored = activeInput.device.position == .front
