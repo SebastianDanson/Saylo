@@ -82,7 +82,7 @@ struct ConversationView: View {
                         }
                         .flippedUpsideDown()
                     } .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -20)
-                    .padding(.bottom, 100)
+                        .padding(.bottom, 100)
                 }
                 .flippedUpsideDown()
                 
@@ -224,127 +224,141 @@ struct OptionsView: View {
     
     var body: some View {
         
-        VStack {
-        HStack(spacing: 4) {
+        ZStack {
             
-            if !viewModel.showPhotos && !viewModel.showKeyboard{
+            if !viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard {
+                VisualEffectView(effect: UIBlurEffect(style: .regular))
+            }
+            VStack {
                 
-                if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
+                
+                HStack(spacing: 0) {
                     
-                    if !viewModel.showCamera {
+                    if !viewModel.showPhotos && !viewModel.showKeyboard{
                         
-                        if !isRecordingAudio {
-                            Button(action: {
-                                withAnimation(.linear(duration: 0.15)) {
-                                    viewModel.showPhotos = true
-                                }
-                            }, label: {
-                                ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
-                            }).transition(.scale)
+                        if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
                             
-                            //Photos button
-                        }
-                        
-                        if !isRecordingAudio {
-                            
-                            //Camera button
-                            Button(action: {
-                                withAnimation(.linear(duration: 0.15)) {
-                                    cameraViewModel.isShowingPhotoCamera = true
-                                    viewModel.showCamera = true
-                                }
-                            }, label: {
-                                ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
-                            }).transition(.scale)
-                        }
-                    }
-                    
-                    if !isRecordingAudio {
-                        //Video record circle
-                        Button(action: {
-                            withAnimation {
-                                cameraViewModel.handleTap()
-                                viewModel.showCamera = true
-                                viewModel.players.forEach({ $0.player.pause() })
-                            }
-                        }, label: {
-                            CameraCircle().padding(.horizontal, 10)
-                        }).transition(.scale)
-                    }
-                    
-                    if !viewModel.showCamera {
-                        
-                        //Mic button
-                        Button(action: {
-                            withAnimation {
+                            if !viewModel.showCamera {
+                                
                                 if !isRecordingAudio {
-                                    audioProgress = 1.0
-                                    viewModel.showAudio = true
-                                    audioRecorder.startRecording()
-                                } else {
-                                    audioProgress = 0.0
-                                    
-                                    if !viewModel.showAudio {
-                                        audioRecorder.audioPlayer.isPlaying ?
-                                        audioRecorder.pauseRecording() : audioRecorder.playRecording()
-                                    } else {
-                                        audioRecorder.stopRecording()
-                                    }
-                                    
-                                    viewModel.showAudio = false
+                                    //Camera button
+                                    Button(action: {
+                                        withAnimation(.linear(duration: 0.15)) {
+                                            cameraViewModel.isShowingPhotoCamera = true
+                                            viewModel.showCamera = true
+                                        }
+                                    }, label: {
+                                        ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
+                                    }).transition(.scale)
                                 }
-                                isRecordingAudio = true
+                                
+                                if !isRecordingAudio {
+                                    
+                                    Button(action: {
+                                        withAnimation(.linear(duration: 0.15)) {
+                                            viewModel.showPhotos = true
+                                        }
+                                    }, label: {
+                                        ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
+                                    }).transition(.scale)
+                                    
+                                    //Photos button
+                                    
+                                }
                             }
-                        }, label: {
-                            ActionView(image: Image(systemName: viewModel.showAudio || !isRecordingAudio ? "mic.fill" :
-                                                        cameraViewModel.isPlaying ?
-                                                    "pause.circle.fill" : "play.circle.fill"),
-                                       imageDimension: viewModel.showAudio || !isRecordingAudio ? 27 : 60, isActive: $isRecordingAudio)
-                                .foregroundColor(isRecordingAudio ? Color.mainBlue : Color(.systemGray))
-                                .overlay(
-                                    ZStack {
-                                        // if isRecordingAudio {
-                                        Circle()
-                                            .trim(from: 0.0, to: CGFloat(min(audioProgress, 1.0)))
-                                            .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
-                                                                                       lineCap: .round,
-                                                                                       lineJoin: .round))
-                                            .animation(.linear(duration: audioProgress == 0 ? 0 : 20), value: audioProgress)
-                                            .frame(width: 48, height: 48)
-                                            .rotationEffect(Angle(degrees: 270))
-                                        // }
+                            
+                            if !isRecordingAudio {
+                                //Video record circle
+                                Button(action: {
+                                    withAnimation {
+                                        cameraViewModel.handleTap()
+                                        viewModel.showCamera = true
+                                        viewModel.players.forEach({ $0.player.pause() })
                                     }
-                                )
-                        })
-                        
-                        if !isRecordingAudio {
-                            //Aa button
-                            Button(action: {
-                                withAnimation {
-                                    viewModel.showKeyboard = true
+                                }, label: {
+                                    CameraCircle().padding(.leading, 15).padding(.trailing, 12)
+                                }).transition(.scale)
+                            }
+                            
+                            if !viewModel.showCamera {
+                                
+                                //Mic button
+                                Button(action: {
+                                    withAnimation {
+                                        if !isRecordingAudio {
+                                            audioProgress = 1.0
+                                            viewModel.showAudio = true
+                                            audioRecorder.startRecording()
+                                        } else {
+                                            audioProgress = 0.0
+                                            
+                                            if !viewModel.showAudio {
+                                                audioRecorder.audioPlayer.isPlaying ?
+                                                audioRecorder.pauseRecording() : audioRecorder.playRecording()
+                                            } else {
+                                                audioRecorder.stopRecording()
+                                            }
+                                            
+                                            viewModel.showAudio = false
+                                        }
+                                        isRecordingAudio = true
+                                    }
+                                }, label: {
+                                    ActionView(image: Image(systemName: viewModel.showAudio || !isRecordingAudio ? "waveform" :
+                                                                cameraViewModel.isPlaying ?
+                                                            "pause.circle.fill" : "play.circle.fill"),
+                                               imageDimension: viewModel.showAudio || !isRecordingAudio ? 30 : 60, isActive: $isRecordingAudio, isAudio: true)
+                                        .foregroundColor(isRecordingAudio ? Color.mainBlue : Color(.systemGray))
+                                        .overlay(
+                                            ZStack {
+                                                // if isRecordingAudio {
+                                                Circle()
+                                                    .trim(from: 0.0, to: CGFloat(min(audioProgress, 1.0)))
+                                                    .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
+                                                                                               lineCap: .round,
+                                                                                               lineJoin: .round))
+                                                    .animation(.linear(duration: audioProgress == 0 ? 0 : 20), value: audioProgress)
+                                                    .frame(width: 48, height: 48)
+                                                    .rotationEffect(Angle(degrees: 270))
+                                                // }
+                                            }
+                                        )
+                                })
+                                
+                                if !isRecordingAudio {
+                                    //Aa button
+                                    Button(action: {
+                                        withAnimation {
+                                            viewModel.showKeyboard = true
+                                        }
+                                    }, label: {
+                                        ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
+                                    }).transition(.scale)
                                 }
-                            }, label: {
-                                ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
-                            }).transition(.scale)
+                                
+                            }
                         }
-                        
                     }
                 }
+                .frame(height: 70)
+                .padding(.bottom, viewModel.showCamera ? 160 + BOTTOM_PADDING : BOTTOM_PADDING)
+                .padding(.horizontal, 14)
+                .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
+                .transition(.opacity)
+                
             }
         }
-        .frame(width: UIScreen.main.bounds.width, height: 70)
-        .clipShape(Capsule())
-        .padding(.bottom, viewModel.showCamera ? 160 + BOTTOM_PADDING : BOTTOM_PADDING)
-        .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
-        .transition(.opacity)
-            
-        }
         
-        
-        .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 75)
-        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? Color.white : Color.clear)
+        .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 70)
+        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? Color(white: 1, opacity: 0.7) : Color.clear)
         
     }
+}
+
+struct VisualEffectView: UIViewRepresentable {
+    var effect: UIVisualEffect?
+    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
+    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
 }
 
 /* The button that records video */
@@ -352,17 +366,20 @@ struct OptionsView: View {
 struct CameraCircle: View {
     @StateObject var viewModel = CameraViewModel.shared
     
+    let gradient = LinearGradient(colors: [.bottomGray, .topGray], startPoint: .bottom, endPoint: .top)
+    
     var body: some View {
         Circle()
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
-            .stroke(Color.white, style: StrokeStyle(lineWidth: 5.7, lineCap: .round, lineJoin: .round))
+            .stroke(Color.white, style: StrokeStyle(lineWidth: 5.5, lineCap: .round, lineJoin: .round))
             .animation(.linear(duration: viewModel.progress == 0 ? 0 : 20), value: viewModel.progress)
-            .frame(width: 60, height: 60)
+            .frame(width: 50, height: 50)
             .rotationEffect(Angle(degrees: 270))
             .overlay(
                 Circle()
-                    .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isShowingPhotoCamera ? .white : Color(.systemGray)),
-                                  lineWidth: viewModel.isRecording ? 3 : 5.7)
+                    .stroke(gradient, style: StrokeStyle(lineWidth: viewModel.isRecording ? 3 : 5.5))
+                //                    .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isShowingPhotoCamera ? .white : Color(.systemGray)),
+                //                                  lineWidth: viewModel.isRecording ? 3 : 5.7)
                     .background(
                         VStack {
                             if viewModel.isRecording {
@@ -374,8 +391,9 @@ struct CameraCircle: View {
                             }
                         }
                     )
-                    .frame(width: 60, height: 60)
+                    .frame(width: 52, height: 52)
             )
+            .padding(.horizontal, 8)
     }
 }
 
@@ -440,22 +458,30 @@ struct ActionView: View {
     
     let image: Image
     let imageDimension: CGFloat
-    
+    let isAudio: Bool
     @Binding var isActive: Bool
     
-    init(image: Image, imageDimension: CGFloat = 32, isActive: Binding<Bool> = .constant(false)) {
+    init(image: Image, imageDimension: CGFloat = 32, isActive: Binding<Bool> = .constant(false), isAudio: Bool = false) {
         self.image = image
         self.imageDimension = imageDimension
         self._isActive = isActive
+        self.isAudio = isAudio
     }
     
     var body: some View {
-        image
-            .resizable()
-            .scaledToFit()
-            .foregroundColor(isActive ? Color.mainBlue : Color(.systemGray))
-            .frame(width: imageDimension, height: imageDimension)
-            .padding(20)
+        LinearGradient(gradient: Gradient(colors: [isAudio && ConversationViewModel.shared.showAudio ? .mainBlue : .bottomGray, isAudio && ConversationViewModel.shared.showAudio ? .mainBlue : .topGray]), startPoint: .bottom, endPoint: .top)
+            .mask(image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: imageDimension, height: imageDimension)
+                    .aspectRatio(contentMode: .fit))
+        
+        //        image
+        //            .resizable()
+        //            .scaledToFit()
+        //            .foregroundColor(isActive ? Color.mainBlue : LinearGradient(colors: [.bottomGray, .topGray], startPoint: .bottom, endPoint: .top))
+        //            .frame(width: imageDimension, height: imageDimension)
+        //            .padding(20)
     }
 }
 
@@ -663,7 +689,7 @@ struct ChatSettingsView: View {
             .background(Color.white)
             .cornerRadius(12)
             .padding(.horizontal)
-    
+            
         }
         .padding(.vertical)
         .background(Color(.systemGray6))

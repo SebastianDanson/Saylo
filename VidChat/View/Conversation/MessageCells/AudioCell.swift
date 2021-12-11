@@ -39,7 +39,7 @@ struct AudioCell: View {
                           "pause.circle.fill" : "play.circle.fill")
                         .resizable()
                         .frame(width: 70, height: 70)
-                        .foregroundColor(.mainBlue)
+                        .foregroundColor(.topGray)
                         .scaledToFill()
                         .padding(.top, 8)
                 }

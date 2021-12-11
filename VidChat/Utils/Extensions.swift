@@ -20,6 +20,9 @@ extension Color {
     static let lightGray = Color(red: 0.67, green: 0.67, blue: 0.67)
     static let iconGray = Color(red: 153/255, green: 153/255, blue: 153/255)
     static let mainGray = Color(red: 83/255, green: 92/255, blue: 104/255)
+    static let topGray = Color(red: 165/255, green: 170/255, blue: 183/255)
+    static let bottomGray = Color(red: 133/255, green: 138/255, blue: 148/255)
+
 }
 
 extension UIImage {
