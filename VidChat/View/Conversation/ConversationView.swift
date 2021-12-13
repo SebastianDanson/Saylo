@@ -47,7 +47,7 @@ struct ConversationView: View {
                                 
                                 MessageCell(message: viewModel.messages[i])
                                     .transition(.move(edge: .bottom))
-                                    .offset(x: 0, y: dragOffset.height - 25)
+                                    .offset(x: 0, y: dragOffset.height - 28)
                                     .onAppear {
                                         if i != viewModel.messages.count - 1 {
                                             viewModel.players.first(where: {$0.messageId == viewModel.messages[i].id})?.player.pause()
@@ -341,7 +341,7 @@ struct OptionsView: View {
                     }
                 }
                 .frame(height: 70)
-                .padding(.bottom, viewModel.showCamera ? 160 + BOTTOM_PADDING : BOTTOM_PADDING)
+                .padding(.bottom, viewModel.showCamera ? 200 + BOTTOM_PADDING : BOTTOM_PADDING)
                 .padding(.horizontal, 14)
                 .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
                 .transition(.opacity)
@@ -366,32 +366,35 @@ struct VisualEffectView: UIViewRepresentable {
 struct CameraCircle: View {
     @StateObject var viewModel = CameraViewModel.shared
     
-    let gradient = LinearGradient(colors: [.bottomGray, .topGray], startPoint: .bottom, endPoint: .top)
-    
     var body: some View {
+        
         Circle()
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
             .stroke(Color.white, style: StrokeStyle(lineWidth: 5.5, lineCap: .round, lineJoin: .round))
             .animation(.linear(duration: viewModel.progress == 0 ? 0 : 20), value: viewModel.progress)
-            .frame(width: 50, height: 50)
+            .frame(width: 52, height: 52)
             .rotationEffect(Angle(degrees: 270))
             .overlay(
                 Circle()
-                    .stroke(gradient, style: StrokeStyle(lineWidth: viewModel.isRecording ? 3 : 5.5))
-                //                    .strokeBorder(viewModel.isRecording ? Color.clear : (viewModel.isShowingPhotoCamera ? .white : Color(.systemGray)),
-                //                                  lineWidth: viewModel.isRecording ? 3 : 5.7)
+                    .stroke(LinearGradient(colors: [viewModel.isRecording ? .clear :
+                                                        viewModel.isShowingPhotoCamera ? .white : .bottomGray,
+                                                    viewModel.isRecording ? .clear :
+                                                        viewModel.isShowingPhotoCamera ? .white : .topGray],
+                                           startPoint: .bottom, endPoint: .top),
+                            style: StrokeStyle(lineWidth: viewModel.isShowingPhotoCamera ? 7 : 5.5))
                     .background(
                         VStack {
                             if viewModel.isRecording {
                                 RoundedRectangle(cornerRadius: 6)
-                                    .frame(width: 28,
-                                           height: 28)
+                                    .frame(width: 26,
+                                           height: 26)
                                     .foregroundColor(Color(.systemRed))
                                     .transition(.scale)
                             }
                         }
                     )
-                    .frame(width: 52, height: 52)
+                    .frame(width: viewModel.isShowingPhotoCamera ? 64 : 52,
+                           height: viewModel.isShowingPhotoCamera ? 64 : 52)
             )
             .padding(.horizontal, 8)
     }
@@ -413,16 +416,31 @@ struct ChatOptions: View {
                 Button {
                     mode.wrappedValue.dismiss()
                 } label: {
-                    Image(systemName: "chevron.left.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color(.systemGray2))
-                        .background(Circle().foregroundColor(.white).frame(width: 32, height: 32))
-                        .frame(width: 36, height: 36)
-                        .padding(.vertical, 10)
+                    
+                    ZStack {
+                        Circle()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(Color(white: 0, opacity: 0.3))
+                        
+                        Image(systemName: "chevron.backward")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .frame(width: 18, height: 18)
+                            .padding(.trailing, 3)
+                        
+                    }
+//                    Image(systemName: "chevron.left.circle.fill")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .foregroundColor(Color(white: 0, opacity: 0.3))
+//                        .background(Circle().foregroundColor(.white).frame(width: 32, height: 32))
+//                        .frame(width: 36, height: 36)
+//                        .padding(.vertical, 10)
                 }
                 
                 Spacer()
+                
                 
                 Button {
                     withAnimation(.linear(duration: 0.1)) {
@@ -439,6 +457,7 @@ struct ChatOptions: View {
                 
                 
                 
+                
             }
             if showSettings {
                 ChatSettingsView()
@@ -446,6 +465,41 @@ struct ChatOptions: View {
                     .transition(.opacity)
             }
             
+            
+            HStack {
+                Spacer()
+                
+                VStack(spacing: 12) {
+                    
+                    ZStack {
+                        Circle()
+                            .frame(width: 36, height: 36)
+                            .foregroundColor(Color(white: 0, opacity: 0.3))
+                        
+                        Image(systemName: "video")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .frame(width: 20, height: 20)
+                        
+                    }
+                    
+                ZStack {
+                    Circle()
+                        .frame(width: 36, height: 36)
+                        .foregroundColor(Color(white: 0, opacity: 0.3))
+
+                    Image(systemName: "film")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.white)
+                        .frame(width: 20, height: 20)
+                    
+                }
+                
+                    
+                }
+            }.padding(.vertical, -6)
         }
         .padding(.horizontal, 16)
         .padding(.top, topPadding)

@@ -54,7 +54,7 @@ struct TextCell: View {
         }
         .background(Color.white)
         .padding(.horizontal, 12)
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
         .onTapGesture {}
         .onLongPressGesture(perform: {
             withAnimation {

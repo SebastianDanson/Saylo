@@ -29,7 +29,7 @@ struct CameraMainView: View {
                     VideoPlayerView(url: videoUrl, showName: false)
                         .overlay(MediaOptions(), alignment: .bottom)
                         .background(Color.clear)
-                        
+                    
                         .padding(.top, TOP_PADDING)
                     Spacer()
                 }.zIndex(3)
@@ -42,8 +42,8 @@ struct CameraMainView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
-                    .overlay(MediaOptions(), alignment: .bottom)
-                    .padding(.top, TOP_PADDING)
+                        .overlay(MediaOptions(), alignment: .bottom)
+                        .padding(.top, TOP_PADDING)
                     Spacer()
                 }.zIndex(3)
             }
@@ -57,25 +57,25 @@ struct CameraMainView: View {
                 FlashView()
             }
             
-//            ZStack(alignment: .top) {
+            //            ZStack(alignment: .top) {
             
-           
-//            }
+            
+            //            }
         }
-//        .overlay( VStack {
-//            Capsule(style: .continuous)
-//                .stroke(Color.red, lineWidth: 20)
-//                .foregroundColor(.clear)
-//                .frame(width: SCREEN_WIDTH - 20, height: SCREEN_WIDTH * 1.85)
-//                .cornerRadius(20)
-//                .padding(.top, TOP_PADDING)
-//            Spacer()
-//        })
+        //        .overlay( VStack {
+        //            Capsule(style: .continuous)
+        //                .stroke(Color.red, lineWidth: 20)
+        //                .foregroundColor(.clear)
+        //                .frame(width: SCREEN_WIDTH - 20, height: SCREEN_WIDTH * 1.85)
+        //                .cornerRadius(20)
+        //                .padding(.top, TOP_PADDING)
+        //            Spacer()
+        //        })
         .overlay(
             VStack{
-            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                .frame(width: SCREEN_WIDTH + 18, height: SCREEN_WIDTH * 16/9 + 20)
-                .padding(.top, TOP_PADDING - 10)
+                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                    .frame(width: SCREEN_WIDTH + 18, height: SCREEN_WIDTH * 16/9 + 20)
+                    .padding(.top, TOP_PADDING - 10)
                 Spacer()
             }
         )
@@ -118,36 +118,37 @@ struct FlashView: View {
 
 struct MediaOptions: View {
     @StateObject var viewModel = CameraViewModel.shared
-
+    
     var body: some View {
         VStack {
-            
-            HStack {
-                
-                Spacer()
-                
-                // X button
-                Button {
-                  //  withAnimation(.linear(duration: 0.15)) {
+            if viewModel.videoUrl != nil || viewModel.photo != nil {
+                HStack {
+                    
+                    Spacer()
+                    
+                    // X button
+                    Button {
+                        //  withAnimation(.linear(duration: 0.15)) {
                         viewModel.reset()
-                    //}
-                } label: {
-                    CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                        //}
+                    } label: {
+                        CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                    }
                 }
-            }
-            
-            Spacer()
-            
-            HStack {
-                
-                CamereraOptionView(image: Image(systemName: "square.and.arrow.down"), imageDimension: 25, circleDimension: 44)
                 
                 Spacer()
                 
-                SendButton()
+                HStack {
+                    
+                    CamereraOptionView(image: Image(systemName: "square.and.arrow.down"), imageDimension: 25, circleDimension: 44)
+                    
+                    Spacer()
+                    
+                    SendButton()
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
         }
     }
 }
@@ -202,7 +203,7 @@ struct CameraOptions: View {
     var body: some View {
         
         VStack {
-            
+            if viewModel.videoUrl == nil && viewModel.photo == nil {
             HStack {
                 
                 //Flash toggle button
@@ -216,8 +217,8 @@ struct CameraOptions: View {
                 
                 // X button
                 Button {
-                  //  withAnimation {
-                        viewModel.reset()
+                    //  withAnimation {
+                    viewModel.reset()
                     //}
                 } label: {
                     CamereraOptionView(image: Image("x"), imageDimension: 14)
@@ -239,9 +240,11 @@ struct CameraOptions: View {
                 })
             }
         }
+        }
         .padding(.top, TOP_PADDING + 4)
-        .padding(.bottom, BOTTOM_PADDING + 75)
+        .padding(.bottom, BOTTOM_PADDING + 100)
         .padding(.horizontal, 6)
+        
     }
 }
 

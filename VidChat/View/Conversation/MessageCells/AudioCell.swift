@@ -14,7 +14,7 @@ struct AudioCell: View {
     @ObservedObject var audioPlayer = AudioPlayer()
     
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 9) {
             Image(systemName: "house")
                 .clipped()
                 .scaledToFit()
@@ -47,8 +47,10 @@ struct AudioCell: View {
             
             Spacer()
         }
-        .padding(.horizontal, 12)
-        .padding(.bottom, 4)
+        .padding(.trailing, 10)
+        .padding(.leading, 17)
+        .padding(.bottom, 12)
+        .padding(.top, 4)
     }
 }
 

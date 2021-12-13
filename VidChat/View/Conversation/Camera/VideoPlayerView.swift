@@ -113,10 +113,10 @@ struct VideoPlayerView: View {
                     ,alignment: .center)
         }
         
-        
-        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white, style: StrokeStyle(lineWidth: 10))
-            .frame(width: width + 10, height: height + 20)
-            
+        if showName {
+            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white, style: StrokeStyle(lineWidth: 10))
+                .frame(width: width + 10, height: height + 20)
+        }
     }
     
     
