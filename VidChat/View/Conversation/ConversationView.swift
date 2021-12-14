@@ -24,6 +24,7 @@ struct ConversationView: View {
     @State private var hasScrolledToVideo = false
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     @State private var showSettings = false
+    @State private var showConversationPlayer = false
     
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
@@ -31,6 +32,7 @@ struct ConversationView: View {
     
     var body: some View {
         
+        ZStack {
         VStack(spacing: 0) {
             
             ZStack {
@@ -104,6 +106,7 @@ struct ConversationView: View {
                             .foregroundColor(.clear)
                     }
                 }
+                
             }
             
             if viewModel.showPhotos {
@@ -115,6 +118,8 @@ struct ConversationView: View {
             if viewModel.showKeyboard {
                 KeyboardView(text: $text)
             }
+            
+            
         }
         .overlay(
             ZStack {
@@ -123,7 +128,8 @@ struct ConversationView: View {
                     VStack {
                         
                         if !viewModel.showCamera {
-                            ChatOptions(showSettings: $showSettings)
+                            ChatOptions(showSettings: $showSettings,
+                                        showConversationPlayer: $showConversationPlayer)
                         }
                         
                         Spacer()
@@ -134,6 +140,21 @@ struct ConversationView: View {
                 }
             }
             ,alignment: .bottom)
+            
+            if showConversationPlayer {
+                ConversationPlayerView()
+                    .overlay(
+                        Button(action: {
+                           showConversationPlayer = false
+                        }, label: {
+                            CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                                .padding(.horizontal, 8)
+                                .padding(.top, TOP_PADDING + 32)
+                        })
+                       
+                        ,alignment: .topLeading)
+            }
+        }
         .background(Color.white)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
@@ -405,6 +426,7 @@ struct CameraCircle: View {
 struct ChatOptions: View {
     @Environment(\.presentationMode) var mode
     @Binding var showSettings: Bool
+    @Binding var showConversationPlayer: Bool
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
@@ -430,13 +452,6 @@ struct ChatOptions: View {
                             .padding(.trailing, 3)
                         
                     }
-//                    Image(systemName: "chevron.left.circle.fill")
-//                        .resizable()
-//                        .scaledToFit()
-//                        .foregroundColor(Color(white: 0, opacity: 0.3))
-//                        .background(Circle().foregroundColor(.white).frame(width: 32, height: 32))
-//                        .frame(width: 36, height: 36)
-//                        .padding(.vertical, 10)
                 }
                 
                 Spacer()
@@ -471,32 +486,42 @@ struct ChatOptions: View {
                 
                 VStack(spacing: 12) {
                     
-                    ZStack {
-                        Circle()
-                            .frame(width: 36, height: 36)
-                            .foregroundColor(Color(white: 0, opacity: 0.3))
+                    
+                    Button {
                         
-                        Image(systemName: "video")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .frame(width: 20, height: 20)
-                        
+                    } label: {
+                        ZStack {
+                            
+                            Circle()
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(Color(white: 0, opacity: 0.3))
+                            
+                            Image(systemName: "video")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.white)
+                                .frame(width: 20, height: 20)
+                        }
                     }
                     
-                ZStack {
-                    Circle()
-                        .frame(width: 36, height: 36)
-                        .foregroundColor(Color(white: 0, opacity: 0.3))
-
-                    Image(systemName: "film")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 20, height: 20)
                     
-                }
-                
+                    
+                    Button {
+                        showConversationPlayer.toggle()
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(Color(white: 0, opacity: 0.3))
+                            
+                            Image(systemName: "film")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.white)
+                                .frame(width: 20, height: 20)
+                        }
+                    }
+                    
                     
                 }
             }.padding(.vertical, -6)
@@ -587,45 +612,6 @@ struct AudioOptions: View {
         }.padding(.bottom, bottomPadding)
     }
 }
-
-//private struct ScrollOffsetPreferenceKey: PreferenceKey {
-//    static var defaultValue: CGPoint = .zero
-//
-//    static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {}
-//}
-
-//struct ScrollView<Content: View>: View {
-//    let axes: Axis.Set
-//    let showsIndicators: Bool
-//    let offsetChanged: (CGPoint) -> Void
-//    let content: Content
-//
-//    init(
-//        axes: Axis.Set = .vertical,
-//        showsIndicators: Bool = true,
-//        offsetChanged: @escaping (CGPoint) -> Void = { _ in },
-//        @ViewBuilder content: () -> Content
-//    ) {
-//        self.axes = axes
-//        self.showsIndicators = showsIndicators
-//        self.offsetChanged = offsetChanged
-//        self.content = content()
-//    }
-//
-//    var body: some View {
-//        SwiftUI.ScrollView(axes, showsIndicators: showsIndicators) {
-//            GeometryReader { geometry in
-//                Color.clear.preference(
-//                    key: ScrollOffsetPreferenceKey.self,
-//                    value: geometry.frame(in: .named("scrollView")).origin
-//                )
-//            }.frame(width: 0, height: 0)
-//            content
-//        }
-//        .coordinateSpace(name: "scrollView")
-//        .onPreferenceChange(ScrollOffsetPreferenceKey.self, perform: offsetChanged)
-//    }
-//}
 
 
 struct KeyboardView: View {
@@ -752,3 +738,4 @@ struct ChatSettingsView: View {
         .shadow(color: Color(.init(white: 0, alpha: 0.2)), radius: 16, x: 0, y: 8)
     }
 }
+

@@ -168,15 +168,30 @@ struct PlayerView: UIViewRepresentable {
     }
 }
 
+struct PlayerQueueView: UIViewRepresentable {
+    
+    @Binding var player : AVQueuePlayer
+    
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerQueueView>) {
+    }
+    
+    func makeUIView(context: Context) -> UIView {
+        let playerView = PlayerUIView(frame: .zero, player: player, shouldLoop: false)
+        return playerView
+    }
+}
+
 class PlayerUIView: UIView {
     private let playerLayer = AVPlayerLayer()
     private var exporter: AVAssetExportSession?
+    private var items = [AVPlayerItem]()
+    private var token: NSKeyValueObservation?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(frame: CGRect, player: AVPlayer) {
+    init(frame: CGRect, player: AVPlayer, shouldLoop: Bool = true) {
         super.init(frame: frame)
         // Setup the player
         playerLayer.player = player
@@ -185,12 +200,18 @@ class PlayerUIView: UIView {
         layer.addSublayer(playerLayer)
         
         // Setup looping
-        player.actionAtItemEnd = .none
+        
+        player.actionAtItemEnd = shouldLoop ? .none : .advance
+        
+        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: player.currentItem)
         
+        if !shouldLoop, let player = player as? AVQueuePlayer {
+            items = player.items()
+        }
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, options: .mixWithOthers)
@@ -199,6 +220,14 @@ class PlayerUIView: UIView {
         }
         
         player.play()
+        
+        if !shouldLoop {
+            token = player.observe(\.currentItem) { [weak self] player, _ in
+                if let player = player as? AVQueuePlayer, player.items().count == 1 {
+                    self?.addAllVideosToPlayer()
+                }
+            }
+        }
     }
     
     @objc
@@ -206,6 +235,16 @@ class PlayerUIView: UIView {
         playerLayer.player?.seek(to: CMTime.zero)
     }
     
+    private func addAllVideosToPlayer() {
+        
+        if let player = playerLayer.player as? AVQueuePlayer {
+            for item in items {
+                if player.canInsert(item, after: player.items().last) {
+                    player.insert(item, after: player.items().last)
+                }
+            }
+        }
+    }
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
