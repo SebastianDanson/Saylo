@@ -21,6 +21,9 @@ class ConversationViewModel: ObservableObject {
     @Published var players = [MessagePlayer]()
     @Published var chatId = "Chat"
     
+    
+    @Published var showConversationPlayer = false
+    
     //Texting
     @Published var showKeyboard = false
     

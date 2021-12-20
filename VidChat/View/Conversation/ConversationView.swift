@@ -24,8 +24,7 @@ struct ConversationView: View {
     @State private var hasScrolledToVideo = false
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     @State private var showSettings = false
-    @State private var showConversationPlayer = false
-    
+
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
     
@@ -128,8 +127,7 @@ struct ConversationView: View {
                     VStack {
                         
                         if !viewModel.showCamera {
-                            ChatOptions(showSettings: $showSettings,
-                                        showConversationPlayer: $showConversationPlayer)
+                            ChatOptions(showSettings: $showSettings)
                         }
                         
                         Spacer()
@@ -141,18 +139,10 @@ struct ConversationView: View {
             }
             ,alignment: .bottom)
             
-            if showConversationPlayer {
+            if viewModel.showConversationPlayer {
                 ConversationPlayerView()
-                    .overlay(
-                        Button(action: {
-                           showConversationPlayer = false
-                        }, label: {
-                            CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
-                                .padding(.horizontal, 8)
-                                .padding(.top, TOP_PADDING + 32)
-                        })
-                       
-                        ,alignment: .topLeading)
+                    .transition(AnyTransition.asymmetric(insertion: .scale, removal: .move(edge: .bottom)))
+                    .zIndex(6)
             }
         }
         .background(Color.white)
@@ -426,7 +416,7 @@ struct CameraCircle: View {
 struct ChatOptions: View {
     @Environment(\.presentationMode) var mode
     @Binding var showSettings: Bool
-    @Binding var showConversationPlayer: Bool
+    @StateObject var viewModel = ConversationViewModel.shared
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
@@ -505,9 +495,10 @@ struct ChatOptions: View {
                     }
                     
                     
-                    
                     Button {
-                        showConversationPlayer.toggle()
+                        withAnimation(.linear(duration: 0.2)) {
+                            viewModel.showConversationPlayer.toggle()
+                        }
                     } label: {
                         ZStack {
                             Circle()

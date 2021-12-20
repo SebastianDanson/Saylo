@@ -10,18 +10,23 @@ import AVFoundation
 
 struct ConversationPlayerView: View {
     
+    @ObservedObject var viewModel = ConversationPlayerViewModel.shared
     @State var player: AVQueuePlayer
+    @State var dateString = ""
+    @State var dragOffset: CGSize = .zero
+    
     private var token: NSKeyValueObservation?
-    private var urls: [AVPlayerItem]?
-
+    private var playerItems = [AVPlayerItem]()
+    
     init() {
-       
-        var playerItems = [AVPlayerItem]()
         
+        var playerItems = [AVPlayerItem]()
+        var dates = [Date]()
         ConversationViewModel.shared.messages.forEach({
             if $0.type == .Video, let urlString = $0.url, let url = URL(string: urlString) {
                 let playerItem = AVPlayerItem(asset: AVAsset(url: url))
                 playerItems.append(playerItem)
+                dates.append($0.timestamp.dateValue())
             }
         })
         
@@ -29,156 +34,74 @@ struct ConversationPlayerView: View {
         player.automaticallyWaitsToMinimizeStalling = false
         self.player = player
         self.player.play()
-        self.player.items().forEach { item in
-            print(item.asset.duration.seconds)
-        }
-        
+        self.playerItems = playerItems
+        viewModel.dates = dates
     }
-
+    
     
     var body: some View {
         
         ZStack {
             PlayerQueueView(player: $player)
                 .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
-               
+            
+            
             RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
                 .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
         }
+        .overlay(
+            VStack {
+                HStack {
+                    Button(action: {
+                        withAnimation(.linear(duration: 0.2)) {
+                            ConversationViewModel.shared.showConversationPlayer = false
+                        }
+                    }, label: {
+                        CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                            .padding(.horizontal, 8)
+                            .padding(.top, 12)
+                    })
+                    Spacer()
+                }
+                
+                Spacer()
+                
+                HStack {
+                    Image(systemName: "house")
+                        .clipped()
+                        .scaledToFit()
+                        .padding()
+                        .background(Color.gray)
+                        .frame(width: 30, height: 30)
+                        .clipShape(Circle())
+                    Text("Sebastian")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                    + Text(" • \(viewModel.dateString)")
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(Color.white)
+                    
+                    Spacer()
+                }
+                .padding(24)
+            })
+        .gesture(
+            DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                .onChanged { gesture in
+                    dragOffset.height = max(0, gesture.translation.height)
+                }
+                .onEnded { gesture in
+                    withAnimation(.linear(duration: 0.2)) {
+                        if dragOffset.height > SCREEN_HEIGHT / 4 {
+                            ConversationViewModel.shared.showConversationPlayer = false
+                        } else {
+                            dragOffset.height = 0
+                        }
+                    }
+                }
+        )
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-        .background(Color.black)
-
- 
+        .background(Color(white: 0, opacity: 1))
+        .offset(dragOffset)
     }
-    
-    func restartPlayer(){
-//        let playerItems = player.items()
-//            player.removeAllItems()
-//            playerItems.forEach{
-//                player.insert($0, after:nil)
-//            }
-            player.seek(to: .zero)
-            
-        }
-    
-//    func getPlayerItems() -> [AVPlayerItem] {
-//
-//
-//
-//        print(playerItems.count, "COUNTER")
-//        return playerItems
-//    }
 }
-
-//struct VideoPlayerView: View {
-//
-//    @State var player: AVPlayer
-//    @ObservedObject var viewModel: VideoPlayerViewModel
-//    @State var isSaved: Bool = false
-//
-//    var messageId: String?
-//
-//    private var exporter: AVAssetExportSession?
-//
-//    var width: CGFloat = UIScreen.main.bounds.width
-//    var height: CGFloat = UIScreen.main.bounds.width
-//    var showName: Bool = false
-//
-//    init(url: URL, id: String? = nil, isSaved: Bool = false, showName: Bool = true, date: Date? = nil) {
-//        let player = AVPlayer(url: url)
-//        self.player = player
-//        self.isSaved = isSaved
-//        self.messageId = id
-//        self.viewModel = VideoPlayerViewModel(player: player, date: date)
-//        self.showName = showName
-//
-//        player.automaticallyWaitsToMinimizeStalling = false
-//        self.player.play()
-//
-//        if let id = id {
-//            ConversationViewModel.shared.players.append(MessagePlayer(player: player, messageId: id))
-//        }
-//
-//        if let size = resolutionForLocalVideo(url: url) {
-//            let ratio = size.height/size.width
-//            height = height * ratio
-//        }
-//    }
-//
-//    //TODO asynchornously load videos
-//    //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
-//
-//    var body: some View {
-//
-//        ZStack {
-//            PlayerView(player: $player)
-//                .padding(.vertical, -6)
-//                .frame(width: width, height: height)
-//                .overlay(
-//                    HStack {
-//                        if showName {
-//                            Image(systemName: "house")
-//                                .clipped()
-//                                .scaledToFit()
-//                                .padding()
-//                                .background(Color.gray)
-//                                .frame(width: 30, height: 30)
-//                                .clipShape(Circle())
-//                            Text("Sebastian")
-//                                .font(.system(size: 14, weight: .semibold))
-//                                .foregroundColor(.white)
-//                            + Text(" • \((viewModel.date ?? Date()).getFormattedDate())")
-//                                .font(.system(size: 12, weight: .regular))
-//                                .foregroundColor(Color.white)
-//                        }
-//                    }
-//                        .padding(12),
-//                    alignment: .bottomLeading)
-//                .simultaneousGesture(
-//                    LongPressGesture()
-//                        .onEnded { _ in
-//                            withAnimation {
-//                                if let i = ConversationViewModel.shared.messages
-//                                    .firstIndex(where: {$0.id == messageId}) {
-//                                    ConversationViewModel.shared.messages[i].isSaved.toggle()
-//                                    isSaved.toggle()
-//                                }
-//                            }
-//                        }
-//                )
-//                .highPriorityGesture(TapGesture()
-//                                        .onEnded { _ in
-//                    viewModel.togglePlay()
-//                })
-//                .overlay(
-//
-//
-//
-//                    HStack {
-//                        Spacer()
-//                        if isSaved {
-//                            Image(systemName: "bookmark.fill")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .foregroundColor(.mainBlue)
-//                                .frame(width: 36, height: 24)
-//                                .padding(.leading, 8)
-//                                .transition(.scale)
-//                        }
-//
-//
-//                    }
-//                    ,alignment: .center)
-//        }
-//
-//        if showName {
-//            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white, style: StrokeStyle(lineWidth: 10))
-//                .frame(width: width + 10, height: height + 20)
-//        }
-//    }
-//
-//struct ConversationPlayerView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ConversationPlayerView()
-//    }
-//}

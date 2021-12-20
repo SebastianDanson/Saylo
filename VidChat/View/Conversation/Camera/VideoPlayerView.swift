@@ -204,10 +204,12 @@ class PlayerUIView: UIView {
         player.actionAtItemEnd = shouldLoop ? .none : .advance
         
         
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(playerItemDidReachEnd(notification:)),
-                                               name: .AVPlayerItemDidPlayToEndTime,
-                                               object: player.currentItem)
+        if shouldLoop {
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(playerItemDidReachEnd(notification:)),
+                                                   name: .AVPlayerItemDidPlayToEndTime,
+                                                   object: player.currentItem)
+        }
         
         if !shouldLoop, let player = player as? AVQueuePlayer {
             items = player.items()
@@ -223,9 +225,63 @@ class PlayerUIView: UIView {
         
         if !shouldLoop {
             token = player.observe(\.currentItem) { [weak self] player, _ in
-                if let player = player as? AVQueuePlayer, player.items().count == 1 {
+                self?.updateDateString()
+                if let player = player as? AVQueuePlayer, player.items().count == 0 {
                     self?.addAllVideosToPlayer()
                 }
+            }
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+            self.addGestureRecognizer(tap)
+            
+//            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+//            self.addGestureRecognizer(pan)
+        }
+    }
+    
+    
+    @objc
+    func handleTap(_ sender: UITapGestureRecognizer) {
+        if let player = playerLayer.player as? AVQueuePlayer {
+            let xLoc = sender.location(in: self).x
+            
+            if xLoc > SCREEN_WIDTH/2 {
+                player.advanceToNextItem()
+            } else if let currentItem = player.currentItem {
+               
+                let currentIndex = items.firstIndex(of: currentItem)
+                
+                if let currentIndex = currentIndex {
+                    
+                    if currentIndex > 0 {
+                        let prevItem = items[currentIndex - 1]
+                        player.replaceCurrentItem(with: prevItem)
+                    }
+                    
+                    player.seek(to: .zero)
+
+                }
+            }
+        }
+    }
+    
+    @objc
+    func handlePan(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        
+        print(translation.y)
+        if gesture.state == .changed {
+            self.center = CGPoint(
+                x: self.center.x,
+                y: self.center.y + translation.y
+            )
+//            gesture.setTranslation(.zero, in: self)
+            
+        } else if gesture.state == .ended {
+            
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveLinear) {
+  
+                gesture.setTranslation(.zero, in: self)
             }
         }
     }
@@ -243,8 +299,19 @@ class PlayerUIView: UIView {
                     player.insert(item, after: player.items().last)
                 }
             }
+            
+            player.seek(to: .zero)
+
         }
     }
+    
+    private func updateDateString() {
+        let viewModel = ConversationPlayerViewModel.shared
+        if let playerItem = (playerLayer.player as? AVQueuePlayer)?.items().first, let index = items.firstIndex(where: {$0 == playerItem}) {
+            viewModel.dateString = viewModel.dates[index].getFormattedDate()
+        }
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
