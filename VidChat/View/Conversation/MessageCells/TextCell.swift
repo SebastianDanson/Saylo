@@ -89,6 +89,7 @@ struct TextCell: View {
                         }
                         .padding(.horizontal, 12)
                     }
+                    //Temp
                     
                 }
             }
