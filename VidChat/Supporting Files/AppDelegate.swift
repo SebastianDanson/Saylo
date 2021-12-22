@@ -1,0 +1,196 @@
+//
+//  AppDelegate.swift
+//  VidChat
+//
+//  Created by Student on 2021-10-20.
+//
+
+import UIKit
+import PushKit
+import Firebase
+import AVFoundation
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    class var shared: AppDelegate! {
+        return UIApplication.shared.delegate as? AppDelegate
+    }
+
+    let pushRegistry = PKPushRegistry(queue: .main)
+    let callManager = CallManager()
+    var providerDelegate: ProviderDelegate?
+
+    // MARK: - UIApplicationDelegate
+
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        pushRegistry.delegate = self
+        pushRegistry.desiredPushTypes = [.voIP]
+
+        providerDelegate = ProviderDelegate(callManager: callManager)
+        
+        FirebaseApp.configure()
+        
+  
+        
+//        let audioSession = AVAudioSession.sharedInstance()
+//            do {
+//                // Set the audio session category, mode, and options.
+//                try audioSession.setCategory(.playAndRecord,  options: [.mixWithOthers,.defaultToSpeaker,.allowBluetooth])
+//                try audioSession.setActive(true)
+//            } catch {
+//                print("Failed to set audio session category.")
+//            }
+        
+        
+        return true
+    }
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    
+        guard let handle = url.startCallHandle else {
+            print("Could not determine start call handle from URL: \(url)")
+            return false
+        }
+
+        callManager.startCall(handle: handle)
+        return true
+    }
+
+    private func application(_ application: UIApplication,
+                             continue userActivity: NSUserActivity,
+                             restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+
+        guard let handle = userActivity.startCallHandle else {
+            print("Could not determine start call handle from user activity: \(userActivity)")
+            return false
+        }
+
+        guard let video = userActivity.video else {
+            print("Could not determine video from user activity: \(userActivity)")
+            return false
+        }
+
+        callManager.startCall(handle: handle, video: video)
+        return true
+    }
+
+    // MARK: - UISceneSession Lifecycle
+
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        // Called when a new scene session is being created.
+        // Use this method to select a configuration to create the new scene with.
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+}
+
+// MARK: - PKPushRegistryDelegate
+extension AppDelegate: PKPushRegistryDelegate {
+
+    func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
+        let token = credentials.token.map { String(format: "%02.2hhx", $0) }.joined()
+        print("voip token = \(token)")
+        let uid = Auth.auth().currentUser?.uid
+        //TODO make this run only when they don't have a pusgkit token
+        if let uid = uid  {
+            COLLECTION_USERS.document(uid).updateData(["pushKitToken" : token])
+        }
+    }
+
+    func pushRegistry(_ registry: PKPushRegistry,
+                      didReceiveIncomingPushWith payload: PKPushPayload,
+                      for type: PKPushType, completion: @escaping () -> Void) {
+        print("RECIEVED")
+        print("PAYLOAD", payload.dictionaryPayload["data"])
+        
+        let data = payload.dictionaryPayload["data"] as? [String:Any] ?? [String:Any]()
+        print(data, "DATA")
+        defer {
+            completion()
+        }
+
+//        guard type == .voIP,
+//            let uuidString = payload.dictionaryPayload["UUID"] as? String,
+//            let handle = payload.dictionaryPayload["handle"] as? String,
+//            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
+//            let uuid = UUID(uuidString: uuidString)
+//            else {
+//                return
+//        }
+        
+        guard type == .voIP,
+            let uuidString = data["UUID"] as? String,
+            let handle = data["handle"] as? String,
+            let hasVideo = data["hasVideo"] as? Bool,
+            let uuid = UUID(uuidString: uuidString)
+            else {
+                return
+        }
+        //let backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+
+//        AppDelegate.shared.displayIncomingCall(uuid: UUID(), handle: handle, hasVideo: hasVideo) { _ in
+//            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
+//        }
+        displayIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+            if self.providerDelegate?.pendingCall != nil {
+                self.providerDelegate?.provider.reportCall(with: uuid, endedAt: Date(), reason: .unanswered)
+            }
+        }
+    }
+
+    // MARK: - PKPushRegistryDelegate Helper
+
+    /// Display the incoming call to the user.
+    func displayIncomingCall(uuid: UUID, handle: String, hasVideo: Bool = false, completion: ((Error?) -> Void)? = nil) {
+        print("INCOMING INCOMING")
+        providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: completion)
+       
+    }
+}
+
+
+extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
+    
+    func askToSendNotifications() {
+        let application = UIApplication.shared
+        
+        UNUserNotificationCenter.current().delegate = self
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: {_, _ in })
+        Messaging.messaging().delegate = self
+        application.registerForRemoteNotifications()
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("FCM TOKEN", fcmToken)
+        if let fcmToken = fcmToken {
+            let dataDict:[String: String] = ["token": fcmToken ?? ""]
+            NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
+            
+            let uid = Auth.auth().currentUser?.uid
+
+            if let uid = uid  {
+                COLLECTION_USERS.document(uid).updateData(["fcmToken" : fcmToken])
+            }
+        }
+    }
+    
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+            completionHandler([.badge, .banner])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+}
