@@ -17,7 +17,8 @@ struct VideoPlayerView: View {
     @State var player: AVPlayer
     @ObservedObject var viewModel: VideoPlayerViewModel
     @State var isSaved: Bool = false
-    
+    @State var showAlert = false
+
     var messageId: String?
     
     private var exporter: AVAssetExportSession?
@@ -80,10 +81,14 @@ struct VideoPlayerView: View {
                     LongPressGesture()
                         .onEnded { _ in
                             withAnimation {
-                                if let i = ConversationViewModel.shared.messages
-                                    .firstIndex(where: {$0.id == messageId}) {
-                                    ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                                    isSaved.toggle()
+                                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+                                    if getMessages()[i].isSaved {
+                                        showAlert = true
+                                    } else {
+                                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
+                                        isSaved.toggle()
+                                    }
+                               
                                 }
                             }
                         }
@@ -101,9 +106,7 @@ struct VideoPlayerView: View {
                         if isSaved {
                             
                             Button {
-                                withAnimation {
-                                    
-                                }
+                                showAlert = true
                             } label: {
                                 ZStack {
                                     
@@ -119,6 +122,10 @@ struct VideoPlayerView: View {
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
+                            }.alert(isPresented: $showAlert) {
+                                savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
+                                    self.isSaved = isSaved
+                                })
                             }
 
                             
@@ -338,6 +345,8 @@ class PlayerUIView: UIView {
         super.layoutSubviews()
         playerLayer.frame = bounds
     }
+    
+    
     
 }
 

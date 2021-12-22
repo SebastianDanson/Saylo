@@ -14,10 +14,21 @@ struct VideoCell: View {
     @State var message: Message
     
     var body: some View {
+        GeometryReader { geometry in
+
         VStack {
             if let urlString = message.url, let url = URL(string: urlString) {
-                VideoPlayerView(url: url)
+            //    VideoPlayerView(url: url)
             }
         }
+        }
     }
+    
+    private func isButtonHidden(_ geometry: GeometryProxy) -> Bool {
+    // Alternatively, you can also check for geometry.frame(in:.global).origin.y if you know the button height.
+                if geometry.frame(in: .global).maxY <= 0 {
+                    return true
+                }
+                return false
+            }
 }

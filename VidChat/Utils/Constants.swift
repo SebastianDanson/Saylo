@@ -10,7 +10,7 @@ import Firebase
 import UIKit
 
 let COLLECTION_USERS = Firestore.firestore().collection("users")
-let COLLECTION_SAVED_POSTS = Firestore.firestore().collection("savedPosts")
+let COLLECTION_SAVED_POSTS = Firestore.firestore().collection("savedMessages")
 let COLLECTION_CONVERSATIONS = Firestore.firestore().collection("conversations")
 
 

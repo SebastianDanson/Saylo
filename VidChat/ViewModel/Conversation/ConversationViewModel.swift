@@ -17,12 +17,19 @@ struct MessagePlayer {
 
 class ConversationViewModel: ObservableObject {
     
+    var UIPlayerViews = [UIView]()
     @Published var messages = [Message]()
+    @Published var savedMessages = [Message]()
+
     @Published var players = [MessagePlayer]()
     @Published var chatId = "Chat"
     
     
-    @Published var showConversationPlayer = false
+    @Published var showConversationPlayer = false {
+        didSet {
+            print("SET")
+        }
+    }
     
     @Published var showSavedPosts = false
 
@@ -184,6 +191,14 @@ class ConversationViewModel: ObservableObject {
     
     func updateIsSaved(atIndex i: Int) {
         self.messages[i].isSaved.toggle()
+        self.savedMessages.removeAll(where: {$0.id == self.messages[i].id})
         ConversationService.updateIsSaved(forMessage: self.messages[i])
+    }
+    
+    func fetchSavedMessages() {
+        ConversationService.fetchSavedMessages(forDocWithId: "test") { messages in
+            self.setIsSameAsPrevId(messages: messages)
+            self.savedMessages = messages
+        }
     }
 }

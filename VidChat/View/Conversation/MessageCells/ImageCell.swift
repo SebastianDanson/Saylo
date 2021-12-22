@@ -21,7 +21,8 @@ struct ImageCell: View {
 
     @State var isSaved: Bool
     @State var backGroundColor = Color.white
-    
+    @State var showAlert = false
+
     var body: some View {
         
         ZStack(alignment: .bottomLeading) {
@@ -81,10 +82,14 @@ struct ImageCell: View {
         .onLongPressGesture(perform: {
             
             withAnimation {
-                if let i = ConversationViewModel.shared.messages
-                    .firstIndex(where: {$0.id == messageId}) {
-                    ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                    isSaved.toggle()
+                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+                    if getMessages()[i].isSaved {
+                        showAlert = true
+                    } else {
+                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
+                        isSaved.toggle()
+                    }
+               
                 }
             }
         })
@@ -93,9 +98,7 @@ struct ImageCell: View {
             ZStack {
                 if isSaved {
                     Button {
-                        withAnimation {
-                            
-                        }
+                           showAlert = true
                     } label: {
                         ZStack {
                             
@@ -111,13 +114,17 @@ struct ImageCell: View {
                         }
                         .padding(.horizontal, 6)
                         .padding(.vertical, 18)
+                    }.alert(isPresented: $showAlert) {
+                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
+                            self.isSaved = isSaved
+                        })
                     }
+                    
                 }
             }
             ,alignment: .bottomTrailing)
             
     }
-    
     
     func setAverageColor() {
         if let url = url {

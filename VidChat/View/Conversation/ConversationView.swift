@@ -39,7 +39,7 @@ struct ConversationView: View {
                 
                             if !viewModel.showSavedPosts {
 
-                ConversationFeedView(dragOffset: $dragOffset)
+                                ConversationFeedView(dragOffset: $dragOffset, showSavedPosts: false)
                             
                             }
                 //Camera
@@ -107,7 +107,7 @@ struct ConversationView: View {
             }
             
             if viewModel.showSavedPosts {
-                ConversationFeedView(dragOffset: $dragOffset)
+                ConversationFeedView(dragOffset: $dragOffset, showSavedPosts: true)
                 .background(Color.white)
                 .overlay(SavedPostsOptionsView(), alignment: .bottom)
                 .transition(.move(edge: .bottom))
@@ -602,6 +602,11 @@ struct ChatSettingsView: View {
             
             
             Button {
+                
+                if ConversationViewModel.shared.savedMessages.count == 0 {
+                    ConversationViewModel.shared.fetchSavedMessages()
+                }
+
                 withAnimation {
                     ConversationViewModel.shared.showSavedPosts = true
                 }
@@ -616,7 +621,7 @@ struct ChatSettingsView: View {
                             .frame(width: 36, height: 20)
                             .padding(.leading, 8)
                         
-                        Text("View saved Posts")
+                        Text("View saved messages")
                             .lineLimit(1)
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.black)
@@ -674,8 +679,8 @@ struct SavedPostsOptionsView: View {
                     
                     Spacer()
                     
-                    Text("Saved Posts")
-                        .font(.system(size: 20, weight: .medium))
+                    Text("Saved Messages")
+                        .font(.system(size: 18, weight: .medium))
                     
                     Spacer()
                  
@@ -698,7 +703,7 @@ struct SavedPostsOptionsView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .foregroundColor(.black)
-                                    .frame(width: 24, height: 24)
+                                    .frame(width: 22, height: 22)
                                     .padding(.trailing, 3)
                                 
                             }.padding(.horizontal, 20)

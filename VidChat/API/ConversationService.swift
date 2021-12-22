@@ -31,11 +31,29 @@ struct ConversationService {
         var messages = [Message]()
         COLLECTION_CONVERSATIONS.document(docId).getDocument { snapshot, _ in
             if let data = snapshot?.data() {
+                let savedMessages = data["savedMessages"] as? [String] ?? [String]()
                 let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
                 
                 messagesDic.forEach { message in
                     let id = message["id"] as? String ?? ""
-                    messages.append(Message(dictionary: message, id: id))
+                    let isSaved = savedMessages.contains(id)
+                    messages.append(Message(dictionary: message, id: id, isSaved: isSaved))
+                }
+                
+                completion(messages)
+            }
+        }
+    }
+    
+    static func fetchSavedMessages(forDocWithId docId: String, completion: @escaping(([Message]) -> Void)) {
+        var messages = [Message]()
+        COLLECTION_SAVED_POSTS.document(docId).getDocument { snapshot, _ in
+            if let data = snapshot?.data() {
+                let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
+                
+                messagesDic.forEach { message in
+                    let id = message["id"] as? String ?? ""
+                    messages.append(Message(dictionary: message, id: id, isSaved: true))
                 }
                 
                 completion(messages)
@@ -45,11 +63,11 @@ struct ConversationService {
     
     static func updateIsSaved(forMessage message: Message) {
         if message.isSaved {
-            COLLECTION_CONVERSATIONS.document("test").updateData(["savedPosts": FieldValue.arrayUnion([message.id])])
-            COLLECTION_SAVED_POSTS.document("test").updateData(["posts" : FieldValue.arrayUnion([message.getDictionary()])])
+            COLLECTION_CONVERSATIONS.document("test").updateData(["savedMessages": FieldValue.arrayUnion([message.id])])
+            COLLECTION_SAVED_POSTS.document("test").updateData(["messages" : FieldValue.arrayUnion([message.getDictionary()])])
         } else {
-            COLLECTION_CONVERSATIONS.document("test").updateData(["savedPosts": FieldValue.arrayRemove([message.id])])
-            COLLECTION_SAVED_POSTS.document("test").updateData(["posts" : FieldValue.arrayRemove([message.getDictionary()])])
+            COLLECTION_CONVERSATIONS.document("test").updateData(["savedMessages": FieldValue.arrayRemove([message.id])])
+            COLLECTION_SAVED_POSTS.document("test").updateData(["messages" : FieldValue.arrayRemove([message.getDictionary()])])
         }
     }
     

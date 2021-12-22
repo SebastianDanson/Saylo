@@ -63,13 +63,13 @@ class Message: Identifiable {
     var isFromPhotoLibrary: Bool
 
     //data
-    var isSaved = true
+    var isSaved: Bool
     var isSameIdAsPrevMessage = false
     
     //date
     let timestamp: Timestamp
     
-    init(dictionary: [String:Any], id: String, exportVideo: Bool = true) {
+    init(dictionary: [String:Any], id: String, exportVideo: Bool = true, isSaved: Bool = false) {
         
         //ids
         self.id = id
@@ -89,6 +89,8 @@ class Message: Identifiable {
         self.text = dictionary["text"] as? String
         
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true
+        
+        self.isSaved = isSaved
         
         //checkCache
         if type == .Video || type == .Audio, exportVideo, let urlString = url, let url = URL(string: urlString) {

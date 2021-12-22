@@ -14,14 +14,15 @@ struct TextCell: View {
     let messageId: String
     let isSameIdAsPrevMessage: Bool
     let date: Date
-    @State var isSaved: Bool = false
+    @State var isSaved: Bool
+    @State var showAlert = false
     
     init(message: Message) {
         self.text = message.text ?? ""
         self.messageId = message.id
         self.isSameIdAsPrevMessage = message.isSameIdAsPrevMessage
         self.date = message.timestamp.dateValue()
-        self.isSaved = message.isSaved
+        self._isSaved = State(initialValue: message.isSaved)
     }
     
     var body: some View {
@@ -58,10 +59,14 @@ struct TextCell: View {
         .onTapGesture {}
         .onLongPressGesture(perform: {
             withAnimation {
-                if let i = ConversationViewModel.shared.messages
-                    .firstIndex(where: {$0.id == messageId}) {
-                    ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                    isSaved.toggle()
+                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+                    if getMessages()[i].isSaved {
+                        showAlert = true
+                    } else {
+                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
+                        isSaved.toggle()
+                    }
+                    
                 }
             }
         })
@@ -71,9 +76,7 @@ struct TextCell: View {
                 if isSaved {
                     
                     Button {
-                        withAnimation {
-                            
-                        }
+                        showAlert = true
                     } label: {
                         ZStack {
                             
@@ -89,7 +92,11 @@ struct TextCell: View {
                         }
                         .padding(.horizontal, 12)
                     }
-                    //Temp
+                    .alert(isPresented: $showAlert) {
+                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
+                            self.isSaved = isSaved
+                        })
+                    }
                     
                 }
             }

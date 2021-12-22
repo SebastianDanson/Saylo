@@ -13,13 +13,14 @@ struct AudioCell: View {
     var date: Date
     var messageId: String?
     @ObservedObject var audioPlayer = AudioPlayer()
-    @State var isSaved: Bool = false
+    @State var isSaved: Bool
+    @State var showAlert = false
 
     init(audioURL: URL, date: Date, isSaved: Bool, messagId: String) {
         self.date = date
         self.audioURL = audioURL
-        self.isSaved = isSaved
         self.messageId = messagId
+        self._isSaved = State(initialValue: isSaved)
     }
     
     var body: some View {
@@ -60,9 +61,7 @@ struct AudioCell: View {
         ZStack {
             if isSaved {
                 Button {
-                    withAnimation {
-                        
-                    }
+                    showAlert = true
                 } label: {
                     ZStack {
                         
@@ -77,6 +76,10 @@ struct AudioCell: View {
                             .frame(width: 13, height: 13)
                     }
                     .padding(.horizontal, 8)
+                }.alert(isPresented: $showAlert) {
+                    savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
+                        self.isSaved = isSaved
+                    })
                 }
             }
         }
@@ -88,10 +91,14 @@ struct AudioCell: View {
         .padding(.top, 4)
         .onLongPressGesture(perform: {
             withAnimation {
-                if let i = ConversationViewModel.shared.messages
-                    .firstIndex(where: {$0.id == messageId}) {
-                    ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                    isSaved.toggle()
+                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+                    if getMessages()[i].isSaved {
+                        showAlert = true
+                    } else {
+                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
+                        isSaved.toggle()
+                    }
+               
                 }
             }
         })
