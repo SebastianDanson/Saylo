@@ -22,7 +22,7 @@ struct ConversationView: View {
     @State private var text = ""
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     @State private var showSettings = false
-
+    
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
     
@@ -30,69 +30,69 @@ struct ConversationView: View {
     var body: some View {
         
         ZStack {
-        VStack(spacing: 0) {
-            
-            ZStack {
+            VStack(spacing: 0) {
                 
-                //Feed
-                //                LazyVStack(spacing: 12) {
-                
-                            if !viewModel.showSavedPosts {
-
-                                ConversationFeedView(dragOffset: $dragOffset, showSavedPosts: false)
-                            
+                ZStack {
+                    
+                    //Feed
+                    //                LazyVStack(spacing: 12) {
+                    
+                    if !viewModel.showSavedPosts {
+                        
+                        ConversationFeedView(showSavedPosts: false)
+                        
+                    }
+                    //Camera
+                    if viewModel.showCamera {
+                        CameraViewModel.shared.cameraView
+                            .transition(.opacity)
+                            .zIndex(6)
+                    }
+                    
+                    if showSettings {
+                        Button {
+                            withAnimation(.linear(duration: 0.1)) {
+                                showSettings = false
                             }
-                //Camera
-                if viewModel.showCamera {
-                    CameraViewModel.shared.cameraView
-                        .transition(.opacity)
-                        .zIndex(6)
+                        } label: {
+                            Rectangle()
+                                .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                                .foregroundColor(.clear)
+                        }
+                    }
                 }
                 
-                if showSettings {
-                    Button {
-                        withAnimation(.linear(duration: 0.1)) {
-                            showSettings = false
-                        }
-                    } label: {
-                        Rectangle()
-                            .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                            .foregroundColor(.clear)
-                    }
+                if viewModel.showPhotos {
+                    PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
+                        .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
+                        .transition(.move(edge: .bottom))
                 }
+                
+                
+                if viewModel.showKeyboard {
+                    KeyboardView(text: $text)
+                }
+                
+                
             }
-            
-            if viewModel.showPhotos {
-                PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
-                    .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
-                    .transition(.move(edge: .bottom))
-            }
-            
-            
-            if viewModel.showKeyboard {
-                KeyboardView(text: $text)
-            }
-            
-            
-        }
-        .overlay(
-            ZStack {
-                if !viewModel.showKeyboard {
-                    
-                    VStack {
+            .overlay(
+                ZStack {
+                    if !viewModel.showKeyboard {
                         
-                        if !viewModel.showCamera {
-                            ChatOptions(showSettings: $showSettings)
+                        VStack {
+                            
+                            if !viewModel.showCamera {
+                                ChatOptions(showSettings: $showSettings)
+                            }
+                            
+                            Spacer()
+                            
+                            OptionsView()
                         }
                         
-                        Spacer()
-                        
-                        OptionsView()
                     }
-                    
                 }
-            }
-            ,alignment: .bottom)
+                ,alignment: .bottom)
             
             if viewModel.showConversationPlayer {
                 ConversationPlayerView()
@@ -107,11 +107,11 @@ struct ConversationView: View {
             }
             
             if viewModel.showSavedPosts {
-                ConversationFeedView(dragOffset: $dragOffset, showSavedPosts: true)
-                .background(Color.white)
-                .overlay(SavedPostsOptionsView(), alignment: .bottom)
-                .transition(.move(edge: .bottom))
-                .zIndex(6)
+                ConversationFeedView(showSavedPosts: true)
+                    .background(Color.white)
+                    .overlay(SavedPostsOptionsView(), alignment: .bottom)
+                    .transition(.move(edge: .bottom))
+                    .zIndex(6)
             }
             
         }
@@ -606,7 +606,7 @@ struct ChatSettingsView: View {
                 if ConversationViewModel.shared.savedMessages.count == 0 {
                     ConversationViewModel.shared.fetchSavedMessages()
                 }
-
+                
                 withAnimation {
                     ConversationViewModel.shared.showSavedPosts = true
                 }
@@ -641,7 +641,7 @@ struct ChatSettingsView: View {
                 .cornerRadius(12)
                 .padding(.horizontal)
             }
-
+            
         }
         .padding(.vertical)
         .background(Color(.systemGray6))
@@ -674,18 +674,18 @@ struct SavedPostsOptionsView: View {
             VStack {
                 
                 ZStack {
-                
-                HStack {
                     
-                    Spacer()
-                    
-                    Text("Saved Messages")
-                        .font(.system(size: 18, weight: .medium))
-                    
-                    Spacer()
-                 
-                    
-                }
+                    HStack {
+                        
+                        Spacer()
+                        
+                        Text("Saved Messages")
+                            .font(.system(size: 18, weight: .medium))
+                        
+                        Spacer()
+                        
+                        
+                    }
                     
                     HStack {
                         
@@ -708,10 +708,9 @@ struct SavedPostsOptionsView: View {
                                 
                             }.padding(.horizontal, 20)
                         }
-
-                       
-                          
-                          Spacer()
+                        
+                        
+                        Spacer()
                         
                     }
                 }

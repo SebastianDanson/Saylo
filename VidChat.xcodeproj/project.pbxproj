@@ -13,6 +13,7 @@
 		069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A6A2772D23400996824 /* ConversationFeedView.swift */; };
 		06DFA9CE27738FD800A8CF0C /* SavedPostAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */; };
 		06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CF27739AFD00A8CF0C /* Helpers.swift */; };
+		06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */; };
 		3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F26E2700F768009E0029 /* ConversationGridCell.swift */; };
 		3F08F27227017A36009E0029 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27127017A36009E0029 /* CameraView.swift */; };
 		3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27327017A3D009E0029 /* CameraViewController.swift */; };
@@ -107,6 +108,7 @@
 		069E4A6A2772D23400996824 /* ConversationFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFeedView.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostAlert.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/Utils/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
 		3F08F26E2700F768009E0029 /* ConversationGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationGridCell.swift; sourceTree = "<group>"; };
 		3F08F27127017A36009E0029 /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		3F08F27327017A3D009E0029 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
@@ -534,6 +536,7 @@
 		3F8B02A026FF914500841565 /* ConversationsList */ = {
 			isa = PBXGroup;
 			children = (
+				06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */,
 			);
 			path = ConversationsList;
 			sourceTree = "<group>";
@@ -680,6 +683,7 @@
 				3F112B852720B34500BA2A73 /* Call.swift in Sources */,
 				3F112BAB2721B04600BA2A73 /* MakeCallView.swift in Sources */,
 				3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */,
+				06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */,
 				3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */,
 				3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */,
 				3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */,

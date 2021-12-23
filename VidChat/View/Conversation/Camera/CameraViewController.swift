@@ -89,10 +89,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         setUpWriter()
         
         captureSession.beginConfiguration()
+        
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             return
         }
-        
         
         do {
             
@@ -132,11 +132,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func switchCamera() {
-        //        if movieOutput.isRecording {
-        //            hasSwitchedCamera = true
-        //            stopRecording()
-        //            return
-        //        }
         
         let position: AVCaptureDevice.Position = (activeInput.device.position == .back) ? .front : .back
         
@@ -144,43 +139,35 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return
         }
         
+//        captureSession.stopRunning()
+
         captureSession.beginConfiguration()
         captureSession.removeInput(activeInput)
         
         do {
             activeInput = try AVCaptureDeviceInput(device: device)
+            
         } catch {
-            print("error switchCamera: \(error.localizedDescription)")
+            print("error: \(error.localizedDescription)")
             return
         }
         
         captureSession.addInput(activeInput)
         captureSession.commitConfiguration()
         
-        //        if hasFlash && movieOutput.isRecording {
-        //            do {
-        //                let device = activeInput.device
-        //                try device.lockForConfiguration()
-        //                if device.position == .back {
-        //                    try device.setTorchModeOn(level:1.0)
-        //                }
-        //                device.unlockForConfiguration()
-        //            } catch {
-        //
-        //            }
-        //        }
-        //
-        if hasSwitchedCamera {
-            print("CAPTURING MOVIE")
-            //captureMovie(withFlash: self.hasFlash)
-        }
-        
+       
+//        self.previewLayer.isHidden = true
+//        
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+//            self.previewLayer.isHidden = false
+//        }
     }
     
     func setupPreview() {
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: 5, y: TOP_PADDING, width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+        previewLayer.frame = CGRect(x: 0, y: TOP_PADDING, width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
         
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         view.layer.addSublayer(previewLayer)
@@ -191,15 +178,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let doubleTapRecognizer = UITapGestureRecognizer(target: self, action:#selector(pinch(_:)))
         doubleTapRecognizer.numberOfTapsRequired = 2
         self.view.addGestureRecognizer(pinchRecognizer)
-        
-        
-//        let croppedLayer = CAShapeLayer()
-//        croppedLayer.path = UIBezierPath(roundedRect: CGRect(x: -9, y: -10 + TOP_PADDING, width: SCREEN_WIDTH + 20, height: SCREEN_WIDTH * 1.85 + 18), cornerRadius: 30).cgPath
-//        croppedLayer.position = CGPoint(x: 0, y: 0)
-//        croppedLayer.fillColor = UIColor.clear.cgColor
-//        croppedLayer.strokeColor = UIColor.black.cgColor
-//        croppedLayer.lineWidth = 20
-//        view.layer.insertSublayer(croppedLayer, above: previewLayer)
     }
     
     func startSession() {

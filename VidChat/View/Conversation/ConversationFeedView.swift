@@ -16,14 +16,10 @@ struct ViewOffsetsKey: PreferenceKey {
 }
 
 struct ConversationFeedView: View {
-    //    @State private var offsets: [Int: CGFloat] = [:]
-    var mainViewHeight: CGFloat = (SCREEN_WIDTH * 16/9) / 2  // demo approximation
+    var mainViewHeight: CGFloat = (SCREEN_WIDTH * 16/9) / 2
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var middleItemNo = -1
     @StateObject private var viewModel = ConversationViewModel.shared
-    @Binding var dragOffset: CGSize
-    @State private var canScroll = true
-    @State private var hasScrolledToVideo = false
     let showSavedPosts: Bool
     @State var currentPlayer: AVPlayer?
     
@@ -35,7 +31,7 @@ struct ConversationFeedView: View {
                 
                 VStack(spacing: 0) {
                     
-                    ForEach(Array(ConversationViewModel.shared.messages.enumerated()), id: \.1.id) { i, element in
+                    ForEach(viewModel.showSavedPosts ? Array(viewModel.savedMessages.enumerated()) : Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
                         MessageCell(message: getMessages()[i])
                             .transition(.move(edge: .bottom))
                             .offset(x: 0, y: -28)
@@ -84,9 +80,11 @@ struct ConversationFeedView: View {
             viewModel.players.removeAll()
         })
         .flippedUpsideDown()
-        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+//        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.white)
         .coordinateSpace(name: "scrollView")
+        
+        //TODO if no saved messages show an alert saying no saved message and telling them how to do it
     }
     
     func playCurrentPlayer() {

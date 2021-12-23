@@ -57,7 +57,7 @@ struct ConversationPlayerView: View {
                             ConversationViewModel.shared.showConversationPlayer = false
                         }
                     }, label: {
-                        CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                        CamereraOptionView(image: Image(systemName: "chevron.down"), imageDimension: 17, circleDimension: 32, topPadding: 3)
                             .padding(.horizontal, 8)
                             .padding(.top, 12)
                     })

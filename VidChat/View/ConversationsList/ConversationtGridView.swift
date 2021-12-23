@@ -39,30 +39,14 @@ struct ConversationGridView: View {
     private var users: [TestUser]
     @State private var showCamera = false
     @State private var text = ""
-    @State var isSelectingUsers = false
     //  @ObservedObject var viewModel: PostGridViewModel
     @StateObject private var conversationViewModel = ConversationViewModel.shared
+    @StateObject private var viewModel = ConversationGridViewModel.shared
+    
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
-    @State private var selectedUsers = [TestUser]()
     
     init() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.darkText]
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.darkText]
-        appearance.backgroundColor = .white
-        appearance.shadowImage = UIImage(named: "shadow")
-        //appearance.shadowColor = .black
-        //appearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterialLight)
-        UINavigationBar.appearance().layer.masksToBounds = false
-        UINavigationBar.appearance().layer.shadowColor = UIColor.black.cgColor
-        UINavigationBar.appearance().layer.shadowOpacity = 0.8
-        UINavigationBar.appearance().layer.shadowOffset = CGSize(width: 0, height: 2.0)
-        UINavigationBar.appearance().layer.shadowRadius = 2
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        
+   
         self.users =  [
             TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .received),
             TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sent),
@@ -75,19 +59,6 @@ struct ConversationGridView: View {
             TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
             TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
             TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .received),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sent),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sentOpened),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook")
         ]
     }
     
@@ -97,58 +68,65 @@ struct ConversationGridView: View {
         NavigationView {
             ZStack(alignment: .top) {
                 
-                if !conversationViewModel.showCamera {
-                    NavView(isSelectingUsers: $isSelectingUsers)
+                if !conversationViewModel.showCamera || viewModel.isSelectingUsers {
+                    NavView(users: users)
                 }
                 
                 VStack {
                     ZStack(alignment: .top) {
-                        ScrollView(showsIndicators: false) {
-                            VStack {
-                                LazyVGrid(columns: items, spacing: 14, content: {
-                                    ForEach(self.users, id: \.id) { user in
-                                        ConversationGridCell(user: user)
-                                            .flippedUpsideDown()
-                                            .onTapGesture {
-                                                withAnimation(.linear(duration: 0.15)) {
-                                                    user.isSelected = !user.isSelected
-                                                    if let index = selectedUsers.firstIndex(where: {$0.id == user.id}) {
-                                                        selectedUsers.remove(at: index)
-                                                    } else {
-                                                        selectedUsers.append(user)
+                        
+                        if !viewModel.hideFeed {
+                            ScrollView(showsIndicators: false) {
+                                VStack {
+                                    LazyVGrid(columns: items, spacing: 14, content: {
+                                        ForEach(self.users, id: \.id) { user in
+                                            ConversationGridCell(user: user)
+                                                .flippedUpsideDown()
+                                                .scaleEffect(x: -1, y: 1, anchor: .center)
+                                                .onTapGesture {
+                                                    if viewModel.isSelectingUsers {
+                                                        withAnimation(.linear(duration: 0.15)) {
+                                                            
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            .onLongPressGesture {
-                                                withAnimation {
-                                                    CameraViewModel.shared.handleTap()
-                                                    conversationViewModel.showCamera = true
+                                                .onLongPressGesture {
+                                                    withAnimation {
+                                                        CameraViewModel.shared.handleTap()
+                                                        conversationViewModel.showCamera = true
+                                                    }
                                                 }
-                                            }
-                                    }
-                                })
-                                    .padding(.horizontal, 12)
-                                
-                            }.padding(.top,
-                                      !conversationViewModel.showKeyboard &&
-                                      !conversationViewModel.showPhotos &&
-                                      !isSelectingUsers ?
-                                      BOTTOM_PADDING + 72 : isSelectingUsers ? 12 : 4)
-                        }
-                        .flippedUpsideDown()
-                        .navigationBarTitle("Conversations", displayMode: .inline)
-                        .ignoresSafeArea()
-                        
-                        VStack {
-                            Spacer()
-                            if !isSelectingUsers {
-                                OptionsView()
+                                        }
+                                    })
+                                        .padding(.horizontal, 12)
+                                    
+                                }.padding(.top,
+                                          !conversationViewModel.showKeyboard &&
+                                          !conversationViewModel.showPhotos &&
+                                          !viewModel.isSelectingUsers ?
+                                          BOTTOM_PADDING + 82 : viewModel.isSelectingUsers ? (viewModel.selectedUsers.count > 0 ? 12 : BOTTOM_PADDING + 12) : 4)
                             }
-                        }.zIndex(3)
+                            //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                            .background(Color.white)
+                            .flippedUpsideDown()
+                            .scaleEffect(x: -1, y: 1, anchor: .center)
+                            .navigationBarTitle("Conversations", displayMode: .inline)
+                            .ignoresSafeArea()
+                            .zIndex(2)
+                            .transition(.move(edge: .bottom))
+                            
+                        }
+//                        VStack {
+//                            Spacer()
+//                            if !viewModel.isSelectingUsers {
+//                                OptionsView()
+//                            }
+//                        }.zIndex(4)
                         
                         if conversationViewModel.showCamera {
                             CameraViewModel.shared.cameraView
                                 .transition(.move(edge: .bottom))
+                                .zIndex(viewModel.cameraViewZIndex)
                         }
                     }
                     if conversationViewModel.showPhotos {
@@ -161,11 +139,25 @@ struct ConversationGridView: View {
                         KeyboardView(text: $text)
                     }
                     
-                    if selectedUsers.count > 0 {
-                        SelectedUsersView(users: $selectedUsers)
+                    if viewModel.selectedUsers.count > 0 && viewModel.isSelectingUsers {
+                        SelectedUsersView()
                     }
                 }
             }
+             .overlay(
+                ZStack {
+                    if !ConversationViewModel.shared.showKeyboard {
+                        
+                        VStack {
+                            
+                            Spacer()
+                            
+                            OptionsView()
+                        }
+                        
+                    }
+                }
+                ,alignment: .bottom)
             .navigationBarHidden(true)
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard ? .top : .all)
@@ -211,31 +203,35 @@ struct ShowCameraView: View {
 
 struct NavView: View {
     
+    @StateObject private var viewModel = ConversationGridViewModel.shared
+    
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
-    private let toolBarWidth: CGFloat = 40
+    private let toolBarWidth: CGFloat = 38
     let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
     
-    @Binding var isSelectingUsers: Bool
+    let users: [TestUser]
     
     var body: some View {
         ZStack(alignment: .center) {
             Rectangle()
-                .frame(width: UIScreen.main.bounds.width, height: topPadding + 54)
+                .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
                 .foregroundColor(.white)
-                .shadow(color: Color(white: 0, opacity: 0.1), radius: 4, x: 0, y: 2)
+                .shadow(color: Color(white: 0, opacity: users.count > 15 ? 0.1 : 0), radius: 4, x: 0, y: 2)
             
+            
+            //            if isSelectingUsers {
+            //                HStack {
+            //                    Spacer()
+            //                    Text("Send To...")
+            //                        .font(.title)
+            //                    Spacer()
+            //                }
+            //            }
             
             HStack {
-                if !isSelectingUsers {
+                if !viewModel.isSelectingUsers {
                     
                     HStack(spacing: 12) {
-//                        Button(action: {}, label: {
-//                            KFImage(URL(string: image1))
-//                                .resizable()
-//                                .scaledToFill()
-//                                .frame(width: toolBarWidth, height: toolBarWidth)
-//                                .clipShape(Circle())
-//                        })
                         
                         NavigationLink {
                             ConversationView()
@@ -246,7 +242,7 @@ struct NavView: View {
                                 .frame(width: toolBarWidth, height: toolBarWidth)
                                 .clipShape(Circle())
                         }
-
+                        
                         
                         Button(action: {}, label: {
                             Image(systemName: "magnifyingglass.circle.fill")
@@ -255,11 +251,11 @@ struct NavView: View {
                                 .scaledToFill()
                                 .background(
                                     Circle()
-                                        .foregroundColor(Color(.systemGray))
-                                        .frame(width: toolBarWidth - 4, height: toolBarWidth - 4)
+                                        .foregroundColor(.toolBarIconDarkGray)
+                                        .frame(width: toolBarWidth - 1, height: toolBarWidth - 1)
                                     
                                 )
-                                .foregroundColor(Color(.systemGray5))
+                                .foregroundColor(.toolBarIconGray)
                         })
                     }
                     
@@ -267,26 +263,26 @@ struct NavView: View {
                     HStack(spacing: 12) {
                         Circle()
                             .frame(width: toolBarWidth, height: toolBarWidth)
-                            .foregroundColor(Color(.systemGray5))
+                            .foregroundColor(.toolBarIconGray)
                             .overlay(
                                 Image(systemName: "person.fill.badge.plus")
                                     .resizable()
-                                    .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
+                                    .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
                                     .scaledToFit()
-                                    .foregroundColor(Color(.systemGray))
+                                    .foregroundColor(.toolBarIconDarkGray)
                                     .padding(.trailing, 2)
                                     .padding(.top, 1)
                             )
                         
                         Circle()
                             .frame(width: toolBarWidth, height: toolBarWidth)
-                            .foregroundColor(Color(.systemGray5))
+                            .foregroundColor(.toolBarIconGray)
                             .overlay(
                                 Image(systemName: "plus.message.fill")
                                     .resizable()
-                                    .frame(width: toolBarWidth - 18, height: toolBarWidth - 18)
+                                    .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
                                     .scaledToFit()
-                                    .foregroundColor(Color(.systemGray))
+                                    .foregroundColor(.toolBarIconDarkGray)
                                     .padding(.top, 1)
                             )
                     }
@@ -295,12 +291,27 @@ struct NavView: View {
                         Text("Send To...")
                             .font(.headline)
                         HStack {
-                            Image(systemName: "x.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: toolBarWidth - 10, height: toolBarWidth - 10)
-                                .foregroundColor(Color(.systemGray))
-                                .padding(.leading, 8)
+                            
+                            Button {
+                                withAnimation(.linear(duration: 0.2)) {
+                                    viewModel.isSelectingUsers = false
+                                    viewModel.hideFeed = true
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    viewModel.cameraViewZIndex = 3
+                                    viewModel.hideFeed = false
+                                }
+                            } label: {
+                                Image(systemName: "chevron.down")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
+                                    .foregroundColor(.black)
+                                    .padding(.leading, 8)
+                                    .padding(.top, -3)
+                            }
+                            
                             Spacer()
                         }
                     }
@@ -316,23 +327,23 @@ struct NavView: View {
 
 struct SelectedUsersView: View {
     
-    @Binding var users: [TestUser]
-    
+    @StateObject private var viewModel = ConversationGridViewModel.shared
+
     var body: some View {
         ZStack {
             
             ZStack() {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(Array(users.enumerated()), id: \.1.id) { i, user in
-                            SelectedUserView(user: user, users: $users)
+                        ForEach(Array(viewModel.selectedUsers.enumerated()), id: \.1.id) { i, user in
+                            SelectedUserView(user: user)
                                 .padding(.leading, i == 0 ? 20 : 4)
-                                .padding(.trailing, i == users.count - 1 ? 80 : 4)
+                                .padding(.trailing, i == viewModel.selectedUsers.count - 1 ? 80 : 4)
                                 .transition(.scale)
                             
                         }
                     }.padding(.bottom, BOTTOM_PADDING)
-                }.frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 80)
+                }.frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 60)
                 
                 
                 HStack {
@@ -355,10 +366,9 @@ struct SelectedUsersView: View {
 }
 
 struct SelectedUserView: View {
-    
+        
     let user: TestUser
-    @Binding var users: [TestUser]
-
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .center, spacing: 4) {
@@ -379,16 +389,11 @@ struct SelectedUserView: View {
             }
             
             Button {
-                if let index = users.firstIndex(where: {$0.id == user.id}) {
-                    withAnimation {
-                        users[index].isSelected = !users[index].isSelected
-                        users.removeAll(where: {$0.id == user.id})
-                    }
-                }
+                ConversationGridViewModel.shared.removeSelectedUser(withId: user.id)
             } label: {
                 ZStack {
                     Circle()
-                        .foregroundColor(Color(.systemGray5))
+                        .foregroundColor(.toolBarIconGray)
                         .frame(width: 20, height: 20)
                     
                     Image("x")
@@ -397,14 +402,14 @@ struct SelectedUserView: View {
                         .foregroundColor(Color(white: 0.4, opacity: 1))
                         .scaledToFit()
                         .frame(width: 10, height: 10)
-
+                    
                 }
-                .padding(.top, -6)
+                .padding(.top, 4)
                 .padding(.trailing, -6)
             }
-
-          
-                
+            
+            
+            
         }
     }
 }

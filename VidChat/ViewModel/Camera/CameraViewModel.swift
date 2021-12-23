@@ -41,13 +41,17 @@ class CameraViewModel: ObservableObject {
         isRecording = false
         isShowingPhotoCamera = false
         photo = nil
+        
         withAnimation(.linear(duration: 0.15)) {
-        ConversationViewModel.shared.showCamera = false
+            ConversationViewModel.shared.showCamera = false
         }
+        
+        ConversationGridViewModel.shared.isSelectingUsers = false
+        ConversationGridViewModel.shared.selectedUsers = [TestUser]()
     }
     
     func startRecording(addDelay: Bool = false) {
-       
+        
         withAnimation {
             ConversationViewModel.shared.showCamera = false
             self.isRecording = true
@@ -55,7 +59,7 @@ class CameraViewModel: ObservableObject {
         }
         
         //TODO keep caached if saved
-      //  self.cameraView.addAudio()
+        //  self.cameraView.addAudio()
         
         if addDelay {
             

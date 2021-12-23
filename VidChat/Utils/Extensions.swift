@@ -23,6 +23,8 @@ extension Color {
     static let topGray = Color(red: 165/255, green: 170/255, blue: 183/255)
     static let bottomGray = Color(red: 133/255, green: 138/255, blue: 148/255)
     static let lightestGray = Color(red: 248/255, green: 248/255, blue: 248/255)
+    static let toolBarIconGray = Color(red: 241/255, green: 242/255, blue: 244/255)
+    static let toolBarIconDarkGray = Color(red: 100/255, green: 109/255, blue: 120/255)
 
 }
 

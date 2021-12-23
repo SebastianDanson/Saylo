@@ -13,6 +13,7 @@ struct CameraMainView: View {
     
     @StateObject var viewModel = CameraViewModel.shared
     @State var isFrontFacing = true
+
     var cameraView = CameraView()
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
@@ -26,18 +27,20 @@ struct CameraMainView: View {
             if let videoUrl = viewModel.videoUrl {
                 
                 VStack {
+                    
                     VideoPlayerView(url: videoUrl, showName: false)
                         .overlay(MediaOptions(), alignment: .bottom)
                         .background(Color.clear)
-                    
                         .padding(.top, TOP_PADDING)
+                    
                     Spacer()
+                    
                 }.zIndex(3)
             }
             
             if let photo = viewModel.photo {
+                
                 VStack{
-                    
                     Image(uiImage: photo)
                         .resizable()
                         .scaledToFill()
@@ -50,12 +53,15 @@ struct CameraMainView: View {
             
             //camera
             cameraView
-                .overlay(CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView), alignment: .center)
+                .onTapGesture(count: 2, perform: {
+                    cameraView.switchCamera()
+                })
+            
+            
+           
             
             //flash view if there's front facing flash
-            if (viewModel.isRecording || viewModel.isTakingPhoto) && isFrontFacing && viewModel.hasFlash {
-                FlashView()
-            }
+            
             
             //            ZStack(alignment: .top) {
             
@@ -72,11 +78,19 @@ struct CameraMainView: View {
         //            Spacer()
         //        })
         .overlay(
-            VStack{
-                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                    .frame(width: SCREEN_WIDTH + 18, height: SCREEN_WIDTH * 16/9 + 20)
-                    .padding(.top, TOP_PADDING - 10)
-                Spacer()
+            ZStack {
+                VStack{
+                    RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                        .frame(width: SCREEN_WIDTH + 18, height: SCREEN_WIDTH * 16/9 + 20)
+                        .padding(.top, TOP_PADDING - 10)
+                    Spacer()
+                }
+                
+                if (viewModel.isRecording || viewModel.isTakingPhoto) && isFrontFacing && viewModel.hasFlash {
+                    FlashView().zIndex(4)
+                }
+                
+                CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 4).zIndex(6)
             }
         )
         .ignoresSafeArea()
@@ -161,19 +175,22 @@ struct SendButton: View {
         Button(action: {
             withAnimation(.linear(duration: 0.2)) {
                 ConversationViewModel.shared.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
-                                                        type: viewModel.videoUrl == nil ? .Photo : .Video, 
+                                                        type: viewModel.videoUrl == nil ? .Photo : .Video,
                                                         isFromPhotoLibrary: false, shouldExport: false)
-                viewModel.reset()
+                
+                if ConversationViewModel.shared.chatId != "" {
+                    viewModel.reset()
+                }
             }
         }, label: {
             HStack {
                 Rectangle()
-                    .frame(width: 110, height: 40)
+                    .frame(width: ConversationViewModel.shared.chatId == "" ? 130 : 110, height: 40)
                     .foregroundColor(.white)
                     .clipShape(Capsule())
                     .overlay(
                         HStack(spacing: 10) {
-                            Text("Send")
+                            Text(ConversationViewModel.shared.chatId == "" ? "Send To" : "Send")
                                 .foregroundColor(.black)
                                 .font(.system(size: 18, weight: .bold))
                             
@@ -204,44 +221,44 @@ struct CameraOptions: View {
         
         VStack {
             if viewModel.videoUrl == nil && viewModel.photo == nil {
-            HStack {
-                
-                //Flash toggle button
-                Button {
-                    self.viewModel.hasFlash.toggle()
-                } label: {
-                    CamereraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
+                HStack {
+                    
+                    //Flash toggle button
+                    Button {
+                        self.viewModel.hasFlash.toggle()
+                    } label: {
+                        CamereraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
+                    }
+                    
+                    Spacer()
+                    
+                    // X button
+                    Button {
+                        //  withAnimation {
+                        viewModel.reset()
+                        //}
+                    } label: {
+                        CamereraOptionView(image: Image("x"), imageDimension: 14)
+                    }
                 }
                 
                 Spacer()
                 
-                // X button
-                Button {
-                    //  withAnimation {
-                    viewModel.reset()
-                    //}
-                } label: {
-                    CamereraOptionView(image: Image("x"), imageDimension: 14)
+                HStack {
+                    
+                    Spacer()
+                    
+                    //Switch camera button
+                    Button(action: {
+                        cameraView.switchCamera()
+                        isFrontFacing.toggle()
+                    }, label: {
+                        CamereraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
+                    })
                 }
             }
-            
-            Spacer()
-            
-            HStack {
-                
-                Spacer()
-                
-                //Switch camera button
-                Button(action: {
-                    cameraView.switchCamera()
-                    isFrontFacing.toggle()
-                }, label: {
-                    CamereraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
-                })
-            }
         }
-        }
-        .padding(.top, TOP_PADDING + 4)
+        .padding(.top, TOP_PADDING)
         .padding(.bottom, BOTTOM_PADDING + 100)
         .padding(.horizontal, 6)
         
@@ -253,13 +270,15 @@ struct CamereraOptionView: View {
     let image: Image
     let imageDimension: CGFloat
     let circleDimension: CGFloat
+    var topPadding: CGFloat = 0
     @Binding var color: Color
     
-    init(image: Image, imageDimension: CGFloat = 20, circleDimension: CGFloat = 36, color: Binding<Color> = .constant(.white)) {
+    init(image: Image, imageDimension: CGFloat = 20, circleDimension: CGFloat = 36, color: Binding<Color> = .constant(.white), topPadding: CGFloat = 0) {
         self.image = image
         self.imageDimension = imageDimension
         self.circleDimension = circleDimension
         self._color = color
+        self.topPadding = topPadding
     }
     
     var body: some View {
@@ -268,7 +287,9 @@ struct CamereraOptionView: View {
             .scaledToFit()
             .foregroundColor(color)
             .frame(width: imageDimension, height: imageDimension)
-            .padding(20)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+            .padding(.top, 20 + topPadding)
             .background(
                 Circle()
                     .frame(width: circleDimension, height: circleDimension)

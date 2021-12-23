@@ -9,6 +9,7 @@ import Foundation
 import Firebase
 import AVFoundation
 import UIKit
+import SwiftUI
 
 struct MessagePlayer {
     let player: AVPlayer
@@ -17,26 +18,24 @@ struct MessagePlayer {
 
 class ConversationViewModel: ObservableObject {
     
-    var UIPlayerViews = [UIView]()
+    var chatId = ""
+    
+    var sendingMessageDic = [String:Any]()
     @Published var messages = [Message]()
     @Published var savedMessages = [Message]()
-
+    
     @Published var players = [MessagePlayer]()
-    @Published var chatId = "Chat"
+    //    @Published var chatId = "Chat"
     
     
-    @Published var showConversationPlayer = false {
-        didSet {
-            print("SET")
-        }
-    }
+    @Published var showConversationPlayer = false
     
     @Published var showSavedPosts = false
-
+    
     @Published var showImageDetailView = false
     @Published var selectedUrl: String?
     @Published var selectedImage: UIImage?
-
+    
     //Texting
     @Published var showKeyboard = false
     
@@ -102,30 +101,38 @@ class ConversationViewModel: ObservableObject {
             dictionary["type"] = "text"
         }
         
-        let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
-        message.image = image
-        
-        if let lastMessage = messages.last {
-            message.isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: lastMessage, nextMessage: message)
-        }
-        self.messages.append(message)
-        uploadQueue.append(dictionary)
-
-        if let url = url {
-            if type == .Video {
-                MediaUploader.shared.uploadVideo(url: url) { newURL in
-                    self.mediaFinishedUploading(id: id, newUrl: newURL)
+        if chatId != "" {
+            let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
+            message.image = image
+            
+            if let lastMessage = messages.last {
+                message.isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: lastMessage, nextMessage: message)
+            }
+            self.messages.append(message)
+            uploadQueue.append(dictionary)
+            
+            if let url = url {
+                if type == .Video {
+                    MediaUploader.shared.uploadVideo(url: url) { newURL in
+                        self.mediaFinishedUploading(id: id, newUrl: newURL)
+                    }
+                } else {
+                    MediaUploader.shared.uploadAudio(url: url) { newURL in
+                        self.mediaFinishedUploading(id: id, newUrl: newURL)
+                    }
                 }
-            } else {
-                MediaUploader.shared.uploadAudio(url: url) { newURL in
+            } else if text != nil {
+                self.atomicallyUploadMessage(toDocWithId: "test", messageId: id)
+            } else if let image = image {
+                MediaUploader.uploadImage(image: image, type: .photo) { newURL in
                     self.mediaFinishedUploading(id: id, newUrl: newURL)
                 }
             }
-        } else if text != nil {
-            self.atomicallyUploadMessage(toDocWithId: "test", messageId: id)
-        } else if let image = image {
-            MediaUploader.uploadImage(image: image, type: .photo) { newURL in
-                self.mediaFinishedUploading(id: id, newUrl: newURL)
+        } else {
+            self.sendingMessageDic = dictionary
+            withAnimation {
+                ConversationGridViewModel.shared.isSelectingUsers = true
+                ConversationGridViewModel.shared.cameraViewZIndex = 1
             }
         }
     }

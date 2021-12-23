@@ -26,7 +26,7 @@ struct ConversationGridCell: View {
                     .background(Color(.systemGray))
                     .frame(width: width, height: width)
                     .cornerRadius(width/2)
-                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
+                    .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
                 
                 
                 Text(user.firstname)
