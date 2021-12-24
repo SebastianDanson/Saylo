@@ -18,7 +18,7 @@ struct VideoPlayerView: View {
     @ObservedObject var viewModel: VideoPlayerViewModel
     @State var isSaved: Bool = false
     @State var showAlert = false
-
+    
     var messageId: String?
     
     private var exporter: AVAssetExportSession?
@@ -75,7 +75,8 @@ struct VideoPlayerView: View {
                                 .foregroundColor(Color.white)
                         }
                     }
-                        .padding(12),
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 26),
                     alignment: .bottomLeading)
                 .simultaneousGesture(
                     LongPressGesture()
@@ -88,7 +89,7 @@ struct VideoPlayerView: View {
                                         ConversationViewModel.shared.updateIsSaved(atIndex: i)
                                         isSaved.toggle()
                                     }
-                               
+                                    
                                 }
                             }
                         }
@@ -127,11 +128,7 @@ struct VideoPlayerView: View {
                                     self.isSaved = isSaved
                                 })
                             }
-
-                            
                         }
-                        
-                        
                     }
                     ,alignment: .bottomTrailing)
         }
@@ -140,6 +137,24 @@ struct VideoPlayerView: View {
             RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white, style: StrokeStyle(lineWidth: 10))
                 .frame(width: width + 10, height: height + 20)
         }
+        
+//        VStack {
+//
+//            Spacer()
+//
+//            Rectangle()
+//                .frame(width: SCREEN_WIDTH - 48, height: 3)
+//                .foregroundColor(.videoPlayerGray)
+//                .clipShape(Capsule())
+//                .overlay(
+//                    Rectangle()
+//                        .frame(width: SCREEN_WIDTH - 200, height: 3)
+//                        .foregroundColor(Color(white: 0.98, opacity: 0.8))
+//                        .clipShape(Capsule()), alignment: .leading
+//                )
+//                .gesture(<#T##gesture: Gesture##Gesture#>)
+//                .padding(.bottom, 22)
+//        }
     }
     
     
@@ -210,9 +225,16 @@ class PlayerUIView: UIView {
     private var items = [AVPlayerItem]()
     private var token: NSKeyValueObservation?
     private var prevTranslation: CGPoint = .zero
+    private var progressBarHighlightedObserver: NSKeyValueObservation?
+    private var timeObserverToken: Any?
+    private let playbackSlider = UISlider()
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        removePeriodicTimeObserver()
     }
     
     init(frame: CGRect, player: AVPlayer, shouldLoop: Bool = true) {
@@ -222,6 +244,29 @@ class PlayerUIView: UIView {
         playerLayer.videoGravity = .resizeAspect
         
         layer.addSublayer(playerLayer)
+        
+        playbackSlider.setDimensions(height: 20, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
+        playbackSlider.minimumValue = 0
+        playbackSlider.maximumValue = 1
+        playbackSlider.thumbTintColor = .clear
+
+        let duration : CMTime = player.currentItem?.asset.duration ?? .zero
+        
+        playbackSlider.isContinuous = true
+        playbackSlider.tintColor = UIColor.white
+        
+        playbackSlider.addTarget(self, action: #selector(self.playbackSliderValueChanged(_:)), for: .valueChanged)
+        // playbackSlider.addTarget(self, action: "playbackSliderValueChanged:", forControlEvents: .ValueChanged)
+        self.addSubview(playbackSlider)
+        playbackSlider.centerX(inView: self)
+        playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 14)
+
+//        player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 100), queue: DispatchQueue.main) {[weak self] (progressTime) in
+//            print("periodic time: \(CMTimeGetSeconds(progressTime)), \(CMTimeGetSeconds(duration)), \(Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))) ")
+//            playbackSlider.value = Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))
+//        }
+        
+       addPeriodicTimeObserver(duration: duration)
         
         // Setup looping
         
@@ -263,6 +308,47 @@ class PlayerUIView: UIView {
         }
     }
     
+    func addPeriodicTimeObserver(duration: CMTime) {
+        // Notify every half second
+        let timeScale = CMTimeScale(NSEC_PER_SEC)
+        let time = CMTime(seconds: 0.05, preferredTimescale: timeScale)
+
+        timeObserverToken = playerLayer.player?.addPeriodicTimeObserver(forInterval: time,
+                                                          queue: .main) {
+            [weak self] time in
+            
+            if self?.playbackSlider.state ?? .normal == .normal {
+                self?.playbackSlider.setValue(Float(CMTimeGetSeconds(time) / CMTimeGetSeconds(duration)), animated: true)
+                self?.playbackSlider.thumbTintColor = .clear
+            }
+           
+        }
+    }
+
+    func removePeriodicTimeObserver() {
+        if let timeObserverToken = timeObserverToken {
+            playerLayer.player?.removeTimeObserver(timeObserverToken)
+            self.timeObserverToken = nil
+        }
+    }
+    
+    @objc
+    func playbackSliderValueChanged(_ playbackSlider:UISlider)
+     {
+         
+         playbackSlider.thumbTintColor = .white
+         let seconds : Double = Double(playbackSlider.value)
+         let duration = playerLayer.player?.currentItem?.asset.duration ?? .zero
+         
+         let targetTime:CMTime = CMTime(seconds: duration.seconds * seconds, preferredTimescale: 1)
+         print(targetTime)
+         playerLayer.player?.seek(to: targetTime)
+         
+         if playerLayer.player?.rate == 0
+         {
+             playerLayer.player?.play()
+         }
+     }
     
     @objc
     func handleTap(_ sender: UITapGestureRecognizer) {
@@ -272,7 +358,7 @@ class PlayerUIView: UIView {
             if xLoc > SCREEN_WIDTH/2 {
                 player.advanceToNextItem()
             } else if let currentItem = player.currentItem {
-               
+                
                 let currentIndex = items.firstIndex(of: currentItem)
                 
                 if let currentIndex = currentIndex {
@@ -283,7 +369,7 @@ class PlayerUIView: UIView {
                     }
                     
                     player.seek(to: .zero)
-
+                    
                 }
             }
         }
@@ -291,14 +377,14 @@ class PlayerUIView: UIView {
     
     @objc
     func handlePan(_ gesture: UIPanGestureRecognizer) {
-      
+        
         let playerViewModel = ConversationPlayerViewModel.shared
-
+        
         if gesture.state == .changed {
             let translation = gesture.translation(in: self)
             let diff = translation.y - prevTranslation.y
             prevTranslation = translation
-
+            
             playerViewModel.dragOffset.height = max(0, playerViewModel.dragOffset.height + diff)
             
         } else if gesture.state == .ended {
@@ -330,7 +416,7 @@ class PlayerUIView: UIView {
             }
             
             player.seek(to: .zero)
-
+            
         }
     }
     

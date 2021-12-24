@@ -25,7 +25,7 @@ extension Color {
     static let lightestGray = Color(red: 248/255, green: 248/255, blue: 248/255)
     static let toolBarIconGray = Color(red: 241/255, green: 242/255, blue: 244/255)
     static let toolBarIconDarkGray = Color(red: 100/255, green: 109/255, blue: 120/255)
-
+    static let videoPlayerGray = Color(red: 115/255, green: 115/255, blue: 115/255)
 }
 
 extension UIImage {

@@ -161,7 +161,7 @@ struct MediaOptions: View {
                     SendButton()
                 }
                 .padding(.horizontal, 20)
-                .padding(.vertical, 12)
+                .padding(.vertical, 24)
             }
         }
     }

@@ -21,8 +21,8 @@ struct ContentView: View {
 //                LoginView()
 //            } else {
 //                if viewModel.currentUser != nil {
-//                    ConversationView()
-            ConversationGridView()
+                    ConversationView()
+            //ConversationGridView()
 //                    MakeCallView()
 //                        .environmentObject(AppDelegate.shared.callManager)
 //                        .onAppear {

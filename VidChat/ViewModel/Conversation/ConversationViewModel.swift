@@ -18,7 +18,7 @@ struct MessagePlayer {
 
 class ConversationViewModel: ObservableObject {
     
-    var chatId = ""
+    var chatId = "test"
     
     var sendingMessageDic = [String:Any]()
     @Published var messages = [Message]()

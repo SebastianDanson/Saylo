@@ -15,9 +15,8 @@ struct MessageCell: View {
     
     var body: some View {
         ZStack {
-            if message.type == .Video, let urlString = message.url, let url = URL(string: urlString)  {
-                VideoPlayerView(url: url, id: message.id, isSaved: message.isSaved, showName: true,
-                                date: message.timestamp.dateValue())
+            if message.type == .Video {
+                VideoCell(message: message)
             } else if message.type == .Audio, let urlString = message.url, let url = URL(string: urlString)  {
                 AudioCell(audioURL: url, date: message.timestamp.dateValue(), isSaved: message.isSaved, messagId: message.id)
             } else if message.type == .Text {
