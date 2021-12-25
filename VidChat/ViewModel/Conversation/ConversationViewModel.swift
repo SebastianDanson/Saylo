@@ -208,4 +208,10 @@ class ConversationViewModel: ObservableObject {
             self.savedMessages = messages
         }
     }
+    
+    func addReactionToMessage(withId id: String, reaction: Reaction) {
+        if let message = self.messages.first(where: {$0.id == id}) {
+            message.reactions.append(reaction)
+        }
+    }
 }

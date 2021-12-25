@@ -16,8 +16,6 @@ struct VideoPlayerView: View {
     
     @State var player: AVPlayer
     @ObservedObject var viewModel: VideoPlayerViewModel
-    @State var isSaved: Bool = false
-    @State var showAlert = false
     
     var messageId: String?
     
@@ -27,14 +25,13 @@ struct VideoPlayerView: View {
     var height: CGFloat = UIScreen.main.bounds.width
     var showName: Bool = false
     
-    init(url: URL, id: String? = nil, isSaved: Bool = false, showName: Bool = true, date: Date? = nil) {
+    init(url: URL, id: String? = nil, showName: Bool = true, date: Date? = nil) {
         let player = AVPlayer(url: url)
         self.player = player
-        self.isSaved = isSaved
         self.messageId = id
         self.viewModel = VideoPlayerViewModel(player: player, date: date)
         self.showName = showName
-        
+
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
         
@@ -60,77 +57,14 @@ struct VideoPlayerView: View {
                 .overlay(
                     HStack {
                         if showName {
-                            Image(systemName: "house")
-                                .clipped()
-                                .scaledToFit()
-                                .padding()
-                                .background(Color.gray)
-                                .frame(width: 30, height: 30)
-                                .clipShape(Circle())
-                            Text("Sebastian")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white)
-                            + Text(" • \((viewModel.date ?? Date()).getFormattedDate())")
-                                .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(Color.white)
+                            MessageInfoView(date: viewModel.date ?? Date())
                         }
-                    }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 26),
+                    },
                     alignment: .bottomLeading)
-                .simultaneousGesture(
-                    LongPressGesture()
-                        .onEnded { _ in
-                            withAnimation {
-                                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
-                                    if getMessages()[i].isSaved {
-                                        showAlert = true
-                                    } else {
-                                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                                        isSaved.toggle()
-                                    }
-                                    
-                                }
-                            }
-                        }
-                )
                 .highPriorityGesture(TapGesture()
                                         .onEnded { _ in
                     viewModel.togglePlay()
                 })
-                .overlay(
-                    
-                    
-                    
-                    HStack {
-                        Spacer()
-                        if isSaved {
-                            
-                            Button {
-                                showAlert = true
-                            } label: {
-                                ZStack {
-                                    
-                                    Circle()
-                                        .frame(width: 30, height: 30)
-                                        .foregroundColor(Color(white: 0, opacity: 0.3))
-                                    
-                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(.white)
-                                        .frame(width: 16, height: 16)
-                                }
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 10)
-                            }.alert(isPresented: $showAlert) {
-                                savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
-                                    self.isSaved = isSaved
-                                })
-                            }
-                        }
-                    }
-                    ,alignment: .bottomTrailing)
         }
         
         if showName {
@@ -138,23 +72,6 @@ struct VideoPlayerView: View {
                 .frame(width: width + 10, height: height + 20)
         }
         
-//        VStack {
-//
-//            Spacer()
-//
-//            Rectangle()
-//                .frame(width: SCREEN_WIDTH - 48, height: 3)
-//                .foregroundColor(.videoPlayerGray)
-//                .clipShape(Capsule())
-//                .overlay(
-//                    Rectangle()
-//                        .frame(width: SCREEN_WIDTH - 200, height: 3)
-//                        .foregroundColor(Color(white: 0.98, opacity: 0.8))
-//                        .clipShape(Capsule()), alignment: .leading
-//                )
-//                .gesture(<#T##gesture: Gesture##Gesture#>)
-//                .padding(.bottom, 22)
-//        }
     }
     
     
@@ -228,7 +145,7 @@ class PlayerUIView: UIView {
     private var progressBarHighlightedObserver: NSKeyValueObservation?
     private var timeObserverToken: Any?
     private let playbackSlider = UISlider()
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -249,7 +166,7 @@ class PlayerUIView: UIView {
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = 1
         playbackSlider.thumbTintColor = .clear
-
+        
         let duration : CMTime = player.currentItem?.asset.duration ?? .zero
         
         playbackSlider.isContinuous = true
@@ -260,13 +177,13 @@ class PlayerUIView: UIView {
         self.addSubview(playbackSlider)
         playbackSlider.centerX(inView: self)
         playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 14)
-
-//        player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 100), queue: DispatchQueue.main) {[weak self] (progressTime) in
-//            print("periodic time: \(CMTimeGetSeconds(progressTime)), \(CMTimeGetSeconds(duration)), \(Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))) ")
-//            playbackSlider.value = Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))
-//        }
         
-       addPeriodicTimeObserver(duration: duration)
+        //        player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 100), queue: DispatchQueue.main) {[weak self] (progressTime) in
+        //            print("periodic time: \(CMTimeGetSeconds(progressTime)), \(CMTimeGetSeconds(duration)), \(Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))) ")
+        //            playbackSlider.value = Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))
+        //        }
+        
+        addPeriodicTimeObserver(duration: duration)
         
         // Setup looping
         
@@ -312,19 +229,19 @@ class PlayerUIView: UIView {
         // Notify every half second
         let timeScale = CMTimeScale(NSEC_PER_SEC)
         let time = CMTime(seconds: 0.05, preferredTimescale: timeScale)
-
+        
         timeObserverToken = playerLayer.player?.addPeriodicTimeObserver(forInterval: time,
-                                                          queue: .main) {
+                                                                        queue: .main) {
             [weak self] time in
             
             if self?.playbackSlider.state ?? .normal == .normal {
                 self?.playbackSlider.setValue(Float(CMTimeGetSeconds(time) / CMTimeGetSeconds(duration)), animated: true)
                 self?.playbackSlider.thumbTintColor = .clear
             }
-           
+            
         }
     }
-
+    
     func removePeriodicTimeObserver() {
         if let timeObserverToken = timeObserverToken {
             playerLayer.player?.removeTimeObserver(timeObserverToken)
@@ -334,21 +251,21 @@ class PlayerUIView: UIView {
     
     @objc
     func playbackSliderValueChanged(_ playbackSlider:UISlider)
-     {
-         
-         playbackSlider.thumbTintColor = .white
-         let seconds : Double = Double(playbackSlider.value)
-         let duration = playerLayer.player?.currentItem?.asset.duration ?? .zero
-         
-         let targetTime:CMTime = CMTime(seconds: duration.seconds * seconds, preferredTimescale: 1)
-         print(targetTime)
-         playerLayer.player?.seek(to: targetTime)
-         
-         if playerLayer.player?.rate == 0
-         {
-             playerLayer.player?.play()
-         }
-     }
+    {
+        
+        playbackSlider.thumbTintColor = .white
+        let seconds : Double = Double(playbackSlider.value)
+        let duration = playerLayer.player?.currentItem?.asset.duration ?? .zero
+        
+        let targetTime:CMTime = CMTime(seconds: duration.seconds * seconds, preferredTimescale: 1)
+        print(targetTime)
+        playerLayer.player?.seek(to: targetTime)
+        
+        if playerLayer.player?.rate == 0
+        {
+            playerLayer.player?.play()
+        }
+    }
     
     @objc
     func handleTap(_ sender: UITapGestureRecognizer) {

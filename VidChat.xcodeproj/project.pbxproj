@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		069E4A652772874000996824 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A642772874000996824 /* ImageDetailView.swift */; };
 		069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A662772A2E100996824 /* ActivityViewController.swift */; };
 		069E4A692772A9CC00996824 /* ringtone.wav in Resources */ = {isa = PBXBuildFile; fileRef = 069E4A682772A9CC00996824 /* ringtone.wav */; };
@@ -102,6 +103,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		069E4A642772874000996824 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		069E4A662772A2E100996824 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
 		069E4A682772A9CC00996824 /* ringtone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringtone.wav; sourceTree = SOURCE_ROOT; };
@@ -398,6 +400,7 @@
 				3F8B02A226FFB33000841565 /* Chat.swift */,
 				3F8B027626FEC03000841565 /* Message.swift */,
 				3F95F44F26FE4B9C00F892B7 /* User.swift */,
+				065971F72776AD1200884420 /* Reaction.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -647,6 +650,7 @@
 				3F2A7EBE2719CE7C00179390 /* PhotoCell.swift in Sources */,
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
 				3F08F27627017A5A009E0029 /* CameraMainView.swift in Sources */,
+				065971F82776AD1200884420 /* Reaction.swift in Sources */,
 				3F112B7C2720736400BA2A73 /* CallView.swift in Sources */,
 				3F08F27827017D9C009E0029 /* VideoPlayerView.swift in Sources */,
 				3F2A7EB32718BED400179390 /* AudioRecorder.swift in Sources */,
