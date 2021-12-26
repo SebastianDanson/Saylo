@@ -29,12 +29,36 @@ enum ReactionType {
             return .Love
         }
     }
+    
+    func getString() -> String {
+        
+        switch self {
+            
+        case .Love:
+            return "love"
+        case .Like:
+            return "like"
+        case .Dislike:
+            return "dislike"
+        case .Emphasize:
+            return "emphasize"
+        case .Laugh:
+            return "laugh"
+            
+        }
+    }
 }
 
 struct Reaction {
+    
+    var messageId: String
     let username: String
     let userId: String
-    let reactionType: ReactionType
+    var reactionType: ReactionType
+    
+    func getDictionary() -> [String:Any] {
+        ["messageId":messageId, "username":username, "userId":userId, "reactionType":reactionType.getString()]
+    }
 }
 
 

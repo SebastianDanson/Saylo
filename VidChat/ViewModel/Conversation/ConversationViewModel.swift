@@ -212,6 +212,16 @@ class ConversationViewModel: ObservableObject {
     func addReactionToMessage(withId id: String, reaction: Reaction) {
         if let message = self.messages.first(where: {$0.id == id}) {
             message.reactions.append(reaction)
+            ConversationService.addReaction(reaction: reaction)
+        }
+    }
+    
+    func removeReactionFromMessage(withId id: String, reaction: Reaction, completion: @escaping(() -> Void)) {
+        if let message = self.messages.first(where: {$0.id == id}) {
+            message.reactions.removeAll(where: {$0.userId == reaction.userId})
+            ConversationService.removeReaction(reaction: reaction) {
+                completion()
+            }
         }
     }
 }

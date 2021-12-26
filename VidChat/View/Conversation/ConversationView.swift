@@ -89,7 +89,6 @@ struct ConversationView: View {
                             
                             OptionsView()
                         }
-                        
                     }
                 }
                 ,alignment: .bottom)
@@ -362,10 +361,8 @@ struct ChatOptions: View {
                         .padding(.vertical, 10)
                 }
                 
-                
-                
-                
             }
+            
             if showSettings {
                 ChatSettingsView()
                     .zIndex(5)
@@ -382,6 +379,7 @@ struct ChatOptions: View {
                     Button {
                         
                     } label: {
+                        
                         ZStack {
                             
                             Circle()

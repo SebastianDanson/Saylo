@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 //TODO fix issue when you close camera and u see the whit background of text cell i.e have textcell on screen and open and close camera
 
@@ -42,7 +43,7 @@ struct VideoCell: View {
                 }
             }
         
-        let addedReactions = AddedReactions(reactions: $reactions)
+        let addedReactions = AddedReactionsContainerView(reactions: $reactions)
             .padding(.leading, 16)
             .padding(.bottom, 76)
         
@@ -114,7 +115,9 @@ struct VideoCell: View {
                                 }
                             }.alert(isPresented: $showAlert) {
                                 savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
-                                    self.isSaved = isSaved
+                                    withAnimation {
+                                        self.isSaved = isSaved
+                                    }
                                 })
                             }
                         }
@@ -126,75 +129,64 @@ struct VideoCell: View {
     }
 }
 
+struct AddedReaction: View {
+    
+    let image: Image
+    let width: CGFloat
+    let height: CGFloat
+    let verticalPadding: CGFloat
+    let horizontalPadding: CGFloat
+    
+    init(image: Image, width: CGFloat, height: CGFloat, verticalPadding: CGFloat, horizontalPadding: CGFloat) {
+        self.image = image
+        self.width = width
+        self.height = height
+        self.verticalPadding = verticalPadding
+        self.horizontalPadding = horizontalPadding
+    }
+    
+    var body: some View {
+        
+        image
+            .resizable()
+            .renderingMode(.template)
+            .foregroundColor(.white)
+            .scaledToFit()
+            .frame(width: width, height: height)
+            .padding(.vertical, verticalPadding)
+            .padding(.horizontal, horizontalPadding)
+            .transition(.scale)
+    }
+}
 
-struct AddedReactions: View {
+struct AddedReactionsView: View {
     
     @Binding var reactions: [Reaction]
     
     var body: some View {
         
-        if reactions.count > 1 {
         ZStack {
+            
             VStack {
                 
                 if reactions.contains(where: {$0.reactionType == .Love}) {
-                    
-                    Image(systemName: "heart.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 19, height: 19)
-                        .padding(.vertical, 0)
-                        .padding(.horizontal, 6)
-                    
+                    AddedReaction(image: Image(systemName: "heart.fill"), width: 19, height: 19, verticalPadding: 0, horizontalPadding: 6)
                 }
                 
                 if reactions.contains(where: {$0.reactionType == .Like}) {
-                    
-                    Image(systemName: "hand.thumbsup.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 19, height: 19)
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 6)
-                    
+                    AddedReaction(image: Image(systemName: "hand.thumbsup.fill"), width: 19, height: 19, verticalPadding: 2, horizontalPadding: 6)
                 }
                 
                 if reactions.contains(where: {$0.reactionType == .Dislike}) {
-                    
-                    Image(systemName: "hand.thumbsdown.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 19, height: 19)
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 6)
-                    
+                    AddedReaction(image: Image(systemName: "hand.thumbsdown.fill"), width: 19, height: 19, verticalPadding: 2, horizontalPadding: 6)
                 }
                 
                 if reactions.contains(where: {$0.reactionType == .Emphasize}) {
-                    
-                    Image("ExclamationMark")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.white)
-                        .scaledToFit()
-                        .frame(width: 20, height: 23)
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 6)
+                    AddedReaction(image: Image("ExclamationMark"), width: 20, height: 23, verticalPadding: 2, horizontalPadding: 6)
                 }
                 
                 if reactions.contains(where: {$0.reactionType == .Laugh}) {
-                    
-                    Image("Haha")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(.white)
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 6)
+                    AddedReaction(image: Image("Haha"), width: 20, height: 20, verticalPadding: 2, horizontalPadding: 6)
                 }
                 
             }
@@ -202,81 +194,23 @@ struct AddedReactions: View {
             
         }
         .background(Color.mainBlue)
-        .clipShape(Capsule())
         
+    }
+}
+
+
+struct AddedReactionsContainerView: View {
+    
+    @Binding var reactions: [Reaction]
+    
+    var body: some View {
+        
+        if reactions.count > 1 {
+            AddedReactionsView(reactions: $reactions).clipShape(Capsule())
         } else {
-            ZStack {
-                VStack {
-                    
-                    if reactions.contains(where: {$0.reactionType == .Love}) {
-                        
-                        Image(systemName: "heart.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .frame(width: 19, height: 19)
-                            .padding(.vertical, 0)
-                            .padding(.horizontal, 6)
-                        
-                    }
-                    
-                    if reactions.contains(where: {$0.reactionType == .Like}) {
-                        
-                        Image(systemName: "hand.thumbsup.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .frame(width: 19, height: 19)
-                            .padding(.vertical, 2)
-                            .padding(.horizontal, 6)
-                        
-                    }
-                    
-                    if reactions.contains(where: {$0.reactionType == .Dislike}) {
-                        
-                        Image(systemName: "hand.thumbsdown.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .frame(width: 19, height: 19)
-                            .padding(.vertical, 2)
-                            .padding(.horizontal, 6)
-                        
-                    }
-                    
-                    if reactions.contains(where: {$0.reactionType == .Emphasize}) {
-                        
-                        Image("ExclamationMark")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.white)
-                            .scaledToFit()
-                            .frame(width: 20, height: 23)
-                            .padding(.vertical, 2)
-                            .padding(.horizontal, 6)
-                    }
-                    
-                    if reactions.contains(where: {$0.reactionType == .Laugh}) {
-                        
-                        Image("Haha")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(.white)
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .padding(.vertical, 2)
-                            .padding(.horizontal, 6)
-                    }
-                    
-                }
-                .padding(.vertical, 10 )
-                
-            }
-            .background(Color.mainBlue)
-            .clipShape(Circle())
+            AddedReactionsView(reactions: $reactions).clipShape(Circle())
         }
     }
-    
 }
 
 struct ReactionView: View {
@@ -284,16 +218,14 @@ struct ReactionView: View {
     let viewModel = ConversationViewModel.shared
     let messageId: String
     @Binding var reactions: [Reaction]
-
+    
     
     var body: some View {
         
         VStack {
             
             Button {
-                let reaction = Reaction(username: "Seb", userId: "dsfs", reactionType: .Love)
-                reactions.append(reaction)
-                viewModel.addReactionToMessage(withId: messageId, reaction: reaction)
+                handleReactionPressed(reactionType: .Love)
             } label: {
                 Image(systemName: "heart.fill")
                     .resizable()
@@ -304,9 +236,9 @@ struct ReactionView: View {
                     .padding(.bottom, 3)
                     .padding(.horizontal, 10)
             }
-
+            
             Button {
-                
+                handleReactionPressed(reactionType: .Like)
             } label: {
                 Image(systemName: "hand.thumbsup.fill")
                     .resizable()
@@ -320,7 +252,7 @@ struct ReactionView: View {
             
             
             Button {
-                
+                handleReactionPressed(reactionType: .Dislike)
             } label: {
                 Image(systemName: "hand.thumbsdown.fill")
                     .resizable()
@@ -332,9 +264,9 @@ struct ReactionView: View {
                     .padding(.horizontal, 10)
             }
             
-           
+            
             Button {
-                
+                handleReactionPressed(reactionType: .Emphasize)
             } label: {
                 Image("ExclamationMark")
                     .resizable()
@@ -347,7 +279,7 @@ struct ReactionView: View {
             }
             
             Button {
-                
+                handleReactionPressed(reactionType: .Laugh)
             } label: {
                 Image("Haha")
                     .resizable()
@@ -358,10 +290,34 @@ struct ReactionView: View {
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
             }
-           
+            
         }.padding(.vertical, 12)
             .background(Color(white: 0, opacity: 0.3))
             .clipShape(Capsule())
+    }
+    
+    func handleReactionPressed(reactionType: ReactionType) {
+        if let index = reactions.firstIndex(where: { $0.userId == "dsfs" && $0.reactionType == reactionType}) {
+            let reaction = reactions[index]
+            withAnimation {
+                reactions.remove(at: index)
+            }
+            viewModel.removeReactionFromMessage(withId: messageId, reaction: reaction) {}
+        } else if let index = reactions.firstIndex(where: {$0.userId == "dsfs"}) {
+            let reaction = reactions[index]
+            withAnimation {
+                reactions[index].reactionType = reactionType
+            }
+            viewModel.removeReactionFromMessage(withId: messageId, reaction: reaction) {
+                viewModel.addReactionToMessage(withId: messageId, reaction: reactions[index])
+            }
+        } else {
+            let reaction = Reaction(messageId: messageId, username: "Seb", userId: "dsfs", reactionType: reactionType)
+            withAnimation {
+                reactions.append(reaction)
+            }
+            viewModel.addReactionToMessage(withId: messageId, reaction: reaction)
+        }
     }
 }
 

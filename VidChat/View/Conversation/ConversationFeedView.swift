@@ -16,7 +16,7 @@ struct ViewOffsetsKey: PreferenceKey {
 }
 
 struct ConversationFeedView: View {
-    var mainViewHeight: CGFloat = (SCREEN_WIDTH * 16/9) / 2
+    var mainViewHeight: CGFloat = (SCREEN_WIDTH * 16/9) / 4
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var middleItemNo = -1
     @StateObject private var viewModel = ConversationViewModel.shared

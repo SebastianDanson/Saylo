@@ -33,12 +33,25 @@ struct ConversationService {
             if let data = snapshot?.data() {
                 let savedMessages = data["savedMessages"] as? [String] ?? [String]()
                 let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
-                
+                let reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
+
                 messagesDic.forEach { message in
                     let id = message["id"] as? String ?? ""
                     let isSaved = savedMessages.contains(id)
                     messages.append(Message(dictionary: message, id: id, isSaved: isSaved))
                 }
+                
+                
+                reactionsDic.forEach({
+                    let reactionType = ReactionType.getReactionType(fromString: $0["reactionType"] as? String ?? "")
+                    let messageId = $0["messageId"] as? String ?? ""
+                    let reaction = Reaction(messageId: messageId,
+                                            username: $0["username"] as? String ?? "",
+                                            userId: $0["userId"] as? String ?? "",
+                                            reactionType: reactionType)
+                    
+                    messages.first(where: {$0.id == messageId})?.reactions.append(reaction)
+                })
                 
                 completion(messages)
             }
@@ -68,6 +81,17 @@ struct ConversationService {
         } else {
             COLLECTION_CONVERSATIONS.document("test").updateData(["savedMessages": FieldValue.arrayRemove([message.id])])
             COLLECTION_SAVED_POSTS.document("test").updateData(["messages" : FieldValue.arrayRemove([message.getDictionary()])])
+        }
+    }
+    
+    static func addReaction(reaction: Reaction) {
+        COLLECTION_CONVERSATIONS.document("test").updateData(["reactions": FieldValue.arrayUnion([reaction.getDictionary()])])
+    }
+    
+    static func removeReaction(reaction: Reaction, completion: @escaping(() -> Void)) {
+        COLLECTION_CONVERSATIONS.document("test").updateData(["reactions": FieldValue.arrayRemove([reaction.getDictionary()])]) { error in
+            if let error = error { print("ERROR: removing reaction \(error.localizedDescription)")}
+            completion()
         }
     }
     

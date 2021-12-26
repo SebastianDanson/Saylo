@@ -93,28 +93,6 @@ class Message: Identifiable {
         
         self.isSaved = isSaved
         
-        let reactionsDic = dictionary["reactions"] as? [[String:Any]] ?? [[String:Any]]()
-        
-        reactionsDic.forEach({
-            let reactionType = ReactionType.getReactionType(fromString: $0["reactionType"] as? String ?? "")
-            let reaction = Reaction(username: $0["username"] as? String ?? "", userId: $0["userId"] as? String ?? "", reactionType: reactionType)
-            self.reactions.append(reaction)
-            
-          
-
-        })
-        
-        let love = Reaction(username: "Seb", userId: "jhbjh", reactionType: .Love)
-        let like = Reaction(username: "Seb", userId: "jhbjh", reactionType: .Like)
-        let dislike = Reaction(username: "Seb", userId: "jhbjh", reactionType: .Dislike)
-        let emphasize = Reaction(username: "Seb", userId: "jhbjh", reactionType: .Emphasize)
-        let laugh = Reaction(username: "Seb", userId: "jhbjh", reactionType: .Laugh)
-        
-      //  self.reactions.append(love)
-//        self.reactions.append(like)
-//        self.reactions.append(dislike)
-//        self.reactions.append(emphasize)
-//        self.reactions.append(laugh)
         
         //checkCache
         if type == .Video || type == .Audio, exportVideo, let urlString = url, let url = URL(string: urlString) {
