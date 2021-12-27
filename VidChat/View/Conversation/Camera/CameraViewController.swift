@@ -201,6 +201,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func captureMovie(withFlash hasFlash: Bool) {
+       
         self.hasFlash = hasFlash
         
         let device = activeInput.device

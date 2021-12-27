@@ -16,7 +16,7 @@ struct ViewOffsetsKey: PreferenceKey {
 }
 
 struct ConversationFeedView: View {
-    var mainViewHeight: CGFloat = (SCREEN_WIDTH * 16/9) / 4
+    
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var middleItemNo = -1
     @StateObject private var viewModel = ConversationViewModel.shared
@@ -56,7 +56,7 @@ struct ConversationFeedView: View {
                 
                     .onPreferenceChange( ViewOffsetsKey.self, perform: { prefs in
                         let prevMiddleItemNo = middleItemNo
-                        middleItemNo = prefs.first(where: { $1 > -mainViewHeight && $1 < mainViewHeight })?.key ?? -1
+                        middleItemNo = prefs.first(where: { $1 > 40 && $1 < 90 })?.key ?? -1
                         
                         if middleItemNo >= 0 {
                             if prevMiddleItemNo != middleItemNo {
@@ -88,8 +88,8 @@ struct ConversationFeedView: View {
     }
     
     func playCurrentPlayer() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             currentPlayer?.play()
-        }
+//        }
     }
 }

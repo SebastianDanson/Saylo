@@ -21,17 +21,18 @@ struct VideoPlayerView: View {
     
     private var exporter: AVAssetExportSession?
     
-    var width: CGFloat = UIScreen.main.bounds.width
-    var height: CGFloat = UIScreen.main.bounds.width
+    var width: CGFloat = SCREEN_WIDTH
+    var height: CGFloat = SCREEN_WIDTH
     var showName: Bool = false
     
     init(url: URL, id: String? = nil, showName: Bool = true, date: Date? = nil) {
+        
         let player = AVPlayer(url: url)
         self.player = player
         self.messageId = id
         self.viewModel = VideoPlayerViewModel(player: player, date: date)
         self.showName = showName
-
+        
         player.automaticallyWaitsToMinimizeStalling = false
         self.player.play()
         
@@ -125,18 +126,17 @@ struct PlayerView: UIViewRepresentable {
 
 struct PlayerQueueView: UIViewRepresentable {
     
-    @Binding var player : AVQueuePlayer
-    
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerQueueView>) {
     }
     
     func makeUIView(context: Context) -> UIView {
-        let playerView = PlayerUIView(frame: .zero, player: player, shouldLoop: false)
+        let playerView = PlayerUIView(frame: .zero, player: ConversationPlayerViewModel.shared.player, shouldLoop: false)
         return playerView
     }
 }
 
 class PlayerUIView: UIView {
+    
     private let playerLayer = AVPlayerLayer()
     private var exporter: AVAssetExportSession?
     private var items = [AVPlayerItem]()
@@ -145,6 +145,7 @@ class PlayerUIView: UIView {
     private var progressBarHighlightedObserver: NSKeyValueObservation?
     private var timeObserverToken: Any?
     private let playbackSlider = UISlider()
+    private var shouldLoop = false
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -167,36 +168,29 @@ class PlayerUIView: UIView {
         playbackSlider.maximumValue = 1
         playbackSlider.thumbTintColor = .clear
         
-        let duration : CMTime = player.currentItem?.asset.duration ?? .zero
-        
         playbackSlider.isContinuous = true
         playbackSlider.tintColor = UIColor.white
         
         playbackSlider.addTarget(self, action: #selector(self.playbackSliderValueChanged(_:)), for: .valueChanged)
-        // playbackSlider.addTarget(self, action: "playbackSliderValueChanged:", forControlEvents: .ValueChanged)
         self.addSubview(playbackSlider)
         playbackSlider.centerX(inView: self)
         playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 14)
         
-        //        player.addPeriodicTimeObserver(forInterval: CMTime(value: CMTimeValue(1), timescale: 100), queue: DispatchQueue.main) {[weak self] (progressTime) in
-        //            print("periodic time: \(CMTimeGetSeconds(progressTime)), \(CMTimeGetSeconds(duration)), \(Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))) ")
-        //            playbackSlider.value = Float(CMTimeGetSeconds(progressTime) / CMTimeGetSeconds(duration))
-        //        }
-        
-        addPeriodicTimeObserver(duration: duration)
+        addPeriodicTimeObserver()
         
         // Setup looping
         
         player.actionAtItemEnd = shouldLoop ? .none : .advance
         
         
-        if shouldLoop {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(playerItemDidReachEnd(notification:)),
-                                                   name: .AVPlayerItemDidPlayToEndTime,
-                                                   object: player.currentItem)
-        }
+        //        if shouldLoop {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(playerItemDidReachEnd(notification:)),
+                                               name: .AVPlayerItemDidPlayToEndTime,
+                                               object: nil)
+        //        }
         
+        self.shouldLoop = shouldLoop
         if !shouldLoop, let player = player as? AVQueuePlayer {
             items = player.items()
         }
@@ -209,23 +203,17 @@ class PlayerUIView: UIView {
         
         player.play()
         
-        if !shouldLoop {
-            token = player.observe(\.currentItem) { [weak self] player, _ in
-                self?.updateDateString()
-                if let player = player as? AVQueuePlayer, player.items().count == 0 {
-                    self?.addAllVideosToPlayer()
-                }
-            }
-            
-            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-            self.addGestureRecognizer(tap)
-            
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            self.addGestureRecognizer(pan)
-        }
+        //        if !shouldLoop {
+        //            token = player.observe(\.currentItem) { [weak self] player, _ in
+        //                self?.updateDateString()
+        //                if let player = player as? AVQueuePlayer, let items = self?.items, player.items().count == 0 {
+        //                    ConversationPlayerViewModel.shared.addAllVideosToPlayer(player: player, items: items)
+        //                }
+        //            }
+        //        }
     }
     
-    func addPeriodicTimeObserver(duration: CMTime) {
+    func addPeriodicTimeObserver() {
         // Notify every half second
         let timeScale = CMTimeScale(NSEC_PER_SEC)
         let time = CMTime(seconds: 0.05, preferredTimescale: timeScale)
@@ -235,10 +223,11 @@ class PlayerUIView: UIView {
             [weak self] time in
             
             if self?.playbackSlider.state ?? .normal == .normal {
+                let duration : CMTime = self?.playerLayer.player?.currentItem?.asset.duration ?? .zero
+                
                 self?.playbackSlider.setValue(Float(CMTimeGetSeconds(time) / CMTimeGetSeconds(duration)), animated: true)
                 self?.playbackSlider.thumbTintColor = .clear
             }
-            
         }
     }
     
@@ -268,79 +257,12 @@ class PlayerUIView: UIView {
     }
     
     @objc
-    func handleTap(_ sender: UITapGestureRecognizer) {
-        if let player = playerLayer.player as? AVQueuePlayer {
-            let xLoc = sender.location(in: self).x
-            
-            if xLoc > SCREEN_WIDTH/2 {
-                player.advanceToNextItem()
-            } else if let currentItem = player.currentItem {
-                
-                let currentIndex = items.firstIndex(of: currentItem)
-                
-                if let currentIndex = currentIndex {
-                    
-                    if currentIndex > 0 {
-                        let prevItem = items[currentIndex - 1]
-                        player.replaceCurrentItem(with: prevItem)
-                    }
-                    
-                    player.seek(to: .zero)
-                    
-                }
-            }
-        }
-    }
-    
-    @objc
-    func handlePan(_ gesture: UIPanGestureRecognizer) {
-        
-        let playerViewModel = ConversationPlayerViewModel.shared
-        
-        if gesture.state == .changed {
-            let translation = gesture.translation(in: self)
-            let diff = translation.y - prevTranslation.y
-            prevTranslation = translation
-            
-            playerViewModel.dragOffset.height = max(0, playerViewModel.dragOffset.height + diff)
-            
-        } else if gesture.state == .ended {
-            
-            self.prevTranslation = .zero
-            withAnimation(.linear(duration: 0.15)) {
-                if playerViewModel.dragOffset.height > SCREEN_HEIGHT / 4 {
-                    ConversationViewModel.shared.showConversationPlayer = false
-                    playerViewModel.dragOffset = .zero
-                } else {
-                    playerViewModel.dragOffset = .zero
-                }
-            }
-        }
-    }
-    
-    @objc
     func playerItemDidReachEnd(notification: Notification) {
-        playerLayer.player?.seek(to: CMTime.zero)
-    }
-    
-    private func addAllVideosToPlayer() {
         
-        if let player = playerLayer.player as? AVQueuePlayer {
-            for item in items {
-                if player.canInsert(item, after: player.items().last) {
-                    player.insert(item, after: player.items().last)
-                }
-            }
-            
-            player.seek(to: .zero)
-            
-        }
-    }
-    
-    private func updateDateString() {
-        let viewModel = ConversationPlayerViewModel.shared
-        if let playerItem = (playerLayer.player as? AVQueuePlayer)?.items().first, let index = items.firstIndex(where: {$0 == playerItem}) {
-            viewModel.dateString = viewModel.dates[index].getFormattedDate()
+        if shouldLoop {
+            playerLayer.player?.seek(to: CMTime.zero)
+        } else {
+            ConversationPlayerViewModel.shared.handleShowNextMessage()
         }
     }
     
@@ -348,9 +270,6 @@ class PlayerUIView: UIView {
         super.layoutSubviews()
         playerLayer.frame = bounds
     }
-    
-    
-    
 }
 
 extension AVPlayer {
