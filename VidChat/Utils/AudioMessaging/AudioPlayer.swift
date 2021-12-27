@@ -9,6 +9,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     var audio: URL!
     var hasFinished = true
+    
     @Published var isPlaying = false {
         didSet {
             CameraViewModel.shared.isPlaying = isPlaying
@@ -72,7 +73,6 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            print("STOPPED")
             stopPlayback()
         }
     }

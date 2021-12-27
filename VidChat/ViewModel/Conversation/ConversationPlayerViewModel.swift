@@ -14,10 +14,12 @@ class ConversationPlayerViewModel: ObservableObject {
     @Published var dragOffset: CGSize = .zero
     @Published var index: Int = 0
     @Published var player = AVQueuePlayer()
-    
+    @Published var audioPlayer = AudioPlayer()
+
     var playerItems = [AVPlayerItem]()
     
     var hasGoneBack = false
+    var canAdvance = true
     
     var dates = [Date]() {
         didSet {
@@ -30,21 +32,26 @@ class ConversationPlayerViewModel: ObservableObject {
     static let shared = ConversationPlayerViewModel()
     private init() {}
     
-    func handleShowNextMessage() {
-        
-        let messages = ConversationViewModel.shared.messages
-        
+    func handleShowNextMessage(wasInterrupted: Bool) {
+                
         incrementIndex()
 
         print(index, "INDEX", player.items().count)
                     
-        if messages[index].type != .Video {
+        if !isPlayable() {
+            
+            if !wasInterrupted {
+                canAdvance = false
+                player.advanceToNextItem()
+            }
             player.pause()
             player.seek(to: .zero)
+            
         } else {
-            if hasGoneBack {
+            if hasGoneBack || !canAdvance {
                 player.play()
                 print("PLAY")
+                canAdvance = true
             } else {
                 print("ADVANCE")
                 player.advanceToNextItem()
@@ -58,6 +65,7 @@ class ConversationPlayerViewModel: ObservableObject {
         }
         
         hasGoneBack = false
+        setDateString()
     }
     
     func incrementIndex() {
@@ -68,11 +76,11 @@ class ConversationPlayerViewModel: ObservableObject {
     func handleShowPrevMessage() {
         
         let messages = ConversationViewModel.shared.messages
-        let currIndex = index
+        let wasPlayable = isPlayable()
         index = max(0, index - 1)
         
         //if the current message and next message are both videos -> replace current video with previous
-        if let currentItem = player.currentItem, messages[index].type == .Video, messages[currIndex].type == .Video || messages[index].type == .Video && hasGoneBack {
+        if let currentItem = player.currentItem, isPlayable(), wasPlayable || isPlayable() && hasGoneBack {
             
             if let currentIndex = playerItems.firstIndex(of: currentItem) {
                 
@@ -86,7 +94,6 @@ class ConversationPlayerViewModel: ObservableObject {
                 player.seek(to: .zero)
             }
             
-            
         } else {
 
             if messages[index].type != .Video {
@@ -97,6 +104,8 @@ class ConversationPlayerViewModel: ObservableObject {
                 player.play()
             }
         }
+        
+        setDateString()
     }
     
     func addAllVideosToPlayer() {
@@ -120,9 +129,15 @@ class ConversationPlayerViewModel: ObservableObject {
     func removePlayerView() {
         index = 0
         player.removeAllItems()
-        addAllVideosToPlayer()
         player.pause()
         ConversationViewModel.shared.showConversationPlayer = false
+    }
+    
+    func isPlayable() -> Bool {
+        
+        let messages = ConversationViewModel.shared.messages
+        
+        return messages[index].type == .Video || messages[index].type == .Audio
     }
 }
 

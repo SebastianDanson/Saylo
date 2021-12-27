@@ -7,14 +7,16 @@
 
 import SwiftUI
 import AVFoundation
-
+import Kingfisher
 
 struct ConversationPlayerView: View {
     
     @ObservedObject var viewModel = ConversationPlayerViewModel.shared
+    @ObservedObject var conversationViewModel = ConversationViewModel.shared
+    
     @State var dateString = ""
     @State var dragOffset: CGSize = .zero
-
+    
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
@@ -24,7 +26,7 @@ struct ConversationPlayerView: View {
         var dates = [Date]()
         
         ConversationViewModel.shared.messages.forEach({
-            if $0.type == .Video, let urlString = $0.url, let url = URL(string: urlString) {
+            if ($0.type == .Video || $0.type == .Audio), let urlString = $0.url, let url = URL(string: urlString) {
                 let playerItem = AVPlayerItem(asset: AVAsset(url: url))
                 playerItems.append(playerItem)
                 dates.append($0.timestamp.dateValue())
@@ -44,24 +46,57 @@ struct ConversationPlayerView: View {
         
         ZStack {
             
-            if ConversationViewModel.shared.messages[viewModel.index].type == .Video {
+            if conversationViewModel.messages[viewModel.index].type == .Video || conversationViewModel.messages[viewModel.index].type == .Audio {
                 
                 PlayerQueueView()
                     .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                    .background(conversationViewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.black)
+                    .overlay(
+                        ZStack {
+                            if conversationViewModel.messages[viewModel.index].type == .Audio {
+                                Image(systemName: "waveform")
+                                    .resizable()
+                                    .frame(width: 120, height: 120)
+                                    .foregroundColor(.white)
+                                    .scaledToFill()
+                                    .padding(.top, 8)
+                            }
+                        }
+                    )
                 
-                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                    .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
+            } else if conversationViewModel.messages[viewModel.index].type == .Text, let text = conversationViewModel.messages[viewModel.index].text {
+                ZStack {
+                    Text(text)
+                        .foregroundColor(.white)
+                        .font(.system(size: 28, weight: .bold))
+                        .padding()
+                    
+                }
+                .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                .background(Color.mainBlue)
                 
-            } else if ConversationViewModel.shared.messages[viewModel.index].type == .Text {
-                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.blue, style: StrokeStyle(lineWidth: 10))
-                    .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
-            } else if ConversationViewModel.shared.messages[viewModel.index].type == .Photo {
-                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.red, style: StrokeStyle(lineWidth: 10))
-                    .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
-            } else if ConversationViewModel.shared.messages[viewModel.index].type == .Audio {
-                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.green, style: StrokeStyle(lineWidth: 10))
-                    .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
-            }
+            } else if conversationViewModel.messages[viewModel.index].type == .Photo {
+                
+                if let url = conversationViewModel.messages[viewModel.index].url {
+                    KFImage(URL(string: url))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                        .cornerRadius(12)
+                        .clipped()
+                } else if let image = conversationViewModel.messages[viewModel.index].image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                        .cornerRadius(12)
+                        .clipped()
+                }
+            } 
+            
+            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
+            
         }
         .overlay(
             
@@ -100,24 +135,25 @@ struct ConversationPlayerView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 16)
-                .padding(.vertical, 40)
-
+                .padding(.vertical, viewModel.isPlayable() ? 40 : 24)
+                
             })
+        
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.black)
         .offset(dragOffset)
-        .gesture(DragGesture(minimumDistance: 0)
+        .gesture(viewModel.isPlayable() ? nil : DragGesture(minimumDistance: 0)
                     .onChanged { gesture in
             dragOffset.height = max(0, gesture.translation.height)
         }
                     .onEnded({ (value) in
             
-            if dragOffset.height == 0 {
+            if dragOffset.height == 0  {
                 
                 let xLoc = value.location.x
                 
                 if xLoc > SCREEN_WIDTH/2 {
-                    viewModel.handleShowNextMessage()
+                    viewModel.handleShowNextMessage(wasInterrupted: true)
                 } else  {
                     viewModel.handleShowPrevMessage()
                 }
@@ -133,6 +169,7 @@ struct ConversationPlayerView: View {
             }
             
         }))
-   
+        
     }
 }
+

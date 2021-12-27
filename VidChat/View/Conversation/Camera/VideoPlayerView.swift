@@ -156,6 +156,7 @@ class PlayerUIView: UIView {
     }
     
     init(frame: CGRect, player: AVPlayer, shouldLoop: Bool = true) {
+        
         super.init(frame: frame)
         // Setup the player
         playerLayer.player = player
@@ -163,7 +164,7 @@ class PlayerUIView: UIView {
         
         layer.addSublayer(playerLayer)
         
-        playbackSlider.setDimensions(height: 20, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
+        playbackSlider.setDimensions(height: 30, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = 1
         playbackSlider.thumbTintColor = .clear
@@ -203,14 +204,11 @@ class PlayerUIView: UIView {
         
         player.play()
         
-        //        if !shouldLoop {
-        //            token = player.observe(\.currentItem) { [weak self] player, _ in
-        //                self?.updateDateString()
-        //                if let player = player as? AVQueuePlayer, let items = self?.items, player.items().count == 0 {
-        //                    ConversationPlayerViewModel.shared.addAllVideosToPlayer(player: player, items: items)
-        //                }
-        //            }
-        //        }
+        if !shouldLoop {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+            self.addGestureRecognizer(tap)
+        }
+        
     }
     
     func addPeriodicTimeObserver() {
@@ -257,12 +255,25 @@ class PlayerUIView: UIView {
     }
     
     @objc
+    func handleTap(_ sender: UITapGestureRecognizer) {
+        if let player = playerLayer.player as? AVQueuePlayer {
+            let xLoc = sender.location(in: self).x
+            
+            if xLoc > SCREEN_WIDTH/2 {
+                ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: true)
+            } else  {
+                ConversationPlayerViewModel.shared.handleShowPrevMessage()
+            }
+        }
+    }
+    
+    @objc
     func playerItemDidReachEnd(notification: Notification) {
         
         if shouldLoop {
             playerLayer.player?.seek(to: CMTime.zero)
         } else {
-            ConversationPlayerViewModel.shared.handleShowNextMessage()
+            ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: false)
         }
     }
     
