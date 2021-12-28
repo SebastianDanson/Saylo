@@ -565,7 +565,9 @@ struct ChatSettingsView: View {
         VStack(spacing: 20) {
             
             HStack(alignment: .center) {
+                
                 HStack(spacing: 12) {
+                    
                     KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
                         .resizable()
                         .scaledToFill()

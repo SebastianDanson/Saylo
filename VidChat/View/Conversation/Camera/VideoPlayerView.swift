@@ -175,7 +175,7 @@ class PlayerUIView: UIView {
         playbackSlider.addTarget(self, action: #selector(self.playbackSliderValueChanged(_:)), for: .valueChanged)
         self.addSubview(playbackSlider)
         playbackSlider.centerX(inView: self)
-        playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 14)
+        playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 8)
         
         addPeriodicTimeObserver()
         
@@ -183,13 +183,10 @@ class PlayerUIView: UIView {
         
         player.actionAtItemEnd = shouldLoop ? .none : .advance
         
-        
-        //        if shouldLoop {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
                                                object: nil)
-        //        }
         
         self.shouldLoop = shouldLoop
         if !shouldLoop, let player = player as? AVQueuePlayer {
@@ -207,6 +204,9 @@ class PlayerUIView: UIView {
         if !shouldLoop {
             let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
             self.addGestureRecognizer(tap)
+            
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+            self.addGestureRecognizer(pan)
         }
         
     }
@@ -237,6 +237,32 @@ class PlayerUIView: UIView {
     }
     
     @objc
+    func handlePan(_ gesture: UIPanGestureRecognizer) {
+        
+        let playerViewModel = ConversationPlayerViewModel.shared
+        
+        if gesture.state == .changed {
+            let translation = gesture.translation(in: self)
+            let diff = translation.y - prevTranslation.y
+            prevTranslation = translation
+            
+            playerViewModel.dragOffset.height = max(0, playerViewModel.dragOffset.height + diff)
+            
+        } else if gesture.state == .ended {
+            
+            self.prevTranslation = .zero
+            withAnimation(.linear(duration: 0.15)) {
+                if playerViewModel.dragOffset.height > SCREEN_HEIGHT / 4 {
+                    ConversationViewModel.shared.showConversationPlayer = false
+                    playerViewModel.dragOffset = .zero
+                } else {
+                    playerViewModel.dragOffset = .zero
+                }
+            }
+        }
+    }
+    
+    @objc
     func playbackSliderValueChanged(_ playbackSlider:UISlider)
     {
         
@@ -256,14 +282,12 @@ class PlayerUIView: UIView {
     
     @objc
     func handleTap(_ sender: UITapGestureRecognizer) {
-        if let player = playerLayer.player as? AVQueuePlayer {
-            let xLoc = sender.location(in: self).x
-            
-            if xLoc > SCREEN_WIDTH/2 {
-                ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: true)
-            } else  {
-                ConversationPlayerViewModel.shared.handleShowPrevMessage()
-            }
+        let xLoc = sender.location(in: self).x
+        
+        if xLoc > SCREEN_WIDTH/2 {
+            ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: true)
+        } else  {
+            ConversationPlayerViewModel.shared.handleShowPrevMessage()
         }
     }
     

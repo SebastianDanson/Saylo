@@ -39,6 +39,8 @@ struct ConversationGridView: View {
     private var users: [TestUser]
     @State private var showCamera = false
     @State private var text = ""
+    @State private var showProfileView = false
+    
     //  @ObservedObject var viewModel: PostGridViewModel
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var viewModel = ConversationGridViewModel.shared
@@ -66,10 +68,11 @@ struct ConversationGridView: View {
     var body: some View {
         
         NavigationView {
+            
             ZStack(alignment: .top) {
                 
                 if !conversationViewModel.showCamera || viewModel.isSelectingUsers {
-                    NavView(users: users)
+                    NavView(showProfileView: $showProfileView, users: users)
                 }
                 
                 VStack {
@@ -204,7 +207,7 @@ struct ShowCameraView: View {
 struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
-    
+    @Binding var showProfileView: Bool
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     private let toolBarWidth: CGFloat = 38
     let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
@@ -212,29 +215,21 @@ struct NavView: View {
     let users: [TestUser]
     
     var body: some View {
+        
         ZStack(alignment: .center) {
+            
             Rectangle()
                 .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
                 .foregroundColor(.white)
                 .shadow(color: Color(white: 0, opacity: users.count > 15 ? 0.1 : 0), radius: 4, x: 0, y: 2)
-            
-            
-            //            if isSelectingUsers {
-            //                HStack {
-            //                    Spacer()
-            //                    Text("Send To...")
-            //                        .font(.title)
-            //                    Spacer()
-            //                }
-            //            }
-            
+                        
             HStack {
                 if !viewModel.isSelectingUsers {
                     
                     HStack(spacing: 12) {
                         
-                        NavigationLink {
-                            ConversationView()
+                        Button {
+                            showProfileView = true
                         } label: {
                             KFImage(URL(string: image1))
                                 .resizable()
@@ -242,8 +237,7 @@ struct NavView: View {
                                 .frame(width: toolBarWidth, height: toolBarWidth)
                                 .clipShape(Circle())
                         }
-                        
-                        
+
                         Button(action: {}, label: {
                             Image(systemName: "magnifyingglass.circle.fill")
                                 .resizable()
@@ -321,7 +315,10 @@ struct NavView: View {
             .padding(.top, topPadding)
             
         }.zIndex(2)
-            .ignoresSafeArea()
+        .ignoresSafeArea()
+        .popover(isPresented: $showProfileView) {
+            ProfileView(user: users[0])
+        }
     }
 }
 

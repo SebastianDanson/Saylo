@@ -13,7 +13,7 @@ import MapKit
 struct VideoCell: View {
     
     let message: Message
-    @State var showReaction = false
+    @State var showReactions = false
     @State var isSaved: Bool
     @State var showAlert = false
     @State var reactions: [Reaction]
@@ -69,20 +69,20 @@ struct VideoCell: View {
                     
                     VStack(spacing: 12) {
                         
-                        if showReaction {
-                            ReactionView(messageId: message.id, reactions: $reactions)
+                        if showReactions {
+                            ReactionView(messageId: message.id, reactions: $reactions, showReactions: $showReactions)
                                 .transition(.scale)
                         }
                         
                         Button {
                             withAnimation(.linear(duration: 0.2)) {
-                                showReaction.toggle()
+                                showReactions.toggle()
                             }
                         } label: {
                             
                             ZStack {
                                 
-                                if showReaction {
+                                if showReactions {
                                     Circle()
                                         .frame(width: 46, height: 46)
                                         .foregroundColor(Color(white: 0, opacity: 0.3))
@@ -218,7 +218,8 @@ struct ReactionView: View {
     let viewModel = ConversationViewModel.shared
     let messageId: String
     @Binding var reactions: [Reaction]
-    
+    @Binding var showReactions: Bool
+
     
     var body: some View {
         
@@ -318,6 +319,8 @@ struct ReactionView: View {
             }
             viewModel.addReactionToMessage(withId: messageId, reaction: reaction)
         }
+        
+        showReactions = false
     }
 }
 

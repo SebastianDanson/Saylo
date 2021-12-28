@@ -15,23 +15,31 @@ struct ConversationGridCell: View {
     let textColor = Color(red: 136/255, green: 137/255, blue: 141/255)
     
     var body: some View {
-        //  user.conversationStatus == .none ? -20 : -50
+
         ZStack(alignment:.top) {
-            VStack(alignment: .center,
-                   spacing: 6) {
+            VStack(alignment: .center, spacing: 6) {
                 
-                KFImage(URL(string: user.image))
-                    .resizable()
-                    .scaledToFill()
-                    .background(Color(.systemGray))
-                    .frame(width: width, height: width)
-                    .cornerRadius(width/2)
-                    .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
+                ZStack {
+                    
+                    Circle().strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 2.5))
+                        .frame(width: width + 10, height: width + 10)
+
+
+                    KFImage(URL(string: user.image))
+                        .resizable()
+                        .scaledToFill()
+                        .background(Color(.systemGray))
+                        .frame(width: width, height: width)
+                        .cornerRadius(width/2)
+                        .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
+                    
+                }
                 
                 
                 Text(user.firstname)
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(textColor)
+                
             }.overlay(
                 ZStack {
                     if user.isSelected {
@@ -42,7 +50,6 @@ struct ConversationGridCell: View {
                             .scaledToFit()
                             .foregroundColor(.mainBlue)
                             .transition(.scale)
-                        //                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                     }
                 }
                 , alignment: .topLeading

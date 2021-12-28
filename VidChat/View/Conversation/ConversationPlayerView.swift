@@ -15,7 +15,6 @@ struct ConversationPlayerView: View {
     @ObservedObject var conversationViewModel = ConversationViewModel.shared
     
     @State var dateString = ""
-    @State var dragOffset: CGSize = .zero
     
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
@@ -92,7 +91,7 @@ struct ConversationPlayerView: View {
                         .cornerRadius(12)
                         .clipped()
                 }
-            } 
+            }
             
             RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
                 .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
@@ -141,14 +140,14 @@ struct ConversationPlayerView: View {
         
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.black)
-        .offset(dragOffset)
+        .offset(viewModel.dragOffset)
         .gesture(viewModel.isPlayable() ? nil : DragGesture(minimumDistance: 0)
                     .onChanged { gesture in
-            dragOffset.height = max(0, gesture.translation.height)
+            viewModel.dragOffset.height = max(0, gesture.translation.height)
         }
                     .onEnded({ (value) in
             
-            if dragOffset.height == 0  {
+            if viewModel.dragOffset.height == 0  {
                 
                 let xLoc = value.location.x
                 
@@ -161,10 +160,10 @@ struct ConversationPlayerView: View {
             
             withAnimation(.linear(duration: 0.2)) {
                 
-                if dragOffset.height > SCREEN_HEIGHT / 4 {
+                if viewModel.dragOffset.height > SCREEN_HEIGHT / 4 {
                     viewModel.removePlayerView()
                 } else {
-                    dragOffset.height = 0
+                    viewModel.dragOffset.height = 0
                 }
             }
             

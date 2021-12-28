@@ -15,7 +15,7 @@ class ConversationPlayerViewModel: ObservableObject {
     @Published var index: Int = 0
     @Published var player = AVQueuePlayer()
     @Published var audioPlayer = AudioPlayer()
-
+    
     var playerItems = [AVPlayerItem]()
     
     var hasGoneBack = false
