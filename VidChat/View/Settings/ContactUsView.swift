@@ -10,6 +10,7 @@ import SwiftUI
 struct ContactUsView: View {
     
     @State private var message = ""
+    @Environment(\.presentationMode) var mode
     
     var body: some View {
         
@@ -18,7 +19,7 @@ struct ContactUsView: View {
             HStack {
                 
                 Button {
-                    
+                    mode.wrappedValue.dismiss()
                 } label: {
                     Text("Cancel")
                         .padding()
@@ -33,7 +34,7 @@ struct ContactUsView: View {
                 Spacer()
                 
                 Button {
-                    
+                    //TODO handle Send
                 } label: {
                     Text("Send").fontWeight(.semibold)
                         .padding()
@@ -52,11 +53,18 @@ struct ContactUsView: View {
                 .foregroundColor(.textGray)
                 .padding(.horizontal)
             
-            MultilineTextField(text: $message)
-                .frame(height: 160)
-                .background(Color.backgroundGray)
-                .cornerRadius(8)
-                .padding(.horizontal)
+            ZStack(alignment: .top) {
+                
+                RoundedRectangle(cornerRadius: 8)
+                    .foregroundColor(.backgroundGray)
+                    .frame(height: 160)
+                    .padding(.horizontal)
+                
+                MultilineTextField("Message", text: $message, height: 160)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 8)
+                
+            }
 
             
             Spacer()

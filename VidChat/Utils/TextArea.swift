@@ -99,12 +99,13 @@ struct MultilineTextField: View {
         }
     }
 
-    @State private var dynamicHeight: CGFloat = 100
+    @State private var dynamicHeight: CGFloat
     @State private var showingPlaceholder = false
 
-    init (_ placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil) {
+    init (_ placeholder: String = "", text: Binding<String>, height: CGFloat = 100, onCommit: (() -> Void)? = nil) {
         self.placeholder = placeholder
         self.onCommit = onCommit
+        self.dynamicHeight = height
         self._text = text
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
@@ -119,8 +120,6 @@ struct MultilineTextField: View {
         Group {
             if showingPlaceholder {
                 Text(placeholder).foregroundColor(.gray)
-                    .padding(.leading, 4)
-                    .padding(.top, 8)
             }
         }
     }

@@ -48,6 +48,7 @@ struct ImageCropper: UIViewControllerRepresentable {
                 self.parent.showImageCropper = false
             }
             
+            self.parent.image = nil
             self.parent.showImagePicker = true
         }
     }

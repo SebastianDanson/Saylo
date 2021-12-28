@@ -13,9 +13,9 @@ struct SearchBar: View {
     
     var body: some View {
         HStack {
-            TextField("Search...", text: $text)
+            SearchTextField(text: $text, isFirstResponder: true)
                 .padding(8)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 26)
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
                 .overlay(
@@ -33,6 +33,7 @@ struct SearchBar: View {
                 Button(action: {
                     isEditing = false
                     text = ""
+                    ConversationGridViewModel.shared.showAllUsers()
                     UIApplication.shared.endEditing()
                 }, label: {
                     Text("Cancel")
@@ -43,12 +44,62 @@ struct SearchBar: View {
                 .animation(.default)
                 
             }
+        }.frame(height: 36)
+    }
+}
+
+struct SearchTextField: UIViewRepresentable {
+
+    class Coordinator: NSObject, UITextFieldDelegate {
+
+        @Binding var text: String
+
+        var didBecomeFirstResponder = false
+
+        init(text: Binding<String>) {
+            _text = text
+        }
+
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            text = textField.text ?? ""
+            ConversationGridViewModel.shared.filterUsers(withText: text)
+        }
+        
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            let viewModel = ConversationGridViewModel.shared
+            
+            withAnimation {
+                viewModel.showSearchBar = false
+                viewModel.showAllUsers()
+            }
+                        
+            text = ""
+            
+            return true
+        }
+
+    }
+
+    @Binding var text: String
+    var isFirstResponder: Bool = false
+
+    func makeUIView(context: UIViewRepresentableContext<SearchTextField>) -> UITextField {
+        let textField = UITextField(frame: .zero)
+        textField.delegate = context.coordinator
+        textField.placeholder = "Search"
+        return textField
+    }
+
+    func makeCoordinator() -> SearchTextField.Coordinator {
+        return Coordinator(text: $text)
+    }
+
+    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<SearchTextField>) {
+        uiView.text = text
+        if isFirstResponder && !context.coordinator.didBecomeFirstResponder  {
+            uiView.becomeFirstResponder()
+            context.coordinator.didBecomeFirstResponder = true
         }
     }
 }
 
-struct SearchBar_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchBar(text: .constant("Search..."), isEditing: .constant(true))
-    }
-}

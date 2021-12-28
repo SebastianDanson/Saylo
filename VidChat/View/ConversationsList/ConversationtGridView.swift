@@ -31,38 +31,16 @@ class TestUser: ObservableObject {
 }
 
 struct ConversationGridView: View {
-    let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
-    let image2 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1"
-    let image3 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Slice%20102.png?alt=media&token=8f470a6e-738b-4724-8fe9-ada2305d48ef"
     
     private let items = [GridItem(), GridItem(), GridItem()]
-    private var users: [TestUser]
-    @State private var showCamera = false
     @State private var text = ""
-    @State private var showProfileView = false
+    @State private var searchText = ""
     
     //  @ObservedObject var viewModel: PostGridViewModel
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var viewModel = ConversationGridViewModel.shared
     
     @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
-    
-    init() {
-   
-        self.users =  [
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .received),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sent),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston", conversationStatus: .sentOpened),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-            TestUser(image: image3, firstname: "Hayden", lastname: "Middlebrook"),
-            TestUser(image: image1, firstname: "Sebastian", lastname: "Danson"),
-            TestUser(image: image2, firstname: "Max", lastname: "Livingston"),
-        ]
-    }
     
     
     var body: some View {
@@ -72,7 +50,7 @@ struct ConversationGridView: View {
             ZStack(alignment: .top) {
                 
                 if !conversationViewModel.showCamera || viewModel.isSelectingUsers {
-                    NavView(showProfileView: $showProfileView, users: users)
+                    NavView(searchText: $searchText)
                 }
                 
                 VStack {
@@ -82,7 +60,7 @@ struct ConversationGridView: View {
                             ScrollView(showsIndicators: false) {
                                 VStack {
                                     LazyVGrid(columns: items, spacing: 14, content: {
-                                        ForEach(self.users, id: \.id) { user in
+                                        ForEach(viewModel.users, id: \.id) { user in
                                             ConversationGridCell(user: user)
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
@@ -106,8 +84,9 @@ struct ConversationGridView: View {
                                 }.padding(.top,
                                           !conversationViewModel.showKeyboard &&
                                           !conversationViewModel.showPhotos &&
+                                          !viewModel.showSearchBar &&
                                           !viewModel.isSelectingUsers ?
-                                          BOTTOM_PADDING + 82 : viewModel.isSelectingUsers ? (viewModel.selectedUsers.count > 0 ? 12 : BOTTOM_PADDING + 12) : 4)
+                                          BOTTOM_PADDING + 82 : viewModel.isSelectingUsers ? (viewModel.selectedUsers.count > 0 ? 12 : BOTTOM_PADDING + 12) : 6)
                             }
                             //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
                             .background(Color.white)
@@ -119,12 +98,7 @@ struct ConversationGridView: View {
                             .transition(.move(edge: .bottom))
                             
                         }
-//                        VStack {
-//                            Spacer()
-//                            if !viewModel.isSelectingUsers {
-//                                OptionsView()
-//                            }
-//                        }.zIndex(4)
+             
                         
                         if conversationViewModel.showCamera {
                             CameraViewModel.shared.cameraView
@@ -142,14 +116,20 @@ struct ConversationGridView: View {
                         KeyboardView(text: $text)
                     }
                     
+                    if viewModel.showSearchBar {
+                        Rectangle()
+                            .foregroundColor(.white)
+                            .frame(height: 2)
+                    }
+                    
                     if viewModel.selectedUsers.count > 0 && viewModel.isSelectingUsers {
                         SelectedUsersView()
                     }
                 }
             }
-             .overlay(
+            .overlay(
                 ZStack {
-                    if !ConversationViewModel.shared.showKeyboard {
+                    if !ConversationViewModel.shared.showKeyboard && !viewModel.showSearchBar {
                         
                         VStack {
                             
@@ -163,7 +143,7 @@ struct ConversationGridView: View {
                 ,alignment: .bottom)
             .navigationBarHidden(true)
             .zIndex(1)
-            .edgesIgnoringSafeArea(conversationViewModel.showKeyboard ? .top : .all)
+            .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
             
         }
     }
@@ -207,125 +187,134 @@ struct ShowCameraView: View {
 struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
-    @Binding var showProfileView: Bool
+    @Binding var searchText: String
+    
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     private let toolBarWidth: CGFloat = 38
     let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
-    
-    let users: [TestUser]
-    
+        
     var body: some View {
         
         ZStack(alignment: .center) {
-            
             Rectangle()
                 .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
                 .foregroundColor(.white)
-                .shadow(color: Color(white: 0, opacity: users.count > 15 ? 0.1 : 0), radius: 4, x: 0, y: 2)
+                .shadow(color: Color(white: 0, opacity: (viewModel.users.count > 15 || viewModel.showSearchBar) ? 0.05 : 0), radius: 2, x: 0, y: 2)
+            
+            if !viewModel.showSearchBar {
+                HStack {
+                    if !viewModel.isSelectingUsers {
                         
-            HStack {
-                if !viewModel.isSelectingUsers {
-                    
-                    HStack(spacing: 12) {
-                        
-                        Button {
-                            showProfileView = true
-                        } label: {
-                            KFImage(URL(string: image1))
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: toolBarWidth, height: toolBarWidth)
-                                .clipShape(Circle())
-                        }
-
-                        Button(action: {}, label: {
-                            Image(systemName: "magnifyingglass.circle.fill")
-                                .resizable()
-                                .frame(width: toolBarWidth, height: toolBarWidth)
-                                .scaledToFill()
-                                .background(
-                                    Circle()
-                                        .foregroundColor(.toolBarIconDarkGray)
-                                        .frame(width: toolBarWidth - 1, height: toolBarWidth - 1)
-                                    
-                                )
-                                .foregroundColor(.toolBarIconGray)
-                        })
-                    }
-                    
-                    Spacer()
-                    HStack(spacing: 12) {
-                        Circle()
-                            .frame(width: toolBarWidth, height: toolBarWidth)
-                            .foregroundColor(.toolBarIconGray)
-                            .overlay(
-                                Image(systemName: "person.fill.badge.plus")
-                                    .resizable()
-                                    .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
-                                    .scaledToFit()
-                                    .foregroundColor(.toolBarIconDarkGray)
-                                    .padding(.trailing, 2)
-                                    .padding(.top, 1)
-                            )
-                        
-                        Circle()
-                            .frame(width: toolBarWidth, height: toolBarWidth)
-                            .foregroundColor(.toolBarIconGray)
-                            .overlay(
-                                Image(systemName: "plus.message.fill")
-                                    .resizable()
-                                    .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
-                                    .scaledToFit()
-                                    .foregroundColor(.toolBarIconDarkGray)
-                                    .padding(.top, 1)
-                            )
-                    }
-                } else {
-                    ZStack {
-                        Text("Send To...")
-                            .font(.headline)
-                        HStack {
+                        HStack(spacing: 12) {
                             
                             Button {
-                                withAnimation(.linear(duration: 0.2)) {
-                                    viewModel.isSelectingUsers = false
-                                    viewModel.hideFeed = true
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                    viewModel.cameraViewZIndex = 3
-                                    viewModel.hideFeed = false
-                                }
+                                viewModel.showProfileView = true
                             } label: {
-                                Image(systemName: "chevron.down")
+                                KFImage(URL(string: image1))
                                     .resizable()
-                                    .scaledToFit()
-                                    .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
-                                    .foregroundColor(.black)
-                                    .padding(.leading, 8)
-                                    .padding(.top, -3)
+                                    .scaledToFill()
+                                    .frame(width: toolBarWidth, height: toolBarWidth)
+                                    .clipShape(Circle())
                             }
                             
-                            Spacer()
+                            Button(action: {
+                                viewModel.showSearchBar = true
+                            }, label: {
+                                Image(systemName: "magnifyingglass.circle.fill")
+                                    .resizable()
+                                    .frame(width: toolBarWidth, height: toolBarWidth)
+                                    .scaledToFill()
+                                    .background(
+                                        Circle()
+                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .frame(width: toolBarWidth - 1, height: toolBarWidth - 1)
+                                        
+                                    )
+                                    .foregroundColor(.toolBarIconGray)
+                            })
+                        }
+                        
+                        Spacer()
+                        HStack(spacing: 12) {
+                            Circle()
+                                .frame(width: toolBarWidth, height: toolBarWidth)
+                                .foregroundColor(.toolBarIconGray)
+                                .overlay(
+                                    Image(systemName: "person.fill.badge.plus")
+                                        .resizable()
+                                        .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
+                                        .scaledToFit()
+                                        .foregroundColor(.toolBarIconDarkGray)
+                                        .padding(.trailing, 2)
+                                        .padding(.top, 1)
+                                )
+                            
+                            Circle()
+                                .frame(width: toolBarWidth, height: toolBarWidth)
+                                .foregroundColor(.toolBarIconGray)
+                                .overlay(
+                                    Image(systemName: "plus.message.fill")
+                                        .resizable()
+                                        .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
+                                        .scaledToFit()
+                                        .foregroundColor(.toolBarIconDarkGray)
+                                        .padding(.top, 1)
+                                )
+                        }
+                    } else {
+                        ZStack {
+                            Text("Send To...")
+                                .font(.headline)
+                            HStack {
+                                
+                                Button {
+                                    withAnimation(.linear(duration: 0.2)) {
+                                        viewModel.isSelectingUsers = false
+                                        viewModel.hideFeed = true
+                                    }
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                        viewModel.cameraViewZIndex = 3
+                                        viewModel.hideFeed = false
+                                    }
+                                } label: {
+                                    Image(systemName: "chevron.down")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
+                                        .foregroundColor(.black)
+                                        .padding(.leading, 8)
+                                        .padding(.top, -3)
+                                }
+                                
+                                Spacer()
+                            }
                         }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.top, topPadding)
+            } else {
+               
+                SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar)
+                        .padding(.horizontal)
+                        .padding(.top, topPadding)
+       
             }
-            .padding(.horizontal)
-            .padding(.top, topPadding)
             
         }.zIndex(2)
-        .ignoresSafeArea()
-        .popover(isPresented: $showProfileView) {
-            ProfileView(user: users[0])
-        }
+            .ignoresSafeArea()
+            .popover(isPresented: $viewModel.showProfileView) {
+                ProfileView(user: viewModel.users[0], showSettings: $viewModel.showProfileView)
+            }
     }
 }
+
 
 struct SelectedUsersView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
-
+    
     var body: some View {
         ZStack {
             
@@ -363,7 +352,7 @@ struct SelectedUsersView: View {
 }
 
 struct SelectedUserView: View {
-        
+    
     let user: TestUser
     
     var body: some View {
@@ -404,8 +393,6 @@ struct SelectedUserView: View {
                 .padding(.top, 4)
                 .padding(.trailing, -6)
             }
-            
-            
             
         }
     }
