@@ -8,17 +8,27 @@
 import SwiftUI
 
 struct AddFriendsView: View {
+
+    @StateObject var viewModel = AddFriendsViewModel.shared
+    
+    @State var searchText: String = ""
+    
     var body: some View {
         
-        VStack {
+        VStack(alignment: .leading) {
             
             ZStack {
                 
                 HStack {
                     
                     Button {
-                        //                    mode.wrappedValue.dismiss()
+                        
+                        withAnimation {
+                            ConversationGridViewModel.shared.showAddFriends = false
+                        }
+                        
                     } label: {
+                        
                         Image(systemName: "chevron.down")
                             .resizable()
                             .scaledToFit()
@@ -28,34 +38,73 @@ struct AddFriendsView: View {
                     }
                     
                     Spacer()
+                    
                 }
+                .frame(height: 44)
+                .background(Color.backgroundGray)
                 
                 Text("Add Friends")
                     .foregroundColor(.black)
                     .fontWeight(.semibold)
                 
-                
-                
             }
-            .background(Color.white)
             .frame(width: SCREEN_WIDTH, height: 44)
+            .background(Color.backgroundGray)
+            .padding(.top, TOP_PADDING)
             
-            VStack(spacing: 0) {
+            SearchBar(text: $searchText, isEditing: $viewModel.isSearching, isFirstResponder: false, placeHolder: "Find Friends")
+                .padding(.horizontal, 20)
+                .padding(.bottom)
+            
+            
+            TrackableScrollView(.vertical, showIndicators: false, contentOffset: $viewModel.scrollViewContentOffset) {
                 
-                AddFriendCell(user: ConversationGridViewModel.shared.users[0])
                 
-            } .frame(width: SCREEN_WIDTH - 40)
-                .background(Color.white)
-                .cornerRadius(10)
-                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 16, x: 0, y: 4)
+                VStack(alignment: .leading) {
+                    
+                    Text("Added Me")
+                        .foregroundColor(.black)
+                        .font(.system(size: 18, weight: .semibold))
+                        .padding(.leading, 20)
+                    
+                    VStack(spacing: 0) {
+                        
+                        AddFriendCell(user: ConversationGridViewModel.shared.users[0], addedMe: true)
+                        AddFriendCell(user: ConversationGridViewModel.shared.users[1], addedMe: true)
+                        
+                    } .frame(width: SCREEN_WIDTH - 40)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 20)
+                        .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+                    
+                    Text("Quick Add")
+                        .foregroundColor(.black)
+                        .font(.system(size: 18, weight: .semibold))
+                        .padding(.top, 28)
+                        .padding(.leading, 20)
+                    
+                    VStack(spacing: 0) {
+                        
+                        AddFriendCell(user: ConversationGridViewModel.shared.users[0], addedMe: false)
+                        AddFriendCell(user: ConversationGridViewModel.shared.users[1], addedMe: false)
+                        AddFriendCell(user: ConversationGridViewModel.shared.users[2], addedMe: false)
+                        
+                    } .frame(width: SCREEN_WIDTH - 40)
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 20)
+                        .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+                }
+                
+                FindFiendsView()
+            }
             
             Spacer()
         }
+        .background(Color.backgroundGray)
+        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+//        .ignoresSafeArea()
     }
 }
 
-struct AddFriendsView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddFriendsView()
-    }
-}

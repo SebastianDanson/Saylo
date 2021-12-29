@@ -47,104 +47,116 @@ struct ConversationGridView: View {
         
         NavigationView {
             
-            ZStack(alignment: .top) {
-                
-                if !conversationViewModel.showCamera || viewModel.isSelectingUsers {
-                    NavView(searchText: $searchText)
-                }
-                
-                VStack {
-                    ZStack(alignment: .top) {
-                        
-                        if !viewModel.hideFeed {
-                            ScrollView(showsIndicators: false) {
-                                VStack {
-                                    LazyVGrid(columns: items, spacing: 14, content: {
-                                        ForEach(viewModel.users, id: \.id) { user in
-                                            ConversationGridCell(user: user)
-                                                .flippedUpsideDown()
-                                                .scaleEffect(x: -1, y: 1, anchor: .center)
-                                                .onTapGesture {
-                                                    if viewModel.isSelectingUsers {
-                                                        withAnimation(.linear(duration: 0.15)) {
-                                                            
+                ZStack(alignment: .top) {
+                    
+                    if !conversationViewModel.showCamera || viewModel.isSelectingUsers {
+                        NavView(searchText: $searchText)
+                    }
+                    
+                    VStack {
+                        ZStack(alignment: .top) {
+                            
+                            if !viewModel.hideFeed {
+                                ScrollView(showsIndicators: false) {
+                                    VStack {
+                                        LazyVGrid(columns: items, spacing: 14, content: {
+                                            ForEach(viewModel.users, id: \.id) { user in
+                                                ConversationGridCell(user: user)
+                                                    .flippedUpsideDown()
+                                                    .scaleEffect(x: -1, y: 1, anchor: .center)
+                                                    .onTapGesture {
+                                                        if viewModel.isSelectingUsers {
+                                                            withAnimation(.linear(duration: 0.15)) {
+                                                                
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                .onLongPressGesture {
-                                                    withAnimation {
-                                                        CameraViewModel.shared.handleTap()
-                                                        conversationViewModel.showCamera = true
+                                                    .onLongPressGesture {
+                                                        withAnimation {
+                                                            CameraViewModel.shared.handleTap()
+                                                            conversationViewModel.showCamera = true
+                                                        }
                                                     }
-                                                }
-                                        }
-                                    })
-                                        .padding(.horizontal, 12)
-                                    
-                                }.padding(.top,
-                                          !conversationViewModel.showKeyboard &&
-                                          !conversationViewModel.showPhotos &&
-                                          !viewModel.showSearchBar &&
-                                          !viewModel.isSelectingUsers ?
-                                          BOTTOM_PADDING + 82 : viewModel.isSelectingUsers ? (viewModel.selectedUsers.count > 0 ? 12 : BOTTOM_PADDING + 12) : 6)
-                            }
-                            //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                            .background(Color.white)
-                            .flippedUpsideDown()
-                            .scaleEffect(x: -1, y: 1, anchor: .center)
-                            .navigationBarTitle("Conversations", displayMode: .inline)
-                            .ignoresSafeArea()
-                            .zIndex(2)
-                            .transition(.move(edge: .bottom))
-                            
-                        }
-             
-                        
-                        if conversationViewModel.showCamera {
-                            CameraViewModel.shared.cameraView
+                                            }
+                                        })
+                                            .padding(.horizontal, 12)
+                                        
+                                    }.padding(.top,
+                                              !conversationViewModel.showKeyboard &&
+                                              !conversationViewModel.showPhotos &&
+                                              !viewModel.showSearchBar &&
+                                              !viewModel.isSelectingUsers ?
+                                              BOTTOM_PADDING + 82 : viewModel.isSelectingUsers ? (viewModel.selectedUsers.count > 0 ? 12 : BOTTOM_PADDING + 12) : 6)
+                                }
+                                //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                                .background(Color.white)
+                                .flippedUpsideDown()
+                                .scaleEffect(x: -1, y: 1, anchor: .center)
+                                .navigationBarTitle("Conversations", displayMode: .inline)
+                                .ignoresSafeArea()
+                                .zIndex(2)
                                 .transition(.move(edge: .bottom))
-                                .zIndex(viewModel.cameraViewZIndex)
+                                
+                            }
+                            
+                            
+                            if conversationViewModel.showCamera {
+                                CameraViewModel.shared.cameraView
+                                    .transition(.move(edge: .bottom))
+                                    .zIndex(viewModel.cameraViewZIndex)
+                            }
+                        }
+                        if conversationViewModel.showPhotos {
+                            PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
+                                .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
+                                .transition(.move(edge: .bottom))
+                        }
+                        
+                        if conversationViewModel.showKeyboard {
+                            KeyboardView(text: $text)
+                        }
+                        
+                        if viewModel.showSearchBar {
+                            Rectangle()
+                                .foregroundColor(.white)
+                                .frame(height: 2)
+                        }
+                        
+                        if viewModel.selectedUsers.count > 0 && viewModel.isSelectingUsers {
+                            SelectedUsersView()
                         }
                     }
-                    if conversationViewModel.showPhotos {
-                        PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
-                            .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
+                    
+                    ZStack(alignment: .bottom) {
+                        
+                        if !ConversationViewModel.shared.showKeyboard && !viewModel.showSearchBar {
+                            
+                            VStack {
+                                
+                                Spacer()
+                                
+                                OptionsView()
+                            }
+                            
+                        }
+                    }
+                    
+                    if viewModel.showAddFriends {
+                        AddFriendsView()
+                            .zIndex(3)
                             .transition(.move(edge: .bottom))
                     }
                     
-                    if conversationViewModel.showKeyboard {
-                        KeyboardView(text: $text)
-                    }
-                    
-                    if viewModel.showSearchBar {
-                        Rectangle()
-                            .foregroundColor(.white)
-                            .frame(height: 2)
-                    }
-                    
-                    if viewModel.selectedUsers.count > 0 && viewModel.isSelectingUsers {
-                        SelectedUsersView()
+                    if viewModel.showNewChat {
+                        NewConversationView()
+                            .zIndex(3)
+                            .transition(.move(edge: .bottom))
                     }
                 }
-            }
-            .overlay(
-                ZStack {
-                    if !ConversationViewModel.shared.showKeyboard && !viewModel.showSearchBar {
-                        
-                        VStack {
-                            
-                            Spacer()
-                            
-                            OptionsView()
-                        }
-                        
-                    }
-                }
-                ,alignment: .bottom)
-            .navigationBarHidden(true)
-            .zIndex(1)
-            .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
-            
+                .navigationBarHidden(true)
+                .zIndex(1)
+                .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
+                
         }
     }
 }
@@ -192,7 +204,7 @@ struct NavView: View {
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     private let toolBarWidth: CGFloat = 38
     let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
-        
+    
     var body: some View {
         
         ZStack(alignment: .center) {
@@ -208,7 +220,7 @@ struct NavView: View {
                         HStack(spacing: 12) {
                             
                             Button {
-                                viewModel.showProfileView = true
+                                viewModel.showSettingsView = true
                             } label: {
                                 KFImage(URL(string: image1))
                                     .resizable()
@@ -236,30 +248,44 @@ struct NavView: View {
                         
                         Spacer()
                         HStack(spacing: 12) {
-                            Circle()
-                                .frame(width: toolBarWidth, height: toolBarWidth)
-                                .foregroundColor(.toolBarIconGray)
-                                .overlay(
-                                    Image(systemName: "person.fill.badge.plus")
-                                        .resizable()
-                                        .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
-                                        .scaledToFit()
-                                        .foregroundColor(.toolBarIconDarkGray)
-                                        .padding(.trailing, 2)
-                                        .padding(.top, 1)
-                                )
                             
-                            Circle()
-                                .frame(width: toolBarWidth, height: toolBarWidth)
-                                .foregroundColor(.toolBarIconGray)
-                                .overlay(
-                                    Image(systemName: "plus.message.fill")
-                                        .resizable()
-                                        .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
-                                        .scaledToFit()
-                                        .foregroundColor(.toolBarIconDarkGray)
-                                        .padding(.top, 1)
-                                )
+                            Button {
+                                withAnimation {
+                                    viewModel.showAddFriends = true
+                                }
+                            } label: {
+                                Circle()
+                                    .frame(width: toolBarWidth, height: toolBarWidth)
+                                    .foregroundColor(.toolBarIconGray)
+                                    .overlay(
+                                        Image(systemName: "person.fill.badge.plus")
+                                            .resizable()
+                                            .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
+                                            .scaledToFit()
+                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .padding(.trailing, 2)
+                                            .padding(.top, 1)
+                                    )
+                            }
+                            
+                            Button {
+                                withAnimation {
+                                    viewModel.showNewChat = true
+                                }
+                            } label: {
+                                
+                                Circle()
+                                    .frame(width: toolBarWidth, height: toolBarWidth)
+                                    .foregroundColor(.toolBarIconGray)
+                                    .overlay(
+                                        Image(systemName: "plus.message.fill")
+                                            .resizable()
+                                            .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
+                                            .scaledToFit()
+                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .padding(.top, 1)
+                                    )
+                            }
                         }
                     } else {
                         ZStack {
@@ -295,17 +321,17 @@ struct NavView: View {
                 .padding(.horizontal)
                 .padding(.top, topPadding)
             } else {
-               
-                SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar)
-                        .padding(.horizontal)
-                        .padding(.top, topPadding)
-       
+                
+                SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search")
+                    .padding(.horizontal)
+                    .padding(.top, topPadding)
+                
             }
             
         }.zIndex(2)
             .ignoresSafeArea()
-            .popover(isPresented: $viewModel.showProfileView) {
-                ProfileView(user: viewModel.users[0], showSettings: $viewModel.showProfileView)
+            .popover(isPresented: $viewModel.showSettingsView) {
+                ProfileView(user: viewModel.users[0], showSettings: $viewModel.showSettingsView)
             }
     }
 }
@@ -323,8 +349,8 @@ struct SelectedUsersView: View {
                     HStack {
                         ForEach(Array(viewModel.selectedUsers.enumerated()), id: \.1.id) { i, user in
                             SelectedUserView(user: user)
-                                .padding(.leading, i == 0 ? 20 : 4)
-                                .padding(.trailing, i == viewModel.selectedUsers.count - 1 ? 80 : 4)
+                                .padding(.leading, i == 0 ? 20 : 5)
+                                .padding(.trailing, i == viewModel.selectedUsers.count - 1 ? 80 : 5)
                                 .transition(.scale)
                             
                         }
@@ -371,7 +397,7 @@ struct SelectedUserView: View {
                 Text(user.firstname)
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
-                    .frame(maxWidth: 44)
+                    .frame(maxWidth: 48)
             }
             
             Button {
@@ -393,7 +419,6 @@ struct SelectedUserView: View {
                 .padding(.top, 4)
                 .padding(.trailing, -6)
             }
-            
         }
     }
 }

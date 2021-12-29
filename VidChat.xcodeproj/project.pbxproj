@@ -13,6 +13,11 @@
 		063CAAB3277B9D0200C84318 /* AddFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB2277B9D0200C84318 /* AddFriendsView.swift */; };
 		063CAAB5277B9D0E00C84318 /* AddFriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB4277B9D0E00C84318 /* AddFriendCell.swift */; };
 		063CAAB7277BA0C300C84318 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB6277BA0C300C84318 /* SettingsView.swift */; };
+		063CAAB9277BDED900C84318 /* FindFiendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB8277BDED900C84318 /* FindFiendsView.swift */; };
+		063CAABB277BEF1900C84318 /* NewConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABA277BEF1900C84318 /* NewConversationView.swift */; };
+		063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */; };
+		063CAABF277C224A00C84318 /* TrackableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABE277C224A00C84318 /* TrackableScrollView.swift */; };
+		063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		069E4A652772874000996824 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A642772874000996824 /* ImageDetailView.swift */; };
 		069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A662772A2E100996824 /* ActivityViewController.swift */; };
@@ -113,6 +118,11 @@
 		063CAAB2277B9D0200C84318 /* AddFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsView.swift; sourceTree = "<group>"; };
 		063CAAB4277B9D0E00C84318 /* AddFriendCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendCell.swift; sourceTree = "<group>"; };
 		063CAAB6277BA0C300C84318 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		063CAAB8277BDED900C84318 /* FindFiendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFiendsView.swift; sourceTree = "<group>"; };
+		063CAABA277BEF1900C84318 /* NewConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationView.swift; sourceTree = "<group>"; };
+		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/View/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
+		063CAABE277C224A00C84318 /* TrackableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackableScrollView.swift; sourceTree = "<group>"; };
+		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		069E4A642772874000996824 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		069E4A662772A2E100996824 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
@@ -228,6 +238,7 @@
 			children = (
 				063CAAB2277B9D0200C84318 /* AddFriendsView.swift */,
 				063CAAB4277B9D0E00C84318 /* AddFriendCell.swift */,
+				063CAAB8277BDED900C84318 /* FindFiendsView.swift */,
 			);
 			path = AddFriends;
 			sourceTree = "<group>";
@@ -235,6 +246,7 @@
 		063CAAB1277B9CEF00C84318 /* AddFriends */ = {
 			isa = PBXGroup;
 			children = (
+				063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */,
 			);
 			path = AddFriends;
 			sourceTree = "<group>";
@@ -289,6 +301,7 @@
 			children = (
 				3F8B02A62700EDD100841565 /* ConversationtGridView.swift */,
 				3F08F26E2700F768009E0029 /* ConversationGridCell.swift */,
+				063CAABA277BEF1900C84318 /* NewConversationView.swift */,
 			);
 			path = ConversationsList;
 			sourceTree = "<group>";
@@ -379,6 +392,7 @@
 				069E4A662772A2E100996824 /* ActivityViewController.swift */,
 				06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */,
 				06DFA9CF27739AFD00A8CF0C /* Helpers.swift */,
+				063CAABE277C224A00C84318 /* TrackableScrollView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -570,6 +584,7 @@
 			isa = PBXGroup;
 			children = (
 				06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */,
+				063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */,
 			);
 			path = ConversationsList;
 			sourceTree = "<group>";
@@ -678,6 +693,7 @@
 			files = (
 				3F3D50E9272204DB0048F5BF /* Audio.swift in Sources */,
 				3F485DAC26FD5D4D0071532B /* SearchBar.swift in Sources */,
+				063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */,
 				3F112C5B2721B4DF00BA2A73 /* URL+StartCallConvertible.swift in Sources */,
 				3F2A7EBE2719CE7C00179390 /* PhotoCell.swift in Sources */,
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
@@ -692,6 +708,7 @@
 				063CAAB5277B9D0E00C84318 /* AddFriendCell.swift in Sources */,
 				3F485DCC26FE29FB0071532B /* CustomTextField.swift in Sources */,
 				3F485D9026FD45F00071532B /* ContentView.swift in Sources */,
+				063CAABB277BEF1900C84318 /* NewConversationView.swift in Sources */,
 				3F08F27227017A36009E0029 /* CameraView.swift in Sources */,
 				3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */,
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
@@ -720,11 +737,13 @@
 				3F95F44C26FE45BC00F892B7 /* MediaUploader.swift in Sources */,
 				3FDEE7B92721C3E200DF43C6 /* AgoraRTM.swift in Sources */,
 				3F485DA626FD477B0071532B /* ProfileView.swift in Sources */,
+				063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */,
 				3F112B852720B34500BA2A73 /* Call.swift in Sources */,
 				3F112BAB2721B04600BA2A73 /* MakeCallView.swift in Sources */,
 				3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */,
 				06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */,
 				3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */,
+				063CAABF277C224A00C84318 /* TrackableScrollView.swift in Sources */,
 				3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */,
 				3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */,
 				3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */,
@@ -741,6 +760,7 @@
 				3F485DE626FE38990071532B /* AuthViewModel.swift in Sources */,
 				3F8BDF3827683CA2005E425F /* ConversationPlayerView.swift in Sources */,
 				3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */,
+				063CAAB9277BDED900C84318 /* FindFiendsView.swift in Sources */,
 				06DFA9CE27738FD800A8CF0C /* SavedPostAlert.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				3F485DBE26FE23AB0071532B /* ImagePicker.swift in Sources */,

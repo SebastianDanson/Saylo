@@ -14,7 +14,9 @@ class ConversationGridViewModel: ObservableObject {
     @Published var hideFeed = false
     @Published var selectedUsers = [TestUser]()
     @Published var showSearchBar: Bool = false
-    @Published var showProfileView: Bool = false
+    @Published var showSettingsView: Bool = false
+    @Published var showAddFriends: Bool = false
+    @Published var showNewChat: Bool = false
     @Published var users: [TestUser]
     
     let allUsers: [TestUser]

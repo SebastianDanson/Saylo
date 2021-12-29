@@ -11,30 +11,29 @@ import Kingfisher
 struct AddFriendCell: View {
     
     let user: TestUser
+    let addedMe: Bool
     
     var body: some View {
         
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             
-            ZStack {
-                
-                KFImage(URL(string: user.image))
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
-                    .clipShape(Circle())
-                
-            }.padding(.leading)
+            KFImage(URL(string: user.image))
+                .resizable()
+                .scaledToFill()
+                .foregroundColor(.white)
+                .frame(width: 44, height: 44)
+                .clipShape(Circle())
+                .padding(.leading, 10)
+            
             
             Text(user.firstname + " " + user.lastname)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.black)
             
             Spacer()
             
             HStack(spacing: 0) {
-                AddButton()
+                AddButton(addedMe: addedMe)
                 RemoveButton()
             }
             
@@ -45,28 +44,23 @@ struct AddFriendCell: View {
 
 struct AddButton: View {
     
+    let addedMe: Bool
+    
     var body: some View {
         
         Button {
             
         } label: {
             
-            ZStack {
-                
-                Circle()
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(.backgroundGray)
-                    .clipShape(Capsule())
-                
-                Image(systemName: "person.fill.badge.plus")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(.horizontal, -1)
-                    .foregroundColor(.black)
-                    .frame(width: 16, height: 16)
-            }
+            Text(addedMe ? "Confirm" : "Add")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(Color.mainBlue)
+                .cornerRadius(4)
+            
         }
-        
     }
 }
 
