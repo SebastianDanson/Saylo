@@ -43,6 +43,7 @@ struct ProfileView: View {
             
             if showImageCropper {
                 ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
+                    .ignoresSafeArea()
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
             }

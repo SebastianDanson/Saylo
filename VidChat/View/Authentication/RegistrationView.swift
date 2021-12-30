@@ -56,16 +56,14 @@ struct RegistrationView: View {
                     }.padding(.bottom, 6)
                     
                     
+                    //email field
                     CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope")
                         .foregroundColor(.white)
                     
-                    
-                    //                    CustomTextField(text: $userName, placeholder: Text("Username"), imageName: "person")
-                    //                        .foregroundColor(.white)
-                    
-                    //password field
-                    
+                                
                     if showPassword {
+                        
+                        //password field
                         CustomSecureField(text: $password)
                             .foregroundColor(.white)
                     }

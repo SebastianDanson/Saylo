@@ -61,16 +61,12 @@ class AuthViewModel: ObservableObject {
         try? Auth.auth().signOut()
     }
 
-    func resetPassword(withEmail email: String) {
+    func resetPassword(withEmail email: String, completion: @escaping(Error?) -> Void) {
         Auth.auth().sendPasswordReset(withEmail: email) { error in
-            if let error = error {
-                print("Failed to send link with error \(error.localizedDescription)")
-                return
-            }
-            
-            self.didSendResetPasswordLink = true
+           completion(error)
         }
     }
+    
     
     func fetchUser() {
         guard let uid = Auth.auth().currentUser?.uid else {return}

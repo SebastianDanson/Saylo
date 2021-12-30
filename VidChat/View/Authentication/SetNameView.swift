@@ -13,10 +13,11 @@ struct SetNameView: View {
     
     @State private var firstName = ""
     @State private var lastName = ""
-    @State private var showTerms = false
-    @State private var showPrivacyPolicy = false
+    @State private var namesEntered = false
+    
     
     var body: some View {
+        
         NavigationView {
             VStack {
                 //email field
@@ -61,6 +62,8 @@ struct SetNameView: View {
                 
                 //sign in
                 
+                NavigationLink(destination: SetProfileImageView(), isActive: $namesEntered) { EmptyView() }
+                
                 HStack {
                     
                     VStack(alignment: .leading) {
@@ -99,8 +102,10 @@ struct SetNameView: View {
                 .padding(.bottom, 20)
                 
                 Button(action: {
-                    //                    viewModel.login(withEmail: email, password: password)
-                    viewModel.canProceed = true
+                    
+                    if !firstName.isEmpty && !lastName.isEmpty {
+                        namesEntered = true
+                    }
                     
                 }, label: {
                     
@@ -110,7 +115,9 @@ struct SetNameView: View {
                         .frame(width: 360, height: 50)
                         .background(Color.mainBlue)
                         .clipShape(Capsule())
+                        .opacity(firstName.isEmpty || lastName.isEmpty ? 0.5 : 1)
                 })
+                    .disabled(firstName.isEmpty || lastName.isEmpty)
                 
                 Spacer()
                 //go to sign up

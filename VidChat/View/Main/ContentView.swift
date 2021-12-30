@@ -23,7 +23,7 @@ struct ContentView: View {
 //                if viewModel.currentUser != nil {
 //                    ConversationView()
 //            RegistrationView()
-            SetNameView()
+            SetProfileImageView()
 //            TermsAndConditionsView()
 //            NewConversationView()
 //            AddFriendsView()
