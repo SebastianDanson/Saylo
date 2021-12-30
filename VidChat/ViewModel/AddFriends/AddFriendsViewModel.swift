@@ -11,16 +11,11 @@ import SwiftUI
 class AddFriendsViewModel: ObservableObject {
     
     @Published var scrollViewContentOffset = CGFloat(0)
+    @Published var allowGesture = false
     @Published var isSearching: Bool = false
-    
+        
     static let shared = AddFriendsViewModel()
     
     private init() {}
     
-    
-    func setContentOffset(_ offset: CGFloat) {
-        DispatchQueue.main.async {
-            self.scrollViewContentOffset = offset
-        }
-    }
 }

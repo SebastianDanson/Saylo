@@ -13,10 +13,25 @@ struct RegistrationView: View {
     @State private var userName = ""
     @State private var fullName = ""
     @State private var password = ""
+    @State private var showPassword = false
+    @State private var showAlert = false
+
     @Environment(\.presentationMode) var mode
-    @EnvironmentObject var viewModel: AuthViewModel
+    @StateObject var viewModel = AuthViewModel.shared
     
     var body: some View {
+                
+        let invalidEmailAlert = Alert(
+            title: Text("Please enter a valid email"),
+            message: nil,
+            dismissButton: .default(
+                Text("OK"),
+                action: {
+                  
+                }
+            )
+        )
+        
         NavigationView {
             VStack {
                 //email field
@@ -45,13 +60,17 @@ struct RegistrationView: View {
                         .foregroundColor(.white)
                     
                     
-                    CustomTextField(text: $userName, placeholder: Text("Username"), imageName: "person")
-                        .foregroundColor(.white)
+                    //                    CustomTextField(text: $userName, placeholder: Text("Username"), imageName: "person")
+                    //                        .foregroundColor(.white)
                     
                     //password field
                     
-                    CustomSecureField(text: $password)
-                        .foregroundColor(.white)
+                    if showPassword {
+                        CustomSecureField(text: $password)
+                            .foregroundColor(.white)
+                    }
+                    
+                    
                 }.padding(.horizontal, 32)
                 
                 
@@ -72,14 +91,36 @@ struct RegistrationView: View {
                 
                 //sign in
                 
-                Button(action: { viewModel.register(withEmail: email, password: password, userName: userName) }, label: {
-                    Text("Sign Up")
+                NavigationLink(destination: RegistrationView(), isActive: $viewModel.canProceed) { EmptyView() }
+                
+                Button(action: {
+                    
+                    if !showPassword {
+                        if isValidEmail(email) {
+                            withAnimation {
+                                showPassword = true
+                            }
+                        } else {
+                            showAlert = true
+                        }
+                    } else {
+                        viewModel.canProceed = true
+                        viewModel.register(withEmail: email, password: password, userName: userName)
+                    }
+                    
+                }, label: {
+                    Text("Continue")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(width: 360, height: 50)
                         .background(Color.mainBlue)
                         .clipShape(Capsule())
+                        .opacity(email.isEmpty ? 0.5 : 1)
                 })
+                    .disabled(email.isEmpty)
+                    .alert(isPresented: $showAlert) {
+                    invalidEmailAlert
+                }
                 
                 Spacer()
                 
@@ -87,6 +128,15 @@ struct RegistrationView: View {
         }
         .padding(.top, -44)
     }
+    
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
+    }
+    
+    //TODO show loading indicator, after email is entered
 }
 
 struct RegistrationView_Previews: PreviewProvider {

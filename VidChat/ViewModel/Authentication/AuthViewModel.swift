@@ -14,6 +14,7 @@ class AuthViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var didSendResetPasswordLink = false
     @Published var isSignedIn = Auth.auth().currentUser != nil
+    @Published var canProceed = false
     
     static let shared = AuthViewModel()
     

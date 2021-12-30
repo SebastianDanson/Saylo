@@ -26,6 +26,9 @@
 		06DFA9CE27738FD800A8CF0C /* SavedPostAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */; };
 		06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CF27739AFD00A8CF0C /* Helpers.swift */; };
 		06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */; };
+		06F1A326277CEAE400A0F992 /* SetNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A325277CEAE400A0F992 /* SetNameView.swift */; };
+		06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */; };
+		06F1A32A277D334F00A0F992 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */; };
 		3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F26E2700F768009E0029 /* ConversationGridCell.swift */; };
 		3F08F27227017A36009E0029 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27127017A36009E0029 /* CameraView.swift */; };
 		3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27327017A3D009E0029 /* CameraViewController.swift */; };
@@ -131,6 +134,9 @@
 		06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostAlert.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/Utils/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
+		06F1A325277CEAE400A0F992 /* SetNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetNameView.swift; sourceTree = "<group>"; };
+		06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
+		06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
 		3F08F26E2700F768009E0029 /* ConversationGridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationGridCell.swift; sourceTree = "<group>"; };
 		3F08F27127017A36009E0029 /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		3F08F27327017A3D009E0029 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
@@ -469,8 +475,11 @@
 			isa = PBXGroup;
 			children = (
 				3F485DC526FE28860071532B /* LoginView.swift */,
+				06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */,
 				3F485DC726FE28920071532B /* RegistrationView.swift */,
 				3F485DC926FE289A0071532B /* ResetPasswordView.swift */,
+				06F1A325277CEAE400A0F992 /* SetNameView.swift */,
+				06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -703,6 +712,7 @@
 				3F08F27827017D9C009E0029 /* VideoPlayerView.swift in Sources */,
 				3F2A7EB32718BED400179390 /* AudioRecorder.swift in Sources */,
 				3F485DA226FD476B0071532B /* SearchView.swift in Sources */,
+				06F1A326277CEAE400A0F992 /* SetNameView.swift in Sources */,
 				3F2A7EB127188CD800179390 /* VideoPlayerViewModel.swift in Sources */,
 				3F485DC826FE28920071532B /* RegistrationView.swift in Sources */,
 				063CAAB5277B9D0E00C84318 /* AddFriendCell.swift in Sources */,
@@ -714,6 +724,7 @@
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
+				06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */,
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
 				3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */,
 				063CAAB3277B9D0200C84318 /* AddFriendsView.swift in Sources */,
@@ -748,6 +759,7 @@
 				3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */,
 				3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */,
 				3F485DCE26FE2A080071532B /* CustomSecureField.swift in Sources */,
+				06F1A32A277D334F00A0F992 /* PrivacyPolicyView.swift in Sources */,
 				3F112B732720716300BA2A73 /* VideoCallView.swift in Sources */,
 				3FB8B5DA270FB6F800355DB9 /* TextCell.swift in Sources */,
 				3F8B027726FEC03100841565 /* Message.swift in Sources */,

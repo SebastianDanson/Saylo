@@ -10,8 +10,8 @@ import SwiftUI
 struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
-    @EnvironmentObject var viewModel: AuthViewModel
-    
+    @StateObject var viewModel = AuthViewModel.shared
+
     var body: some View {
         NavigationView {
             VStack {
@@ -64,7 +64,12 @@ struct LoginView: View {
                 
                 //sign in
                 
-                Button(action: { viewModel.login(withEmail: email, password: password) }, label: {
+                NavigationLink(destination: RegistrationView(), isActive: $viewModel.canProceed) { EmptyView() }
+
+                Button(action: {
+                    viewModel.login(withEmail: email, password: password)
+                    viewModel.canProceed = true
+                }, label: {
                     Text("Sign In")
                         .font(.headline)
                         .foregroundColor(.white)
@@ -83,8 +88,3 @@ struct LoginView: View {
     }
 }
 
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
-    }
-}
