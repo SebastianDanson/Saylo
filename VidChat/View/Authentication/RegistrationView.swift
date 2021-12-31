@@ -10,124 +10,161 @@ import SwiftUI
 struct RegistrationView: View {
     
     @State private var email = ""
-    @State private var userName = ""
-    @State private var fullName = ""
     @State private var password = ""
     @State private var showPassword = false
-    @State private var showAlert = false
+    @State private var showError = false
+    @State private var isLoading = false
 
-    @Environment(\.presentationMode) var mode
+    @State private var canProceed = false
+    @State private var error: Error?
+    
     @StateObject var viewModel = AuthViewModel.shared
     
     var body: some View {
-                
+        
         let invalidEmailAlert = Alert(
             title: Text("Please enter a valid email"),
             message: nil,
             dismissButton: .default(
                 Text("OK"),
                 action: {
-                  
+                    
                 }
             )
         )
         
-        NavigationView {
-            VStack {
-                //email field
+        VStack {
+            //email field
+            
+            VStack(alignment: .leading, spacing: 24) {
                 
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 4) {
                     
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Sign up")
-                            .font(.system(size: 30, weight: .medium))
-                        
-                        NavigationLink(
-                            destination: LoginView().navigationBarHidden(true),
-                            label: {
-                                Text("or ").foregroundColor(.black) +
-                                
-                                Text("Login")
-                                    .foregroundColor(.mainBlue)
-                                    .fontWeight(.medium)
-                            })
-                        
-                        
-                    }.padding(.bottom, 6)
+                    Text("Sign up")
+                        .font(.system(size: 30, weight: .medium))
                     
-                    
-                    //email field
-                    CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope")
-                        .foregroundColor(.white)
-                    
-                                
-                    if showPassword {
-                        
-                        //password field
-                        CustomSecureField(text: $password)
-                            .foregroundColor(.white)
-                    }
-                    
-                    
-                }.padding(.horizontal, 32)
-                
-                
-                //forgot password
-                
-                HStack {
-                    Spacer()
                     NavigationLink(
-                        destination: ResetPasswordView(email: $email),
+                        destination: LoginView(),
                         label: {
-                            Text("Forgot Password?")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.top)
-                                .padding(.trailing, 28)
+                            Text("or ").foregroundColor(.black) +
+                            
+                            Text("Login")
+                                .foregroundColor(.mainBlue)
+                                .fontWeight(.medium)
                         })
+                    
+                    
+                }.padding(.bottom, 6)
+                
+                
+                //email field
+                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope")
+                    .foregroundColor(.white)
+                
+                
+                if showPassword {
+                    
+                    //password field
+                    CustomSecureField(text: $password)
+                        .foregroundColor(.white)
                 }
                 
-                //sign in
                 
-                NavigationLink(destination: RegistrationView(), isActive: $viewModel.canProceed) { EmptyView() }
+            }.padding(.horizontal, 32)
+            
+            
+            //forgot password
+            
+            HStack {
+                Spacer()
+                NavigationLink(
+                    destination: ResetPasswordView(),
+                    label: {
+                        Text("Forgot Password?")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.top)
+                            .padding(.trailing, 28)
+                    })
+            }
+            
+            //sign in
+            
+            NavigationLink(destination: SetNameView()
+                            .navigationBarBackButtonHidden(true), isActive: $canProceed) { EmptyView() }
+            
+            Button(action: {
                 
-                Button(action: {
-                    
-                    if !showPassword {
-                        if isValidEmail(email) {
-                            withAnimation {
-                                showPassword = true
-                            }
-                        } else {
-                            showAlert = true
+                if !showPassword {
+                    if isValidEmail(email) {
+                        withAnimation {
+                            showPassword = true
                         }
                     } else {
-                        viewModel.canProceed = true
-                        viewModel.register(withEmail: email, password: password, userName: userName)
+                        showError = true
                     }
+                } else {
                     
-                }, label: {
-                    Text("Continue")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 360, height: 50)
-                        .background(Color.mainBlue)
-                        .clipShape(Capsule())
-                        .opacity(email.isEmpty ? 0.5 : 1)
-                })
-                    .disabled(email.isEmpty)
-                    .alert(isPresented: $showAlert) {
-                    invalidEmailAlert
+                    isLoading = true
+                    
+                    viewModel.register(withEmail: email, password: password) { error in
+                        
+                        isLoading = false
+                        
+                        if let error = error {
+                            self.error = error
+                            showError = true
+                        } else {
+                            canProceed = true
+                        }
+                    }
                 }
                 
-                Spacer()
+            }, label: {
+                
+                Text("Continue")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(width: SCREEN_WIDTH - 64, height: 50)
+                    .background(Color.mainBlue)
+                    .clipShape(Capsule())
+                    .opacity(email.isEmpty || (password.isEmpty && showPassword) ? 0.5 : 1)
+            })
+                .disabled(email.isEmpty || isLoading || (password.isEmpty && showPassword))
+                .alert(isPresented: $showError) {
+                    
+                    if let error = error {
+                        return Alert(
+                            title: Text("Error"),
+                            message: Text("\(error.localizedDescription)"),
+                            dismissButton: .default(
+                                Text("OK"),
+                                action: {
+                                    self.error = nil
+                                }
+                            )
+                        )
+                    } else {
+                        return invalidEmailAlert
+                    }
+                }
+            
+            if isLoading {
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .frame(width: 50, height: 50)
                 
             }
+            
+            Spacer()
+            
         }
-        .padding(.top, -44)
+
     }
     
     func isValidEmail(_ email: String) -> Bool {
+        
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)

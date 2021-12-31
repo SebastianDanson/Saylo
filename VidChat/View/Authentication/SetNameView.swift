@@ -14,30 +14,36 @@ struct SetNameView: View {
     @State private var firstName = ""
     @State private var lastName = ""
     @State private var namesEntered = false
-    
+    @State private var showInvalidName = false
+
     
     var body: some View {
         
-        NavigationView {
+        let invalidNameAlert = Alert(
+            title: Text("Your name must be under 50 characters"),
+            message: nil,
+            dismissButton: .default(
+                Text("OK"),
+                action: {
+                    
+                }
+            )
+        )
+        
+        ZStack {
+            
             VStack {
-                //email field
                 
                 VStack(alignment: .leading, spacing: 24) {
                     
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Join VidChat")
+                    HStack() {
+                        
+                        Spacer()
+                        
+                        Text("What's your name?")
                             .font(.system(size: 30, weight: .medium))
                         
-                        NavigationLink(
-                            destination: LoginView().navigationBarHidden(true),
-                            label: {
-                                Text("or ").foregroundColor(.black) +
-                                
-                                Text("Login")
-                                    .foregroundColor(.mainBlue)
-                                    .fontWeight(.medium)
-                            })
-                        
+                        Spacer()
                         
                     }.padding(.bottom, 6)
                     
@@ -50,19 +56,18 @@ struct SetNameView: View {
                     
                     //last name field
                     
-                    CustomTextField(text: $firstName, placeholder: Text("Last name"), imageName: "person")
+                    CustomTextField(text: $lastName, placeholder: Text("Last name"), imageName: "person")
                         .foregroundColor(.white)
+                    
                     
                 }.padding(.horizontal, 32)
                 
-                
-                //forgot password
-                
+                                
                 //TODO missed call notifications
                 
                 //sign in
                 
-                NavigationLink(destination: SetProfileImageView(), isActive: $namesEntered) { EmptyView() }
+                NavigationLink(destination: SetUsernameView(), isActive: $namesEntered) { EmptyView() }
                 
                 HStack {
                     
@@ -75,7 +80,10 @@ struct SetNameView: View {
                         HStack(spacing: 5) {
                             
                             NavigationLink(
-                                destination: TermsAndConditionsView().navigationBarHidden(true),
+                                destination: TermsAndConditionsView()
+                                    .navigationTitle("Terms of Use")
+                                    .navigationBarBackButtonHidden(false)
+                                    .navigationBarTitleDisplayMode(.automatic),
                                 label: {
                                     Text("Terms of Use")
                                         .foregroundColor(Color(.systemBlue))
@@ -87,7 +95,11 @@ struct SetNameView: View {
                                 .font(.system(size: 12, weight: .regular))
                             
                             NavigationLink(
-                                destination: PrivacyPolicyView().navigationBarHidden(true),
+                                
+                                destination: PrivacyPolicyView()
+                                    .navigationTitle("Terms of Use")
+                                    .navigationBarBackButtonHidden(false)
+                                    .navigationBarTitleDisplayMode(.automatic),
                                 label: {
                                     Text("Privacy Policy")
                                         .foregroundColor(Color(.systemBlue))
@@ -95,6 +107,7 @@ struct SetNameView: View {
                                 })
                         }
                     }
+                    
                     Spacer()
                 }
                 .padding(.leading, 32)
@@ -103,7 +116,10 @@ struct SetNameView: View {
                 
                 Button(action: {
                     
-                    if !firstName.isEmpty && !lastName.isEmpty {
+                    if firstName.trimmingCharacters(in: [" "]).count + lastName.trimmingCharacters(in: [" "]).count >= 50 {
+                        showInvalidName = true
+                    } else {
+                        viewModel.setName(firstName: firstName, lastName: lastName)
                         namesEntered = true
                     }
                     
@@ -112,20 +128,24 @@ struct SetNameView: View {
                     Text("Agree & Join")
                         .font(.headline)
                         .foregroundColor(.white)
-                        .frame(width: 360, height: 50)
+                        .frame(width: SCREEN_WIDTH - 64, height: 50)
                         .background(Color.mainBlue)
                         .clipShape(Capsule())
-                        .opacity(firstName.isEmpty || lastName.isEmpty ? 0.5 : 1)
+                        .opacity(hasValidName() ? 1 : 0.5)
                 })
-                    .disabled(firstName.isEmpty || lastName.isEmpty)
+                    .disabled(!hasValidName())
+                    .alert(isPresented: $showInvalidName) {
+                        invalidNameAlert
+                    }
                 
                 Spacer()
-                //go to sign up
                 
             }
-            
         }
-        .padding(.top, -44)
+    }
+    
+    func hasValidName() -> Bool {
+        return !firstName.trimmingCharacters(in: [" "]).isEmpty && !lastName.trimmingCharacters(in: [" "]).isEmpty
     }
 }
 

@@ -44,13 +44,16 @@ class MediaUploader {
         
         var width = image.size.width
         var height = image.size.height
-        if height > 700 || width > 700 {
+        
+        let targetDimension: CGFloat = type == .profile ? 300 : 700
+        
+        if height > targetDimension || width > targetDimension {
             if width > height {
-                let const = 700/width
+                let const = targetDimension/width
                 width *= const
                 height *= const
             } else {
-                let const = 700/height
+                let const = targetDimension/height
                 width *= const
                 height *= const
             }

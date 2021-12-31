@@ -205,3 +205,17 @@ extension Date {
         return dateformat.string(from: self)
     }
 }
+
+
+extension String {
+    mutating func removeTrailingSpaces() {
+        for _ in 0..<self.count {
+           
+            if let last = self.last, last == " " {
+                self.removeLast()
+            } else {
+                break
+            }
+        }
+    }
+}

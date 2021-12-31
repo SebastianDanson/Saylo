@@ -16,82 +16,82 @@ struct SetProfileImageView: View {
     
     var body: some View {
         
-        NavigationView {
-            ZStack {
+        ZStack {
+            
+            
+            VStack {
                 
-                NavigationLink(destination: ConversationGridView(), isActive: $signUpComplete) { EmptyView() }
+                Text("Adding a photo helps your friends recognize you")
+                    .font(.system(size: 28, weight: .medium))
                 
-                VStack {
+                
+                Button {
                     
-                    Text("Adding a photo helps your friends recognize you")
-                        .font(.system(size: 28, weight: .medium))
-                        .padding(.top, TOP_PADDING)
+                    showImagePicker = true
                     
+                } label: {
                     
-                    Button {
+                    if let profileImage = profileImage {
+                        Image(uiImage: profileImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 150, height: 150)
+                            .padding(.top, 40)
+                            .clipShape(Circle())
+                    } else {
                         
-                        showImagePicker = true
-                        
-                    } label: {
-                        
-                        if let profileImage = profileImage {
-                            Image(uiImage: profileImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 150, height: 150)
-                                .padding(.top, 40)
-                                .clipShape(Circle())
-                        } else {
-                            
-                            Image("plusPhoto")
-                                .resizable()
-                                .frame(width: 150, height: 150)
-                                .padding(.top, 40)
-                        }
-                        
-                    }.sheet(isPresented: $showImagePicker, content: {
-                        ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
-                    })
-                    
-                    
-                    Text("Seb Danson")
-                        .font(.system(size: 24, weight: .medium))
-                        .padding(.vertical)
-                    
-                    Spacer()
-                    
-                    
-                    Button {
-                        
-                        if profileImage != nil {
-                            signUpComplete = true
-                        } else {
-                            showImagePicker = true
-                        }
-                        
-                    } label: {
-                        
-                        Text(profileImage == nil ? "Add a profile Image" : "Continue")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: SCREEN_WIDTH * 0.75, height: 50)
-                            .background(Color.mainBlue)
-                            .clipShape(Capsule())
-                        
+                        Image("plusPhoto")
+                            .resizable()
+                            .frame(width: 150, height: 150)
+                            .padding(.top, 40)
                     }
                     
-                }.padding(.vertical, BOTTOM_PADDING + 16)
+                }.sheet(isPresented: $showImagePicker, content: {
+                    ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
+                })
                 
-                if showImageCropper {
-                    ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .ignoresSafeArea()
+                
+                Text("Seb Danson")
+                    .font(.system(size: 24, weight: .medium))
+                    .padding(.vertical)
+                
+                Spacer()
+                
+                
+                Button {
+                    
+                    if let profileImage = profileImage {
+                        AuthViewModel.shared.setProfileImage(image: profileImage)
+                        signUpComplete = true
+                    } else {
+                        showImagePicker = true
+                    }
+                    
+                } label: {
+                    
+                    Text(profileImage == nil ? "Add a profile Image" : "Continue")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.white)
+                        .frame(width: SCREEN_WIDTH * 0.75, height: 50)
+                        .background(Color.mainBlue)
+                        .clipShape(Capsule())
+                    
                 }
+                
+            }.padding(.bottom, BOTTOM_PADDING + 16)
+            
+            if showImageCropper {
+                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
+                    .zIndex(5)
+                    .transition(.move(edge: .bottom))
+                    .ignoresSafeArea()
             }
             
-            .navigationBarHidden(true)
+            NavigationLink(destination: ConversationGridView().navigationBarBackButtonHidden(true), isActive: $signUpComplete) { EmptyView() }
+
         }
+        
+        .navigationBarBackButtonHidden(true)
     }
 }
 

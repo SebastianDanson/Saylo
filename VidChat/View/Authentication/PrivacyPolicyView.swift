@@ -23,7 +23,7 @@ struct PrivacyPolicyView: View {
             TextSubSection(title: "", paragraph: "We may collect information about you in a variety of ways. The information we may collect on the mobile application includes:"),
             
             TextSubSection(title: "Personal Information", paragraph: "Personally identifiable information, such as your name, email address, and friends that you voluntarily give to VidChat when you register or when you choose to participate in various activities on VidChat. You are under no obligation to provide us with personal information, however your refusal to do so may prevent you from using certain features of VidChat."),
-
+            
             TextSubSection(title: "Derivative Data", paragraph: "Information our servers automatically collect when you access VidChat.org, such as your IP address, your browser type, your operating system and your access times. If you are using our mobile application, this information may also include your device name and type, your operating system, and other interactions with the application and other users via server log files, as well as any other information you choose to provide."),
             
             TextSubSection(title: "Mobile Device Data", paragraph: "Device information, such as your mobile device ID, model, and manufacturer, if you access the site from a mobile device."),
@@ -31,7 +31,7 @@ struct PrivacyPolicyView: View {
             TextSubSection(title: "Data From Contests, Giveaways, and Surveys", paragraph: "Personal and other information you may provide when entering contests or giveaways and/or responding to surveys."),
             
             TextSubSection(title: "Mobile Application Information", paragraph: "If you connect using our mobile application:\n\nMobile Device Access. We may request access or permission to certain features from your mobile device, including your mobile device’s reminders and other features. If you wish to change our access or permissions, you may do so in your device’s settings. \n\nMobile Device Data. We may collect device information (such as your mobile device ID, model and manufacturer), operating system, version information and IP address. \n\nPush Notifications. We may request to send you push notifications regarding your account or the Application. If you wish to opt-out from receiving these types of communications, you may turn them off in your device’s settings."),
-
+            
         ]),
         
         //Section 3
@@ -49,18 +49,18 @@ struct PrivacyPolicyView: View {
             TextSubSection(title: "Third-Party Service Providers", paragraph: "We may share your information with third parties that perform services for us or on our behalf, including payment processing, data analysis, email delivery, hosting services, customer service, and marketing assistance."),
             
             TextSubSection(title: "Marketing Communications", paragraph: "With your consent, or with an opportunity for you to withdraw consent, we may share your information with third parties for marketing purposes, as permitted by law. Interactions with Other Users If you interact with other users of the Site and our mobile application, those users may see your name, profile photo, and descriptions of your activity, including any posts that you may have uploaded to our services."),
-
+            
             TextSubSection(title: "Other Third Parties", paragraph: "We may share your information with advertisers and investors for the purpose of conducting general business analysis. We may also share your information with such third parties for marketing purposes, as permitted by law."),
-
+            
             TextSubSection(title: "Sale or Bankruptcy", paragraph: "If we reorganize or sell all or a portion of our assets, undergo a merger, or are acquired by another entity, we may transfer your information to the successor entity. If we go out of business or enter bankruptcy, your information would be an asset transferred or acquired by a third party. You acknowledge that such transfers may occur and that the transferee may decline honor commitments we made in this Privacy Policy. We are not responsible for the actions of third parties with whom you share personal or sensitive data, and we have no authority to manage or control third-party solicitations. If you no longer wish to receive correspondence, emails or other communications from third parties, you are responsible for contacting the third party directly."),
-
+            
         ]),
         
         //Section 5
         TextSection(header: "Security of Your Information", subSections: [
             
             TextSubSection(title: "", paragraph: "We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse. Any information disclosed online is vulnerable to interception and misuse by unauthorized parties. Therefore, we cannot guarantee complete security if you provide personal information."),
-    
+            
         ]),
         
         //Section 6
@@ -81,31 +81,29 @@ struct PrivacyPolicyView: View {
     
     var body: some View {
         
-        NavigationView {
-            VStack(alignment: .leading) {
+        VStack(alignment: .leading) {
+            
+            ScrollView {
                 
-                ScrollView {
+                HStack {
                     
-                    HStack {
-                        
-                        Text("Date last modified: Dec 29, 2021.")
-                            .font(.system(size: 18, weight: .bold))
-                            .padding(.vertical)
-                        
-                        Spacer()
-                    }
-                    
-                    ForEach(Array(textSections.enumerated()), id: \.1.header) { i, textSection in
-                        
-                        TextSectionView(textSection: textSection).padding(.vertical)
-                    }
+                    Text("Date last modified: Dec 29, 2021.")
+                        .font(.system(size: 18, weight: .bold))
+                        .padding(.vertical)
                     
                     Spacer()
                 }
                 
-            }.padding(.horizontal, 20)
-                .navigationTitle("Privacy Policy")
-        }
+                ForEach(Array(textSections.enumerated()), id: \.1.header) { i, textSection in
+                    
+                    TextSectionView(textSection: textSection).padding(.vertical)
+                }
+                
+                Spacer()
+            }
+            
+        }.padding(.horizontal, 20)
+            .navigationTitle("Privacy Policy")
     }
 }
 

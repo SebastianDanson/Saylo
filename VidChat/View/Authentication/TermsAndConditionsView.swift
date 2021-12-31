@@ -92,33 +92,30 @@ struct TermsAndConditionsView: View {
     
     var body: some View {
         
-        NavigationView {
+        
+        VStack(alignment: .leading) {
             
-            VStack(alignment: .leading) {
+            ScrollView {
                 
-                ScrollView {
+                HStack {
                     
-                    HStack {
-                        
-                        Text("Date last modified: Dec 29, 2021.")
-                            .font(.system(size: 18, weight: .bold))
-                            .padding(.vertical)
-                        
-                        Spacer()
-                    }
-                    
-                    
-                    ForEach(Array(textSections.enumerated()), id: \.1.header) { i, textSection in
-                        
-                        TextSectionView(textSection: textSection).padding(.vertical)
-                    }
+                    Text("Date last modified: Dec 29, 2021.")
+                        .font(.system(size: 18, weight: .bold))
+                        .padding(.vertical)
                     
                     Spacer()
                 }
                 
-            }.padding(.horizontal, 20)
-                .navigationTitle("Terms of Use")
-        }
+                
+                ForEach(Array(textSections.enumerated()), id: \.1.header) { i, textSection in
+                    
+                    TextSectionView(textSection: textSection).padding(.vertical)
+                }
+                
+                Spacer()
+            }
+            
+        }.padding(.horizontal, 20)
     }
 }
 

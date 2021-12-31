@@ -14,15 +14,15 @@ struct User {
     let id: String
     
     //name
-    let username: String
-    let fullname: String
+    var username: String
+    var fullname: String
     
     //contact unfo
     let email: String
     let phoneNumber: String
 
     //profile
-    let profileImageUrl: String
+    var profileImageUrl: String
     let createdAt: Timestamp
 
     //chat

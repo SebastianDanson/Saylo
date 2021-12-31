@@ -11,10 +11,13 @@ struct CustomSecureField: View {
     @Binding var text: String
     
     var body: some View {
-        VStack(spacing: 16) {
+        
+        VStack(spacing: 0) {
+            
             ZStack(alignment: .leading) {
+                
                 if text.isEmpty {
-                    Text("Password").foregroundColor(Color(.init(white: 0, alpha: 0.8)))
+                    Text("Password").foregroundColor(Color(.init(white: 0, alpha: 0.6)))
                         .padding(.leading, 30)
                 }
                 
@@ -22,13 +25,15 @@ struct CustomSecureField: View {
                     Image(systemName: "lock")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 20, height: 20)
+                        .frame(width: 19, height: 19)
                         .foregroundColor(.black)
                     
                     SecureField("", text: $text)
                         .foregroundColor(.black)
+                        .frame(height: 35)
                 }
             }
+            
             Rectangle()
                 .frame(height: 1)
                 .foregroundColor(.lightGray)
