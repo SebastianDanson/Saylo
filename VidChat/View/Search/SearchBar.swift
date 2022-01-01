@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+
+//TODO notifications
+//1. group created
+//2. sent friend request
+//3. accepted friend request
+//4. messages received
+
 struct SearchBar: View {
     
     @Binding var text: String
@@ -14,12 +21,13 @@ struct SearchBar: View {
     
     var isFirstResponder: Bool
     var placeHolder: String
+    var showSearchReturnKey: Bool
     
     var body: some View {
         
         HStack {
             
-            SearchTextField(text: $text, isFirstResponder: isFirstResponder, placeHolderText: placeHolder)
+            SearchTextField(text: $text, isFirstResponder: isFirstResponder, placeHolderText: placeHolder, showSearchReturnKey: showSearchReturnKey)
                 .padding(8)
                 .padding(.horizontal, 26)
                 .background(Color(.systemGray5))
@@ -44,6 +52,8 @@ struct SearchBar: View {
                         text = ""
                         ConversationGridViewModel.shared.showAllUsers()
                         UIApplication.shared.endEditing()
+                        
+                      
                     }
                 }, label: {
                     Text("Cancel")
@@ -64,13 +74,16 @@ struct SearchTextField: UIViewRepresentable {
         @Binding var text: String
         
         var didBecomeFirstResponder = false
+        var showSearchReturnKey: Bool
+        var searchText = ""
+        var lastPerformArgument: NSString? = nil
         
-        init(text: Binding<String>) {
+        init(text: Binding<String>, showSearchReturnKey: Bool) {
             _text = text
+            self.showSearchReturnKey = showSearchReturnKey
         }
         
         func textFieldDidChangeSelection(_ textField: UITextField) {
-            text = textField.text ?? ""
             ConversationGridViewModel.shared.filterUsers(withText: text)
         }
         
@@ -89,15 +102,54 @@ struct SearchTextField: UIViewRepresentable {
             return true
         }
         
+        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+            
+            if showSearchReturnKey {
+                NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(reload), object: lastPerformArgument)
+                lastPerformArgument = text as NSString
+                self.searchText = textField.text ?? "" + string
+                
+                AddFriendsViewModel.shared.showSearchResults = self.searchText.count > 1
+                
+                if self.searchText.count > 1 {
+                    perform(#selector(reload), with: lastPerformArgument, afterDelay: 0.8)
+                } else {
+                    withAnimation {
+                        AddFriendsViewModel.shared.searchedUsers.removeAll()
+                    }
+                }
+                
+            }
+            
+            return true
+        }
+        
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            
+            textField.text = ""
+            
+            if showSearchReturnKey {
+                AddFriendsViewModel.shared.searchedUsers.removeAll()
+            }
+        }
+        
+        @objc func reload() {
+            AddFriendsViewModel.shared.search(withText: searchText)
+        }
+        
     }
     
     @Binding var text: String
     var isFirstResponder: Bool
     var placeHolderText: String
+    var showSearchReturnKey: Bool
+    var textField = UITextField(frame: .zero)
     
     func makeUIView(context: UIViewRepresentableContext<SearchTextField>) -> UITextField {
-        let textField = UITextField(frame: .zero)
         textField.delegate = context.coordinator
+        
+        textField.returnKeyType = showSearchReturnKey ? .search : .default
+        textField.text = text
         
         textField.attributedPlaceholder = NSAttributedString(
             string: placeHolderText,
@@ -107,11 +159,10 @@ struct SearchTextField: UIViewRepresentable {
     }
     
     func makeCoordinator() -> SearchTextField.Coordinator {
-        return Coordinator(text: $text)
+        return Coordinator(text: $text, showSearchReturnKey: showSearchReturnKey)
     }
     
     func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<SearchTextField>) {
-        uiView.text = text
         if isFirstResponder && !context.coordinator.didBecomeFirstResponder  {
             uiView.becomeFirstResponder()
             context.coordinator.didBecomeFirstResponder = true

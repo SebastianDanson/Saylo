@@ -131,6 +131,7 @@ struct FlashView: View {
 }
 
 struct MediaOptions: View {
+    
     @StateObject var viewModel = CameraViewModel.shared
     
     var body: some View {

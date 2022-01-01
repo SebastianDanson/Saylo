@@ -10,7 +10,7 @@ import Kingfisher
 
 struct ConversationGridCell: View {
     
-    @ObservedObject var user: TestUser
+    var user: User
     let width = UIScreen.main.bounds.width/4.2
     let textColor = Color(red: 136/255, green: 137/255, blue: 141/255)
     
@@ -25,7 +25,7 @@ struct ConversationGridCell: View {
                         .frame(width: width + 10, height: width + 10)
 
 
-                    KFImage(URL(string: user.image))
+                    KFImage(URL(string: user.profileImageUrl))
                         .resizable()
                         .scaledToFill()
                         .background(Color(.systemGray))
@@ -36,13 +36,13 @@ struct ConversationGridCell: View {
                 }
                 
                 
-                Text(user.firstname)
+                Text(user.firstName)
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(textColor)
                 
             }.overlay(
                 ZStack {
-                    if user.isSelected {
+//                    if user.isSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .resizable()
                             .frame(width: 32, height: 32)
@@ -50,7 +50,7 @@ struct ConversationGridCell: View {
                             .scaledToFit()
                             .foregroundColor(.mainBlue)
                             .transition(.scale)
-                    }
+//                    }
                 }
                 , alignment: .topLeading
                 

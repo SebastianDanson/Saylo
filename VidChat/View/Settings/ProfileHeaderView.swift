@@ -48,6 +48,10 @@ struct ProfileHeaderView: View {
             
             Text("\(authViewModel.currentUser?.firstName ?? "") \(authViewModel.currentUser?.lastName ?? "")")
                 .font(.system(size: 24, weight: .bold))
+            
+            Text("\(authViewModel.currentUser?.username ?? "")")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(.mainGray)
         }
     }
 }

@@ -13,13 +13,13 @@ class NewConversationViewModel: ObservableObject {
     @Published var isCreatingNewGroup: Bool = false
     @Published var isSearching: Bool = true
     @Published var isTypingName: Bool = false
-    @Published var addedUsers = [TestUser]()
+    @Published var addedUsers = [User]()
 
     static let shared = NewConversationViewModel()
     
     private init() {}
     
-    func handleUserSelected(user: TestUser) {
+    func handleUserSelected(user: User) {
         
         withAnimation {
             if !addedUsers.contains(where: { $0.id == user.id }) {
@@ -30,7 +30,7 @@ class NewConversationViewModel: ObservableObject {
         }
     }
     
-    func containsUser(user: TestUser) -> Bool {
+    func containsUser(user: User) -> Bool {
         addedUsers.contains(where: { $0.id == user.id })
     }
 }

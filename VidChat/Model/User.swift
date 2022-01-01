@@ -8,7 +8,7 @@
 import Foundation
 import Firebase
 
-struct User {
+class User: ObservableObject  {
     
     //Doc info
     let id: String
@@ -27,15 +27,16 @@ struct User {
     let createdAt: Timestamp
 
     //chat
-    var chats = [UserChat]()
+    @Published var chats = [UserChat]()
     
     //tokens
     let fcmToken: String
     let pushKitToken: String
     
-    //connections
-    let connections: [String]
-    
+    //friends
+    var friends: [String]
+    var friendRequests: [String]
+
     init(dictionary: [String:Any], id: String) {
         
         //Doc info
@@ -54,25 +55,29 @@ struct User {
         self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
         self.createdAt = dictionary["createdAt"] as? Timestamp ?? Timestamp(date: Date())
 
-        //connections
-        self.connections = dictionary["connections"] as? [String] ?? [String]()
-        
+        //friends
+        self.friends = dictionary["friends"] as? [String] ?? [String]()
+        self.friendRequests = dictionary["friendRequests"] as? [String] ?? [String]()
+
         //tokens
         self.fcmToken = dictionary["fcmToken"] as? String ?? ""
         self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
 
         //chat
-        let chatDic = dictionary["chats"] as? [[String:Any]] ?? [[String:Any]]()
+        let chatDic = dictionary["directConversations"] as? [[String:Any]] ?? [[String:Any]]()
     
-        chatDic.forEach({
-            let id = $0["id"] as? String ?? ""
-            let lastVisited = $0["lastVisited"] as? String ?? ""
-            self.chats.append(UserChat(id: id, lastVisited: lastVisited))
-        })
+        chatDic.forEach({self.chats.append(UserChat(dictionary: $0))})
     }
 }
 
 struct UserChat: Decodable {
     let id: String
     let lastVisited: String
+    let notificationsEnbaled: Bool
+    
+    init(dictionary: [String:Any]) {
+        self.id = dictionary["id"] as? String ?? ""
+        self.lastVisited = dictionary["lastVisited"] as? String ?? ""
+        self.notificationsEnbaled = dictionary["notificationsEnbaled"] as? Bool ?? true
+    }
 }

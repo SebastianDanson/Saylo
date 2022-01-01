@@ -20,7 +20,20 @@ class AuthViewModel: ObservableObject {
     static let shared = AuthViewModel()
     
     private init() {
+        
         fetchUser()
+        
+//        COLLECTION_USERS.getDocuments { documents, _ in
+//            documents?.documents.forEach({ document in
+//                
+//                var keywords = self.addKeyWords(name: document.data()["username"] as? String ?? "")
+//                keywords.append(contentsOf: self.addKeyWords(name: document.data()["firstName"] as? String ?? ""))
+//                keywords.append(contentsOf: self.addKeyWords(name: document.data()["lastName"] as? String ?? ""))
+//
+//                COLLECTION_USERS.document(document.documentID).updateData(["searchKeywords":keywords, "firstNameKeywords":FieldValue.delete(), "lastNameKeywords":FieldValue.delete(), "usernameKeywords":FieldValue.delete()])
+//
+//            })
+//        }
     }
     
     func login(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
@@ -87,14 +100,18 @@ class AuthViewModel: ObservableObject {
         currentUser.firstName = firstName
         currentUser.lastName = lastName
         
-        COLLECTION_USERS.document(currentUser.id).updateData(["firstName":firstName, "lastName":lastName])
+        var keywords = addKeyWords(name: firstName)
+        keywords.append(contentsOf: addKeyWords(name: lastName))
+
+        COLLECTION_USERS.document(currentUser.id).updateData(["firstName":firstName, "lastName":lastName,
+                                                              "searchKeywords":FieldValue.arrayUnion([keywords])])
 
     }
     
     
     func setUsername(username: String, completion: @escaping(Bool) -> Void) {
                 
-        var username = username
+        var username = username.lowercased()
         username.removeTrailingSpaces()
 
         COLLECTION_USERS.whereField("username", isEqualTo: username).getDocuments { snapshot, _ in
@@ -113,8 +130,9 @@ class AuthViewModel: ObservableObject {
             }
 
             currentUser.username = username
+            let keywords = self.addKeyWords(name: username)
 
-            COLLECTION_USERS.document(currentUser.id).updateData(["username":username])
+            COLLECTION_USERS.document(currentUser.id).updateData(["username":username, "searchKeywords":FieldValue.arrayUnion([keywords])])
             
             completion(false)
         }
@@ -171,6 +189,40 @@ class AuthViewModel: ObservableObject {
         } catch {
             
         }
+    }
+    
+    
+    func addKeyWords(name: String) -> [String] {
+        var letters = [String]()
+        var some_letters = [String]()
+        let groupName = name.components(separatedBy: [" "])
+        
+        for word in groupName {
+            for j in 1..<word.count + 1 {
+                some_letters.append(word.prefix(j).lowercased())
+            }
+            
+            for k in 0..<name.count + 1 {
+                letters.append(name.prefix(k).lowercased())
+            }
+        }
+        
+        letters = some_letters + letters
+        letters = removeDuplicates(strings: letters)
+        letters.removeAll(where: {$0 == ""})
+        return letters
+    }
+    
+    func removeDuplicates(strings: [String]) -> [String] {
+        var result = [String]()
+        
+        for value in strings {
+            if result.contains(value) == false {
+                result.append(value)
+            }
+        }
+        
+        return result
     }
 }
 

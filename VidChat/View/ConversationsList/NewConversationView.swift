@@ -13,6 +13,7 @@ struct NewConversationView: View {
     @StateObject var viewModel = NewConversationViewModel.shared
     
     @State var searchText: String = ""
+    @State var users = [User]()
     
     var body: some View {
         
@@ -68,7 +69,7 @@ struct NewConversationView: View {
                 .background(Color.backgroundGray)
                 .padding(.top, TOP_PADDING)
                 
-                SearchBar(text: $searchText, isEditing: $viewModel.isSearching, isFirstResponder: true, placeHolder: "Search")
+                SearchBar(text: $searchText, isEditing: $viewModel.isSearching, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
                     .padding(.horizontal, 20)
                     .padding(.bottom)
                 
@@ -96,9 +97,11 @@ struct NewConversationView: View {
                         
                         VStack(spacing: 0) {
                             
-                            NewConversationCell(user: ConversationGridViewModel.shared.users[0])
-                            NewConversationCell(user: ConversationGridViewModel.shared.users[1])
-                            NewConversationCell(user: ConversationGridViewModel.shared.users[2])
+                            ForEach(Array(users.enumerated()), id: \.1.id) { i, user in
+                                
+                                NewConversationCell(user: user)
+                                
+                            }
                             
                         }.frame(width: SCREEN_WIDTH - 40)
                             .background(Color.white)
@@ -139,7 +142,7 @@ struct NewConversationCell: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
     
-    let user: TestUser
+    let user: User
     
     var body: some View {
         
@@ -149,7 +152,7 @@ struct NewConversationCell: View {
             
             HStack(spacing: 12) {
                 
-                KFImage(URL(string: user.image))
+                KFImage(URL(string: user.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .foregroundColor(.white)
@@ -158,7 +161,7 @@ struct NewConversationCell: View {
                     .padding(.leading, 12)
                 
                 
-                Text(user.firstname + " " + user.lastname)
+                Text(user.firstName + " " + user.lastName)
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.black)
                 
@@ -284,8 +287,8 @@ struct AddedUsersView: View {
 struct AddedUserView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
-
-    let user: TestUser
+    
+    let user: User
     
     var body: some View {
         
@@ -293,7 +296,7 @@ struct AddedUserView: View {
             
             VStack(alignment: .center, spacing: 4) {
                 
-                KFImage(URL(string: user.image))
+                KFImage(URL(string: user.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .background(Color(.systemGray))
@@ -302,7 +305,7 @@ struct AddedUserView: View {
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 
-                Text(user.firstname)
+                Text(user.firstName)
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
                     .frame(maxWidth: 50)

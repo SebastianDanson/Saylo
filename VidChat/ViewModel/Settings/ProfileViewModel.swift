@@ -8,9 +8,9 @@
 import Foundation
 
 class ProfileViewModel: ObservableObject {
-    var user: TestUser
+    var user: User
     
-    init(user: TestUser) {
+    init(user: User) {
         self.user = user
     }
     

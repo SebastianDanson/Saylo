@@ -50,7 +50,7 @@ class CameraViewModel: ObservableObject {
         cameraView.cancelRecording()
          
         ConversationGridViewModel.shared.isSelectingUsers = false
-        ConversationGridViewModel.shared.selectedUsers = [TestUser]()
+        ConversationGridViewModel.shared.selectedUsers = [User]()
     }
     
     func closeCamera() {

@@ -38,22 +38,22 @@ extension UIImage {
     var averageColor: UIColor? {
         // convert our image to a Core Image Image
         guard let inputImage = CIImage(image: self) else { return nil }
-
+        
         // Create an extent vector (a frame with width and height of our current input image)
         let extentVector = CIVector(x: inputImage.extent.origin.x,
                                     y: inputImage.extent.origin.y,
                                     z: inputImage.extent.size.width,
                                     w: inputImage.extent.size.height)
-
+        
         // create a CIAreaAverage filter, this will allow us to pull the average color from the image later on
         guard let filter = CIFilter(name: "CIAreaAverage",
-                                  parameters: [kCIInputImageKey: inputImage, kCIInputExtentKey: extentVector]) else { return nil }
+                                    parameters: [kCIInputImageKey: inputImage, kCIInputExtentKey: extentVector]) else { return nil }
         guard let outputImage = filter.outputImage else { return nil }
-
+        
         // A bitmap consisting of (r, g, b, a) value
         var bitmap = [UInt8](repeating: 0, count: 4)
         let context = CIContext(options: [.workingColorSpace: kCFNull!])
-
+        
         // Render our output image into a 1 by 1 image supplying it our bitmap to update the values of (i.e the rgba of the 1 by 1 image will fill out bitmap array
         context.render(outputImage,
                        toBitmap: &bitmap,
@@ -61,7 +61,7 @@ extension UIImage {
                        bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBA8,
                        colorSpace: nil)
-
+        
         // Convert our bitmap images of r, g, b, a to a UIColor
         return UIColor(red: CGFloat(bitmap[0]) / 255,
                        green: CGFloat(bitmap[1]) / 255,
@@ -74,7 +74,7 @@ extension UIColor {
     
     static let mainBlue = UIColor(red: 15/255, green: 188/255, blue: 249/255, alpha: 1)
     static let grayText = UIColor(red: 83/255, green: 92/255, blue: 104/255, alpha: 1)
-
+    
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
         
@@ -208,14 +208,66 @@ extension Date {
 
 
 extension String {
+    
     mutating func removeTrailingSpaces() {
         for _ in 0..<self.count {
-           
+            
             if let last = self.last, last == " " {
                 self.removeLast()
             } else {
                 break
             }
         }
+    }
+    
+    public func levenshtein(_ other: String) -> Int {
+        let sCount = self.count
+        let oCount = other.count
+        
+        guard sCount != 0 else {
+            return oCount
+        }
+        
+        guard oCount != 0 else {
+            return sCount
+        }
+        
+        let line : [Int]  = Array(repeating: 0, count: oCount + 1)
+        var mat : [[Int]] = Array(repeating: line, count: sCount + 1)
+        
+        for i in 0...sCount {
+            mat[i][0] = i
+        }
+        
+        for j in 0...oCount {
+            mat[0][j] = j
+        }
+        
+        for j in 1...oCount {
+            for i in 1...sCount {
+                if self.characterAtIndex(index: i-1) == other.characterAtIndex(index: j-1) {
+                    mat[i][j] = mat[i - 1][j - 1]       // no operation
+                }
+                else {
+                    let del = mat[i - 1][j] + 1         // deletion
+                    let ins = mat[i][j - 1] + 1         // insertion
+                    let sub = mat[i - 1][j - 1] + 1     // substitution
+                    mat[i][j] = min(min(del, ins), sub)
+                }
+            }
+        }
+        
+        return mat[sCount][oCount]
+    }
+    
+    func characterAtIndex(index: Int) -> Character? {
+        var cur = 0
+        for char in self {
+            if cur == index {
+                return char
+            }
+            cur += 1
+        }
+        return nil
     }
 }

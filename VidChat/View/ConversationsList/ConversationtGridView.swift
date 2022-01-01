@@ -13,23 +13,6 @@ enum ConversationStatus {
     case sent, received, receivedOpened, sentOpened, none
 }
 
-class TestUser: ObservableObject {
-    
-    @Published var isSelected = false
-    let image: String
-    let firstname: String
-    let lastname: String
-    let id = UUID()
-    var conversationStatus: ConversationStatus = .none
-    
-    init(image: String, firstname: String, lastname: String, conversationStatus: ConversationStatus = .none) {
-        self.image = image
-        self.firstname = firstname
-        self.lastname = lastname
-        self.conversationStatus = conversationStatus
-    }
-}
-
 struct ConversationGridView: View {
     
     private let items = [GridItem(), GridItem(), GridItem()]
@@ -324,7 +307,7 @@ struct NavView: View {
                 .padding(.top, topPadding)
             } else {
                 
-                SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search")
+                SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
                     .padding(.horizontal)
                     .padding(.top, topPadding)
                 
@@ -332,7 +315,7 @@ struct NavView: View {
             
         }
         .sheet(isPresented: $viewModel.showSettingsView) {
-            ProfileView(user: viewModel.users[0], showSettings: $viewModel.showSettingsView)
+            ProfileView(showSettings: $viewModel.showSettingsView)
         }
         .zIndex(2)
         .ignoresSafeArea()
@@ -383,13 +366,13 @@ struct SelectedUsersView: View {
 
 struct SelectedUserView: View {
     
-    let user: TestUser
+    let user: User
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .center, spacing: 4) {
                 
-                KFImage(URL(string: user.image))
+                KFImage(URL(string: user.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .background(Color(.systemGray))
@@ -398,7 +381,7 @@ struct SelectedUserView: View {
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 
-                Text(user.firstname)
+                Text(user.firstName)
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
                     .frame(maxWidth: 48)
@@ -407,7 +390,9 @@ struct SelectedUserView: View {
             Button {
                 ConversationGridViewModel.shared.removeSelectedUser(withId: user.id)
             } label: {
+                
                 ZStack {
+                    
                     Circle()
                         .foregroundColor(.toolBarIconGray)
                         .frame(width: 20, height: 20)

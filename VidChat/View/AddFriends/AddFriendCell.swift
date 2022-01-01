@@ -10,31 +10,57 @@ import Kingfisher
 
 struct AddFriendCell: View {
     
-    let user: TestUser
+    let user: User
     let addedMe: Bool
+    let isSearch: Bool
+    let viewModel = AddFriendsViewModel.shared
+    
+    @Binding var users: [User]
     
     var body: some View {
         
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             
-            KFImage(URL(string: user.image))
+            KFImage(URL(string: user.profileImageUrl))
                 .resizable()
                 .scaledToFill()
                 .foregroundColor(.white)
                 .frame(width: 44, height: 44)
                 .clipShape(Circle())
-                .padding(.leading, 10)
+                .padding(.leading, 12)
             
             
-            Text(user.firstname + " " + user.lastname)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.black)
+            VStack(alignment: .leading, spacing: 2) {
+                
+                Text(user.firstName + " " + user.lastName)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.black)
+                
+                Text(user.username)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.gray)
+                
+            }
             
             Spacer()
             
             HStack(spacing: 0) {
-                AddButton(addedMe: addedMe)
-                RemoveButton()
+                
+                Button {
+                    
+                    addedMe ? viewModel.acceptFriendRequest(fromUser: user) : viewModel.sendFriendRequest(toUser: user)
+                    self.users.removeAll(where: {$0.id == user.id})
+                    
+                } label: {
+                    AddButton(addedMe: addedMe)
+                        .padding(.trailing, addedMe ? 0 : 16)
+                }
+
+              
+                
+                if addedMe {
+                    RemoveButton()
+                }
             }
             
         }.frame(height: 60)
@@ -48,10 +74,7 @@ struct AddButton: View {
     
     var body: some View {
         
-        Button {
-            
-        } label: {
-            
+    
             Text(addedMe ? "Confirm" : "Add")
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(.white)
@@ -60,7 +83,6 @@ struct AddButton: View {
                 .background(Color.mainBlue)
                 .cornerRadius(4)
             
-        }
     }
 }
 

@@ -8,10 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    
-    let user: TestUser
-    
-    @ObservedObject var viewModel: ProfileViewModel
+        
     
     @Binding var showSettings: Bool
 
@@ -19,9 +16,7 @@ struct ProfileView: View {
     @State var showImageCropper = false
     @State var showImagePicker = false
 
-    init(user: TestUser, showSettings: Binding<Bool>) {
-        self.user = user
-        self.viewModel = ProfileViewModel(user: user)
+    init(showSettings: Binding<Bool>) {
         self._showSettings = showSettings
     }
     
