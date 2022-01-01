@@ -31,7 +31,6 @@ struct ResetPasswordView: View {
             )
         )
         
-        
         VStack {
             //email field
             

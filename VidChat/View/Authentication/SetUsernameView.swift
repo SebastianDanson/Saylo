@@ -85,7 +85,7 @@ struct SetUsernameView: View {
                     
                     isLoading = true
                     
-                    viewModel.setUsername(username: username) { alreadyTaken in
+                    viewModel.setUsername(username: username.trimmingCharacters(in: [" "])) { alreadyTaken in
                         
                         if alreadyTaken {
                             showInvalidUsername = false
@@ -106,9 +106,9 @@ struct SetUsernameView: View {
                     .frame(width: SCREEN_WIDTH - 92, height: 50)
                     .background(Color.mainBlue)
                     .clipShape(Capsule())
-                    .opacity(username.count < 4 ? 0.5 : 1)
+                    .opacity(username.trimmingCharacters(in: [" "]).count < 4 ? 0.5 : 1)
             })
-                .disabled(username.count < 4)
+                .disabled(username.trimmingCharacters(in: [" "]).count < 4)
                 .padding(.vertical, 20)
                 .alert(isPresented: $showError) {
                     

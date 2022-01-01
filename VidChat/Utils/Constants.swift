@@ -9,9 +9,12 @@ import Foundation
 import Firebase
 import UIKit
 
+
+//Firestore collections
 let COLLECTION_USERS = Firestore.firestore().collection("users")
 let COLLECTION_SAVED_POSTS = Firestore.firestore().collection("savedMessages")
 let COLLECTION_CONVERSATIONS = Firestore.firestore().collection("conversations")
+let COLLECTION_CONTACTUS = Firestore.firestore().collection("contactUs")
 
 
 //Camera

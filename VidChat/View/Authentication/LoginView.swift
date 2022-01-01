@@ -88,7 +88,7 @@ struct LoginView: View {
                 
                 isLoading = true
                 
-                viewModel.login(withEmail: email, password: password) { error in
+                viewModel.login(withEmail: email.trimmingCharacters(in: [" "]), password: password) { error in
                     
                     isLoading = false
                     

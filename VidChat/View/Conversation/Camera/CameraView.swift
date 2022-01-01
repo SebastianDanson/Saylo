@@ -40,6 +40,10 @@ struct CameraView: UIViewControllerRepresentable {
         cameraViewController.takePhoto(withFlash: hasFlash)
     }
     
+    public func cancelRecording() {
+        cameraViewController.stopRecording(showVideo: false)
+    }
+    
     public func addAudio() {
         cameraViewController.addAudio()
     }

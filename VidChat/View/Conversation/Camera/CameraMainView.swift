@@ -109,6 +109,10 @@ struct CameraMainView: View {
         cameraView.addAudio()
     }
     
+    func cancelRecording() {
+        cameraView.cancelRecording()
+    }
+    
     func takePhoto() {
         CameraViewModel.shared.isTakingPhoto = true
         let hasFlash = CameraViewModel.shared.hasFlash

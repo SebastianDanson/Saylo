@@ -30,7 +30,11 @@ struct SettingsView: View {
             secondaryButton: .destructive(
                 Text("Logout"),
                 action: {
-                    //TODO handle logout
+                    ConversationGridViewModel.shared.showSettingsView = false
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        AuthViewModel.shared.logout()
+                    }
                 }
             )
         )

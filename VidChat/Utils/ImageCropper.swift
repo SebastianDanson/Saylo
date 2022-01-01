@@ -41,9 +41,12 @@ struct ImageCropper: UIViewControllerRepresentable {
             withAnimation {
                 self.parent.showImageCropper = false
             }
+            
+            AuthViewModel.shared.setProfileImage(image: image)
         }
         
         func cropViewController(_ cropViewController: CropViewController, didFinishCancelled cancelled: Bool) {
+            
             withAnimation {
                 self.parent.showImageCropper = false
             }

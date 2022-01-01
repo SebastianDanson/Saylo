@@ -61,6 +61,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     var sessionAtSourceTime: CMTime!
     var audioSessionAtSourceTime: CMTime!
     
+    var isFrontFacing = true
+    
     var outputURL: URL!
     
     override func viewWillAppear(_ animated: Bool) {
@@ -139,8 +141,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return
         }
         
-//        captureSession.stopRunning()
-
+        //        captureSession.stopRunning()
+        
+        isFrontFacing.toggle()
+        
         captureSession.beginConfiguration()
         captureSession.removeInput(activeInput)
         
@@ -155,13 +159,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         captureSession.addInput(activeInput)
         captureSession.commitConfiguration()
         
-       
-//        self.previewLayer.isHidden = true
-//        
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-//            self.previewLayer.isHidden = false
-//        }
+        
+        //        self.previewLayer.isHidden = true
+        //
+        //
+        //        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        //            self.previewLayer.isHidden = false
+        //        }
     }
     
     func setupPreview() {
@@ -201,7 +205,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func captureMovie(withFlash hasFlash: Bool) {
-       
+        
         self.hasFlash = hasFlash
         
         let device = activeInput.device
@@ -290,80 +294,51 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         return CameraViewModel.shared.isRecording && videoWriter != nil && videoWriter?.status == .writing
     }
     
-    func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        let writable = canWrite()
-        
-        if writable,
-           sessionAtSourceTime == nil {
-            // start writing
-            sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
-            //print("Writing")
-        }
-        
-        //        if output == videoDataOutput {
-        //            connection.videoOrientation = .portrait
-        //
-        //            if connection.isVideoMirroringSupported {
-        //                connection.isVideoMirrored = true
-        //            }
-        //        }
-        //        if writable,
-        //            output == videoDataOutput,
-        //            (videoWriterInput.isReadyForMoreMediaData) {
-        //            print("VIDEO 2")
-        //            // write video buffer
-        //            videoWriterInput.append(sampleBuffer)
-        //            //print("video buffering")
-        //        } else if writable,
-        //            output == audioDataOutput,
-        //            (audioWriterInput.isReadyForMoreMediaData) {
-        //            print("AUDIO 2")
-        //
-        //            // write audio buffer
-        //            audioWriterInput?.append(sampleBuffer)
-        //            //print("audio buffering")
-        //        }
-    }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        
-        let writable = canWrite()
-        
-        if writable,
-           sessionAtSourceTime == nil {
-            // start writing
-            sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
-            //print("Writing")
-        }
-        
-        if output == videoDataOutput {
-            connection.videoOrientation = .portrait
-            
-            if connection.isVideoMirroringSupported {
-                connection.isVideoMirrored = true
-            }
-        }
-        
-        if writable,
-           output == videoDataOutput,
-           (videoWriterInput.isReadyForMoreMediaData) {
-            print("VIDEO")
-            // write video buffer
-            videoWriterInput.append(sampleBuffer)
-            //print("video buffering")
-        } else if writable,
-                  output == audioDataOutput,
-                  (audioWriterInput.isReadyForMoreMediaData) {
-            
-            // write audio buffer
-            audioWriterInput?.append(sampleBuffer)
-            //print("audio buffering")
-        }
-        
-    }
+           
+           let writable = canWrite()
+           
+           guard writable else {return}
+                   
+           if sessionAtSourceTime == nil {
+               // start writing
+               sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+               videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
+               //print("Writing")
+           }
+           
+           if output == videoDataOutput {
+               
+               connection.videoOrientation = .portrait
+               
+               
+               if connection.isVideoMirroringSupported, isFrontFacing {
+                   DispatchQueue.global().async {
+                       connection.isVideoMirrored = self.isFrontFacing
+                   }
+               }
+           }
+           
+           if output == videoDataOutput,
+              (videoWriterInput.isReadyForMoreMediaData) {
+               // write video buffer
+               //            if isFrontFacing {
+               //                videoWriterInput.transform = CGAffineTransform(rotationAngle: CGFloat(180.0 * .pi / 180))
+               //            }
+               videoWriterInput.append(sampleBuffer)
+               //print("video buffering")
+               
+           } else if output == audioDataOutput,
+                     (audioWriterInput.isReadyForMoreMediaData) {
+               
+               // write audio buffer
+               audioWriterInput?.append(sampleBuffer)
+               //print("audio buffering")
+           }
+           
+       }
     
     //TODO saved videos that you record in video playback I.e start recording vide and then make download button work when done
     
@@ -373,7 +348,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         DispatchQueue.global(qos: .userInteractive).async {
             
-
+            
             if isFirstLoad {
                 self.audioCaptureSession.beginConfiguration()
                 
@@ -414,10 +389,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let photoSettings = AVCapturePhotoSettings()
         let previewPixelType = photoSettings.availablePreviewPhotoPixelFormatTypes.first!
         let previewFormat = [
-               kCVPixelBufferPixelFormatTypeKey as String: previewPixelType,
-               kCVPixelBufferWidthKey as String: 160,
-               kCVPixelBufferHeightKey as String: 160
-          ]
+            kCVPixelBufferPixelFormatTypeKey as String: previewPixelType,
+            kCVPixelBufferWidthKey as String: 160,
+            kCVPixelBufferHeightKey as String: 160
+        ]
         photoSettings.previewPhotoFormat = previewFormat
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
@@ -426,17 +401,17 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
-    public func stopRecording() {
+    public func stopRecording(showVideo: Bool = true) {
+        
         videoWriterInput.markAsFinished()
         audioWriterInput.markAsFinished()
         
-        
-        print("marked as finished")
         videoWriter.finishWriting {
             self.sessionAtSourceTime = nil
             DispatchQueue.main.async {
-                print(self.outputURL, "OUTPUTURL")
-                CameraViewModel.shared.videoUrl = self.outputURL
+                if showVideo {
+                    CameraViewModel.shared.videoUrl = self.outputURL
+                }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
                 self.setUpWriter()
                 //  try! AVAudioSession.sharedInstance().setActive(true)
@@ -450,7 +425,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         
         //TODO everywhere u have try! replace with dop catch
-
+        
     }
     
     @objc func pinch(_ pinch: UIPinchGestureRecognizer) {

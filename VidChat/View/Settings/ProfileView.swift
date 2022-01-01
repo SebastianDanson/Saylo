@@ -47,6 +47,7 @@ struct ProfileView: View {
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
             }
+            
         }.background(Color.backgroundGray)
     }
 }
@@ -62,6 +63,5 @@ struct DividerView: View {
                 .foregroundColor(.dividerGray)
                 .frame(width: SCREEN_WIDTH - 102, height: 0.5)
         }
-        
     }
 }

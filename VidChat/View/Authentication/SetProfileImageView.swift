@@ -13,6 +13,7 @@ struct SetProfileImageView: View {
     @State var showImageCropper: Bool = false
     @State var showImagePicker: Bool = false
     @State var signUpComplete: Bool = false
+    @State var showActionSheet: Bool = false
     
     var body: some View {
         
@@ -27,7 +28,7 @@ struct SetProfileImageView: View {
                 
                 Button {
                     
-                    showImagePicker = true
+                    showActionSheet = true
                     
                 } label: {
                     
@@ -36,8 +37,8 @@ struct SetProfileImageView: View {
                             .resizable()
                             .scaledToFill()
                             .frame(width: 150, height: 150)
-                            .padding(.top, 40)
                             .clipShape(Circle())
+                            .padding(.top, 40)
                     } else {
                         
                         Image("plusPhoto")
@@ -46,7 +47,21 @@ struct SetProfileImageView: View {
                             .padding(.top, 40)
                     }
                     
-                }.sheet(isPresented: $showImagePicker, content: {
+                }
+                .actionSheet(isPresented: $showActionSheet, content: {
+                        ActionSheet(title: Text("Select Photo Option"),
+                                message: Text(""),
+                                buttons: [
+                                    .default(Text("Choose from library")) {
+                                        showImagePicker = true
+                          },
+                          .default(Text("Take a photo")) {
+                             
+                          },
+                          .cancel()
+                        ])
+                })
+                .sheet(isPresented: $showImagePicker, content: {
                     ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
                 })
                 
@@ -64,7 +79,7 @@ struct SetProfileImageView: View {
                         AuthViewModel.shared.setProfileImage(image: profileImage)
                         signUpComplete = true
                     } else {
-                        showImagePicker = true
+                        showActionSheet = true
                     }
                     
                 } label: {
@@ -86,6 +101,13 @@ struct SetProfileImageView: View {
                     .transition(.move(edge: .bottom))
                     .ignoresSafeArea()
             }
+            
+            
+            
+            CameraViewModel.shared.cameraView
+                .ignoresSafeArea()
+                .transition(.opacity)
+                .zIndex(6)
             
             NavigationLink(destination: ConversationGridView().navigationBarBackButtonHidden(true), isActive: $signUpComplete) { EmptyView() }
 

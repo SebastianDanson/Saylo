@@ -14,7 +14,9 @@ class AuthViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var didSendResetPasswordLink = false
     @Published var isSignedIn = Auth.auth().currentUser != nil
-        
+    @Published var hasCompletedSignUp = true
+    @Published var profileImageUrl: String?
+    
     static let shared = AuthViewModel()
     
     private init() {
@@ -22,6 +24,7 @@ class AuthViewModel: ObservableObject {
     }
     
     func login(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
+        
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
                 completion(error)
@@ -47,7 +50,6 @@ class AuthViewModel: ObservableObject {
                         "createdAt":Timestamp(date: Date()),
                         "uid": user.uid] as [String : Any]
             
-            self.isSignedIn = true
             self.currentUser = User(dictionary: data, id: user.uid)
             
             COLLECTION_USERS.document(user.uid).setData(data) { _ in
@@ -78,13 +80,12 @@ class AuthViewModel: ObservableObject {
         firstName.removeTrailingSpaces()
         lastName.removeTrailingSpaces()
 
-        print(firstName)
-        print(lastName)
         guard var currentUser = currentUser else {
             return
         }
 
-        currentUser.fullname = firstName + " " + lastName
+        currentUser.firstName = firstName
+        currentUser.lastName = lastName
         
         COLLECTION_USERS.document(currentUser.id).updateData(["firstName":firstName, "lastName":lastName])
 
@@ -123,26 +124,52 @@ class AuthViewModel: ObservableObject {
     func setProfileImage(image: UIImage) {
         
         guard var currentUser = currentUser else { return }
-        
+        hasCompletedSignUp = true
         MediaUploader.uploadImage(image: image, type: .profile) { imageUrl in
             currentUser.profileImageUrl = imageUrl
-            COLLECTION_USERS.document(currentUser.id).updateData(["profileImageUrl":imageUrl])
+            self.profileImageUrl = imageUrl
+            COLLECTION_USERS.document(currentUser.id).updateData(["profileImageUrl":imageUrl, "hasCompletedSignUp":true])
         }
     }
     
     
     func fetchUser() {
-        guard let uid = Auth.auth().currentUser?.uid else {return}
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
         COLLECTION_USERS.document(uid).getDocument { snapshot, _ in
+            
             if let data = snapshot?.data() {
+                
                 let user = User(dictionary: data, id: uid)
                 self.currentUser = user
+                self.profileImageUrl = user.profileImageUrl
+                
+                /*
+                 * Ensure user has completed the full sign up process
+                 * If not take them to the landing page view
+                 * And redirect them to the auth view that they didn't complete
+                 */
+                if data["hasCompletedSignUp"] as? Bool ?? false == false {
+                    self.hasCompletedSignUp = false
+                    LandingPageViewModel.shared.setAuthView()
+                }
+               
             } else {
                 try! Auth.auth().signOut()
-                
             }
         }
     }
     
+    func logout() {
+        
+        do {
+            try Auth.auth().signOut()
+            currentUser = nil
+            isSignedIn = false
+        } catch {
+            
+        }
+    }
 }
 

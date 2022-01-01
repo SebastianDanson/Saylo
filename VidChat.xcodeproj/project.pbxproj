@@ -23,6 +23,8 @@
 		069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A662772A2E100996824 /* ActivityViewController.swift */; };
 		069E4A692772A9CC00996824 /* ringtone.wav in Resources */ = {isa = PBXBuildFile; fileRef = 069E4A682772A9CC00996824 /* ringtone.wav */; };
 		069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A6A2772D23400996824 /* ConversationFeedView.swift */; };
+		06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDA277F80480030357B /* ContactUsViewModel.swift */; };
+		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
 		06DFA9CE27738FD800A8CF0C /* SavedPostAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */; };
 		06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CF27739AFD00A8CF0C /* Helpers.swift */; };
 		06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */; };
@@ -134,6 +136,8 @@
 		069E4A662772A2E100996824 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
 		069E4A682772A9CC00996824 /* ringtone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringtone.wav; sourceTree = SOURCE_ROOT; };
 		069E4A6A2772D23400996824 /* ConversationFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFeedView.swift; sourceTree = "<group>"; };
+		06A7FEDA277F80480030357B /* ContactUsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewModel.swift; sourceTree = "<group>"; };
+		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostAlert.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/Utils/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
@@ -480,6 +484,7 @@
 		3F485D9526FD461C0071532B /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				06F1A32F277E811800A0F992 /* LandingPageView.swift */,
 				3F485DC526FE28860071532B /* LoginView.swift */,
 				06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */,
 				3F485DC726FE28920071532B /* RegistrationView.swift */,
@@ -488,7 +493,6 @@
 				06F1A32B277D522300A0F992 /* SetProfileImageView.swift */,
 				06F1A32D277E7A9E00A0F992 /* SetUsernameView.swift */,
 				06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */,
-				06F1A32F277E811800A0F992 /* LandingPageView.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -508,6 +512,7 @@
 		3F485D9A26FD46910071532B /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				06A7FEDA277F80480030357B /* ContactUsViewModel.swift */,
 				3F8B026E26FEAF0500841565 /* ProfileViewModel.swift */,
 			);
 			path = Settings;
@@ -517,6 +522,7 @@
 			isa = PBXGroup;
 			children = (
 				3F485DE526FE38990071532B /* AuthViewModel.swift */,
+				06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -744,6 +750,7 @@
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
 				3F71247A276FC92C00C8457D /* ConversationPlayerViewModel.swift in Sources */,
 				069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */,
+				06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
 				3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */,
 				3F112B822720B32700BA2A73 /* CallManager.swift in Sources */,
@@ -768,6 +775,7 @@
 				063CAABF277C224A00C84318 /* TrackableScrollView.swift in Sources */,
 				3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */,
 				3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */,
+				06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */,
 				3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */,
 				3F485DCE26FE2A080071532B /* CustomSecureField.swift in Sources */,
 				06F1A32A277D334F00A0F992 /* PrivacyPolicyView.swift in Sources */,

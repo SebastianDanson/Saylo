@@ -46,6 +46,8 @@ class CameraViewModel: ObservableObject {
             ConversationViewModel.shared.showCamera = false
         }
         
+        cameraView.cancelRecording()
+         
         ConversationGridViewModel.shared.isSelectingUsers = false
         ConversationGridViewModel.shared.selectedUsers = [TestUser]()
     }

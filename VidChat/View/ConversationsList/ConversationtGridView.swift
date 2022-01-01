@@ -203,7 +203,6 @@ struct NavView: View {
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     private let toolBarWidth: CGFloat = 38
-    let image1 = "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"
     
     var body: some View {
         
@@ -222,7 +221,7 @@ struct NavView: View {
                             Button {
                                 viewModel.showSettingsView = true
                             } label: {
-                                KFImage(URL(string: image1))
+                                KFImage(URL(string: AuthViewModel.shared.profileImageUrl ?? ""))
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: toolBarWidth, height: toolBarWidth)

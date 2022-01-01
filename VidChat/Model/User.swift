@@ -15,8 +15,9 @@ struct User {
     
     //name
     var username: String
-    var fullname: String
-    
+    var firstName: String
+    var lastName: String
+
     //contact unfo
     let email: String
     let phoneNumber: String
@@ -42,8 +43,9 @@ struct User {
 
         //name
         self.username = dictionary["username"] as? String ?? ""
-        self.fullname = dictionary["fullname"] as? String ?? ""
-        
+        self.firstName = dictionary["firstName"] as? String ?? ""
+        self.lastName = dictionary["lastName"] as? String ?? ""
+
         //contact
         self.email = dictionary["email"] as? String ?? ""
         self.phoneNumber = dictionary["phoneNumber"] as? String ?? ""

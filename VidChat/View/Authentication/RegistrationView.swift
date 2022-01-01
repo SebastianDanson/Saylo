@@ -107,7 +107,7 @@ struct RegistrationView: View {
                     
                     isLoading = true
                     
-                    viewModel.register(withEmail: email, password: password) { error in
+                    viewModel.register(withEmail: email.trimmingCharacters(in: [" "]), password: password) { error in
                         
                         isLoading = false
                         

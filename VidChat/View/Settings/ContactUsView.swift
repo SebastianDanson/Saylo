@@ -10,9 +10,23 @@ import SwiftUI
 struct ContactUsView: View {
     
     @State private var message = ""
+    @State private var showAlert = false
     @Environment(\.presentationMode) var mode
     
+    let viewModel = ContactUsViewModel()
+    
     var body: some View {
+        
+        let emailSentAlert = Alert(
+            title: Text("Thank you for messaging us!"),
+            message: Text("We will get back to you soon!"),
+            dismissButton: .default(
+                Text("OK"),
+                action: {
+                    mode.wrappedValue.dismiss()
+                }
+            )
+        )
         
         VStack(alignment: .leading, spacing: 16) {
             
@@ -34,10 +48,17 @@ struct ContactUsView: View {
                 Spacer()
                 
                 Button {
-                    //TODO handle Send
+                    viewModel.sendMessage(message)
+                    showAlert = true
                 } label: {
-                    Text("Send").fontWeight(.semibold)
+                    Text("Send")
+                        .fontWeight(.semibold)
                         .padding()
+                        .foregroundColor(message.isEmpty ? .lightGray : Color(.systemBlue))
+                }
+                .disabled(message.isEmpty)
+                .alert(isPresented: $showAlert) {
+                    emailSentAlert
                 }
 
             }

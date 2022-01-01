@@ -9,17 +9,27 @@ import SwiftUI
 
 struct LandingPageView: View {
     
+    @StateObject var viewModel = LandingPageViewModel.shared
 
     var body: some View {
         
         NavigationView {
-                                        
+            
                 VStack {
+                    
+                    NavigationLink(destination: SetNameView()
+                                    .navigationBarBackButtonHidden(true), isActive: $viewModel.showSetNameView) { EmptyView() }
+                    
+                    NavigationLink(destination: SetUsernameView()
+                                    .navigationBarBackButtonHidden(true), isActive: $viewModel.showSetUsernameView) { EmptyView() }
+                    
+                    NavigationLink(destination: SetProfileImageView()
+                                    .navigationBarBackButtonHidden(true), isActive: $viewModel.showSetProfileImageView) { EmptyView() }
                     
                     Image("Logo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 170, height: 170)
+                        .frame(width: 160, height: 160)
                         .padding(.top, TOP_PADDING + SCREEN_HEIGHT/5)
                     
                     Spacer()
@@ -52,6 +62,7 @@ struct LandingPageView: View {
             .frame(width: SCREEN_HEIGHT, height: SCREEN_HEIGHT)
             .background(Color.mainBlue)
             .ignoresSafeArea()
+            
         }
     }
 }
