@@ -33,7 +33,7 @@ struct ProfileView: View {
                 
                 VStack(spacing: 32) {
                     
-                    ProfileHeaderView(viewModel: viewModel, image: $profileImage, showSettings: $showSettings)
+                    ProfileHeaderView(image: $profileImage, showSettings: $showSettings)
                     
                     SettingsView(profileImage: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
                     

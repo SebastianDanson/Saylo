@@ -10,10 +10,14 @@ import SwiftUI
 struct SetProfileImageView: View {
     
     @State var profileImage: UIImage?
-    @State var showImageCropper: Bool = false
+    @State var showLibraryImageCropper: Bool = false
+    @State var showCameraImageCropper: Bool = false
     @State var showImagePicker: Bool = false
     @State var signUpComplete: Bool = false
     @State var showActionSheet: Bool = false
+    @State var showCamera: Bool = false
+    
+    let cameraView = CameraMainView()
     
     var body: some View {
         
@@ -49,24 +53,24 @@ struct SetProfileImageView: View {
                     
                 }
                 .actionSheet(isPresented: $showActionSheet, content: {
-                        ActionSheet(title: Text("Select Photo Option"),
+                    ActionSheet(title: Text("Select Photo Option"),
                                 message: Text(""),
                                 buttons: [
                                     .default(Text("Choose from library")) {
                                         showImagePicker = true
-                          },
-                          .default(Text("Take a photo")) {
-                             
-                          },
-                          .cancel()
-                        ])
+                                    },
+                                    .default(Text("Take a photo")) {
+                                        showCamera = true
+                                    },
+                                    .cancel()
+                                ])
                 })
                 .sheet(isPresented: $showImagePicker, content: {
-                    ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
+                    ImagePicker(image: $profileImage, showImageCropper: $showLibraryImageCropper)
                 })
                 
                 
-                Text("Seb Danson")
+                Text("\(AuthViewModel.shared.currentUser?.firstName ?? "") \(AuthViewModel.shared.currentUser?.lastName ?? "")")
                     .font(.system(size: 24, weight: .medium))
                     .padding(.vertical)
                 
@@ -95,25 +99,78 @@ struct SetProfileImageView: View {
                 
             }.padding(.bottom, BOTTOM_PADDING + 16)
             
-            if showImageCropper {
-                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
+            if showLibraryImageCropper {
+                ImageCropper(image: $profileImage, showImageCropper: $showLibraryImageCropper, showImagePicker: $showImagePicker)
+                    .zIndex(5)
+                    .transition(.move(edge: .bottom))
+                    .ignoresSafeArea()
+            } else if showCameraImageCropper {
+                ImageCropper(image: $profileImage, showImageCropper: $showCameraImageCropper, showImagePicker: $showCamera)
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
                     .ignoresSafeArea()
             }
             
             
-            
-            CameraViewModel.shared.cameraView
-                .ignoresSafeArea()
-                .transition(.opacity)
-                .zIndex(6)
-            
-            NavigationLink(destination: ConversationGridView().navigationBarBackButtonHidden(true), isActive: $signUpComplete) { EmptyView() }
+            if showCamera {
+                
+                CameraViewModel.shared.cameraView
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                    .zIndex(6)
+                    .overlay(
+                        
+                        VStack {
+                            
+                            HStack {
+                                Spacer()
+                                
+                                Button {
+                                    withAnimation {
+                                        showCamera = false
+                                    }
+                                } label: {
+                                    CamereraOptionView(image: Image("x"), imageDimension: 14).padding()
+                                }
 
+                            }
+                            
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                CameraViewModel.shared.takePhoto()
+                                setImage()
+                            }, label: {
+                                Circle()
+                                    .foregroundColor(.white)
+                                    .frame(width: 60, height: 60)
+                                    .padding(.bottom)
+                            })
+                        }.frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9).padding(.top, TOP_PADDING).ignoresSafeArea()
+                        , alignment: .top)
+                
+            }
+            
+            NavigationLink(destination: ConversationGridView().navigationBarHidden(true), isActive: $signUpComplete) { EmptyView() }
+            
         }
         
         .navigationBarBackButtonHidden(true)
     }
+    
+    func setImage() {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            if let photo = CameraViewModel.shared.photo {
+                profileImage = photo
+                showCameraImageCropper = true
+                showCamera = false
+            } else {
+                setImage()
+            }
+        }
+    }
 }
+
 

@@ -26,7 +26,6 @@ struct ConversationView: View {
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
     
-    
     var body: some View {
         
         ZStack {
@@ -45,7 +44,6 @@ struct ConversationView: View {
                     //Camera
                     if viewModel.showCamera {
                         CameraViewModel.shared.cameraView
-                            .transition(.opacity)
                             .zIndex(6)
                     }
                     
@@ -146,7 +144,7 @@ struct OptionsView: View {
                 
                 HStack(spacing: 0) {
                     
-                    if !viewModel.showPhotos && !viewModel.showKeyboard{
+                    if !viewModel.showPhotos && !viewModel.showKeyboard {
                         
                         if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
                             
@@ -182,11 +180,14 @@ struct OptionsView: View {
                             if !isRecordingAudio {
                                 //Video record circle
                                 Button(action: {
-                                    withAnimation {
-                                        cameraViewModel.handleTap()
+                                    
+                                    cameraViewModel.handleTap()
+
+//                                    withAnimation {
                                         viewModel.showCamera = true
-                                        viewModel.players.forEach({ $0.player.pause() })
-                                    }
+//                                    }
+                                    viewModel.players.forEach({ $0.player.pause() })
+
                                 }, label: {
                                     CameraCircle().padding(.leading, 15).padding(.trailing, 12)
                                 }).transition(.scale)

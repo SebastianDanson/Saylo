@@ -54,6 +54,7 @@ struct ConversationGridView: View {
                     }
                     
                     VStack {
+                        
                         ZStack(alignment: .top) {
                             
                             if !viewModel.hideFeed {
@@ -88,7 +89,6 @@ struct ConversationGridView: View {
                                               !viewModel.isSelectingUsers ?
                                               BOTTOM_PADDING + 82 : viewModel.isSelectingUsers ? (viewModel.selectedUsers.count > 0 ? 12 : BOTTOM_PADDING + 12) : 6)
                                 }
-                                //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
                                 .background(Color.white)
                                 .flippedUpsideDown()
                                 .scaleEffect(x: -1, y: 1, anchor: .center)
@@ -102,7 +102,6 @@ struct ConversationGridView: View {
                             
                             if conversationViewModel.showCamera {
                                 CameraViewModel.shared.cameraView
-                                    .transition(.move(edge: .bottom))
                                     .zIndex(viewModel.cameraViewZIndex)
                             }
                         }
@@ -199,6 +198,8 @@ struct ShowCameraView: View {
 struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
+    @StateObject private var authViewModel = AuthViewModel.shared
+
     @Binding var searchText: String
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
@@ -213,7 +214,9 @@ struct NavView: View {
                 .shadow(color: Color(white: 0, opacity: (viewModel.users.count > 15 || viewModel.showSearchBar) ? 0.05 : 0), radius: 2, x: 0, y: 2)
             
             if !viewModel.showSearchBar {
+                
                 HStack {
+                    
                     if !viewModel.isSelectingUsers {
                         
                         HStack(spacing: 12) {
@@ -221,7 +224,7 @@ struct NavView: View {
                             Button {
                                 viewModel.showSettingsView = true
                             } label: {
-                                KFImage(URL(string: AuthViewModel.shared.profileImageUrl ?? ""))
+                                KFImage(URL(string: authViewModel.profileImageUrl ?? ""))
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: toolBarWidth, height: toolBarWidth)
@@ -327,11 +330,13 @@ struct NavView: View {
                 
             }
             
-        }.zIndex(2)
-            .ignoresSafeArea()
-            .popover(isPresented: $viewModel.showSettingsView) {
-                ProfileView(user: viewModel.users[0], showSettings: $viewModel.showSettingsView)
-            }
+        }
+        .sheet(isPresented: $viewModel.showSettingsView) {
+            ProfileView(user: viewModel.users[0], showSettings: $viewModel.showSettingsView)
+        }
+        .zIndex(2)
+        .ignoresSafeArea()
+            
     }
 }
 

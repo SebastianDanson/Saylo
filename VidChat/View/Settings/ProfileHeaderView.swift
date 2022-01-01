@@ -10,7 +10,8 @@ import Kingfisher
 
 struct ProfileHeaderView: View {
     
-    @ObservedObject var viewModel: ProfileViewModel
+    let authViewModel = AuthViewModel.shared
+    
     @Binding var image: UIImage?
     @Binding var showSettings: Bool
     
@@ -45,7 +46,7 @@ struct ProfileHeaderView: View {
                     .clipShape(Circle())
             }
             
-            Text("\(viewModel.user.firstname) \(viewModel.user.lastname)")
+            Text("\(authViewModel.currentUser?.firstName ?? "") \(authViewModel.currentUser?.lastName ?? "")")
                 .font(.system(size: 24, weight: .bold))
         }
     }

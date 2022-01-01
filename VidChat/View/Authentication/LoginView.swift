@@ -82,7 +82,7 @@ struct LoginView: View {
             
             //sign in
             
-            NavigationLink(destination: ConversationGridView().navigationBarBackButtonHidden(true), isActive: $canProceed) { EmptyView() }
+            NavigationLink(destination: ConversationGridView().navigationBarHidden(true), isActive: $canProceed) { EmptyView() }
             
             Button(action: {
                 

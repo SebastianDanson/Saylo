@@ -65,17 +65,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     var outputURL: URL!
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        startSession()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        //TOOD stop session when chat is dismissed
-        // stopSession()
-        self.recordings = [AVURLAsset]()
-        
-    }
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        startSession()
+//    }
+
     
     func getTempUrl() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
@@ -300,16 +294,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
            
            let writable = canWrite()
            
-           guard writable else {return}
+//           guard writable else {return}
                    
-           if sessionAtSourceTime == nil {
+           if writable, sessionAtSourceTime == nil {
                // start writing
                sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
                videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
                //print("Writing")
            }
            
-           if output == videoDataOutput {
+        if !CameraViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
                
                connection.videoOrientation = .portrait
                
@@ -321,7 +315,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                }
            }
            
-           if output == videoDataOutput,
+           if writable, output == videoDataOutput,
               (videoWriterInput.isReadyForMoreMediaData) {
                // write video buffer
                //            if isFrontFacing {
@@ -330,7 +324,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                videoWriterInput.append(sampleBuffer)
                //print("video buffering")
                
-           } else if output == audioDataOutput,
+           } else if writable, output == audioDataOutput,
                      (audioWriterInput.isReadyForMoreMediaData) {
                
                // write audio buffer

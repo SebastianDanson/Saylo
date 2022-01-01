@@ -36,15 +36,16 @@ class CameraViewModel: ObservableObject {
     }
     
     func reset() {
+        
+        if !isRecording && videoUrl == nil && photo == nil {
+            closeCamera()
+            isShowingPhotoCamera = false
+        }
+        
         videoUrl = nil
         progress = 0.0
         isRecording = false
-        isShowingPhotoCamera = false
         photo = nil
-        
-        withAnimation(.linear(duration: 0.15)) {
-            ConversationViewModel.shared.showCamera = false
-        }
         
         cameraView.cancelRecording()
          
@@ -52,10 +53,15 @@ class CameraViewModel: ObservableObject {
         ConversationGridViewModel.shared.selectedUsers = [TestUser]()
     }
     
+    func closeCamera() {
+        withAnimation(.linear(duration: 0.15)) {
+            ConversationViewModel.shared.showCamera = false
+        }
+    }
+    
     func startRecording(addDelay: Bool = false) {
         
         withAnimation {
-            ConversationViewModel.shared.showCamera = false
             self.isRecording = true
             self.progress = 1
         }

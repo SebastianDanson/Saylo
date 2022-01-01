@@ -13,7 +13,7 @@ struct CameraMainView: View {
     
     @StateObject var viewModel = CameraViewModel.shared
     @State var isFrontFacing = true
-
+    
     var cameraView = CameraView()
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
@@ -38,7 +38,7 @@ struct CameraMainView: View {
                 }.zIndex(3)
             }
             
-            if let photo = viewModel.photo {
+            if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
                 
                 VStack{
                     Image(uiImage: photo)
@@ -53,12 +53,13 @@ struct CameraMainView: View {
             
             //camera
             cameraView
+                .frame(width: SCREEN_WIDTH, height: screenHeight)
                 .onTapGesture(count: 2, perform: {
                     cameraView.switchCamera()
                 })
             
             
-           
+            
             
             //flash view if there's front facing flash
             
@@ -68,15 +69,7 @@ struct CameraMainView: View {
             
             //            }
         }
-        //        .overlay( VStack {
-        //            Capsule(style: .continuous)
-        //                .stroke(Color.red, lineWidth: 20)
-        //                .foregroundColor(.clear)
-        //                .frame(width: SCREEN_WIDTH - 20, height: SCREEN_WIDTH * 1.85)
-        //                .cornerRadius(20)
-        //                .padding(.top, TOP_PADDING)
-        //            Spacer()
-        //        })
+        
         .overlay(
             ZStack {
                 VStack{
@@ -90,11 +83,14 @@ struct CameraMainView: View {
                     FlashView().zIndex(4)
                 }
                 
-                CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 4).zIndex(6)
+                if AuthViewModel.shared.hasCompletedSignUp {
+                    CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 4).zIndex(6)
+                }
             }
         )
         .ignoresSafeArea()
         .background(Color(white: 0, opacity: 1))
+        .navigationBarHidden(true)
     }
     
     func startRecording() {
@@ -142,7 +138,6 @@ struct MediaOptions: View {
             if viewModel.videoUrl != nil || viewModel.photo != nil {
                 HStack {
                     
-                    Spacer()
                     
                     // X button
                     Button {
@@ -152,6 +147,9 @@ struct MediaOptions: View {
                     } label: {
                         CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
                     }
+                    
+                    Spacer()
+
                 }
                 
                 Spacer()
@@ -172,6 +170,7 @@ struct MediaOptions: View {
 }
 
 struct SendButton: View {
+    
     var viewModel = CameraViewModel.shared
     
     var body: some View {
@@ -187,6 +186,7 @@ struct SendButton: View {
                 }
             }
         }, label: {
+            
             HStack {
                 Rectangle()
                     .frame(width: ConversationViewModel.shared.chatId == "" ? 130 : 110, height: 40)
@@ -224,8 +224,22 @@ struct CameraOptions: View {
     var body: some View {
         
         VStack {
+            
             if viewModel.videoUrl == nil && viewModel.photo == nil {
+                
                 HStack {
+                    
+                    // X button
+                    
+                    Button {
+                        //  withAnimation {
+                        viewModel.reset()
+                        //}
+                    } label: {
+                        CamereraOptionView(image: Image("x"), imageDimension: 14)
+                    }
+                   
+                    Spacer()
                     
                     //Flash toggle button
                     Button {
@@ -234,16 +248,6 @@ struct CameraOptions: View {
                         CamereraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
                     }
                     
-                    Spacer()
-                    
-                    // X button
-                    Button {
-                        //  withAnimation {
-                        viewModel.reset()
-                        //}
-                    } label: {
-                        CamereraOptionView(image: Image("x"), imageDimension: 14)
-                    }
                 }
                 
                 Spacer()

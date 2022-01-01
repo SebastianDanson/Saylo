@@ -13,7 +13,8 @@ struct ImageCropper: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     @Binding var showImageCropper: Bool
     @Binding var showImagePicker: Bool
-
+    
+    
     func makeUIViewController(context: Context) -> some UIViewController {
         let picker = CropViewController(croppingStyle: .circular, image: image ?? UIImage())
         picker.delegate = context.coordinator
@@ -52,6 +53,7 @@ struct ImageCropper: UIViewControllerRepresentable {
             }
             
             self.parent.image = nil
+            
             self.parent.showImagePicker = true
         }
     }
