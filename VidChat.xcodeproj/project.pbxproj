@@ -17,7 +17,6 @@
 		063CAAB9277BDED900C84318 /* FindFiendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB8277BDED900C84318 /* FindFiendsView.swift */; };
 		063CAABB277BEF1900C84318 /* NewConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABA277BEF1900C84318 /* NewConversationView.swift */; };
 		063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */; };
-		063CAABF277C224A00C84318 /* TrackableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABE277C224A00C84318 /* TrackableScrollView.swift */; };
 		063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		069E4A652772874000996824 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A642772874000996824 /* ImageDetailView.swift */; };
@@ -129,7 +128,6 @@
 		063CAAB8277BDED900C84318 /* FindFiendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFiendsView.swift; sourceTree = "<group>"; };
 		063CAABA277BEF1900C84318 /* NewConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationView.swift; sourceTree = "<group>"; };
 		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/View/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
-		063CAABE277C224A00C84318 /* TrackableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackableScrollView.swift; sourceTree = "<group>"; };
 		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		069E4A642772874000996824 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
@@ -406,7 +404,6 @@
 				069E4A662772A2E100996824 /* ActivityViewController.swift */,
 				06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */,
 				06DFA9CF27739AFD00A8CF0C /* Helpers.swift */,
-				063CAABE277C224A00C84318 /* TrackableScrollView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -769,7 +766,6 @@
 				06F1A330277E811800A0F992 /* LandingPageView.swift in Sources */,
 				06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */,
 				3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */,
-				063CAABF277C224A00C84318 /* TrackableScrollView.swift in Sources */,
 				3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */,
 				3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */,
 				06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */,

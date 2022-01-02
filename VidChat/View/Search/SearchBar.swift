@@ -50,7 +50,7 @@ struct SearchBar: View {
                     withAnimation {
                         isEditing = false
                         text = ""
-                        ConversationGridViewModel.shared.showAllUsers()
+                        ConversationGridViewModel.shared.showAllChats()
                         UIApplication.shared.endEditing()
                         
                       
@@ -93,7 +93,7 @@ struct SearchTextField: UIViewRepresentable {
             
             withAnimation {
                 viewModel.showSearchBar = false
-                viewModel.showAllUsers()
+                viewModel.showAllChats()
                 NewConversationViewModel.shared.isTypingName = false
             }
             

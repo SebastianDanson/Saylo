@@ -15,7 +15,8 @@ class AddFriendsViewModel: ObservableObject {
     @Published var allowGesture = false
     @Published var isSearching: Bool = false
     @Published var searchedUsers = [User]()
-    
+    @Published var friendRequests = [User]()
+
     var showSearchResults = false
     
     static let shared = AddFriendsViewModel()
@@ -126,12 +127,27 @@ class AddFriendsViewModel: ObservableObject {
     }
     
     func sendFriendRequest(toUser user: User) {
-        guard let currentUser = AuthViewModel.shared.currentUser else { return }
         
-        COLLECTION_USERS.document(user.id).updateData(["friendRequests": currentUser.id])
+        guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayUnion([currentUser.id]),
+                                                       "hasUnseenFriendRequest":true])
+    }
+    
+    func removeFriendRequest(toUser user: User) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayRemove([currentUser.id])])
+    }
+    
+    func rejectFriendRequest(fromUser user: User) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        currentUser.friendRequests.removeAll(where: {$0 == user.id})
+        COLLECTION_USERS.document(currentUser.id).updateData(["friendRequests": FieldValue.arrayRemove([user.id])])
     }
     
     func acceptFriendRequest(fromUser friend: User) {
+        
         guard let user = AuthViewModel.shared.currentUser else {return}
         
         let chatId: String!
@@ -162,18 +178,19 @@ class AddFriendsViewModel: ObservableObject {
             "lastName":friend.lastName
         ]
         
-        COLLECTION_DIRECT_CONVERSATIONS.document(chatId).setData(["users":[userData,friendData]])
+        COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData,friendData], "isDm":true])
         
         let chatData = ["id":chatId,
                         "lastVisited": Int(Date().timeIntervalSince1970 * 1000),
                         "notificationsEnabled": true] as [String: Any]
         
+        ConversationGridViewModel.shared.addConversation(withId: chatId)
         
         COLLECTION_USERS.document(user.id)
             .updateData(
                 ["friendRequests" : FieldValue.arrayRemove([friend.id]),
                  "friends": FieldValue.arrayUnion([friend.id]),
-                 "directConversations": FieldValue.arrayUnion([chatData])])
+                 "conversations": FieldValue.arrayUnion([chatData])])
         
         user.friends.append(friend.id)
         user.chats.append(UserChat(dictionary: chatData))
@@ -182,6 +199,40 @@ class AddFriendsViewModel: ObservableObject {
         COLLECTION_USERS.document(friend.id)
             .updateData(
                 ["friends": FieldValue.arrayUnion([user.id]),
-                 "directConversations": FieldValue.arrayUnion([chatData])])
+                 "conversations": FieldValue.arrayUnion([chatData])])
+    }
+    
+    func fetchFriendRequests() {
+        AuthViewModel.shared.fetchUser {
+            guard let currentUser = AuthViewModel.shared.currentUser else {return}
+            
+            currentUser.friendRequests.forEach { uid in
+                
+                COLLECTION_USERS.document(uid).getDocument { snapshot, _ in
+                    if let data = snapshot?.data() {
+                        let user = User(dictionary: data, id: uid)
+                        
+                        if !self.friendRequests.contains(where: {$0.id == user.id}) && !currentUser.friends.contains(user.id){
+                            self.friendRequests.append(user)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    func setSeenFriendRequests() {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else {return}
+        currentUser.hasUnseenFriendRequest = false
+        COLLECTION_USERS.document(currentUser.id).updateData(["hasUnseenFriendRequest":false])
+    }
+    
+    func reset() {
+        searchedUsers = [User]()
+        friendRequests = [User]()
+        isSearching = false
+        showSearchResults = false
     }
 }

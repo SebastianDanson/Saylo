@@ -36,6 +36,7 @@ class User: ObservableObject  {
     //friends
     var friends: [String]
     var friendRequests: [String]
+    @Published var hasUnseenFriendRequest: Bool
 
     init(dictionary: [String:Any], id: String) {
         
@@ -58,14 +59,14 @@ class User: ObservableObject  {
         //friends
         self.friends = dictionary["friends"] as? [String] ?? [String]()
         self.friendRequests = dictionary["friendRequests"] as? [String] ?? [String]()
+        self.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
 
         //tokens
         self.fcmToken = dictionary["fcmToken"] as? String ?? ""
         self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
 
         //chat
-        let chatDic = dictionary["directConversations"] as? [[String:Any]] ?? [[String:Any]]()
-    
+        let chatDic = dictionary["conversations"] as? [[String:Any]] ?? [[String:Any]]()
         chatDic.forEach({self.chats.append(UserChat(dictionary: $0))})
     }
 }
@@ -81,3 +82,5 @@ struct UserChat: Decodable {
         self.notificationsEnbaled = dictionary["notificationsEnbaled"] as? Bool ?? true
     }
 }
+
+

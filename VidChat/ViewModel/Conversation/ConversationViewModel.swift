@@ -21,6 +21,7 @@ class ConversationViewModel: ObservableObject {
     var chatId = "test"
     
     var sendingMessageDic = [String:Any]()
+    
     @Published var messages = [Message]()
     @Published var savedMessages = [Message]()
     
@@ -51,16 +52,22 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
+    @Published var isCameraFrontFacing = true
+    
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     
     static let shared = ConversationViewModel()
     
-    init() {
-        fetchMessages()
+    private init() {
         //CacheManager.removeOldFiles()
         
         //TODO test removeing old files
+    }
+    
+    func setChat(chat: Chat) {
+        self.chatId = chat.id
+        self.messages = chat.messages
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
@@ -131,7 +138,7 @@ class ConversationViewModel: ObservableObject {
         } else {
             self.sendingMessageDic = dictionary
             withAnimation {
-                ConversationGridViewModel.shared.isSelectingUsers = true
+                ConversationGridViewModel.shared.isSelectingChats = true
                 ConversationGridViewModel.shared.cameraViewZIndex = 1
             }
         }

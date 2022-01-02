@@ -12,7 +12,6 @@ struct AddFriendsView: View {
     @StateObject var viewModel = AddFriendsViewModel.shared
     
     @State var searchText: String = ""
-    @State var friendRequests = [User]()
     @State var suggestedUsers = [User]()
     
     
@@ -29,6 +28,8 @@ struct AddFriendsView: View {
                         withAnimation {
                             ConversationGridViewModel.shared.showAddFriends = false
                         }
+                        
+                        AddFriendsViewModel.shared.reset()
                         
                     } label: {
                         
@@ -60,7 +61,7 @@ struct AddFriendsView: View {
                 .padding(.bottom)
             
             
-            TrackableScrollView(.vertical, showIndicators: false, contentOffset: $viewModel.scrollViewContentOffset) {
+            ScrollView() {
                 
                 
                 VStack(alignment: .leading) {
@@ -77,7 +78,7 @@ struct AddFriendsView: View {
                             
                             ForEach(Array(viewModel.searchedUsers.enumerated()), id: \.1.id) { i, user in
                                 
-                                AddFriendCell(user: user, addedMe: false, isSearch: true, users: $viewModel.searchedUsers)
+                                AddFriendCell(user: user, addedMe: viewModel.friendRequests.contains(where: {$0.id == user.id}), users: $viewModel.searchedUsers)
                                 
                             }
                             
@@ -89,7 +90,7 @@ struct AddFriendsView: View {
                         
                     }
                     
-                    if friendRequests.count > 0 && viewModel.searchedUsers.count == 0 {
+                    if viewModel.friendRequests.count > 0 && viewModel.searchedUsers.count == 0 {
                         Text("Added Me")
                             .foregroundColor(.black)
                             .font(.system(size: 18, weight: .semibold))
@@ -99,9 +100,10 @@ struct AddFriendsView: View {
                     VStack(spacing: 0) {
                         
                         if viewModel.searchedUsers.count == 0 {
-                            ForEach(Array(friendRequests.enumerated()), id: \.1.id) { i, user in
+                            
+                            ForEach(Array(viewModel.friendRequests.enumerated()), id: \.1.id) { i, user in
                                 
-                                AddFriendCell(user: user, addedMe: true, isSearch: false, users: $friendRequests)
+                                AddFriendCell(user: user, addedMe: true, users: $viewModel.friendRequests)
                                 
                             }
                         }
@@ -126,7 +128,7 @@ struct AddFriendsView: View {
                             
                             ForEach(Array(suggestedUsers.enumerated()), id: \.1.id) { i, user in
                                 
-                                AddFriendCell(user: user, addedMe: true, isSearch: false, users: $suggestedUsers)
+                                AddFriendCell(user: user, addedMe: true, users: $suggestedUsers)
                                 
                             }
                         }
@@ -146,6 +148,11 @@ struct AddFriendsView: View {
         .background(Color.backgroundGray)
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .ignoresSafeArea()
+        .onAppear {
+            print("APPREAR")
+            AddFriendsViewModel.shared.fetchFriendRequests()
+            AddFriendsViewModel.shared.setSeenFriendRequests()
+        }
     }
 }
 

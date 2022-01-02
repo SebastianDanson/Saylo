@@ -49,8 +49,8 @@ class CameraViewModel: ObservableObject {
         
         cameraView.cancelRecording()
          
-        ConversationGridViewModel.shared.isSelectingUsers = false
-        ConversationGridViewModel.shared.selectedUsers = [User]()
+        ConversationGridViewModel.shared.isSelectingChats = false
+        ConversationGridViewModel.shared.selectedChats = [Chat]()
     }
     
     func closeCamera() {

@@ -182,12 +182,12 @@ struct OptionsView: View {
                                 Button(action: {
                                     
                                     cameraViewModel.handleTap()
-
-//                                    withAnimation {
-                                        viewModel.showCamera = true
-//                                    }
+                                    
+                                    //                                    withAnimation {
+                                    viewModel.showCamera = true
+                                    //                                    }
                                     viewModel.players.forEach({ $0.player.pause() })
-
+                                    
                                 }, label: {
                                     CameraCircle().padding(.leading, 15).padding(.trailing, 12)
                                 }).transition(.scale)
@@ -318,6 +318,7 @@ struct CameraCircle: View {
 struct ChatOptions: View {
     @Environment(\.presentationMode) var mode
     @Binding var showSettings: Bool
+    
     @StateObject var viewModel = ConversationViewModel.shared
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
@@ -376,9 +377,10 @@ struct ChatOptions: View {
                 
                 VStack(spacing: 12) {
                     
-                    
                     Button {
-                        
+                        withAnimation {
+                            viewModel.isCameraFrontFacing.toggle()
+                        }
                     } label: {
                         
                         ZStack {
@@ -387,14 +389,14 @@ struct ChatOptions: View {
                                 .frame(width: 36, height: 36)
                                 .foregroundColor(Color(white: 0, opacity: 0.3))
                             
-                            Image(systemName: "video")
+                            Image(viewModel.isCameraFrontFacing ? "frontCamera" : "rearCamera")
                                 .resizable()
+                                .renderingMode(.template)
                                 .scaledToFit()
                                 .foregroundColor(.white)
-                                .frame(width: 20, height: 20)
+                                .frame(width: 20, height: 24)
                         }
                     }
-                    
                     
                     Button {
                         withAnimation(.linear(duration: 0.2)) {
@@ -413,8 +415,6 @@ struct ChatOptions: View {
                                 .frame(width: 20, height: 20)
                         }
                     }
-                    
-                    
                 }
             }.padding(.vertical, -6)
         }

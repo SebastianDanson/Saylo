@@ -21,19 +21,10 @@ class AuthViewModel: ObservableObject {
     
     private init() {
         
-        fetchUser()
+        fetchUser() {
+            ConversationGridViewModel.shared.fetchConversations()
+        }
         
-//        COLLECTION_USERS.getDocuments { documents, _ in
-//            documents?.documents.forEach({ document in
-//                
-//                var keywords = self.addKeyWords(name: document.data()["username"] as? String ?? "")
-//                keywords.append(contentsOf: self.addKeyWords(name: document.data()["firstName"] as? String ?? ""))
-//                keywords.append(contentsOf: self.addKeyWords(name: document.data()["lastName"] as? String ?? ""))
-//
-//                COLLECTION_USERS.document(document.documentID).updateData(["searchKeywords":keywords, "firstNameKeywords":FieldValue.delete(), "lastNameKeywords":FieldValue.delete(), "usernameKeywords":FieldValue.delete()])
-//
-//            })
-//        }
     }
     
     func login(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
@@ -45,7 +36,7 @@ class AuthViewModel: ObservableObject {
             }
             
             self.isSignedIn = true
-            self.fetchUser()
+            self.fetchUser {}
             
             completion(error)
         }
@@ -67,7 +58,7 @@ class AuthViewModel: ObservableObject {
             
             COLLECTION_USERS.document(user.uid).setData(data) { _ in
                 //self.userSession = user
-                self.fetchUser()
+                self.fetchUser { }
             }
             
             completion(error)
@@ -93,7 +84,7 @@ class AuthViewModel: ObservableObject {
         firstName.removeTrailingSpaces()
         lastName.removeTrailingSpaces()
 
-        guard var currentUser = currentUser else {
+        guard let currentUser = currentUser else {
             return
         }
 
@@ -104,7 +95,7 @@ class AuthViewModel: ObservableObject {
         keywords.append(contentsOf: addKeyWords(name: lastName))
 
         COLLECTION_USERS.document(currentUser.id).updateData(["firstName":firstName, "lastName":lastName,
-                                                              "searchKeywords":FieldValue.arrayUnion([keywords])])
+                                                              "searchKeywords":FieldValue.arrayUnion(keywords)])
 
     }
     
@@ -125,14 +116,14 @@ class AuthViewModel: ObservableObject {
             
             //username is available
 
-            guard var currentUser = self.currentUser else {
+            guard let currentUser = self.currentUser else {
                 return
             }
 
             currentUser.username = username
             let keywords = self.addKeyWords(name: username)
 
-            COLLECTION_USERS.document(currentUser.id).updateData(["username":username, "searchKeywords":FieldValue.arrayUnion([keywords])])
+            COLLECTION_USERS.document(currentUser.id).updateData(["username":username, "searchKeywords":FieldValue.arrayUnion(keywords)])
             
             completion(false)
         }
@@ -141,7 +132,7 @@ class AuthViewModel: ObservableObject {
     
     func setProfileImage(image: UIImage) {
         
-        guard var currentUser = currentUser else { return }
+        guard let currentUser = currentUser else { return }
         hasCompletedSignUp = true
         CameraViewModel.shared.photo = nil
         MediaUploader.uploadImage(image: image, type: .profile) { imageUrl in
@@ -152,7 +143,7 @@ class AuthViewModel: ObservableObject {
     }
     
     
-    func fetchUser() {
+    func fetchUser(completion: @escaping(() -> Void)) {
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -173,9 +164,10 @@ class AuthViewModel: ObservableObject {
                     self.hasCompletedSignUp = false
                     LandingPageViewModel.shared.setAuthView()
                 }
-               
+               completion()
             } else {
                 try! Auth.auth().signOut()
+                completion()
             }
         }
     }
