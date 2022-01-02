@@ -11,7 +11,7 @@ import Firebase
 class Chat: ObservableObject {
     
     //Doc info
-    let id: String
+    var id: String
     
     //info
     let name: String

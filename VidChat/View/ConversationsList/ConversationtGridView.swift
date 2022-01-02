@@ -188,6 +188,7 @@ struct ShowCameraView: View {
 struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
+    @StateObject private var conversationviewModel = ConversationViewModel.shared
     @StateObject private var authViewModel = AuthViewModel.shared
     
     @Binding var searchText: String
@@ -199,11 +200,16 @@ struct NavView: View {
         
         ZStack(alignment: .center) {
             
+            VStack {
             Rectangle()
                 .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
                 .foregroundColor(.white)
                 .shadow(color: Color(white: 0, opacity: (viewModel.chats.count > 15 || viewModel.showSearchBar) ? 0.05 : 0), radius: 2, x: 0, y: 2)
+                Spacer()
+            }
             
+            
+            VStack {
             if !viewModel.showSearchBar {
                 
                 HStack(alignment: .top) {
@@ -223,24 +229,19 @@ struct NavView: View {
                             }
                             
                             Button(action: {
-                                viewModel.showSearchBar = true
+                                conversationviewModel.isCameraFrontFacing.toggle()
                             }, label: {
-                                Image(systemName: "magnifyingglass.circle.fill")
+                                Image(conversationviewModel.isCameraFrontFacing ? "frontCamera" : "rearCamera")
                                     .resizable()
-                                    .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .scaledToFill()
-                                    .background(
-                                        Circle()
-                                            .foregroundColor(.toolBarIconDarkGray)
-                                            .frame(width: toolBarWidth - 1, height: toolBarWidth - 1)
-                                        
-                                    )
-                                    .foregroundColor(.toolBarIconGray)
+                                    .renderingMode(.template)
+                                    .foregroundColor(.toolBarIconDarkGray)
+                                    .scaledToFit()
+                                    .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
                             })
                         }
                         
                         Spacer()
-                        HStack(alignment: .top, spacing: 10) {
+                        HStack(alignment: .top, spacing: 14) {
                             
                             Button {
                                 withAnimation {
@@ -254,26 +255,28 @@ struct NavView: View {
                                         .frame(width: toolBarWidth, height: toolBarWidth)
                                         .foregroundColor(.toolBarIconGray)
                                         .overlay(
-                                            
+
                                                 Image(systemName: "person.fill.badge.plus")
                                                     .resizable()
-                                                    .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
+                                                    .renderingMode(.template)
                                                     .scaledToFit()
+                                                    .frame(height: toolBarWidth - 15)
                                                     .foregroundColor(.toolBarIconDarkGray)
-                                                    .padding(.trailing, 2)
-                                                    .padding(.top, 1)
+                                                    .padding(.leading, -1)
+
                                         )
-                                    
-                                    
+                                        .padding(.top, -3)
+
+
                                     if AuthViewModel.shared.currentUser?.hasUnseenFriendRequest ?? false {
                                         VStack {
                                             HStack {
                                                 Spacer()
-                                                
+
                                                 Circle()
                                                     .foregroundColor(Color(.systemRed))
                                                     .frame(width: 16, height: 16)
-                                                
+
                                             }
                                             Spacer()
                                         }
@@ -283,7 +286,6 @@ struct NavView: View {
 
                             }
                             
-                            VStack {
                                 
                             Button {
                                 withAnimation {
@@ -295,58 +297,38 @@ struct NavView: View {
                                     .frame(width: toolBarWidth, height: toolBarWidth)
                                     .foregroundColor(.toolBarIconGray)
                                     .overlay(
-                                        Image(systemName: "plus.message.fill")
+                                        Image("video")
                                             .resizable()
-                                            .frame(width: toolBarWidth - 15, height: toolBarWidth - 15)
+                                            .renderingMode(.template)
                                             .scaledToFit()
+                                            .frame(height: toolBarWidth - 22)
                                             .foregroundColor(.toolBarIconDarkGray)
-                                            .padding(.top, 1)
-                                    ).padding(.top, 3)
-                            }
-                            
-                            
-                            
+                                            .padding(.leading, 1)
+                                    )
+                                    .padding(.leading, -2)
                                 
-                                VStack(spacing: 12) {
-                                    
-                                    Button {
-                                       //TODO handle video on grid view
-                                    } label: {
-                                        ZStack {
-                                            Circle()
-                                                .frame(width: 36, height: 36)
-                                                .foregroundColor(Color(white: 0, opacity: 0.3))
-                                            
-                                            Image(systemName: "video")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .foregroundColor(.white)
-                                                .frame(width: 20, height: 20)
-                                        }
-                                    }
-                                    
-                                    Button {
-                                        withAnimation {
-                                            ConversationViewModel.shared.isCameraFrontFacing.toggle()
-                                        }
-                                    } label: {
-                                        
-                                        ZStack {
-                                            
-                                            Circle()
-                                                .frame(width: 36, height: 36)
-                                                .foregroundColor(Color(white: 0, opacity: 0.3))
-                                            
-                                            Image(ConversationViewModel.shared.isCameraFrontFacing ? "frontCamera" : "rearCamera")
-                                                .resizable()
-                                                .renderingMode(.template)
-                                                .scaledToFit()
-                                                .foregroundColor(.white)
-                                                .frame(width: 20, height: 24)
-                                        }
-                                    }
-                                }.padding(.top, 3)
                             }
+                   
+                            Button {
+                                withAnimation {
+                                    viewModel.showNewChat = true
+                                }
+                            } label: {
+                                
+                                Circle()
+                                    .frame(width: toolBarWidth, height: toolBarWidth)
+                                    .foregroundColor(.toolBarIconGray)
+                                    .overlay(
+                                        Image("pencil")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .scaledToFit()
+                                            .frame(height: toolBarWidth - 18)
+                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .padding(.top, 0)
+                                    )
+                            }
+                            
                         }
                     } else {
                         ZStack {
@@ -387,6 +369,8 @@ struct NavView: View {
                     .padding(.horizontal)
                     .padding(.top, topPadding)
                 
+            }
+             Spacer()
             }
         }
         .sheet(isPresented: $viewModel.showSettingsView) {
