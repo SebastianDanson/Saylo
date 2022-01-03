@@ -15,6 +15,8 @@ struct ImageCell: View {
     
     let messageId: String
     let showName: Bool
+    let profileImageUrl: String
+    let name: String
     let date: Date
     
     let isFromPhotoLibrary: Bool
@@ -22,6 +24,19 @@ struct ImageCell: View {
     @State var isSaved: Bool
     @State var backGroundColor = Color.white
     @State var showAlert = false
+    
+    init(message: Message, url: String?, image: UIImage?, showName: Bool) {
+        self.messageId = message.id
+        self.showName = showName
+        self.isFromPhotoLibrary = message.isFromPhotoLibrary
+        self.name = message.username
+        self.profileImageUrl = message.userProfileImageUrl
+        self.date = message.timestamp.dateValue()
+        
+        self.image = image
+        self.url = url
+        self._isSaved = State(initialValue: message.isSaved)
+    }
 
     var body: some View {
         
@@ -44,19 +59,7 @@ struct ImageCell: View {
             
             HStack {
                 if showName {
-                    Image(systemName: "house")
-                        .clipped()
-                        .scaledToFit()
-                        .padding()
-                        .background(Color.gray)
-                        .frame(width: 30, height: 30)
-                        .clipShape(Circle())
-                    Text("Sebastian")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(backGroundColor)
-                    + Text(" • \(date.getFormattedDate())")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(backGroundColor)
+                    MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
                 }
             }
             .padding(.vertical, 12)

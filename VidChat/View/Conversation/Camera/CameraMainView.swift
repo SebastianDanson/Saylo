@@ -18,21 +18,22 @@ struct CameraMainView: View {
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     let screenHeight = UIScreen.main.bounds.height
-    
+        
     var body: some View {
         
         ZStack(alignment: .center) {
             
             //video player
-            if let videoUrl = viewModel.videoUrl {
+            if let playerView = viewModel.videoPlayerView {
                 
                 VStack {
                     
-                    VideoPlayerView(url: videoUrl, showName: false)
+                    playerView
                         .overlay(MediaOptions(), alignment: .bottom)
                         .background(Color.clear)
                         .padding(.top, TOP_PADDING)
                     
+//
                     Spacer()
                     
                 }.zIndex(3)
@@ -55,7 +56,7 @@ struct CameraMainView: View {
             cameraView
                 .frame(width: SCREEN_WIDTH, height: screenHeight)
                 .onTapGesture(count: 2, perform: {
-                    cameraView.switchCamera()
+                    switchCamera()
                 })
             
             
@@ -93,6 +94,10 @@ struct CameraMainView: View {
         .navigationBarHidden(true)
     }
     
+    func switchCamera() {
+        cameraView.switchCamera()
+    }
+    
     func startRecording() {
         cameraView.startRecording()
     }
@@ -118,6 +123,10 @@ struct CameraMainView: View {
     func setupSession() {
         print("SETTING UP SESSION")
         cameraView.setupSession()
+    }
+    
+    func setupWriter() {
+//        cameraView.setupWriter()
     }
 }
 
@@ -150,7 +159,7 @@ struct MediaOptions: View {
                     }
                     
                     Spacer()
-
+                    
                 }
                 
                 Spacer()
@@ -178,12 +187,13 @@ struct SendButton: View {
         
         Button(action: {
             withAnimation(.linear(duration: 0.2)) {
+             
                 ConversationViewModel.shared.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
                                                         type: viewModel.videoUrl == nil ? .Photo : .Video,
                                                         isFromPhotoLibrary: false, shouldExport: false)
                 
                 if ConversationViewModel.shared.chatId != "" {
-                    viewModel.reset()
+                    viewModel.reset(hideCamera: true)
                 }
             }
         }, label: {
@@ -239,7 +249,7 @@ struct CameraOptions: View {
                     } label: {
                         CamereraOptionView(image: Image("x"), imageDimension: 14)
                     }
-                   
+                    
                     Spacer()
                     
                     //Flash toggle button

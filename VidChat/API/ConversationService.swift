@@ -74,22 +74,22 @@ struct ConversationService {
         }
     }
     
-    static func updateIsSaved(forMessage message: Message) {
+    static func updateIsSaved(forMessage message: Message, chatId: String) {
         if message.isSaved {
-            COLLECTION_CONVERSATIONS.document("test").updateData(["savedMessages": FieldValue.arrayUnion([message.id])])
-            COLLECTION_SAVED_POSTS.document("test").updateData(["messages" : FieldValue.arrayUnion([message.getDictionary()])])
+            COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayUnion([message.id])])
+            COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayUnion([message.getDictionary()])])
         } else {
-            COLLECTION_CONVERSATIONS.document("test").updateData(["savedMessages": FieldValue.arrayRemove([message.id])])
-            COLLECTION_SAVED_POSTS.document("test").updateData(["messages" : FieldValue.arrayRemove([message.getDictionary()])])
+            COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayRemove([message.id])])
+            COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayRemove([message.getDictionary()])])
         }
     }
     
-    static func addReaction(reaction: Reaction) {
-        COLLECTION_CONVERSATIONS.document("test").updateData(["reactions": FieldValue.arrayUnion([reaction.getDictionary()])])
+    static func addReaction(reaction: Reaction, chatId: String) {
+        COLLECTION_CONVERSATIONS.document(chatId).updateData(["reactions": FieldValue.arrayUnion([reaction.getDictionary()])])
     }
     
-    static func removeReaction(reaction: Reaction, completion: @escaping(() -> Void)) {
-        COLLECTION_CONVERSATIONS.document("test").updateData(["reactions": FieldValue.arrayRemove([reaction.getDictionary()])]) { error in
+    static func removeReaction(reaction: Reaction, chatId: String, completion: @escaping(() -> Void)) {
+        COLLECTION_CONVERSATIONS.document(chatId).updateData(["reactions": FieldValue.arrayRemove([reaction.getDictionary()])]) { error in
             if let error = error { print("ERROR: removing reaction \(error.localizedDescription)")}
             completion()
         }

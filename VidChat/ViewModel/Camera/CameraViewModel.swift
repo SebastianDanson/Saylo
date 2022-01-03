@@ -22,6 +22,8 @@ class CameraViewModel: ObservableObject {
     @Published var hasSentWithoutCrop = false
     @Published var isPlaying = false
     @Published var isFirstLoad = true
+    @Published var isFrontFacing = true
+    @Published var videoPlayerView: VideoPlayerView?
     
     static let shared = CameraViewModel()
     
@@ -35,20 +37,22 @@ class CameraViewModel: ObservableObject {
         isRecording = false
     }
     
-    func reset() {
+    func reset(hideCamera: Bool = false) {
         
-        if !isRecording && videoUrl == nil && photo == nil {
+        if !isRecording && videoUrl == nil && photo == nil || hideCamera {
             closeCamera()
             isShowingPhotoCamera = false
         }
         
+        videoPlayerView = nil
         videoUrl = nil
         progress = 0.0
         isRecording = false
         photo = nil
         
         cameraView.cancelRecording()
-         
+        cameraView.addAudio()
+
         ConversationGridViewModel.shared.isSelectingChats = false
         ConversationGridViewModel.shared.selectedChats = [Chat]()
     }
@@ -71,7 +75,7 @@ class CameraViewModel: ObservableObject {
         
         if addDelay {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.cameraView.startRecording()
             }
         } else {
@@ -100,5 +104,20 @@ class CameraViewModel: ObservableObject {
     
     func takePhoto() {
         self.cameraView.takePhoto()
+    }
+    
+    func toggleIsFrontFacing() {
+        withAnimation {
+            self.isFrontFacing.toggle()
+        }
+        self.cameraView.switchCamera()
+    }
+    
+    func setVideoPlayer() {
+        if let videoUrl = videoUrl {
+            videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
+        }
+     
+        
     }
 }

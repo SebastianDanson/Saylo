@@ -268,10 +268,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             
             // add audio input
-            audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
-            
-            audioWriterInput.expectsMediaDataInRealTime = true
-            
+            let audioSettings : [String : Any] = [
+                                AVFormatIDKey : kAudioFormatMPEG4AAC,
+                                AVSampleRateKey : 44100,
+                                AVEncoderBitRateKey : 64000,
+                                AVNumberOfChannelsKey: 1
+                            ]
+            audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+                        
             if videoWriter.canAdd(audioWriterInput!) {
                 videoWriter.add(audioWriterInput!)
                 print("audio input added")
@@ -326,11 +330,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                
            } else if writable, output == audioDataOutput,
                      (audioWriterInput.isReadyForMoreMediaData) {
-               
+               print("ADDING AUDIO")
                // write audio buffer
                audioWriterInput?.append(sampleBuffer)
                //print("audio buffering")
            }
+        
            
        }
     
@@ -405,9 +410,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             DispatchQueue.main.async {
                 if showVideo {
                     CameraViewModel.shared.videoUrl = self.outputURL
+                    CameraViewModel.shared.setVideoPlayer()
                 }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
                 self.setUpWriter()
+                self.addAudio()
                 //  try! AVAudioSession.sharedInstance().setActive(true)
             }
             //              self.audioWriterInput

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import Kingfisher
 
 //TODO fix issue when you close camera and u see the whit background of text cell i.e have textcell on screen and open and close camera
 
@@ -328,18 +329,19 @@ struct ReactionView: View {
 struct MessageInfoView: View {
     
     let date: Date
+    let profileImage: String
+    let name: String
     
     var body: some View {
         
         HStack {
-            Image(systemName: "house")
+            KFImage(URL(string: profileImage))
                 .clipped()
-                .scaledToFit()
-                .padding()
-                .background(Color.gray)
+                .scaledToFill()
                 .frame(width: 30, height: 30)
                 .clipShape(Circle())
-            Text("Sebastian")
+            
+            Text(name)
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(.white)
             + Text(" • \(date.getFormattedDate())")

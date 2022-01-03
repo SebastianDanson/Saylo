@@ -320,6 +320,7 @@ struct ChatOptions: View {
     @Binding var showSettings: Bool
     
     @StateObject var viewModel = ConversationViewModel.shared
+    @StateObject var cameraViewModel = CameraViewModel.shared
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
@@ -355,7 +356,7 @@ struct ChatOptions: View {
                         showSettings.toggle()
                     }
                 } label: {
-                    KFImage(URL(string: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%202.54.09%20PM.png?alt=media&token=0a1b499c-a2d9-416f-ab99-3f965939ed66"))
+                    KFImage(URL(string: viewModel.chat?.profileImageUrl ?? ""))
                         .resizable()
                         .scaledToFit()
                         .frame(width: 36, height: 36)
@@ -379,7 +380,7 @@ struct ChatOptions: View {
                     
                     Button {
                         withAnimation {
-                            viewModel.isCameraFrontFacing.toggle()
+                            cameraViewModel.toggleIsFrontFacing()
                         }
                     } label: {
                         
@@ -389,7 +390,7 @@ struct ChatOptions: View {
                                 .frame(width: 36, height: 36)
                                 .foregroundColor(Color(white: 0, opacity: 0.3))
                             
-                            Image(viewModel.isCameraFrontFacing ? "frontCamera" : "rearCamera")
+                            Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
                                 .resizable()
                                 .renderingMode(.template)
                                 .scaledToFit()
@@ -398,21 +399,24 @@ struct ChatOptions: View {
                         }
                     }
                     
-                    Button {
-                        withAnimation(.linear(duration: 0.2)) {
-                            viewModel.showConversationPlayer.toggle()
-                        }
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .frame(width: 36, height: 36)
-                                .foregroundColor(Color(white: 0, opacity: 0.3))
-                            
-                            Image(systemName: "film")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.white)
-                                .frame(width: 20, height: 20)
+                    if viewModel.messages.count > 0 {
+                        
+                        Button {
+                            withAnimation(.linear(duration: 0.2)) {
+                                viewModel.showConversationPlayer.toggle()
+                            }
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .frame(width: 36, height: 36)
+                                    .foregroundColor(Color(white: 0, opacity: 0.3))
+                                
+                                Image(systemName: "film")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.white)
+                                    .frame(width: 20, height: 20)
+                            }
                         }
                     }
                 }
@@ -446,13 +450,6 @@ struct ActionView: View {
                     .scaledToFit()
                     .frame(width: imageDimension, height: imageDimension)
                     .aspectRatio(contentMode: .fit))
-        
-        //        image
-        //            .resizable()
-        //            .scaledToFit()
-        //            .foregroundColor(isActive ? Color.mainBlue : LinearGradient(colors: [.bottomGray, .topGray], startPoint: .bottom, endPoint: .top))
-        //            .frame(width: imageDimension, height: imageDimension)
-        //            .padding(20)
     }
 }
 
@@ -510,20 +507,19 @@ struct KeyboardView: View {
     
     @StateObject var viewModel = ConversationViewModel.shared
     @Binding var text: String
+    let authViewModel = AuthViewModel.shared
     
     var body: some View {
         
         HStack(alignment: .bottom) {
             HStack(alignment: .top, spacing: 10) {
-                Image(systemName: "house")
-                    .clipped()
-                    .scaledToFit()
-                    .padding()
-                    .background(Color.gray)
+                KFImage(URL(string: authViewModel.currentUser?.profileImageUrl ?? ""))
+                .clipped()
+                    .scaledToFill()
                     .frame(width: 30, height: 30)
                     .clipShape(Circle())
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Sebastian")
+                    Text(authViewModel.currentUser?.profileImageUrl ?? "")
                         .font(.system(size: 14, weight: .semibold))
                     MultilineTextField(text: $text) {
                         viewModel.showKeyboard = false
@@ -562,20 +558,23 @@ struct KeyboardView: View {
 
 struct ChatSettingsView: View {
     
+    let chat = ConversationViewModel.shared.chat
+    
     var body: some View {
+        
         VStack(spacing: 20) {
             
             HStack(alignment: .center) {
                 
                 HStack(spacing: 12) {
                     
-                    KFImage(URL(string: AuthViewModel.shared.profileImageUrl ?? ""))
+                    KFImage(URL(string: chat?.profileImageUrl ?? ""))
                         .resizable()
                         .scaledToFill()
                         .frame(width: 36, height: 36)
                         .clipShape(Circle())
                     
-                    Text("Sebastian Danson")
+                    Text(chat?.name ?? "")
                         .lineLimit(1)
                         .font(.system(size: 18, weight: .semibold))
                 }

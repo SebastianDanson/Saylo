@@ -221,9 +221,7 @@ class AddFriendsViewModel: ObservableObject {
         }
     }
     
-    
     func setSeenFriendRequests() {
-        
         guard let currentUser = AuthViewModel.shared.currentUser else {return}
         currentUser.hasUnseenFriendRequest = false
         COLLECTION_USERS.document(currentUser.id).updateData(["hasUnseenFriendRequest":false])

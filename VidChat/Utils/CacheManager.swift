@@ -14,10 +14,14 @@ class CacheManager {
     
     static func getCachedUrl(_ url: URL, userStoredURL: URL?, isVideo: Bool) -> URL {
         if fileExists(forUrl: url, isVideo: isVideo) {
+            print("EXISTS")
             return createNewPath(lastPath: url.lastPathComponent.appending(isVideo ? ".mov" : ".m4a"))
         } else if let url = userStoredURL, fileExists(forUrl: url, isVideo: isVideo, addComp: false) {
+            print("STORED EXISTS")
             return createNewPath(lastPath: url.lastPathComponent)
-        } else {
+        }
+        else {
+            print("DOESNT EXIST")
             isVideo ? (exportSession(forUrl: url)) : (exportAudio(forUrl: url))
             return url
         }
@@ -171,14 +175,13 @@ class CacheManager {
         let cacheDirectory = NSTemporaryDirectory() as NSString
         
         
-        let pathComp = isVideo && addComp ? "\(fileName).mov" : "\(fileName).m4a"
+        let pathComp = addComp ? (isVideo ? "\(fileName).mov" :"\(fileName).m4a") : "\(fileName)"
         let outputURL = cacheDirectory.appendingPathComponent(pathComp)
-        
-        print(fileName, FileManager.default.fileExists(atPath: outputURL), "FILE EXISTS")
         return FileManager.default.fileExists(atPath: outputURL)
     }
     
     static func removeOldFiles() {
+        
         do {
             
             let tempDir = NSTemporaryDirectory()
@@ -188,7 +191,6 @@ class CacheManager {
                 let fullUrl = tempDir + fileURL
                 let date = (try? FileManager.default.attributesOfItem(atPath: fullUrl))?[.creationDate] as? Date
                 if let date = date, date.timeIntervalSince1970 < Date().timeIntervalSince1970 - 86400  {
-                    print("REMOVING")
                     try FileManager.default.removeItem(at: URL(fileURLWithPath: fullUrl))
                 }
             }

@@ -12,32 +12,26 @@ struct AudioCell: View {
     var audioURL: URL
     var date: Date
     var messageId: String?
+    var profileImageUrl: String
+    var name: String
     @ObservedObject var audioPlayer = AudioPlayer()
     @State var isSaved: Bool
     @State var showAlert = false
 
-    init(audioURL: URL, date: Date, isSaved: Bool, messagId: String) {
-        self.date = date
-        self.audioURL = audioURL
-        self.messageId = messagId
-        self._isSaved = State(initialValue: isSaved)
+    init(message: Message, audioUrl: URL) {
+        self.date = message.timestamp.dateValue()
+        self.audioURL = audioUrl
+        self.messageId = message.id
+        self.name = message.username
+        self.profileImageUrl = message.userProfileImageUrl
+        self._isSaved = State(initialValue: message.isSaved)
     }
     
     var body: some View {
         HStack(alignment: .top, spacing: 9) {
-            Image(systemName: "house")
-                .clipped()
-                .scaledToFit()
-                .padding()
-                .background(Color.gray)
-                .frame(width: 30, height: 30)
-                .clipShape(Circle())
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Sebastian")
-                    .font(.system(size: 14, weight: .semibold))
-                + Text(" • \(date.getFormattedDate())")
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.mainGray)
+            
+            MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
+                
                 Button {
                     if !audioPlayer.isPlaying {
                         audioPlayer.hasFinished ? audioPlayer.startPlayback(audio: self.audioURL) : audioPlayer.resume()
@@ -52,7 +46,6 @@ struct AudioCell: View {
                         .foregroundColor(.topGray)
                         .scaledToFill()
                         .padding(.top, 8)
-                }
             }
             
             Spacer()

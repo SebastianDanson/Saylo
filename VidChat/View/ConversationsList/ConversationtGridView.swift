@@ -188,7 +188,7 @@ struct ShowCameraView: View {
 struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
-    @StateObject private var conversationviewModel = ConversationViewModel.shared
+    @StateObject private var cameraViewModel = CameraViewModel.shared
     @StateObject private var authViewModel = AuthViewModel.shared
     
     @Binding var searchText: String
@@ -229,9 +229,9 @@ struct NavView: View {
                             }
                             
                             Button(action: {
-                                conversationviewModel.isCameraFrontFacing.toggle()
+                                cameraViewModel.toggleIsFrontFacing()
                             }, label: {
-                                Image(conversationviewModel.isCameraFrontFacing ? "frontCamera" : "rearCamera")
+                                Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
                                     .resizable()
                                     .renderingMode(.template)
                                     .foregroundColor(.toolBarIconDarkGray)

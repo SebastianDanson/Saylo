@@ -24,8 +24,10 @@ struct VideoPlayerView: View {
     var width: CGFloat = SCREEN_WIDTH
     var height: CGFloat = SCREEN_WIDTH
     var showName: Bool = false
+    var name: String?
+    var profileImageUrl: String?
     
-    init(url: URL, id: String? = nil, showName: Bool = true, date: Date? = nil) {
+    init(url: URL, id: String? = nil, showName: Bool = true, date: Date? = nil, name: String? = nil, profileImage: String? = nil) {
         
         let player = AVPlayer(url: url)
         self.player = player
@@ -58,7 +60,7 @@ struct VideoPlayerView: View {
                 .overlay(
                     HStack {
                         if showName {
-                            MessageInfoView(date: viewModel.date ?? Date())
+                            MessageInfoView(date: viewModel.date ?? Date(), profileImage: profileImageUrl ?? "", name: name ?? "")
                         }
                     },
                     alignment: .bottomLeading)
@@ -152,6 +154,7 @@ class PlayerUIView: UIView {
     }
     
     deinit {
+        playerLayer.player?.pause()
         removePeriodicTimeObserver()
     }
     

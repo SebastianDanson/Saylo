@@ -10,7 +10,8 @@ import AVFoundation
 
 class ConversationPlayerViewModel: ObservableObject {
     
-    @Published var dateString = ""
+    @Published var profileImageUrl = ""
+    @Published var name = ""
     @Published var dragOffset: CGSize = .zero
     @Published var index: Int = 0
     @Published var player = AVQueuePlayer()
@@ -21,13 +22,6 @@ class ConversationPlayerViewModel: ObservableObject {
     var hasGoneBack = false
     var canAdvance = true
     
-    var dates = [Date]() {
-        didSet {
-            if let date = dates.first {
-                self.dateString = date.getFormattedDate()
-            }
-        }
-    }
     
     static let shared = ConversationPlayerViewModel()
     private init() {}
@@ -65,7 +59,6 @@ class ConversationPlayerViewModel: ObservableObject {
         }
         
         hasGoneBack = false
-        setDateString()
     }
     
     func incrementIndex() {
@@ -103,9 +96,7 @@ class ConversationPlayerViewModel: ObservableObject {
                 player.seek(to: .zero)
                 player.play()
             }
-        }
-        
-        setDateString()
+        }        
     }
     
     func addAllVideosToPlayer() {
@@ -120,16 +111,11 @@ class ConversationPlayerViewModel: ObservableObject {
         
     }
     
-    func setDateString() {
-        if let playerItem = player.items().first, let index = playerItems.firstIndex(where: {$0 == playerItem}) {
-            dateString = dates[index].getFormattedDate()
-        }
-    }
     
     func removePlayerView() {
         index = 0
-        player.removeAllItems()
         player.pause()
+        player.removeAllItems()
         ConversationViewModel.shared.showConversationPlayer = false
     }
     

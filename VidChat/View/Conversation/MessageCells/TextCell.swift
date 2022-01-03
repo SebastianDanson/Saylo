@@ -14,6 +14,8 @@ struct TextCell: View {
     let messageId: String
     let isSameIdAsPrevMessage: Bool
     let date: Date
+    let profileImageUrl: String
+    let name: String
     @State var isSaved: Bool
     @State var showAlert = false
     
@@ -22,29 +24,20 @@ struct TextCell: View {
         self.messageId = message.id
         self.isSameIdAsPrevMessage = message.isSameIdAsPrevMessage
         self.date = message.timestamp.dateValue()
+        self.name = message.username
+        self.profileImageUrl = message.userProfileImageUrl
         self._isSaved = State(initialValue: message.isSaved)
     }
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             if !isSameIdAsPrevMessage {
-                Image(systemName: "house")
-                    .clipped()
-                    .scaledToFit()
-                    .padding()
-                    .background(Color.gray)
-                    .frame(width: 30, height: 30)
-                    .clipShape(Circle())
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Sebastian")
-                        .font(.system(size: 14, weight: .semibold))
-                    + Text(" • \(date.getFormattedDate())")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.mainGray)
-                    
-                    Text(text)
-                        .font(.system(size: 16))
-                }
+                
+                MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
+                
+                Text(text)
+                    .font(.system(size: 16))
+                
             } else {
                 Text(text)
                     .font(.system(size: 16))

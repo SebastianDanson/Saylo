@@ -18,8 +18,9 @@ struct MessagePlayer {
 
 class ConversationViewModel: ObservableObject {
     
-    var chatId = "test"
+    var chat: Chat?
     
+    var chatId = ""
     var sendingMessageDic = [String:Any]()
     
     @Published var messages = [Message]()
@@ -52,8 +53,6 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
-    @Published var isCameraFrontFacing = true
-    
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     
@@ -64,10 +63,12 @@ class ConversationViewModel: ObservableObject {
         
         //TODO test removeing old files
     }
-    
+     
     func setChat(chat: Chat) {
+        self.chat = chat
         self.chatId = chat.id
         self.messages = chat.messages
+        self.messages.forEach({print($0.id)})
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
@@ -78,7 +79,7 @@ class ConversationViewModel: ObservableObject {
         
         var dictionary = [
             "id":id,
-            "chatId": self.chatId,
+            "chatId": chatId,
             "userProfileImageUrl":"",
             "username": "Seb",
             "timestamp": Timestamp(date: Date())
@@ -96,6 +97,7 @@ class ConversationViewModel: ObservableObject {
         }
         
         if type == .Photo {
+            
             dictionary["type"] = "photo"
             
             if !isFromPhotoLibrary {
@@ -108,7 +110,7 @@ class ConversationViewModel: ObservableObject {
             dictionary["type"] = "text"
         }
         
-        if chatId != "" {
+        if self.chatId != "" {
             let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
             message.image = image
             
@@ -129,7 +131,7 @@ class ConversationViewModel: ObservableObject {
                     }
                 }
             } else if text != nil {
-                self.atomicallyUploadMessage(toDocWithId: "test", messageId: id)
+                self.atomicallyUploadMessage(toDocWithId: self.chatId, messageId: id)
             } else if let image = image {
                 MediaUploader.uploadImage(image: image, type: .photo) { newURL in
                     self.mediaFinishedUploading(id: id, newUrl: newURL)
@@ -159,7 +161,7 @@ class ConversationViewModel: ObservableObject {
     func mediaFinishedUploading(id: String, newUrl: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == id})
         self.uploadQueue[index!]["url"] = newUrl
-        self.atomicallyUploadMessage(toDocWithId: "test", messageId: id)
+        self.atomicallyUploadMessage(toDocWithId: self.chatId, messageId: id)
     }
     
     func uploadMessage(toDocWithId docId: String) {
@@ -184,7 +186,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func fetchMessages() {
-        ConversationService.fetchMessages(forDocWithId: "test") { messages in
+        ConversationService.fetchMessages(forDocWithId: self.chatId) { messages in
             self.setIsSameAsPrevId(messages: messages)
             self.messages = messages
         }
@@ -206,11 +208,11 @@ class ConversationViewModel: ObservableObject {
     func updateIsSaved(atIndex i: Int) {
         self.messages[i].isSaved.toggle()
         self.savedMessages.removeAll(where: {$0.id == self.messages[i].id})
-        ConversationService.updateIsSaved(forMessage: self.messages[i])
+        ConversationService.updateIsSaved(forMessage: self.messages[i], chatId: self.chatId)
     }
     
     func fetchSavedMessages() {
-        ConversationService.fetchSavedMessages(forDocWithId: "test") { messages in
+        ConversationService.fetchSavedMessages(forDocWithId: self.chatId) { messages in
             self.setIsSameAsPrevId(messages: messages)
             self.savedMessages = messages
         }
@@ -219,14 +221,14 @@ class ConversationViewModel: ObservableObject {
     func addReactionToMessage(withId id: String, reaction: Reaction) {
         if let message = self.messages.first(where: {$0.id == id}) {
             message.reactions.append(reaction)
-            ConversationService.addReaction(reaction: reaction)
+            ConversationService.addReaction(reaction: reaction,  chatId: self.chatId)
         }
     }
     
     func removeReactionFromMessage(withId id: String, reaction: Reaction, completion: @escaping(() -> Void)) {
         if let message = self.messages.first(where: {$0.id == id}) {
             message.reactions.removeAll(where: {$0.userId == reaction.userId})
-            ConversationService.removeReaction(reaction: reaction) {
+            ConversationService.removeReaction(reaction: reaction, chatId: self.chatId) {
                 completion()
             }
         }

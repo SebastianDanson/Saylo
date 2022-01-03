@@ -11,6 +11,7 @@
 		062D28DA277AD21E00B25637 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = 062D28D9277AD21E00B25637 /* CropViewController */; };
 		062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062D28DB277AD4C100B25637 /* ImageCropper.swift */; };
 		062D28DE277ADCD200B25637 /* ContactUsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062D28DD277ADCD200B25637 /* ContactUsView.swift */; };
+		063A89FC27839F70008A8B71 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 063A89FB27839F70008A8B71 /* GoogleService-Info.plist */; };
 		063CAAB3277B9D0200C84318 /* AddFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB2277B9D0200C84318 /* AddFriendsView.swift */; };
 		063CAAB5277B9D0E00C84318 /* AddFriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB4277B9D0E00C84318 /* AddFriendCell.swift */; };
 		063CAAB7277BA0C300C84318 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAB6277BA0C300C84318 /* SettingsView.swift */; };
@@ -92,7 +93,6 @@
 		3F4C618127402A09003EE726 /* ConversationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4C618027402A09003EE726 /* ConversationService.swift */; };
 		3F50C6F4270195B30027D080 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F50C6F3270195B30027D080 /* CameraViewModel.swift */; };
 		3F71247A276FC92C00C8457D /* ConversationPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F712479276FC92C00C8457D /* ConversationPlayerViewModel.swift */; };
-		3F7786B127230DB5005AF9DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */; };
 		3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7786B727231E8A005AF9DA /* CallKit.framework */; };
 		3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */; };
 		3F8A7DE3273C72B500A1BDF6 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8A7DE2273C72B500A1BDF6 /* CacheManager.swift */; };
@@ -122,6 +122,7 @@
 		0626343E2780F14D00C3BE39 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		062D28DB277AD4C100B25637 /* ImageCropper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCropper.swift; sourceTree = "<group>"; };
 		062D28DD277ADCD200B25637 /* ContactUsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsView.swift; sourceTree = "<group>"; };
+		063A89FB27839F70008A8B71 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		063CAAB2277B9D0200C84318 /* AddFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsView.swift; sourceTree = "<group>"; };
 		063CAAB4277B9D0E00C84318 /* AddFriendCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendCell.swift; sourceTree = "<group>"; };
 		063CAAB6277BA0C300C84318 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -176,7 +177,7 @@
 		3F2A7EBF2719E4DF00179390 /* PhotosCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosCollectionView.swift; sourceTree = "<group>"; };
 		3F2A7EC12719E53700179390 /* AssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCell.swift; sourceTree = "<group>"; };
 		3F3D50E8272204DB0048F5BF /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
-		3F485D7726FD453B0071532B /* VidChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VidChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F485D7726FD453B0071532B /* Salo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Salo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F485D7E26FD453D0071532B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3F485D8126FD453D0071532B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3F485D8326FD453D0071532B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -196,7 +197,6 @@
 		3F50C6F3270195B30027D080 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		3F712479276FC92C00C8457D /* ConversationPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPlayerViewModel.swift; sourceTree = "<group>"; };
 		3F7786AF27225958005AF9DA /* VidChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VidChat.entitlements; sourceTree = "<group>"; };
-		3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3F7786B727231E8A005AF9DA /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		3F7786BF27245D99005AF9DA /* MakeCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeCallViewModel.swift; sourceTree = "<group>"; };
 		3F8A7DE2273C72B500A1BDF6 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
@@ -354,7 +354,7 @@
 		3F485D7826FD453B0071532B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3F485D7726FD453B0071532B /* VidChat.app */,
+				3F485D7726FD453B0071532B /* Salo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -370,8 +370,8 @@
 				3F485D8926FD457A0071532B /* Utils */,
 				3F7786BD27234F26005AF9DA /* Supporting Files */,
 				3F485D7E26FD453D0071532B /* Assets.xcassets */,
-				3F7786B027230DB5005AF9DA /* GoogleService-Info.plist */,
 				3F485D8326FD453D0071532B /* Info.plist */,
+				063A89FB27839F70008A8B71 /* GoogleService-Info.plist */,
 				3F485D8026FD453D0071532B /* Preview Content */,
 			);
 			path = VidChat;
@@ -618,9 +618,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3F485D7626FD453B0071532B /* VidChat */ = {
+		3F485D7626FD453B0071532B /* Salo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3F485D8626FD453D0071532B /* Build configuration list for PBXNativeTarget "VidChat" */;
+			buildConfigurationList = 3F485D8626FD453D0071532B /* Build configuration list for PBXNativeTarget "Salo" */;
 			buildPhases = (
 				3F485D7326FD453B0071532B /* Sources */,
 				3F485D7426FD453B0071532B /* Frameworks */,
@@ -630,7 +630,7 @@
 			);
 			dependencies = (
 			);
-			name = VidChat;
+			name = Salo;
 			packageProductDependencies = (
 				3F17680D2713ED550049ADBA /* FirebaseAnalytics */,
 				3F17680F2713ED550049ADBA /* FirebaseAuth */,
@@ -646,7 +646,7 @@
 				062D28D9277AD21E00B25637 /* CropViewController */,
 			);
 			productName = VideoMessengerApp;
-			productReference = 3F485D7726FD453B0071532B /* VidChat.app */;
+			productReference = 3F485D7726FD453B0071532B /* Salo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -684,7 +684,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3F485D7626FD453B0071532B /* VidChat */,
+				3F485D7626FD453B0071532B /* Salo */,
 			);
 		};
 /* End PBXProject section */
@@ -694,9 +694,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F7786B127230DB5005AF9DA /* GoogleService-Info.plist in Resources */,
 				3F485D8226FD453D0071532B /* Preview Assets.xcassets in Resources */,
 				3F112C5E2721B75700BA2A73 /* Localizable.strings in Resources */,
+				063A89FC27839F70008A8B71 /* GoogleService-Info.plist in Resources */,
 				069E4A692772A9CC00996824 /* ringtone.wav in Resources */,
 				3F485D7F26FD453D0071532B /* Assets.xcassets in Resources */,
 			);
@@ -939,7 +939,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.VidChatApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.Salo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -964,7 +964,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.VidChatApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.Salo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -983,7 +983,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3F485D8626FD453D0071532B /* Build configuration list for PBXNativeTarget "VidChat" */ = {
+		3F485D8626FD453D0071532B /* Build configuration list for PBXNativeTarget "Salo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3F485D8726FD453D0071532B /* Debug */,

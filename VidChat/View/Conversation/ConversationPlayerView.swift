@@ -13,9 +13,7 @@ struct ConversationPlayerView: View {
     
     @ObservedObject var viewModel = ConversationPlayerViewModel.shared
     @ObservedObject var conversationViewModel = ConversationViewModel.shared
-    
-    @State var dateString = ""
-    
+        
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
@@ -37,11 +35,14 @@ struct ConversationPlayerView: View {
         viewModel.player = player
         viewModel.player.play()
         viewModel.playerItems = playerItems
-        viewModel.dates = dates
     }
     
     
     var body: some View {
+        
+        let messageInfoView = MessageInfoView(date: conversationViewModel.messages[viewModel.index].timestamp.dateValue(),
+                                              profileImage: conversationViewModel.messages[viewModel.index].userProfileImageUrl,
+                                              name: conversationViewModel.messages[viewModel.index].username)
         
         ZStack {
             
@@ -117,19 +118,8 @@ struct ConversationPlayerView: View {
                 Spacer()
                 
                 HStack {
-                    Image(systemName: "house")
-                        .clipped()
-                        .scaledToFit()
-                        .padding()
-                        .background(Color.gray)
-                        .frame(width: 30, height: 30)
-                        .clipShape(Circle())
-                    Text("Sebastian")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white)
-                    + Text(" • \(viewModel.dateString)")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(Color.white)
+                    
+                        messageInfoView
                     
                     Spacer()
                 }

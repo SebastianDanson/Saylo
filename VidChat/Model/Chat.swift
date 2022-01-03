@@ -71,7 +71,7 @@ class Chat: ObservableObject {
         
         //messages
         let messagesDic = dictionary["messages"] as? [[String:Any]] ?? [[String:Any]]()
-        messagesDic.forEach({ self.messages.append(Message(dictionary: $0, id: $0[id] as? String ?? "")) })
+        messagesDic.forEach({ self.messages.append(Message(dictionary: $0, id: $0["id"] as? String ?? "")) })
         
     }
 }
