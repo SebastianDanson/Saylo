@@ -18,7 +18,7 @@ struct CameraMainView: View {
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     let screenHeight = UIScreen.main.bounds.height
-        
+    
     var body: some View {
         
         ZStack(alignment: .center) {
@@ -33,7 +33,7 @@ struct CameraMainView: View {
                         .background(Color.clear)
                         .padding(.top, TOP_PADDING)
                     
-//
+                    //
                     Spacer()
                     
                 }.zIndex(3)
@@ -126,7 +126,7 @@ struct CameraMainView: View {
     }
     
     func setupWriter() {
-//        cameraView.setupWriter()
+        //        cameraView.setupWriter()
     }
 }
 
@@ -187,7 +187,7 @@ struct SendButton: View {
         
         Button(action: {
             withAnimation(.linear(duration: 0.2)) {
-             
+                
                 ConversationViewModel.shared.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
                                                         type: viewModel.videoUrl == nil ? .Photo : .Video,
                                                         isFromPhotoLibrary: false, shouldExport: false)
@@ -198,27 +198,38 @@ struct SendButton: View {
             }
         }, label: {
             
-            HStack {
-                Rectangle()
-                    .frame(width: ConversationViewModel.shared.chatId == "" ? 130 : 110, height: 40)
-                    .foregroundColor(.white)
-                    .clipShape(Capsule())
-                    .overlay(
-                        HStack(spacing: 10) {
-                            Text(ConversationViewModel.shared.chatId == "" ? "Send To" : "Send")
-                                .foregroundColor(.black)
-                                .font(.system(size: 18, weight: .bold))
-                            
-                            Image(systemName: "location.north.fill")
-                                .resizable()
-                                .rotationEffect(Angle(degrees: 90))
-                                .foregroundColor(.black)
-                                .frame(width: 20, height: 20)
-                                .scaledToFit()
-                        }
-                    )
+            
+            HStack(spacing: 12) {
+                Text(getSendText())
+                    .foregroundColor(.black)
+                    .font(.system(size: 18, weight: .bold))
+                
+                Image(systemName: "location.north.fill")
+                    .resizable()
+                    .rotationEffect(Angle(degrees: 90))
+                    .foregroundColor(.black)
+                    .frame(width: 20, height: 20)
+                    .scaledToFit()
             }
+            .padding(.horizontal, 20)
+            .frame(height: 40)
+            .background(Color.white)
+            .clipShape(Capsule())
+            
+            
         })
+    }
+    
+    func getSendText() -> String {
+        let viewModel = ConversationViewModel.shared
+        
+        if let user = viewModel.selectedUser {
+            return user.firstName
+        } else if viewModel.chatId == "" {
+            return "Send To"
+        } else {
+            return "Send"
+        }
     }
 }
 

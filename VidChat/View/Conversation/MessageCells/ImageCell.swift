@@ -60,6 +60,8 @@ struct ImageCell: View {
             HStack {
                 if showName {
                     MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
+                        .padding(.vertical, 0)
+                        .padding(.horizontal, 3)
                 }
             }
             .padding(.vertical, 12)

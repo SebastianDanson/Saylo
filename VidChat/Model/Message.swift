@@ -78,7 +78,13 @@ class Message: Identifiable {
         
         //userInfo
         self.userId = dictionary["userId"] as? String ?? ""
-        self.username = dictionary["username"] as? String ?? ""
+                
+        if userId == AuthViewModel.shared.currentUser?.id ?? "" {
+            self.username = "Me"
+        } else {
+            self.username = dictionary["username"] as? String ?? ""
+        }
+        
         self.userProfileImageUrl = dictionary["userProfileImageUrl"] as? String ?? ""
         
         //content

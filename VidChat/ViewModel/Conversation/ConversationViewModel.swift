@@ -12,7 +12,7 @@ import UIKit
 import SwiftUI
 
 struct MessagePlayer {
-    let player: AVPlayer
+    var player: AVPlayer
     let messageId: String
 }
 
@@ -55,6 +55,9 @@ class ConversationViewModel: ObservableObject {
     
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
+    private var listener: ListenerRegistration?
+    
+    var selectedUser: User?
     
     static let shared = ConversationViewModel()
     
@@ -63,12 +66,28 @@ class ConversationViewModel: ObservableObject {
         
         //TODO test removeing old files
     }
-     
+    
     func setChat(chat: Chat) {
         self.chat = chat
         self.chatId = chat.id
+        self.setIsSameAsPrevId(messages: chat.messages)
         self.messages = chat.messages
-        self.messages.forEach({print($0.id)})
+        self.addListener()
+    }
+    
+    func removeChat() {
+        self.players = [MessagePlayer]()
+        self.chat = nil
+        self.chatId = ""
+        self.messages = [Message]()
+        self.removeListener()
+    }
+    
+    func addPlayer(_ player: MessagePlayer) {
+        
+        if !self.players.contains(where: {$0.messageId == player.messageId}) {
+            self.players.append(player)
+        }
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
@@ -80,9 +99,10 @@ class ConversationViewModel: ObservableObject {
         var dictionary = [
             "id":id,
             "chatId": chatId,
-            "userProfileImageUrl":"",
-            "username": "Seb",
-            "timestamp": Timestamp(date: Date())
+            "userProfileImageUrl":AuthViewModel.shared.currentUser?.profileImageUrl ?? "",
+            "username": AuthViewModel.shared.currentUser?.firstName ?? "",
+            "timestamp": Timestamp(date: Date()),
+            "userId": AuthViewModel.shared.currentUser?.id
         ] as [String: Any]
         
         if let url = url {
@@ -185,12 +205,12 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func fetchMessages() {
-        ConversationService.fetchMessages(forDocWithId: self.chatId) { messages in
-            self.setIsSameAsPrevId(messages: messages)
-            self.messages = messages
-        }
-    }
+//    func fetchMessages() {
+//        ConversationService.fetchMessages(forDocWithId: self.chatId) { messages in
+//            self.setIsSameAsPrevId(messages: messages)
+//            self.messages = messages
+//        }
+//    }
     
     func setIsSameAsPrevId(messages: [Message]) {
         guard messages.count > 1 else {return}
@@ -201,8 +221,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func getIsSameAsPrevId(prevMessage: Message, nextMessage: Message) -> Bool {
-        return prevMessage.type == .Text && nextMessage.type == .Text
-        && prevMessage.userId == nextMessage.userId
+        return prevMessage.type == .Text && nextMessage.type == .Text && prevMessage.userId == nextMessage.userId
     }
     
     func updateIsSaved(atIndex i: Int) {
@@ -232,5 +251,25 @@ class ConversationViewModel: ObservableObject {
                 completion()
             }
         }
+    }
+    
+    func addListener() {
+        listener = COLLECTION_CONVERSATIONS.document(chatId)
+            .addSnapshotListener { snapshot, _ in
+                if let data = snapshot?.data() {
+                    print("1")
+                    let messages = ConversationService.getMessagesFromData(data: data)
+
+                    //TODO handle reactions
+                    
+                    self.messages = messages
+                }
+            }
+        
+        //TODO ensure mic symbol is not in the top left of the screen of ur phone when ur not on the app
+    }
+    
+    func removeListener() {
+        listener?.remove()
     }
 }

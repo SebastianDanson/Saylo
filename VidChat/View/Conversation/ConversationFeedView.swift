@@ -35,34 +35,34 @@ struct ConversationFeedView: View {
                         MessageCell(message: getMessages()[i])
                             .transition(.move(edge: .bottom))
                             .offset(x: 0, y: -28)
-                            .onAppear {
-                                if i != getMessages().count - 1 {
-                                    viewModel.players.first(where: {$0.messageId == getMessages()[i].id})?.player.pause()
-                                }
-                                
-                                //TODO don't scroll if you're high up and ur not the one sending
-                                //AKA ur watching an older vid and ur buddy send u don't wanna scroll
-                                // if !isFirstLoad {
-                                reader.scrollTo(getMessages().last!.id, anchor: .center)
-                                //}
-                            }
                             .background(
                                 getMessages()[i].type == .Video ? GeometryReader { geo in
                                     Color.white.preference(
                                         key: ViewOffsetsKey.self,
                                         value: [i: geo.frame(in: .named("scrollView")).origin.y]) } : nil)
+                            .onAppear {
+                                if let last = getMessages().last {
+                                    reader.scrollTo(last.id, anchor: .center)
+                                }
+                                
+                            }
                     }
                 }.flippedUpsideDown()
+                   
                 
                     .onPreferenceChange( ViewOffsetsKey.self, perform: { prefs in
                         let prevMiddleItemNo = middleItemNo
                         middleItemNo = prefs.first(where: { $1 > 40 && $1 < 90 })?.key ?? -1
                         
+                        
+                        //                        viewModel.showKeyboard = false
+                        //                        UIApplication.shared.endEditing()
+                        
                         if middleItemNo >= 0 {
                             if prevMiddleItemNo != middleItemNo {
                                 currentPlayer?.pause()
                                 currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
-                                playCurrentPlayer()
+                                currentPlayer?.play()
                                 withAnimation {
                                     reader.scrollTo(getMessages()[middleItemNo].id, anchor: .center)
                                 }
@@ -71,25 +71,26 @@ struct ConversationFeedView: View {
                             currentPlayer?.pause()
                         }
                     })
-            }.padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -20)
-                .padding(.bottom, 100)
+            }
+            .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -20)
+            .padding(.bottom, 100)
             
         }
-        .onDisappear(perform: {
-            viewModel.players.forEach({$0.player.pause()})
-            viewModel.players.removeAll()
-        })
+        
+        
+        //TODO if the last message is a view (aka the fist cell u see), make sure it starts playing right away
+        
+        //TODO don't scroll if you're high up and ur not the one sending
+        //AKA ur watching an older vid and ur buddy send u don't wanna scroll
+        // if !isFirstLoad {
+        //}
+        
         .flippedUpsideDown()
-//        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.white)
         .coordinateSpace(name: "scrollView")
         
         //TODO if no saved messages show an alert saying no saved message and telling them how to do it
     }
     
-    func playCurrentPlayer() {
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            currentPlayer?.play()
-//        }
-    }
 }

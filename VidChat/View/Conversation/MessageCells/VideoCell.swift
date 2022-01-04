@@ -18,13 +18,15 @@ struct VideoCell: View {
     @State var isSaved: Bool
     @State var showAlert = false
     @State var reactions: [Reaction]
-    let videoPlayerView: VideoPlayerView
+    
+//    let videoPlayerView: VideoPlayerView
     
     init(message: Message) {
         self.message = message
         self.reactions = message.reactions
         self.isSaved = message.isSaved
-        self.videoPlayerView = VideoPlayerView(url: URL(string: message.url!)!, id: message.id, showName: true, date: message.timestamp.dateValue())
+//        self.videoPlayerView =
+//        self.videoPlayerView.player.pause()
     }
     
     var body: some View {
@@ -50,7 +52,7 @@ struct VideoCell: View {
         
         ZStack {
             
-            videoPlayerView
+            VideoPlayerView(url: URL(string: message.url!)!, showName: true, message: message)
                 .gesture(gesture)
             
             VStack {
@@ -336,7 +338,7 @@ struct MessageInfoView: View {
         
         HStack {
             KFImage(URL(string: profileImage))
-                .clipped()
+                .resizable()
                 .scaledToFill()
                 .frame(width: 30, height: 30)
                 .clipShape(Circle())
@@ -348,7 +350,6 @@ struct MessageInfoView: View {
                 .font(.system(size: 12, weight: .regular))
                 .foregroundColor(Color.white)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 26)
+  
     }
 }

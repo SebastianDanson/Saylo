@@ -65,6 +65,7 @@ struct ConversationGridView: View {
                                                 .onLongPressGesture {
                                                     withAnimation {
                                                         CameraViewModel.shared.handleTap()
+                                                        conversationViewModel.selectedUser = AuthViewModel.shared.currentUser
                                                         conversationViewModel.showCamera = true
                                                     }
                                                 }

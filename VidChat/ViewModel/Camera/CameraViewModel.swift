@@ -42,8 +42,9 @@ class CameraViewModel: ObservableObject {
         if !isRecording && videoUrl == nil && photo == nil || hideCamera {
             closeCamera()
             isShowingPhotoCamera = false
+            ConversationViewModel.shared.selectedUser = nil
         }
-        
+                
         videoPlayerView = nil
         videoUrl = nil
         progress = 0.0

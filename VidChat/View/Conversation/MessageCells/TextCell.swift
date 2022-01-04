@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import Kingfisher
 
 struct TextCell: View {
     
@@ -33,22 +34,34 @@ struct TextCell: View {
         HStack(alignment: .top, spacing: 10) {
             if !isSameIdAsPrevMessage {
                 
-                MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
-                
-                Text(text)
-                    .font(.system(size: 16))
+                KFImage(URL(string: profileImageUrl))
+                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 30, height: 30)
+                                    .clipShape(Circle())
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(name)
+                                        .font(.system(size: 14, weight: .semibold))
+                                    + Text(" • \(date.getFormattedDate())")
+                                        .font(.system(size: 12, weight: .regular))
+                                        .foregroundColor(.mainGray)
+                                    
+                                    Text(text)
+                                        .font(.system(size: 16))
+                                }
                 
             } else {
                 Text(text)
                     .font(.system(size: 16))
                     .padding(.leading, 30 + 10)
+                    
             }
             
             Spacer()
         }
         .background(Color.white)
         .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.vertical, isSameIdAsPrevMessage ? 0 : 8)
         .onTapGesture {}
         .onLongPressGesture(perform: {
             withAnimation {

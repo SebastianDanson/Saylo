@@ -28,6 +28,7 @@ struct ConversationView: View {
     
     var body: some View {
         
+        
         ZStack {
             VStack(spacing: 0) {
                 
@@ -285,31 +286,48 @@ struct CameraCircle: View {
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
             .stroke(Color.white, style: StrokeStyle(lineWidth: 5.5, lineCap: .round, lineJoin: .round))
             .animation(.linear(duration: viewModel.progress == 0 ? 0 : 20), value: viewModel.progress)
-            .frame(width: 52, height: 52)
+            .frame(width: 56, height: 56)
             .rotationEffect(Angle(degrees: 270))
             .overlay(
-                Circle()
-                    .stroke(LinearGradient(colors: [viewModel.isRecording ? .clear :
-                                                        viewModel.isShowingPhotoCamera ? .white : .bottomGray,
-                                                    viewModel.isRecording ? .clear :
-                                                        viewModel.isShowingPhotoCamera ? .white : .topGray],
-                                           startPoint: .bottom, endPoint: .top),
-                            style: StrokeStyle(lineWidth: viewModel.isShowingPhotoCamera ? 7 : 5.5))
-                    .background(
-                        VStack {
-                            if viewModel.isRecording {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .frame(width: 26,
-                                           height: 26)
-                                    .foregroundColor(Color(.systemRed))
-                                    .transition(.scale)
-                            }
+                
+                ZStack {
+                    if !viewModel.isShowingPhotoCamera && !viewModel.isRecording {
+                        ZStack {
+                            
+                            Circle()
+                                .foregroundColor(.mainBlue)
+                                .frame(width: 56, height: 56)
+                            
+                            Image(systemName: "video.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 27, height: 27)
+                                .foregroundColor(.white)
                         }
-                    )
-                    .frame(width: viewModel.isShowingPhotoCamera ? 64 : 52,
-                           height: viewModel.isShowingPhotoCamera ? 64 : 52)
+                    } else {
+                        Circle()
+                            .stroke(viewModel.isRecording ? .clear : .white,
+                                    style: StrokeStyle(lineWidth: 7))
+                            .scaledToFit()
+                            .background(
+                                
+                                VStack {
+                                    
+                                    if viewModel.isRecording {
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .frame(width: 26,
+                                                   height: 26)
+                                            .foregroundColor(Color(.systemRed))
+                                            .transition(.scale)
+                                    }
+                                }
+                            ).frame(width: viewModel.isShowingPhotoCamera ? 64 : 56,
+                                    height: viewModel.isShowingPhotoCamera ? 64 : 56)
+                    }
+                }
+                
             )
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 5)
     }
 }
 
@@ -331,6 +349,7 @@ struct ChatOptions: View {
                 
                 Button {
                     mode.wrappedValue.dismiss()
+                    viewModel.removeChat()
                 } label: {
                     
                     ZStack {
@@ -512,46 +531,60 @@ struct KeyboardView: View {
     var body: some View {
         
         HStack(alignment: .bottom) {
-            HStack(alignment: .top, spacing: 10) {
-                KFImage(URL(string: authViewModel.currentUser?.profileImageUrl ?? ""))
-                .clipped()
-                    .scaledToFill()
-                    .frame(width: 30, height: 30)
-                    .clipShape(Circle())
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(authViewModel.currentUser?.profileImageUrl ?? "")
-                        .font(.system(size: 14, weight: .semibold))
-                    MultilineTextField(text: $text) {
-                        viewModel.showKeyboard = false
-                    }
-                }
                 
+                Button {
+                    viewModel.showKeyboard = false
+                    UIApplication.shared.endEditing()
+                } label: {
+                    
+                            Image(systemName: "xmark.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 32, height: 32)
+                                .foregroundColor(Color.bottomGray)
+                                .transition(.move(edge: .trailing))
+                        
+                    
+                }
+                .padding(.leading, 16)
+                .padding(.bottom, 8)
+
+                //                KFImage(URL(string: authViewModel.currentUser?.profileImageUrl ?? ""))
+                //                    .resizable()
+                //                    .scaledToFill()
+                //                    .frame(width: 30, height: 30)
+                //                    .clipShape(Circle())
+                //                VStack(alignment: .leading, spacing: 2) {
+                //                    Text(authViewModel.currentUser?.firstName ?? "")
+                //                        .font(.system(size: 14, weight: .semibold))
+                MultilineTextField("Message...",text: $text) {
+                   
+                }
+                .padding(.vertical, 5)
+                .padding(.horizontal, 3)
+
                 Spacer()
-            }
-            .padding(.leading, 12)
-            .padding(.top, 4)
+        
             
             Button {
-                if !text.isEmpty {
+                if !text.trimmingCharacters(in: [" "]).isEmpty {
                     withAnimation(.linear(duration: 0.15)) {
                         viewModel.addMessage(text: text, type: .Text)
                         text = ""
                     }
                 }
             } label: {
-                ZStack {
-                    if text != "" {
+                
                         Image(systemName: "arrow.up.circle.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 28, height: 28)
+                            .frame(width: 32, height: 32)
                             .foregroundColor(Color.mainBlue)
                             .transition(.move(edge: .trailing))
-                    }
-                }
+                    
             }
-            .padding(.bottom, 9)
-            .padding(.trailing, 10)
+            .padding(.trailing, 16)
+            .padding(.bottom, 8)
         }
     }
 }

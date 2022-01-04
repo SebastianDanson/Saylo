@@ -28,31 +28,11 @@ struct ConversationService {
     }
     
     static func fetchMessages(forDocWithId docId: String, completion: @escaping(([Message]) -> Void)) {
-        var messages = [Message]()
         COLLECTION_CONVERSATIONS.document(docId).getDocument { snapshot, _ in
+            
             if let data = snapshot?.data() {
-                let savedMessages = data["savedMessages"] as? [String] ?? [String]()
-                let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
-                let reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
-
-                messagesDic.forEach { message in
-                    let id = message["id"] as? String ?? ""
-                    let isSaved = savedMessages.contains(id)
-                    messages.append(Message(dictionary: message, id: id, isSaved: isSaved))
-                }
                 
-                
-                reactionsDic.forEach({
-                    let reactionType = ReactionType.getReactionType(fromString: $0["reactionType"] as? String ?? "")
-                    let messageId = $0["messageId"] as? String ?? ""
-                    let reaction = Reaction(messageId: messageId,
-                                            username: $0["username"] as? String ?? "",
-                                            userId: $0["userId"] as? String ?? "",
-                                            reactionType: reactionType)
-                    
-                    messages.first(where: {$0.id == messageId})?.reactions.append(reaction)
-                })
-                
+                let messages = self.getMessagesFromData(data: data)
                 completion(messages)
             }
         }
@@ -68,10 +48,39 @@ struct ConversationService {
                     let id = message["id"] as? String ?? ""
                     messages.append(Message(dictionary: message, id: id, isSaved: true))
                 }
-                
+                ConversationViewModel.shared.setIsSameAsPrevId(messages: messages)
                 completion(messages)
             }
         }
+    }
+    
+    static func getMessagesFromData(data: [String:Any]) -> [Message] {
+        
+        var messages = [Message]()
+
+        let savedMessages = data["savedMessages"] as? [String] ?? [String]()
+        let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
+        let reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
+
+        messagesDic.forEach { message in
+            let id = message["id"] as? String ?? ""
+            let isSaved = savedMessages.contains(id)
+            messages.append(Message(dictionary: message, id: id, isSaved: isSaved))
+        }
+        
+        
+        reactionsDic.forEach({
+            let reactionType = ReactionType.getReactionType(fromString: $0["reactionType"] as? String ?? "")
+            let messageId = $0["messageId"] as? String ?? ""
+            let reaction = Reaction(messageId: messageId,
+                                    username: $0["username"] as? String ?? "",
+                                    userId: $0["userId"] as? String ?? "",
+                                    reactionType: reactionType)
+            
+            messages.first(where: {$0.id == messageId})?.reactions.append(reaction)
+        })
+        
+        return messages
     }
     
     static func updateIsSaved(forMessage message: Message, chatId: String) {

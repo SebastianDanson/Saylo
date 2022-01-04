@@ -252,7 +252,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 AVVideoWidthKey : 720,
                 AVVideoHeightKey : 1280,
                 AVVideoCompressionPropertiesKey : [
-                    AVVideoAverageBitRateKey : 1024 * 1024 * 3,
+                    AVVideoAverageBitRateKey : 1024 * 1024 * 2,
                 ],
             ])
             
@@ -264,7 +264,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             } else {
                 print("no input added")
             }
-            
             
             
             // add audio input
@@ -380,6 +379,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 
             }
         }
+        
         CameraViewModel.shared.isFirstLoad = false
         
     }

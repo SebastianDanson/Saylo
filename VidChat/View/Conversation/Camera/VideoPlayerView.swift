@@ -15,59 +15,63 @@ import SwiftUI
 struct VideoPlayerView: View {
     
     @State var player: AVPlayer
-    @ObservedObject var viewModel: VideoPlayerViewModel
-    
-    var messageId: String?
-    
+        
     private var exporter: AVAssetExportSession?
     
     var width: CGFloat = SCREEN_WIDTH
-    var height: CGFloat = SCREEN_WIDTH
+    var height: CGFloat = SCREEN_WIDTH * 16/9
+ 
     var showName: Bool = false
-    var name: String?
-    var profileImageUrl: String?
+    var message: Message?
     
-    init(url: URL, id: String? = nil, showName: Bool = true, date: Date? = nil, name: String? = nil, profileImage: String? = nil) {
-        
+    init(url: URL, showName: Bool = true, message: Message? = nil) {
         let player = AVPlayer(url: url)
         self.player = player
-        self.messageId = id
-        self.viewModel = VideoPlayerViewModel(player: player, date: date)
         self.showName = showName
-        
+        self.message = message
+
         player.automaticallyWaitsToMinimizeStalling = false
-        self.player.play()
         
-        if let id = id {
-            ConversationViewModel.shared.players.append(MessagePlayer(player: player, messageId: id))
+       
+        if let id = message?.id, let lastMessageId = ConversationViewModel.shared.messages.last?.id, id == lastMessageId {
+            player.play()
         }
         
-        if let size = resolutionForLocalVideo(url: url) {
-            let ratio = size.height/size.width
-            height = height * ratio
-        }
+//        setResolutionForLocalVideo(assest: asset)
+       
     }
     
     //TODO asynchornously load videos
     //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
     
     var body: some View {
-        
+                
         ZStack {
+            
             PlayerView(player: $player)
                 .padding(.vertical, -6)
                 .frame(width: width, height: height)
                 .overlay(
                     HStack {
                         if showName {
-                            MessageInfoView(date: viewModel.date ?? Date(), profileImage: profileImageUrl ?? "", name: name ?? "")
+                            MessageInfoView(date: message?.timestamp.dateValue() ?? Date(),
+                                            profileImage: message?.userProfileImageUrl ?? "",
+                                            name: message?.username ?? "")
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 26)
                         }
                     },
                     alignment: .bottomLeading)
                 .highPriorityGesture(TapGesture()
                                         .onEnded { _ in
-                    viewModel.togglePlay()
+                    
+                    togglePlay()
                 })
+                .onAppear {
+                    if let id = message?.id {
+                        ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
+                    }
+                }
         }
         
         if showName {
@@ -77,11 +81,22 @@ struct VideoPlayerView: View {
         
     }
     
+    func togglePlay() {
+        if player.isPlaying {
+            player.pause()
+        } else {
+            player.play()
+        }
+    }
     
-    private func resolutionForLocalVideo(url: URL) -> CGSize? {
-        guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
-        let size = track.naturalSize.applying(track.preferredTransform)
-        return CGSize(width: abs(size.width), height: abs(size.height))
+    private func setResolutionForLocalVideo(assest: AVURLAsset) {
+        
+//        guard let track = assest.tracks(withMediaType: AVMediaType.video).first else { return }
+//        let size = track.naturalSize.applying(track.preferredTransform)
+//
+//        let ratio = size.height/size.width
+//        height = height * ratio
+        
     }
     
 }
@@ -154,7 +169,9 @@ class PlayerUIView: UIView {
     }
     
     deinit {
+        
         playerLayer.player?.pause()
+        playerLayer.player = nil
         removePeriodicTimeObserver()
     }
     
@@ -202,9 +219,13 @@ class PlayerUIView: UIView {
             print(error.localizedDescription)
         }
         
-        player.play()
+        
+        if !shouldLoop || ConversationViewModel.shared.showCamera {
+            player.play()
+        }
         
         if !shouldLoop {
+
             let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
             self.addGestureRecognizer(tap)
             
@@ -299,6 +320,10 @@ class PlayerUIView: UIView {
         
         if shouldLoop {
             playerLayer.player?.seek(to: CMTime.zero)
+            
+            if !ConversationViewModel.shared.showCamera {
+                playerLayer.player?.pause()
+            }
         } else {
             ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: false)
         }

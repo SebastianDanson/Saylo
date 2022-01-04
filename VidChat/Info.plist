@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Salo</string>
+	<string>Saylo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,7 +25,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>So you can take videos</string>
+	<string>So you can send messages</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>So your videos can have audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>

@@ -13,7 +13,7 @@ struct ConversationPlayerView: View {
     
     @ObservedObject var viewModel = ConversationPlayerViewModel.shared
     @ObservedObject var conversationViewModel = ConversationViewModel.shared
-        
+    
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
@@ -44,64 +44,74 @@ struct ConversationPlayerView: View {
                                               profileImage: conversationViewModel.messages[viewModel.index].userProfileImageUrl,
                                               name: conversationViewModel.messages[viewModel.index].username)
         
-        ZStack {
+        
+        ZStack(alignment: .top) {
             
-            if conversationViewModel.messages[viewModel.index].type == .Video || conversationViewModel.messages[viewModel.index].type == .Audio {
-                
-                PlayerQueueView()
-                    .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
-                    .background(conversationViewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.black)
-                    .overlay(
-                        ZStack {
-                            if conversationViewModel.messages[viewModel.index].type == .Audio {
-                                Image(systemName: "waveform")
-                                    .resizable()
-                                    .frame(width: 120, height: 120)
-                                    .foregroundColor(.white)
-                                    .scaledToFill()
-                                    .padding(.top, 8)
-                            }
-                        }
-                    )
-                
-            } else if conversationViewModel.messages[viewModel.index].type == .Text, let text = conversationViewModel.messages[viewModel.index].text {
-                ZStack {
-                    Text(text)
-                        .foregroundColor(.white)
-                        .font(.system(size: 28, weight: .bold))
-                        .padding()
+            ZStack {
+                if conversationViewModel.messages[viewModel.index].type == .Video || conversationViewModel.messages[viewModel.index].type == .Audio {
                     
+                    PlayerQueueView()
+                        .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                        .background(conversationViewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.black)
+                        .overlay(
+                            ZStack {
+                                if conversationViewModel.messages[viewModel.index].type == .Audio {
+                                    Image(systemName: "waveform")
+                                        .resizable()
+                                        .frame(width: 120, height: 120)
+                                        .foregroundColor(.white)
+                                        .scaledToFill()
+                                        .padding(.top, 8)
+                                }
+                            }
+                        )
+                    
+                } else if conversationViewModel.messages[viewModel.index].type == .Text, let text = conversationViewModel.messages[viewModel.index].text {
+                    ZStack {
+                        Text(text)
+                            .foregroundColor(.white)
+                            .font(.system(size: 28, weight: .bold))
+                            .padding()
+                        
+                    }
+                    .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                    .background(Color.mainBlue)
+                    
+                } else if conversationViewModel.messages[viewModel.index].type == .Photo {
+                    
+                    if let url = conversationViewModel.messages[viewModel.index].url {
+                        KFImage(URL(string: url))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                            .cornerRadius(12)
+                            .clipped()
+                    } else if let image = conversationViewModel.messages[viewModel.index].image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                            .cornerRadius(12)
+                            .clipped()
+                    }
                 }
-                .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
-                .background(Color.mainBlue)
-                
-            } else if conversationViewModel.messages[viewModel.index].type == .Photo {
-                
-                if let url = conversationViewModel.messages[viewModel.index].url {
-                    KFImage(URL(string: url))
-                        .resizable()
-                        .scaledToFill()
-                        .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
-                        .cornerRadius(12)
-                        .clipped()
-                } else if let image = conversationViewModel.messages[viewModel.index].image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
-                        .cornerRadius(12)
-                        .clipped()
-                }
-            }
+            }.padding(.top, TOP_PADDING)
             
-            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
+            VStack {
+                RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                    .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
+                    .padding(.top, TOP_PADDING - 10)
+                
+                Spacer()
+            }
             
         }
         .overlay(
             
             VStack {
                 HStack {
+                    
+                    VStack {
                     Button(action: {
                         withAnimation(.linear(duration: 0.2)) {
                             viewModel.removePlayerView()
@@ -109,8 +119,10 @@ struct ConversationPlayerView: View {
                     }, label: {
                         CamereraOptionView(image: Image(systemName: "chevron.down"), imageDimension: 17, circleDimension: 32, topPadding: 3)
                             .padding(.horizontal, 8)
-                            .padding(.top, 12)
+                            .padding(.top, -28)
                     })
+                        
+                    }
                     
                     Spacer()
                 }
@@ -119,14 +131,18 @@ struct ConversationPlayerView: View {
                 
                 HStack {
                     
-                        messageInfoView
+                    messageInfoView
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, viewModel.isPlayable() ? 64 : 48)
                     
                     Spacer()
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, viewModel.isPlayable() ? 40 : 24)
+//                .padding(.horizontal, 16)
+//                .padding(.bottom, viewModel.isPlayable() ? 40 : 24)
                 
-            })
+            }
+            .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+        )
         
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.black)
