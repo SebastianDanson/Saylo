@@ -10,9 +10,14 @@ import Kingfisher
 
 struct ConversationGridCell: View {
     
-    var chat: Chat
-    let width = UIScreen.main.bounds.width/4.2
-    let textColor = Color(red: 136/255, green: 137/255, blue: 141/255)
+    @Binding var chat: Chat
+    let width = SCREEN_WIDTH/4.2
+    let textColor: Color
+    
+    init(chat: Binding<Chat>, textColor: Color = Color(red: 136/255, green: 137/255, blue: 141/255)) {
+        self._chat = chat
+        self.textColor = textColor
+    }
     
     var body: some View {
 
@@ -42,7 +47,9 @@ struct ConversationGridCell: View {
                 
             }.overlay(
                 ZStack {
+                    
                     if chat.isSelected {
+                        
                         Image(systemName: "checkmark.circle.fill")
                             .resizable()
                             .frame(width: 32, height: 32)

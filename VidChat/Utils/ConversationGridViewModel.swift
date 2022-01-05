@@ -39,7 +39,7 @@ class ConversationGridViewModel: ObservableObject {
     
     func toggleSelectedChat(chat: Chat) {
         //TODO handle isSelected
-        chat.isSelected = !chat.isSelected
+        chat.isSelected.toggle()
         if let index = selectedChats.firstIndex(where: {$0.id == chat.id}) {
             selectedChats.remove(at: index)
         } else {
@@ -74,9 +74,45 @@ class ConversationGridViewModel: ObservableObject {
         
         COLLECTION_CONVERSATIONS.document(id).getDocument { snapshot, _ in
             if let data = snapshot?.data() {
-                let chat = Chat(dictionary: data, id: id)
+                var chat = Chat(dictionary: data, id: id)
                 
                 if !self.allChats.contains(where: {$0.id == chat.id}) {
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+                    
+                  
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+               
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+                    
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+                    
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+                    
+              
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
+                    self.chats.append(chat)
+                    self.allChats.append(chat)
+                 
+                    
+                    chat = Chat(dictionary: data, id: UUID().uuidString)
                     self.chats.append(chat)
                     self.allChats.append(chat)
                 }
@@ -90,6 +126,14 @@ class ConversationGridViewModel: ObservableObject {
 
         user.chats.forEach { chat in
             addConversation(withId: chat.id)
+        }
+    }
+    
+    func stopSelectingChats() {
+        withAnimation {
+            isSelectingChats = false
+            selectedChats.forEach({$0.isSelected = false})
+            selectedChats.removeAll()
         }
     }
 }

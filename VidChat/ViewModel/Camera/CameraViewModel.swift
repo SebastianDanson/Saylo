@@ -42,7 +42,13 @@ class CameraViewModel: ObservableObject {
         if !isRecording && videoUrl == nil && photo == nil || hideCamera {
             closeCamera()
             isShowingPhotoCamera = false
-            ConversationViewModel.shared.selectedUser = nil
+            
+            if ConversationViewModel.shared.selectedChat != nil {
+                ConversationViewModel.shared.selectedChat = nil
+                ConversationViewModel.shared.chatId = ""
+            }
+            
+            
         }
                 
         videoPlayerView = nil
@@ -54,7 +60,7 @@ class CameraViewModel: ObservableObject {
         cameraView.cancelRecording()
         cameraView.addAudio()
 
-        ConversationGridViewModel.shared.isSelectingChats = false
+        ConversationGridViewModel.shared.stopSelectingChats()
         ConversationGridViewModel.shared.selectedChats = [Chat]()
     }
     

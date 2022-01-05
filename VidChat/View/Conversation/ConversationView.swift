@@ -20,7 +20,6 @@ struct ConversationView: View {
     @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
     @State private var text = ""
-    @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
     @State private var showSettings = false
     
     private var isFirstLoad = true
@@ -62,8 +61,8 @@ struct ConversationView: View {
                 }
                 
                 if viewModel.showPhotos {
-                    PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
-                        .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
+                    PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight)
+                        .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
                         .transition(.move(edge: .bottom))
                 }
                 
@@ -116,7 +115,6 @@ struct ConversationView: View {
         .background(Color.white)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
     }
-    
 }
 
 
@@ -131,7 +129,6 @@ struct OptionsView: View {
     
     @State var audioRecorder = AudioRecorder()
     @State var audioProgress = 0.0
-    @State var isRecordingAudio = false
     
     var body: some View {
         
@@ -151,24 +148,34 @@ struct OptionsView: View {
                             
                             if !viewModel.showCamera {
                                 
-                                if !isRecordingAudio {
+                                if !viewModel.isRecordingAudio {
                                     //Camera button
                                     Button(action: {
                                         withAnimation(.linear(duration: 0.15)) {
                                             cameraViewModel.isShowingPhotoCamera = true
                                             viewModel.showCamera = true
+                                            viewModel.pauseVideos()
                                         }
                                     }, label: {
                                         ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
                                     }).transition(.scale)
                                 }
                                 
-                                if !isRecordingAudio {
+                                if !viewModel.isRecordingAudio {
                                     
                                     Button(action: {
+                                        
+                                        viewModel.photoBaseHeight = viewModel.chatId.isEmpty ? PHOTO_PICKER_SMALL_HEIGHT : PHOTO_PICKER_BASE_HEIGHT
+
                                         withAnimation(.linear(duration: 0.15)) {
+                                            
                                             viewModel.showPhotos = true
+                                            
+                                            if viewModel.chatId.isEmpty {
+                                                ConversationGridViewModel.shared.isSelectingChats = true
+                                            }
                                         }
+                                        
                                     }, label: {
                                         ActionView(image: Image(systemName: "photo.on.rectangle.angled"), imageDimension: 31)
                                     }).transition(.scale)
@@ -178,7 +185,7 @@ struct OptionsView: View {
                                 }
                             }
                             
-                            if !isRecordingAudio {
+                            if !viewModel.isRecordingAudio {
                                 //Video record circle
                                 Button(action: {
                                     
@@ -187,8 +194,8 @@ struct OptionsView: View {
                                     //                                    withAnimation {
                                     viewModel.showCamera = true
                                     //                                    }
-                                    viewModel.players.forEach({ $0.player.pause() })
-                                    
+                                    viewModel.pauseVideos()
+
                                 }, label: {
                                     CameraCircle().padding(.leading, 15).padding(.trailing, 12)
                                 }).transition(.scale)
@@ -199,7 +206,9 @@ struct OptionsView: View {
                                 //Mic button
                                 Button(action: {
                                     withAnimation {
-                                        if !isRecordingAudio {
+                                        if !viewModel.isRecordingAudio {
+                                            viewModel.pauseVideos()
+
                                             audioProgress = 1.0
                                             viewModel.showAudio = true
                                             audioRecorder.startRecording()
@@ -214,15 +223,21 @@ struct OptionsView: View {
                                             }
                                             
                                             viewModel.showAudio = false
+                                            
+                                            if viewModel.chatId.isEmpty {
+                                                ConversationGridViewModel.shared.isSelectingChats = true
+                                            }
                                         }
-                                        isRecordingAudio = true
+                                        
+                                        viewModel.isRecordingAudio = true
                                     }
                                 }, label: {
-                                    ActionView(image: Image(systemName: viewModel.showAudio || !isRecordingAudio ? "waveform" :
+                                    
+                                    ActionView(image: Image(systemName: viewModel.showAudio || !viewModel.isRecordingAudio ? "waveform" :
                                                                 cameraViewModel.isPlaying ?
                                                             "pause.circle.fill" : "play.circle.fill"),
-                                               imageDimension: viewModel.showAudio || !isRecordingAudio ? 30 : 60, isActive: $isRecordingAudio, isAudio: true)
-                                        .foregroundColor(isRecordingAudio ? Color.mainBlue : Color(.systemGray))
+                                               imageDimension: viewModel.showAudio || !viewModel.isRecordingAudio ? 30 : 60, isActive: $viewModel.isRecordingAudio, isAudio: true)
+                                        .foregroundColor(viewModel.isRecordingAudio ? Color.mainBlue : Color(.systemGray))
                                         .overlay(
                                             ZStack {
                                                 // if isRecordingAudio {
@@ -239,11 +254,15 @@ struct OptionsView: View {
                                         )
                                 })
                                 
-                                if !isRecordingAudio {
+                                if !viewModel.isRecordingAudio {
                                     //Aa button
                                     Button(action: {
                                         withAnimation {
                                             viewModel.showKeyboard = true
+                                            
+                                            if viewModel.chatId.isEmpty {
+                                                ConversationGridViewModel.shared.isSelectingChats = true
+                                            }
                                         }
                                     }, label: {
                                         ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
@@ -257,7 +276,7 @@ struct OptionsView: View {
                 .frame(height: 70)
                 .padding(.bottom, viewModel.showCamera ? 200 + BOTTOM_PADDING : BOTTOM_PADDING)
                 .padding(.horizontal, 14)
-                .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $isRecordingAudio))
+                .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $viewModel.isRecordingAudio))
                 .transition(.opacity)
                 
             }
@@ -477,7 +496,8 @@ struct AudioOptions: View {
     
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     @StateObject var viewModel = ConversationViewModel.shared
-    
+    @StateObject var conversationGridViewModel = ConversationGridViewModel.shared
+
     @Binding var audioRecorder: AudioRecorder
     @Binding var isRecordingAudio: Bool
     
@@ -491,6 +511,9 @@ struct AudioOptions: View {
                     withAnimation {
                         isRecordingAudio = false
                     }
+                    
+                    ConversationGridViewModel.shared.stopSelectingChats()
+                    
                 } label: {
                     Image(systemName: "x.circle.fill")
                         .resizable()
@@ -514,10 +537,21 @@ struct AudioOptions: View {
                         .scaledToFit()
                         .frame(width: 44, height: 44)
                         .foregroundColor(Color.mainBlue)
+                        .opacity(canSend() ? 1 : 0.3)
                         .padding(32)
                 }.transition(.move(edge: .trailing))
+                    .disabled(!canSend())
             }
         }.padding(.bottom, bottomPadding)
+    }
+    
+    func canSend() -> Bool {
+                
+        if conversationGridViewModel.isSelectingChats {
+            return conversationGridViewModel.selectedChats.count > 0
+        }
+        
+        return true
     }
 }
 
@@ -533,8 +567,13 @@ struct KeyboardView: View {
         HStack(alignment: .bottom) {
                 
                 Button {
-                    viewModel.showKeyboard = false
                     UIApplication.shared.endEditing()
+
+                    withAnimation {
+                        viewModel.showKeyboard = false
+                        ConversationGridViewModel.shared.stopSelectingChats()
+                    }
+                   
                 } label: {
                     
                             Image(systemName: "xmark.circle.fill")
@@ -580,12 +619,22 @@ struct KeyboardView: View {
                             .scaledToFit()
                             .frame(width: 32, height: 32)
                             .foregroundColor(Color.mainBlue)
+                            .opacity(getIsSendButtonEnabled() ? 1 : 0.3)
                             .transition(.move(edge: .trailing))
+                            .disabled(!getIsSendButtonEnabled())
                     
             }
             .padding(.trailing, 16)
             .padding(.bottom, 8)
         }
+    }
+    
+    func getIsSendButtonEnabled() -> Bool {
+        if ConversationViewModel.shared.chatId.isEmpty {
+            return ConversationGridViewModel.shared.selectedChats.count > 0 && !text.isEmpty
+        }
+        
+        return !text.isEmpty
     }
 }
 

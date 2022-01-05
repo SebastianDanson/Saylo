@@ -23,11 +23,11 @@ struct ConversationGridView: View {
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var viewModel = ConversationGridViewModel.shared
     
-    @State private var photosPickerHeight = PHOTO_PICKER_BASE_HEIGHT
-    
     
     var body: some View {
         
+        let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight, height: $conversationViewModel.photoBaseHeight)
+
         NavigationView {
             
             ZStack(alignment: .top) {
@@ -48,8 +48,8 @@ struct ConversationGridView: View {
                             ScrollView(showsIndicators: false) {
                                 VStack {
                                     LazyVGrid(columns: items, spacing: 14, content: {
-                                        ForEach(viewModel.chats, id: \.id) { chat in
-                                            ConversationGridCell(chat: chat)
+                                        ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                            ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
                                                 .onTapGesture {
@@ -57,6 +57,11 @@ struct ConversationGridView: View {
                                                         withAnimation(.linear(duration: 0.15)) {
                                                             viewModel.toggleSelectedChat(chat: chat)
                                                         }
+                                                        
+                                                        if conversationViewModel.showPhotos {
+                                                            photoPicker.setIsSendEnabled()
+                                                        }
+                                                        
                                                     } else {
                                                         conversationViewModel.setChat(chat: chat)
                                                         viewModel.showConversation = true
@@ -65,7 +70,8 @@ struct ConversationGridView: View {
                                                 .onLongPressGesture {
                                                     withAnimation {
                                                         CameraViewModel.shared.handleTap()
-                                                        conversationViewModel.selectedUser = AuthViewModel.shared.currentUser
+                                                        conversationViewModel.selectedChat = chat
+                                                        conversationViewModel.chatId = chat.id
                                                         conversationViewModel.showCamera = true
                                                     }
                                                 }
@@ -73,34 +79,41 @@ struct ConversationGridView: View {
                                     })
                                         .padding(.horizontal, 12)
                                     
-                                }.padding(.top,
-                                          !conversationViewModel.showKeyboard &&
-                                          !conversationViewModel.showPhotos &&
-                                          !viewModel.showSearchBar &&
-                                          !viewModel.isSelectingChats ?
-                                          BOTTOM_PADDING + 82 : viewModel.isSelectingChats ? (viewModel.selectedChats.count > 0 ? 12 : BOTTOM_PADDING + 12) : 6)
+                                }.padding(.top, getConversationGridPadding())
                             }
                             .background(Color.white)
                             .flippedUpsideDown()
                             .scaleEffect(x: -1, y: 1, anchor: .center)
-                            .navigationBarTitle("Conversations", displayMode: .inline)
-                            .ignoresSafeArea()
                             .zIndex(2)
                             .transition(.move(edge: .bottom))
                             
                         }
                         
                         
-                        if conversationViewModel.showCamera {
+                        if conversationViewModel.showCamera && !viewModel.isSelectingChats {
                             CameraViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
+                            //                                .overlay(
+                            //                                    VStack {
+                            //                                        Spacer()
+                            //
+                            //                                        SelectUsersPopUpView()
+                            //                                    }
+                            //                                )
                         }
                     }
+                    
+                    
+                    if viewModel.isSelectingChats {
+                        SelectedChatsView()
+                    }
+                    
                     if conversationViewModel.showPhotos {
-                        PhotoPickerView(baseHeight: PHOTO_PICKER_BASE_HEIGHT, height: $photosPickerHeight)
-                            .frame(width: SCREEN_WIDTH, height: photosPickerHeight)
+                        photoPicker
+                            .frame(width: SCREEN_WIDTH, height: conversationViewModel.photoBaseHeight)
                             .transition(.move(edge: .bottom))
                     }
+                    
                     
                     if conversationViewModel.showKeyboard {
                         KeyboardView(text: $text)
@@ -110,10 +123,6 @@ struct ConversationGridView: View {
                         Rectangle()
                             .foregroundColor(.white)
                             .frame(height: 2)
-                    }
-                    
-                    if viewModel.selectedChats.count > 0 && viewModel.isSelectingChats {
-                        SelectedUsersView()
                     }
                 }
                 
@@ -127,7 +136,6 @@ struct ConversationGridView: View {
                             
                             OptionsView()
                         }
-                        
                     }
                 }
                 
@@ -148,6 +156,26 @@ struct ConversationGridView: View {
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
             
         }
+    }
+    
+    func getConversationGridPadding() -> CGFloat {
+        
+        if !conversationViewModel.showKeyboard &&
+            !conversationViewModel.showPhotos &&
+            !viewModel.showSearchBar &&
+            !viewModel.isSelectingChats {
+            return BOTTOM_PADDING + 82
+        }
+        
+        if viewModel.isSelectingChats {
+            
+//            if viewModel.selectedChats.count > 0 {
+                return 12
+//            }
+            
+        }
+        
+        return 6
     }
 }
 
@@ -189,74 +217,75 @@ struct ShowCameraView: View {
 struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
+    @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var cameraViewModel = CameraViewModel.shared
     @StateObject private var authViewModel = AuthViewModel.shared
     
     @Binding var searchText: String
     
-    private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     private let toolBarWidth: CGFloat = 38
     
     var body: some View {
         
         ZStack(alignment: .center) {
             
-            VStack {
-            Rectangle()
-                .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
-                .foregroundColor(.white)
-                .shadow(color: Color(white: 0, opacity: (viewModel.chats.count > 15 || viewModel.showSearchBar) ? 0.05 : 0), radius: 2, x: 0, y: 2)
-                Spacer()
-            }
+            //            VStack {
+            //            Rectangle()
+            //                .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
+            //                .foregroundColor(.white)
+            //                .shadow(color: Color(white: 0, opacity: (viewModel.chats.count > 15 || viewModel.showSearchBar) ? 0.05 : 0), radius: 2, x: 0, y: 2)
+            //                Spacer()
+            //            }
             
             
             VStack {
-            if !viewModel.showSearchBar {
                 
-                HStack(alignment: .top) {
+                if !viewModel.showSearchBar {
                     
-                    if !viewModel.isSelectingChats {
+                    HStack(alignment: .top) {
                         
-                        HStack(spacing: 12) {
+                        if !viewModel.isSelectingChats {
                             
-                            Button {
-                                viewModel.showSettingsView = true
-                            } label: {
-                                KFImage(URL(string: authViewModel.profileImageUrl ?? ""))
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .clipShape(Circle())
+                            HStack(spacing: 12) {
+                                
+                                Button {
+                                    viewModel.showSettingsView = true
+                                } label: {
+                                    KFImage(URL(string: authViewModel.profileImageUrl ?? ""))
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: toolBarWidth, height: toolBarWidth)
+                                        .clipShape(Circle())
+                                }
+                                
+                                Button(action: {
+                                    cameraViewModel.toggleIsFrontFacing()
+                                }, label: {
+                                    Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .foregroundColor(.toolBarIconDarkGray)
+                                        .scaledToFit()
+                                        .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                })
                             }
                             
-                            Button(action: {
-                                cameraViewModel.toggleIsFrontFacing()
-                            }, label: {
-                                Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(.toolBarIconDarkGray)
-                                    .scaledToFit()
-                                    .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
-                            })
-                        }
-                        
-                        Spacer()
-                        HStack(alignment: .top, spacing: 14) {
-                            
-                            Button {
-                                withAnimation {
-                                    viewModel.showAddFriends = true
-                                }
-                                AuthViewModel.shared.currentUser?.hasUnseenFriendRequest = false
-                            } label: {
-                                ZStack {
-                                    
-                                    Circle()
-                                        .frame(width: toolBarWidth, height: toolBarWidth)
-                                        .foregroundColor(.toolBarIconGray)
-                                        .overlay(
-
+                            Spacer()
+                            HStack(alignment: .top, spacing: 14) {
+                                
+                                Button {
+                                    withAnimation {
+                                        viewModel.showAddFriends = true
+                                    }
+                                    AuthViewModel.shared.currentUser?.hasUnseenFriendRequest = false
+                                } label: {
+                                    ZStack {
+                                        
+                                        Circle()
+                                            .frame(width: toolBarWidth, height: toolBarWidth)
+                                            .foregroundColor(.toolBarIconGray)
+                                            .overlay(
+                                                
                                                 Image(systemName: "person.fill.badge.plus")
                                                     .resizable()
                                                     .renderingMode(.template)
@@ -264,119 +293,121 @@ struct NavView: View {
                                                     .frame(height: toolBarWidth - 15)
                                                     .foregroundColor(.toolBarIconDarkGray)
                                                     .padding(.leading, -1)
-
-                                        )
-                                        .padding(.top, -3)
-
-
-                                    if AuthViewModel.shared.currentUser?.hasUnseenFriendRequest ?? false {
-                                        VStack {
-                                            HStack {
+                                                
+                                            )
+                                            .padding(.top, -3)
+                                        
+                                        
+                                        if AuthViewModel.shared.currentUser?.hasUnseenFriendRequest ?? false {
+                                            VStack {
+                                                HStack {
+                                                    Spacer()
+                                                    
+                                                    Circle()
+                                                        .foregroundColor(Color(.systemRed))
+                                                        .frame(width: 16, height: 16)
+                                                    
+                                                }
                                                 Spacer()
-
-                                                Circle()
-                                                    .foregroundColor(Color(.systemRed))
-                                                    .frame(width: 16, height: 16)
-
                                             }
-                                            Spacer()
                                         }
-                                    }
+                                        
+                                    }.frame(width: toolBarWidth + 6, height: toolBarWidth + 6)
                                     
-                                }.frame(width: toolBarWidth + 6, height: toolBarWidth + 6)
-
-                            }
-                            
-                                
-                            Button {
-                                withAnimation {
-                                    viewModel.showNewChat = true
                                 }
-                            } label: {
                                 
-                                Circle()
-                                    .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .foregroundColor(.toolBarIconGray)
-                                    .overlay(
-                                        Image("video")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .scaledToFit()
-                                            .frame(height: toolBarWidth - 22)
-                                            .foregroundColor(.toolBarIconDarkGray)
-                                            .padding(.leading, 1)
-                                    )
-                                    .padding(.leading, -2)
-                                
-                            }
-                   
-                            Button {
-                                withAnimation {
-                                    viewModel.showNewChat = true
-                                }
-                            } label: {
-                                
-                                Circle()
-                                    .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .foregroundColor(.toolBarIconGray)
-                                    .overlay(
-                                        Image("pencil")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .scaledToFit()
-                                            .frame(height: toolBarWidth - 18)
-                                            .foregroundColor(.toolBarIconDarkGray)
-                                            .padding(.top, 0)
-                                    )
-                            }
-                            
-                        }
-                    } else {
-                        ZStack {
-                            Text("Send To...")
-                                .font(.headline)
-                            HStack {
                                 
                                 Button {
-                                    withAnimation(.linear(duration: 0.2)) {
-                                        viewModel.isSelectingChats = false
-                                        viewModel.hideFeed = true
-                                    }
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                        viewModel.cameraViewZIndex = 3
-                                        viewModel.hideFeed = false
+                                    withAnimation {
+                                        viewModel.showNewChat = true
                                     }
                                 } label: {
-                                    Image(systemName: "chevron.down")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 8)
-                                        .padding(.top, -3)
+                                    
+                                    Circle()
+                                        .frame(width: toolBarWidth, height: toolBarWidth)
+                                        .foregroundColor(.toolBarIconGray)
+                                        .overlay(
+                                            Image("video")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .scaledToFit()
+                                                .frame(height: toolBarWidth - 22)
+                                                .foregroundColor(.toolBarIconDarkGray)
+                                                .padding(.leading, 1)
+                                        )
+                                        .padding(.leading, -2)
                                 }
                                 
-                                Spacer()
+                                Button {
+                                    withAnimation {
+                                        viewModel.showNewChat = true
+                                    }
+                                } label: {
+                                    
+                                    Circle()
+                                        .frame(width: toolBarWidth, height: toolBarWidth)
+                                        .foregroundColor(.toolBarIconGray)
+                                        .overlay(
+                                            Image("pencil")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .scaledToFit()
+                                                .frame(height: toolBarWidth - 18)
+                                                .foregroundColor(.toolBarIconDarkGray)
+                                                .padding(.top, 0)
+                                        )
+                                }
+                                
+                            }
+                        } else {
+                            ZStack {
+                                Text("Send To...")
+                                    .font(.headline)
+                                HStack {
+                                    
+                                    if conversationViewModel.showCamera {
+                                    Button {
+                                        withAnimation(.linear(duration: 0.2)) {
+                                            viewModel.stopSelectingChats()
+                                            viewModel.hideFeed = true
+                                        }
+                                        
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            viewModel.cameraViewZIndex = 3
+                                            viewModel.hideFeed = false
+                                        }
+                                    } label: {
+                                        Image(systemName: "chevron.down")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
+                                            .foregroundColor(.black)
+                                            .padding(.leading, 8)
+                                            .padding(.top, -3)
+                                    }
+                                    }
+                                    Spacer()
+                                }
+                                    
                             }
                         }
                     }
-                }
-                .padding(.horizontal)
-                .padding(.top, topPadding)
-            } else {
-                
-                SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
                     .padding(.horizontal)
-                    .padding(.top, topPadding)
-                
-            }
-             Spacer()
+                    .padding(.top, TOP_PADDING)
+                } else {
+                    SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
+                        .padding(.horizontal)
+                        .padding(.top, TOP_PADDING)
+                    
+                }
+                Spacer()
             }
         }
         .sheet(isPresented: $viewModel.showSettingsView) {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
+        .frame(width: SCREEN_WIDTH, height: conversationViewModel.showKeyboard ? TOP_PADDING + 40 : TOP_PADDING + 50)
+        .background(Color.white)
         .zIndex(2)
         .ignoresSafeArea()
         
@@ -384,14 +415,16 @@ struct NavView: View {
 }
 
 
-struct SelectedUsersView: View {
+struct SelectedChatsView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
+    @StateObject private var conversationViewModel = ConversationViewModel.shared
     
     var body: some View {
+        
         ZStack {
             
-            ZStack() {
+            if viewModel.selectedChats.count > 0 {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(Array(viewModel.selectedChats.enumerated()), id: \.1.id) { i, chat in
@@ -401,26 +434,47 @@ struct SelectedUsersView: View {
                                 .transition(.scale)
                             
                         }
-                    }.padding(.bottom, BOTTOM_PADDING)
-                }.frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 60)
-                
-                
-                HStack {
-                    Spacer()
-                    
-                    Image(systemName: "location.circle.fill")
-                        .resizable()
-                        .rotationEffect(Angle(degrees: 45))
-                        .foregroundColor(Color(.systemGray))
-                        .frame(width: 50, height: 50)
-                        .background(Circle().frame(width: 40, height: 40).foregroundColor(.white))
-                        .scaledToFit()
-                        .padding(.horizontal)
-                }.padding(.bottom, BOTTOM_PADDING)
+                    }.padding(.bottom, getBottomPadding())
+                }.frame(width: SCREEN_WIDTH, height: getBottomPadding() + 60)
+            } else {
+                Text("Select Chats")
+                    .font(.system(size: 18, weight: .medium))
+                    .padding(.bottom, getBottomPadding())
             }
             
+            HStack {
+                Spacer()
+                
+                if conversationViewModel.showCamera {
+                    Button {
+                        //                        viewModel.selectedChats.forEach({ConversationViewModel.shared.addMessage(type: .Video)})
+                    } label: {
+                        Image(systemName: "location.circle.fill")
+                            .resizable()
+                            .rotationEffect(Angle(degrees: 45))
+                            .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
+                            .frame(width: 50, height: 50)
+                            .background(Circle().frame(width: 40, height: 40).foregroundColor(.white))
+                            .scaledToFit()
+                            .padding(.horizontal)
+                    }.disabled(viewModel.selectedChats.count == 0)
+                    
+                }
+            }.padding(.bottom, getBottomPadding())
+            
+        }.transition(.identity)
+        
+    }
+    
+    func getBottomPadding() -> CGFloat {
+        
+        if conversationViewModel.showKeyboard {
+            return 2
+        } else if conversationViewModel.isRecordingAudio {
+            return BOTTOM_PADDING + 80
         }
-        .transition(.identity)
+         
+        return BOTTOM_PADDING
     }
 }
 

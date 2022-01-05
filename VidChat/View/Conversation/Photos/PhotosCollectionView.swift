@@ -24,7 +24,7 @@ class PhotosCollectionView: UIView {
     private var assetsFetchResults: PHFetchResult<PHAsset>?
     private var selectedAssets: [PHAsset] = [] {
         didSet {
-            sendButton.isHidden = selectedAssets.count == 0
+//            sendButton.isHidden = selectedAssets.count == 0
         }
     }
     
@@ -46,7 +46,9 @@ class PhotosCollectionView: UIView {
         let width: CGFloat = 64
         button.setDimensions(height: width, width: width)
         button.layer.cornerRadius = width / 2
-        button.isHidden = true
+        button.isHidden = false
+        button.isEnabled = false
+        button.alpha = 0.3
         return button
     }()
     
@@ -97,7 +99,7 @@ class PhotosCollectionView: UIView {
         collectionView.allowsMultipleSelection = true
         addSubview(collectionView)
         collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 20)
-        collectionView.setDimensions(height: UIScreen.main.bounds.width/4 * 3, width: UIScreen.main.bounds.width)
+        collectionView.setDimensions(height: ConversationViewModel.shared.photoBaseHeight, width: SCREEN_WIDTH)
         
         resetCache()
         updateSelectedItems()
@@ -124,6 +126,23 @@ class PhotosCollectionView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setIsSendEnabled() {
+        
+        if ConversationGridViewModel.shared.isSelectingChats {
+            print(selectedAssets.count, ConversationGridViewModel.shared.selectedChats.count)
+            if ConversationGridViewModel.shared.selectedChats.count > 0 && !selectedAssets.isEmpty {
+                sendButton.isEnabled = true
+                sendButton.alpha = 1
+            } else {
+                sendButton.isEnabled = false
+                sendButton.alpha = 0.3
+            }
+        } else {
+            sendButton.isEnabled = selectedAssets.isEmpty ? false : true
+            sendButton.alpha = selectedAssets.isEmpty ? 0.3 : 1
+        }
+            
+    }
     //MARK: - Selectors
     
     @objc func sendImages() {
@@ -214,6 +233,9 @@ extension PhotosCollectionView: UICollectionViewDelegate {
             view.setSelectedNumber(selectedAssets.count)
             selectedIndexes.append(indexPath.row)
         }
+        
+        setIsSendEnabled()
+
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
@@ -356,6 +378,7 @@ extension PhotosCollectionView {
         case .ended:
             if translation.y > self.frame.height / 2.5 {
                 delegate?.hidePhotoPicker()
+                ConversationGridViewModel.shared.stopSelectingChats()
             } else  {
                 delegate?.resetHeight()
             }

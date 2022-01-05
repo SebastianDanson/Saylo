@@ -43,9 +43,13 @@ class ConversationViewModel: ObservableObject {
     
     //Audio
     @Published var showAudio = false
-    
+    @Published var isRecordingAudio = false
+
     //Photos
     @Published var showPhotos = false
+    
+    //TODO ensure that this shows 3 vertical photos when on chat and 2 otherwise
+    @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
     
     //Camera
     @Published var showCamera = false
@@ -57,7 +61,7 @@ class ConversationViewModel: ObservableObject {
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?
     
-    var selectedUser: User?
+    var selectedChat: Chat?
     
     static let shared = ConversationViewModel()
     
@@ -90,11 +94,13 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
+    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil) {
         
         //       guard let user = AuthViewModel.shared.currentUser else {return}
         
         let id = NSUUID().uuidString
+        
+        let chatId = chatId ?? self.chatId
         
         var dictionary = [
             "id":id,
@@ -143,18 +149,18 @@ class ConversationViewModel: ObservableObject {
             if let url = url {
                 if type == .Video {
                     MediaUploader.shared.uploadVideo(url: url) { newURL in
-                        self.mediaFinishedUploading(id: id, newUrl: newURL)
+                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                     }
                 } else {
                     MediaUploader.shared.uploadAudio(url: url) { newURL in
-                        self.mediaFinishedUploading(id: id, newUrl: newURL)
+                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                     }
                 }
             } else if text != nil {
-                self.atomicallyUploadMessage(toDocWithId: self.chatId, messageId: id)
+                self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id)
             } else if let image = image {
                 MediaUploader.uploadImage(image: image, type: .photo) { newURL in
-                    self.mediaFinishedUploading(id: id, newUrl: newURL)
+                    self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                 }
             }
         } else {
@@ -178,10 +184,10 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func mediaFinishedUploading(id: String, newUrl: String) {
-        let index = uploadQueue.firstIndex(where:{$0["id"] as? String == id})
+    func mediaFinishedUploading(chatId: String, messageId: String, newUrl: String) {
+        let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
         self.uploadQueue[index!]["url"] = newUrl
-        self.atomicallyUploadMessage(toDocWithId: self.chatId, messageId: id)
+        self.atomicallyUploadMessage(toDocWithId: chatId, messageId: messageId)
     }
     
     func uploadMessage(toDocWithId docId: String) {
@@ -271,5 +277,9 @@ class ConversationViewModel: ObservableObject {
     
     func removeListener() {
         listener?.remove()
+    }
+    
+    func pauseVideos() {
+        players.forEach({$0.player.pause()})
     }
 }

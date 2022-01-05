@@ -29,6 +29,11 @@ struct PhotoPickerView: UIViewRepresentable {
         Coordinator(self)
     }
     
+    func setIsSendEnabled() {
+        print("IS ENABLED")
+        photosCollectioView.setIsSendEnabled()
+    }
+
     class Coordinator: NSObject, UINavigationControllerDelegate, PhotosCollectioViewDelegate {
         
         func resetHeight() {
@@ -49,7 +54,6 @@ struct PhotoPickerView: UIViewRepresentable {
         
         
         func setHeightOffset(offset: CGFloat) {
-            print(offset, "OFFSET")
             self.parent.height = self.parent.baseHeight - offset
         }
         

@@ -21,6 +21,7 @@ let COLLECTION_CONTACTUS = Firestore.firestore().collection("contactUs")
 
 //Photo
 let PHOTO_PICKER_BASE_HEIGHT = UIScreen.main.bounds.width/4*3 + 20
+let PHOTO_PICKER_SMALL_HEIGHT = UIScreen.main.bounds.width/4*2 + 20
 
 //height of extra space above and below camera
 let NON_CAMERA_HEIGHT = UIScreen.main.bounds.height - (UIScreen.main.bounds.width * 16/9) // Camera aspect ratio is 16/9

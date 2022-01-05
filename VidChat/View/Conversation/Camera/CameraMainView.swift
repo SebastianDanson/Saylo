@@ -188,11 +188,15 @@ struct SendButton: View {
         Button(action: {
             withAnimation(.linear(duration: 0.2)) {
                 
-                ConversationViewModel.shared.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
-                                                        type: viewModel.videoUrl == nil ? .Photo : .Video,
-                                                        isFromPhotoLibrary: false, shouldExport: false)
+                let conversationVM = ConversationViewModel.shared
                 
-                if ConversationViewModel.shared.chatId != "" {
+                conversationVM.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
+                                                        type: viewModel.videoUrl == nil ? .Photo : .Video,
+                                          isFromPhotoLibrary: false, shouldExport: false, chatId: conversationVM.selectedChat?.id)
+                
+                viewModel.videoPlayerView?.player.pause()
+                
+                if conversationVM.chatId != "" {
                     viewModel.reset(hideCamera: true)
                 }
             }
@@ -200,6 +204,7 @@ struct SendButton: View {
             
             
             HStack(spacing: 12) {
+                
                 Text(getSendText())
                     .foregroundColor(.black)
                     .font(.system(size: 18, weight: .bold))
@@ -223,8 +228,8 @@ struct SendButton: View {
     func getSendText() -> String {
         let viewModel = ConversationViewModel.shared
         
-        if let user = viewModel.selectedUser {
-            return user.firstName
+        if let chat = viewModel.selectedChat{
+            return chat.name
         } else if viewModel.chatId == "" {
             return "Send To"
         } else {

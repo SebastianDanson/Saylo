@@ -20,6 +20,7 @@
 		063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */; };
 		063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
+		0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */; };
 		069E4A652772874000996824 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A642772874000996824 /* ImageDetailView.swift */; };
 		069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A662772A2E100996824 /* ActivityViewController.swift */; };
 		069E4A692772A9CC00996824 /* ringtone.wav in Resources */ = {isa = PBXBuildFile; fileRef = 069E4A682772A9CC00996824 /* ringtone.wav */; };
@@ -131,6 +132,7 @@
 		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/View/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
 		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
+		0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUsersPopUpView.swift; sourceTree = "<group>"; };
 		069E4A642772874000996824 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		069E4A662772A2E100996824 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
 		069E4A682772A9CC00996824 /* ringtone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringtone.wav; sourceTree = SOURCE_ROOT; };
@@ -314,6 +316,7 @@
 				3F8B02A62700EDD100841565 /* ConversationtGridView.swift */,
 				3F08F26E2700F768009E0029 /* ConversationGridCell.swift */,
 				063CAABA277BEF1900C84318 /* NewConversationView.swift */,
+				0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */,
 			);
 			path = ConversationsList;
 			sourceTree = "<group>";
@@ -752,6 +755,7 @@
 				062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */,
 				069E4A652772874000996824 /* ImageDetailView.swift in Sources */,
 				3F8B027126FEB10E00841565 /* UserService.swift in Sources */,
+				0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */,
 				3F8A7DE3273C72B500A1BDF6 /* CacheManager.swift in Sources */,
 				3F112B802720B1C200BA2A73 /* ProviderDelegate.swift in Sources */,
 				062D28DE277ADCD200B25637 /* ContactUsView.swift in Sources */,
