@@ -31,10 +31,16 @@ struct ConversationGridView: View {
         NavigationView {
             
             ZStack(alignment: .top) {
-                
+
+                NavigationLink(destination: CallView()
+                                .edgesIgnoringSafeArea(.top), isActive: $conversationViewModel.showCall) { EmptyView() }
+                    
                 NavigationLink(destination: ConversationView()
                                 .navigationBarHidden(true), isActive: $viewModel.showConversation) { EmptyView() }
                 
+                
+                NavigationLink(destination: MakeCallView()
+                                .navigationBarHidden(true), isActive: $viewModel.isCalling) { EmptyView() }
                 
                 if !conversationViewModel.showCamera || viewModel.isSelectingChats {
                     NavView(searchText: $searchText)
@@ -58,9 +64,9 @@ struct ConversationGridView: View {
                                                             viewModel.toggleSelectedChat(chat: chat)
                                                         }
                                                         
-                                                        if conversationViewModel.showPhotos {
-                                                            photoPicker.setIsSendEnabled()
-                                                        }
+//                                                        if conversationViewModel.showPhotos {
+////                                                            photoPicker.setIsSendEnabled()
+//                                                        }
                                                         
                                                     } else {
                                                         conversationViewModel.setChat(chat: chat)
@@ -313,13 +319,12 @@ struct NavView: View {
                                         }
                                         
                                     }.frame(width: toolBarWidth + 6, height: toolBarWidth + 6)
-                                    
                                 }
                                 
                                 
                                 Button {
                                     withAnimation {
-                                        viewModel.showNewChat = true
+                                        viewModel.isCalling = true
                                     }
                                 } label: {
                                     

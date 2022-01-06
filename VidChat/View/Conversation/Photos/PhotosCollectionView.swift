@@ -24,7 +24,7 @@ class PhotosCollectionView: UIView {
     private var assetsFetchResults: PHFetchResult<PHAsset>?
     private var selectedAssets: [PHAsset] = [] {
         didSet {
-//            sendButton.isHidden = selectedAssets.count == 0
+            ConversationViewModel.shared.hasSelectedAssets = !selectedAssets.isEmpty
         }
     }
     
@@ -37,7 +37,7 @@ class PhotosCollectionView: UIView {
     private var initialCenter:CGPoint!
     private var collectionView: UICollectionView!
     
-    private let sendButton: UIButton = {
+    let sendButton: UIButton = {
         let button = UIButton()
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 64, weight: .regular, scale: .medium)
         button.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: largeConfig), for: .normal)
@@ -52,7 +52,7 @@ class PhotosCollectionView: UIView {
         return button
     }()
     
-    private var selectedIndexes = [Int]()
+    var selectedIndexes = [Int]()
     
     let requestOptions: PHImageRequestOptions = {
         let o = PHImageRequestOptions()
@@ -127,22 +127,25 @@ class PhotosCollectionView: UIView {
     }
     
     func setIsSendEnabled() {
+        let viewModel = ConversationGridViewModel.shared
         
-        if ConversationGridViewModel.shared.isSelectingChats {
-            print(selectedAssets.count, ConversationGridViewModel.shared.selectedChats.count)
-            if ConversationGridViewModel.shared.selectedChats.count > 0 && !selectedAssets.isEmpty {
+        if viewModel.isSelectingChats {
+                print(viewModel.selectedChats.count, ConversationViewModel.shared.hasSelectedAssets)
+            if viewModel.selectedChats.count > 0 && ConversationViewModel.shared.hasSelectedAssets {
                 sendButton.isEnabled = true
                 sendButton.alpha = 1
             } else {
                 sendButton.isEnabled = false
                 sendButton.alpha = 0.3
             }
+            
         } else {
-            sendButton.isEnabled = selectedAssets.isEmpty ? false : true
-            sendButton.alpha = selectedAssets.isEmpty ? 0.3 : 1
+            sendButton.isEnabled = selectedIndexes.isEmpty ? false : true
+            sendButton.alpha = selectedIndexes.isEmpty ? 0.3 : 1
         }
             
     }
+    
     //MARK: - Selectors
     
     @objc func sendImages() {
@@ -261,6 +264,8 @@ extension PhotosCollectionView: UICollectionViewDelegate {
                 cell.setSelectedNumber(nil)
             }
         }
+        
+        setIsSendEnabled()
     }
 }
 

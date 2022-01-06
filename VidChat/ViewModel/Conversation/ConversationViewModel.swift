@@ -62,7 +62,8 @@ class ConversationViewModel: ObservableObject {
     private var listener: ListenerRegistration?
     
     var selectedChat: Chat?
-    
+    var hasSelectedAssets = false
+
     static let shared = ConversationViewModel()
     
     private init() {

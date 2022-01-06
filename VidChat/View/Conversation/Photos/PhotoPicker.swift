@@ -13,26 +13,28 @@ import AVFoundation
 struct PhotoPickerView: UIViewRepresentable {
     
     typealias UIViewType = PhotosCollectionView
-    var photosCollectioView = PhotosCollectionView()
+//    var photosCollectionView = PhotosCollectionView()
+    
     let baseHeight: CGFloat
     @Binding var height: CGFloat
     
     func makeUIView(context: Context) -> PhotosCollectionView {
-        photosCollectioView.delegate = context.coordinator
-        return photosCollectioView
+        let photosCollectionView = PhotosCollectionView()
+        photosCollectionView.delegate = context.coordinator
+        return photosCollectionView
     }
     
     func updateUIView(_ uiView: PhotosCollectionView, context: Context) {
+        uiView.setIsSendEnabled()
     }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    func setIsSendEnabled() {
-        print("IS ENABLED")
-        photosCollectioView.setIsSendEnabled()
-    }
+//    func setIsSendEnabled() {
+//        photosCollectionView.setIsSendEnabled()
+//    }
 
     class Coordinator: NSObject, UINavigationControllerDelegate, PhotosCollectioViewDelegate {
         

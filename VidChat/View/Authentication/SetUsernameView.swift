@@ -85,6 +85,9 @@ struct SetUsernameView: View {
                     
                     isLoading = true
                     
+                    //TODO ensure no spaces when they're typing in username
+                    
+                    
                     viewModel.setUsername(username: username.trimmingCharacters(in: [" "])) { alreadyTaken in
                         
                         if alreadyTaken {

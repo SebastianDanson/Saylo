@@ -129,6 +129,7 @@ extension ProviderDelegate: CXProviderDelegate {
                 // Add the new outgoing call to the app's list of calls.
                 self.callManager.addCall(call)
                 self.callManager.currentCall = call
+                ConversationViewModel.shared.showCall = true
             } else {
                 // Signal to the system that the action was unable to be performed.
                 action.fail()
@@ -139,6 +140,8 @@ extension ProviderDelegate: CXProviderDelegate {
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         self.callManager.addCall(pendingCall)
         self.callManager.currentCall = pendingCall
+        ConversationViewModel.shared.showCall = true
+
         pendingCall = nil
         print(self.callManager.currentCall, "CURRENT CALL")
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID.

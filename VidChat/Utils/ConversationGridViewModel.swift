@@ -19,7 +19,8 @@ class ConversationGridViewModel: ObservableObject {
     @Published var showNewChat: Bool = false
     @Published var chats = [Chat]()
     @Published var showConversation = false
-    
+    @Published var isCalling = false
+
     var allChats = [Chat]()
     
     
@@ -80,41 +81,41 @@ class ConversationGridViewModel: ObservableObject {
                     self.chats.append(chat)
                     self.allChats.append(chat)
                     
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
-                    
-                  
-                    
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
-               
-                    
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
-                    
-                    
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
-                    
-                    
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
-                    
-              
-                    
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
-                 
-                    
-                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    self.chats.append(chat)
-                    self.allChats.append(chat)
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
+//
+//
+//
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
+//
+//
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
+//
+//
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
+//
+//
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
+//
+//
+//
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
+//
+//
+//                    chat = Chat(dictionary: data, id: UUID().uuidString)
+//                    self.chats.append(chat)
+//                    self.allChats.append(chat)
                 }
             }
         }

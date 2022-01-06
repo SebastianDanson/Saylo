@@ -15,7 +15,7 @@ struct CallView: View {
     @State private var showVideo: Bool = true
     @State private var showCallOptions = true
     
-    @EnvironmentObject var callsController: CallManager
+    @StateObject var callsController = CallManager.shared
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -45,7 +45,7 @@ struct CallOptionsView: View {
     @Binding var isFrontFacing: Bool
     @Binding var showVideo: Bool
     
-    @EnvironmentObject var callsController: CallManager
+    @StateObject var callsController = CallManager.shared
     
     var body: some View {
         HStack {

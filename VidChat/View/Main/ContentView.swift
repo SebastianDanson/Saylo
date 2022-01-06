@@ -9,9 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @EnvironmentObject var callManager: CallManager
     @StateObject var viewModel = AuthViewModel.shared
-    @State var selectedIndex = 0
     
     var body: some View {
         
@@ -22,11 +20,12 @@ struct ContentView: View {
             if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
                 LandingPageView()
             } else {
-                if viewModel.currentUser != nil {
+//                if viewModel.currentUser != nil {
                     ConversationGridView()
-                }
+//                }
             }
             
+//            MakeCallView()
         }
     }
 }

@@ -29,6 +29,10 @@ final class CallManager: NSObject, ObservableObject {
     weak var delegate: CallManagerDelegate?
     var currentCall: Call?
     
+    static var shared = CallManager()
+    
+    private override init() {}
+    
     @Published var remoteUserIDs: [UInt] = [] {
         didSet {
             if remoteUserIDs.count == 0 {
@@ -99,10 +103,11 @@ final class CallManager: NSObject, ObservableObject {
             //            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
             //            let uuid = UUID(uuidString: uuidString)
             
+            print(pushKitToken, "toPK")
             
             let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "token": pushKitToken] as [String : Any]
             
-            Firebase.Functions.functions().httpsCallable("makeCall").call(data) { result, error in
+            Firebase.Functions.functions().httpsCallable("test").call(data) { result, error in
                 print(error?.localizedDescription, "FUNCTION ERROR")
             }
         }
@@ -159,7 +164,6 @@ final class CallManager: NSObject, ObservableObject {
     /// Adds a call to the array of active calls.
     /// - Parameter call: The call  to add.
     func addCall(_ call: Call) {
-        print("CALL ADDED")
         calls.append(call)
     }
     

@@ -18,7 +18,7 @@ struct VideoCallView: UIViewControllerRepresentable {
     @Binding var showVideo: Bool
     @Binding var showCallOptions: Bool
     
-    @EnvironmentObject var callsController: CallManager
+    @StateObject var callsController = CallManager.shared
     
     func makeUIViewController(context: Context) -> VideoCallViewController {
         let agoraViewController = VideoCallViewController()

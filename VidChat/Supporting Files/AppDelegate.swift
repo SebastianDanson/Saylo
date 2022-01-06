@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     let pushRegistry = PKPushRegistry(queue: .main)
-    let callManager = CallManager()
+    let callManager = CallManager.shared
     var providerDelegate: ProviderDelegate?
 
     // MARK: - UIApplicationDelegate
