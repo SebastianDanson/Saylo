@@ -128,7 +128,6 @@ struct OptionsView: View {
     @StateObject var viewModel = ConversationViewModel.shared
     
     @State var audioRecorder = AudioRecorder()
-    @State var audioProgress = 0.0
     
     var body: some View {
         
@@ -206,14 +205,17 @@ struct OptionsView: View {
                                 //Mic button
                                 Button(action: {
                                     withAnimation {
-                                        if !viewModel.isRecordingAudio {
+                                        
+                                        
+                                        
+                                        if !viewModel.isRecordingAudio || (viewModel.chatId.isEmpty && viewModel.showAudio && !audioRecorder.recording) {
                                             viewModel.pauseVideos()
 
-                                            audioProgress = 1.0
+                                            viewModel.audioProgress = 1.0
                                             viewModel.showAudio = true
                                             audioRecorder.startRecording()
                                         } else {
-                                            audioProgress = 0.0
+                                            viewModel.audioProgress = 0.0
                                             
                                             if !viewModel.showAudio {
                                                 audioRecorder.audioPlayer.isPlaying ?
@@ -242,11 +244,11 @@ struct OptionsView: View {
                                             ZStack {
                                                 // if isRecordingAudio {
                                                 Circle()
-                                                    .trim(from: 0.0, to: CGFloat(min(audioProgress, 1.0)))
+                                                    .trim(from: 0.0, to: CGFloat(min(viewModel.audioProgress, 1.0)))
                                                     .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
                                                                                                lineCap: .round,
                                                                                                lineJoin: .round))
-                                                    .animation(.linear(duration: audioProgress == 0 ? 0 : 20), value: audioProgress)
+                                                    .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : 20), value: viewModel.audioProgress)
                                                     .frame(width: 48, height: 48)
                                                     .rotationEffect(Angle(degrees: 270))
                                                 // }
@@ -276,7 +278,7 @@ struct OptionsView: View {
                 .frame(height: 70)
                 .padding(.bottom, viewModel.showCamera ? 200 + BOTTOM_PADDING : BOTTOM_PADDING)
                 .padding(.horizontal, 14)
-                .overlay(AudioOptions(audioRecorder: $audioRecorder, isRecordingAudio: $viewModel.isRecordingAudio))
+                .overlay(AudioOptions(audioRecorder: $audioRecorder))
                 .transition(.opacity)
                 
             }
@@ -499,21 +501,22 @@ struct AudioOptions: View {
     @StateObject var conversationGridViewModel = ConversationGridViewModel.shared
 
     @Binding var audioRecorder: AudioRecorder
-    @Binding var isRecordingAudio: Bool
     
     var body: some View {
         HStack{
             
-            if !viewModel.showAudio && isRecordingAudio {
+            if viewModel.isRecordingAudio {
                 
                 Button {
                     audioRecorder.stopPlayback()
                     withAnimation {
-                        isRecordingAudio = false
+                        viewModel.isRecordingAudio = false
                     }
                     
                     ConversationGridViewModel.shared.stopSelectingChats()
-                    
+                    audioRecorder.stopRecording(startPlayback: false)
+                    viewModel.audioProgress = 0.0
+                    viewModel.showAudio = false
                 } label: {
                     Image(systemName: "x.circle.fill")
                         .resizable()
@@ -522,15 +525,23 @@ struct AudioOptions: View {
                         .foregroundColor(Color(.systemGray))
                         .padding(32)
                 }.transition(.move(edge: .leading))
+            }
                 
                 Spacer()
                 
+            if !viewModel.showAudio && viewModel.isRecordingAudio {
+
                 Button {
                     audioRecorder.sendRecording()
                     audioRecorder.stopPlayback()
+                    if ConversationViewModel.shared.chatId.isEmpty {
+                        viewModel.showAudio = true
+                    } else {
                     withAnimation {
-                        isRecordingAudio = false
+                        viewModel.isRecordingAudio = false
                     }
+                    }
+                        
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .resizable()
@@ -608,7 +619,8 @@ struct KeyboardView: View {
             Button {
                 if !text.trimmingCharacters(in: [" "]).isEmpty {
                     withAnimation(.linear(duration: 0.15)) {
-                        viewModel.addMessage(text: text, type: .Text)
+                       
+                        viewModel.sendMessage(text: text, type: .Text)
                         text = ""
                     }
                 }

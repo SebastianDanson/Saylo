@@ -10,7 +10,8 @@ import SwiftUI
 struct ContentView: View {
     
     @StateObject var viewModel = AuthViewModel.shared
-    
+    @StateObject var conversationViewModel = ConversationViewModel.shared
+
     var body: some View {
         
         Group {
@@ -21,7 +22,11 @@ struct ContentView: View {
                 LandingPageView()
             } else {
 //                if viewModel.currentUser != nil {
+                if conversationViewModel.showCall {
+                    CallView().ignoresSafeArea()
+                } else {
                     ConversationGridView()
+                }
 //                }
             }
             

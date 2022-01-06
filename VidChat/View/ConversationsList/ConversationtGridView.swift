@@ -32,8 +32,6 @@ struct ConversationGridView: View {
             
             ZStack(alignment: .top) {
 
-                NavigationLink(destination: CallView()
-                                .edgesIgnoringSafeArea(.top), isActive: $conversationViewModel.showCall) { EmptyView() }
                     
                 NavigationLink(destination: ConversationView()
                                 .navigationBarHidden(true), isActive: $viewModel.showConversation) { EmptyView() }

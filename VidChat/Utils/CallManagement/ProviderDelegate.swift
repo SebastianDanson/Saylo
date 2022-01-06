@@ -143,7 +143,6 @@ extension ProviderDelegate: CXProviderDelegate {
         ConversationViewModel.shared.showCall = true
 
         pendingCall = nil
-        print(self.callManager.currentCall, "CURRENT CALL")
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID.
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()

@@ -62,17 +62,19 @@ class AudioRecorder: NSObject,ObservableObject {
         }
     }
     
-    func stopRecording() {
+    func stopRecording(startPlayback: Bool = true) {
         audioRecorder.stop()
         recording = false
         
-        audioPlayer.startPlayback(audio: audioUrl)
+        if startPlayback {
+            audioPlayer.startPlayback(audio: audioUrl)
+        }
         print("STOPPING RECORDING")
     }
     
     func sendRecording() {
         withAnimation(.easeInOut(duration: 0.2)) {
-            ConversationViewModel.shared.addMessage(url: audioUrl, text: nil, type: .Audio)
+            ConversationViewModel.shared.sendMessage(url: audioUrl, text: nil, type: .Audio)
         }
     }
     
@@ -89,6 +91,6 @@ class AudioRecorder: NSObject,ObservableObject {
     }
     
     func stopPlayback() {
-        audioPlayer.stopPlayback()
+        audioPlayer.stopPlayback(recording: recording)
     }
 }

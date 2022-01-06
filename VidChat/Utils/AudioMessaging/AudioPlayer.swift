@@ -49,8 +49,12 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
                                                object: audioPlayer.currentItem)
     }
     
-    func stopPlayback() {
-        audioPlayer.seek(to: .zero)
+    func stopPlayback(recording: Bool) {
+        
+        if !recording {
+            audioPlayer.seek(to: .zero)
+        }
+        
         hasFinished = false
         isPlaying = false
     }
@@ -73,12 +77,12 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            stopPlayback()
+            stopPlayback(recording: false)
         }
     }
     
     @objc
     func playerItemDidReachEnd(notification: Notification) {
-        stopPlayback()
+        stopPlayback(recording: false)
     }
 }

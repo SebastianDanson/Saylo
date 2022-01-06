@@ -44,6 +44,7 @@ class ConversationViewModel: ObservableObject {
     //Audio
     @Published var showAudio = false
     @Published var isRecordingAudio = false
+    @Published var audioProgress = 0.0
 
     //Photos
     @Published var showPhotos = false
@@ -137,7 +138,9 @@ class ConversationViewModel: ObservableObject {
             dictionary["type"] = "text"
         }
         
-        if self.chatId != "" {
+        if chatId != "" {
+            
+            if !self.chatId.isEmpty {
             let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
             message.image = image
             
@@ -145,6 +148,8 @@ class ConversationViewModel: ObservableObject {
                 message.isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: lastMessage, nextMessage: message)
             }
             self.messages.append(message)
+            }
+            
             uploadQueue.append(dictionary)
             
             if let url = url {
@@ -176,7 +181,7 @@ class ConversationViewModel: ObservableObject {
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
         if index == 0 {
-            uploadMessage(toDocWithId: id)
+                uploadMessage(toDocWithId: id)
             return
         }
         
@@ -195,18 +200,22 @@ class ConversationViewModel: ObservableObject {
         if !isUploadingMessage {
             self.isUploadingMessage = true
             let data = uploadQueue[0]
+            
             ConversationService.uploadMessage(toDocWithId: docId, data: data) { error in
                 if let error = error {
                     print("ERROR uploading message \(error.localizedDescription)")
                 } else {
                     print("Message uploaded successfully")
+                    if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
+                        ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
+                    }
                 }
                 
                 self.isUploadingMessage = false
                 self.uploadQueue.remove(at: 0)
                 
-                if self.uploadQueue.count > 0 {
-                    self.uploadMessage(toDocWithId: docId)
+                if self.uploadQueue.count > 0, let chatId = self.uploadQueue.first?["chatId"] as? String {
+                    self.uploadMessage(toDocWithId: chatId)
                 }
             }
         }
@@ -282,5 +291,19 @@ class ConversationViewModel: ObservableObject {
     
     func pauseVideos() {
         players.forEach({$0.player.pause()})
+    }
+    
+    func sendMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil) {
+        
+        if self.chatId.isEmpty {
+            
+            ConversationGridViewModel.shared.selectedChats.forEach { chat in
+                addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
+                ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
+            }
+
+        } else {
+            addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
+        }
     }
 }

@@ -27,7 +27,9 @@ class Chat: ObservableObject {
     var chatMembers = [ChatMember]()
     
     @Published var isSelected = false
-    
+    @Published var isSending = false
+    @Published var hasSent = false
+
     init(dictionary: [String:Any], id: String) {
         
         //Doc info

@@ -190,7 +190,7 @@ struct SendButton: View {
                 
                 let conversationVM = ConversationViewModel.shared
                 
-                conversationVM.addMessage(url: viewModel.videoUrl, image: viewModel.photo,
+                conversationVM.sendMessage(url: viewModel.videoUrl, image: viewModel.photo,
                                                         type: viewModel.videoUrl == nil ? .Photo : .Video,
                                           isFromPhotoLibrary: false, shouldExport: false, chatId: conversationVM.selectedChat?.id)
                 

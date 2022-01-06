@@ -91,7 +91,7 @@ struct CallNavView: View {
                 HStack {
                     
                     Button {
-                        
+                        ConversationGridViewModel.shared.isCalling = false
                     } label: {
                         Image(systemName: "chevron.backward")
                             .resizable()

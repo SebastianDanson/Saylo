@@ -20,16 +20,16 @@ struct ConversationGridCell: View {
     }
     
     var body: some View {
-
+        
         ZStack(alignment:.top) {
             VStack(alignment: .center, spacing: 6) {
                 
                 ZStack {
                     
-//                    Circle().strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 2.5))
-//                        .frame(width: width + 10, height: width + 10)
-
-
+                    //                    Circle().strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 2.5))
+                    //                        .frame(width: width + 10, height: width + 10)
+                    
+                    
                     KFImage(URL(string: chat.profileImageUrl))
                         .resizable()
                         .scaledToFill()
@@ -37,6 +37,44 @@ struct ConversationGridCell: View {
                         .frame(width: width, height: width)
                         .cornerRadius(width/2)
                         .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
+                        .onAppear(perform: {
+                            print(chat.id, "CHATEr")
+                        })
+                        .overlay(
+                            
+                            ZStack {
+                                
+                                if chat.hasSent {
+                                    
+                                    ZStack {
+                                        Circle()
+                                            .frame(width: width, height: width)
+                                            .foregroundColor(.mainBlue)
+                                            .opacity(0.9)
+                                        
+                                        Image(systemName: "checkmark")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: width/3, height: width/3)
+                                            .foregroundColor(.white)
+                                    }.transition(.opacity)
+                                    //                                        .onAppear {
+                                    //                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    //                                                chat.hasSent = false
+                                    //                                            }
+                                    //                                        }
+                                }
+                                
+                                
+                                
+                                if chat.isSending {
+                                    
+                                    ActivityIndicator(shouldAnimate: $chat.isSending, diameter: width + 10)
+                                        .transition(.opacity)
+                                }
+                            }
+                            
+                        )
                     
                 }
                 
