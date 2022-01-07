@@ -14,8 +14,8 @@ class Chat: ObservableObject {
     var id: String
     
     //info
-    let name: String
-    let fullName: String
+    var name: String
+    var fullName: String
     let profileImageUrl: String
     var isDm = true
     
@@ -78,6 +78,40 @@ class Chat: ObservableObject {
         let messagesDic = dictionary["messages"] as? [[String:Any]] ?? [[String:Any]]()
         messagesDic.forEach({ self.messages.append(Message(dictionary: $0, id: $0["id"] as? String ?? "")) })
         
+        if self.name.isEmpty {
+            self.name = getDefaultChatName()
+            
+            let currentUser = AuthViewModel.shared.currentUser
+            let userFullname = (currentUser?.firstName ?? "") + " " + (currentUser?.lastName ?? "")
+            self.fullName = self.name + ", " + userFullname
+        }
+    }
+    
+    func getDateOfLastPost() -> Int {
+        return Int(self.messages.last?.timestamp.dateValue().timeIntervalSince1970 ?? 0)
+    }
+    
+    func getDefaultChatName() -> String {
+        
+        guard let currentUserId = AuthViewModel.shared.currentUser?.id else {return ""}
+        
+        var name = ""
+        
+        self.chatMembers.forEach { chatMember in
+            
+            if chatMember.id != currentUserId {
+                
+                if name.isEmpty {
+                    name = chatMember.firstName
+                } else {
+                    name += ", \(chatMember.firstName)"
+                }
+                
+            }
+            
+        }
+        
+        return name
     }
 }
 

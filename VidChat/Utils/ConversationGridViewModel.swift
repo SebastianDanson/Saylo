@@ -113,7 +113,7 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func addConversation(withId id: String) {
+    func addConversation(withId id: String, completion: @escaping(() -> Void)) {
         
         COLLECTION_CONVERSATIONS.document(id).getDocument { snapshot, _ in
             if let data = snapshot?.data() {
@@ -122,6 +122,8 @@ class ConversationGridViewModel: ObservableObject {
                 if !self.allChats.contains(where: {$0.id == chat.id}) {
                     self.chats.append(chat)
                     self.allChats.append(chat)
+                    
+                    
                     
                     //                    chat = Chat(dictionary: data, id: UUID().uuidString)
                     //                    self.chats.append(chat)
@@ -160,15 +162,26 @@ class ConversationGridViewModel: ObservableObject {
                     //                    self.allChats.append(chat)
                 }
             }
+            completion()
         }
     }
     
     func fetchConversations() {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
-        
+        var count = 0
         user.chats.forEach { chat in
-            addConversation(withId: chat.id)
+            addConversation(withId: chat.id) {
+                count += 1
+                
+                if count == user.chats.count {
+                    
+                    let chats = self.allChats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+                    
+                    self.allChats = chats
+                    self.chats = chats
+                }
+            }
         }
     }
     
@@ -179,4 +192,5 @@ class ConversationGridViewModel: ObservableObject {
             selectedChats.removeAll()
         }
     }
+    
 }

@@ -28,8 +28,8 @@ struct CallView: View {
                 showCallOptions.toggle()
             }
             
-            if callsController.remoteUserIDs.count == 0  {
-                DialingView(profileImage: CallManager.shared.currentChat?.profileImageUrl ?? "", name: CallManager.shared.currentChat?.name ?? "")
+            if callsController.remoteUserIDs.count == 0, let chat = CallManager.shared.currentChat {
+                DialingView(chat: chat)
             }
         }
     }
@@ -98,19 +98,15 @@ struct CallOptionsView: View {
 
 struct DialingView: View {
     
-    let profileImage: String
-    let name: String
+    let chat: Chat
     
     var body: some View {
         VStack(spacing: 2) {
             VStack(spacing: 8) {
-                KFImage(URL(string: profileImage))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 100, height: 100)
-                    .clipShape(Circle())
                 
-                Text("\(name)")
+                ChatImage(chat: chat, diameter: 100)
+           
+                Text("\(chat.name)")
                     .foregroundColor(.white)
                     .font(.system(size: 24, weight: .bold))
             }

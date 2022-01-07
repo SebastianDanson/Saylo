@@ -30,16 +30,8 @@ struct ConversationGridCell: View {
                     //                        .frame(width: width + 10, height: width + 10)
                     
                     
-                    KFImage(URL(string: chat.profileImageUrl))
-                        .resizable()
-                        .scaledToFill()
-                        .background(Color(.systemGray))
-                        .frame(width: width, height: width)
-                        .cornerRadius(width/2)
-                        .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
-                        .onAppear(perform: {
-                            print(chat.id, "CHATEr")
-                        })
+                    ChatImage(chat: chat, diameter: width)
+                    .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
                         .overlay(
                             
                             ZStack {
@@ -58,11 +50,7 @@ struct ConversationGridCell: View {
                                             .frame(width: width/3, height: width/3)
                                             .foregroundColor(.white)
                                     }.transition(.opacity)
-                                    //                                        .onAppear {
-                                    //                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    //                                                chat.hasSent = false
-                                    //                                            }
-                                    //                                        }
+                                                                
                                 }
                                 
                                 

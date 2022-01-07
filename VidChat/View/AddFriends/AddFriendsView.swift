@@ -140,7 +140,9 @@ struct AddFriendsView: View {
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
                 }
                 
-                    FindFiendsView()
+                    FindFriendsView()
+                    .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
+
             }
             
             Spacer()

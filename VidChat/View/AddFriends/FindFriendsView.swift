@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
+import Kingfisher
 
-struct FindFiendsView: View {
+struct FindFriendsView: View {
         
     var body: some View {
         
@@ -15,7 +16,7 @@ struct FindFiendsView: View {
             
             VStack(spacing: 4) {
                 
-                Text("Welcome to Vidchat")
+                Text("Welcome to Saylo")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.black)
                     .padding(.top, 15)
@@ -45,7 +46,45 @@ struct FindFiendsView: View {
         .background(Color.white)
         .cornerRadius(12)
         .padding(.vertical, 28)
-        .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
+        
+    }
+}
+
+struct TipView: View {
+    
+    let header: String
+    let subText: String
+    let imageName: String
+        
+    var body: some View {
+        
+        VStack(spacing: 20) {
+            
+            VStack(spacing: 4) {
+                
+                Text(header)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.black)
+                    .padding(.top, 15)
+                
+                Text(subText)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.textGray)
+                
+            }
+            
+            Image(systemName: imageName)
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(.mainBlue)
+                .frame(width: 40, height: 40)
+                .padding(.bottom, 15)
+            
+        }
+        .frame(width: SCREEN_WIDTH - 40, height: 150)
+        .background(Color.white)
+        .cornerRadius(12)
+        .padding(.vertical, 28)
         
     }
 }

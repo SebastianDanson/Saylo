@@ -18,6 +18,7 @@ struct ConversationGridView: View {
     private let items = [GridItem(), GridItem(), GridItem()]
     @State private var text = ""
     @State private var searchText = ""
+    @State var selection = 0
     
     //  @ObservedObject var viewModel: PostGridViewModel
     @StateObject private var conversationViewModel = ConversationViewModel.shared
@@ -27,12 +28,12 @@ struct ConversationGridView: View {
     var body: some View {
         
         let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight, height: $conversationViewModel.photoBaseHeight)
-
+        
         NavigationView {
             
             ZStack(alignment: .top) {
-
-                    
+                
+                
                 NavigationLink(destination: ConversationView()
                                 .navigationBarHidden(true), isActive: $viewModel.showConversation) { EmptyView() }
                 
@@ -42,13 +43,44 @@ struct ConversationGridView: View {
                 
                 if !conversationViewModel.showCamera || viewModel.isSelectingChats {
                     NavView(searchText: $searchText)
+                    
                 }
                 
                 VStack {
                     
+                    if viewModel.chats.count < 5 && !conversationViewModel.showCamera && !viewModel.isSelectingChats {
+                        
+                        PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
+                            
+                            FindFriendsView().tag(0)
+                            
+                            TipView(header: "Tap and Hold on a Chat",
+                                    subText: "To start recording a video for that chat",
+                                    imageName: "video.fill").tag(1)
+                            
+                            TipView(header: "Double Tap on a Chat",
+                                    subText: "To start typing a message for that chat",
+                                    imageName: "message.fill").tag(2)
+                            
+                            
+                        }
+                        .frame(width: SCREEN_WIDTH - 40, height: 300)
+                        .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
+                        .padding(.top, 20)
+                        .onAppear {
+                            setSelection()
+                        }
+                        
+                        
+                    }
+                    
+                    
                     ZStack(alignment: .top) {
                         
                         if !viewModel.hideFeed {
+                            
+                            
+                            
                             ScrollView(showsIndicators: false) {
                                 VStack {
                                     LazyVGrid(columns: items, spacing: 14, content: {
@@ -56,21 +88,31 @@ struct ConversationGridView: View {
                                             ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
-                                                .onTapGesture {
+                                                .onTapGesture(count: 2, perform: {
+                                                    
+                                                    if !conversationViewModel.showKeyboard {
+                                                        withAnimation {
+                                                            conversationViewModel.showKeyboard = true
+                                                            viewModel.isSelectingChats = true
+                                                            viewModel.toggleSelectedChat(chat: chat)
+                                                        }
+                                                    }
+                                                })
+                                                .onTapGesture(count: 1, perform: {
                                                     if viewModel.isSelectingChats {
                                                         withAnimation(.linear(duration: 0.15)) {
                                                             viewModel.toggleSelectedChat(chat: chat)
                                                         }
                                                         
-//                                                        if conversationViewModel.showPhotos {
-////                                                            photoPicker.setIsSendEnabled()
-//                                                        }
+                                                        //                                                        if conversationViewModel.showPhotos {
+                                                        ////                                                            photoPicker.setIsSendEnabled()
+                                                        //                                                        }
                                                         
                                                     } else {
                                                         conversationViewModel.setChat(chat: chat)
                                                         viewModel.showConversation = true
                                                     }
-                                                }
+                                                })
                                                 .onLongPressGesture {
                                                     withAnimation {
                                                         CameraViewModel.shared.handleTap()
@@ -84,6 +126,7 @@ struct ConversationGridView: View {
                                         .padding(.horizontal, 12)
                                     
                                 }.padding(.top, getConversationGridPadding())
+                                
                             }
                             .background(Color.white)
                             .flippedUpsideDown()
@@ -168,19 +211,48 @@ struct ConversationGridView: View {
             !conversationViewModel.showPhotos &&
             !viewModel.showSearchBar &&
             !viewModel.isSelectingChats {
-            return BOTTOM_PADDING + 82
+            return BOTTOM_PADDING + 90
         }
         
         if viewModel.isSelectingChats {
             
-//            if viewModel.selectedChats.count > 0 {
-                return 12
-//            }
+            //            if viewModel.selectedChats.count > 0 {
+            return 12
+            //            }
             
         }
         
         return 6
     }
+    
+    func setSelection() {
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+            if selection == 0 {
+                withAnimation {
+                    selection = 1
+                }
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 12) {
+            if selection == 1 {
+                withAnimation {
+                    selection = 2
+                }
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 18) {
+            if selection == 2 {
+                
+                withAnimation {
+                    selection = 0
+                }
+            }
+        }
+    }
+    
 }
 
 struct FlippedUpsideDown: ViewModifier {
@@ -369,29 +441,29 @@ struct NavView: View {
                                 HStack {
                                     
                                     if conversationViewModel.showCamera {
-                                    Button {
-                                        withAnimation(.linear(duration: 0.2)) {
-                                            viewModel.stopSelectingChats()
-                                            viewModel.hideFeed = true
+                                        Button {
+                                            withAnimation(.linear(duration: 0.2)) {
+                                                viewModel.stopSelectingChats()
+                                                viewModel.hideFeed = true
+                                            }
+                                            
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                viewModel.cameraViewZIndex = 3
+                                                viewModel.hideFeed = false
+                                            }
+                                        } label: {
+                                            Image(systemName: "chevron.down")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
+                                                .foregroundColor(.black)
+                                                .padding(.leading, 8)
+                                                .padding(.top, -3)
                                         }
-                                        
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                            viewModel.cameraViewZIndex = 3
-                                            viewModel.hideFeed = false
-                                        }
-                                    } label: {
-                                        Image(systemName: "chevron.down")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
-                                            .foregroundColor(.black)
-                                            .padding(.leading, 8)
-                                            .padding(.top, -3)
-                                    }
                                     }
                                     Spacer()
                                 }
-                                    
+                                
                             }
                         }
                     }
@@ -484,7 +556,7 @@ struct SelectedChatsView: View {
         } else if conversationViewModel.isRecordingAudio {
             return BOTTOM_PADDING + 80
         }
-         
+        
         return BOTTOM_PADDING
     }
 }
@@ -497,12 +569,7 @@ struct SelectedChatView: View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .center, spacing: 4) {
                 
-                KFImage(URL(string: chat.profileImageUrl))
-                    .resizable()
-                    .scaledToFill()
-                    .background(Color(.systemGray))
-                    .frame(width: 44, height: 44)
-                    .cornerRadius(44/2)
+                ChatImage(chat: chat, diameter: 44)
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 

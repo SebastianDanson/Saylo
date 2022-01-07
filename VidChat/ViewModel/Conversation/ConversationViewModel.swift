@@ -213,8 +213,11 @@ class ConversationViewModel: ObservableObject {
                     print("ERROR uploading message \(error.localizedDescription)")
                 } else {
                     print("Message uploaded successfully")
+                    
+                    
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
                         ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
+                        self.sendMessageNotification(chat: chat, messageData: data)
                     }
                 }
                 
@@ -227,13 +230,34 @@ class ConversationViewModel: ObservableObject {
             }
         }
     }
-    
-//    func fetchMessages() {
-//        ConversationService.fetchMessages(forDocWithId: self.chatId) { messages in
-//            self.setIsSameAsPrevId(messages: messages)
-//            self.messages = messages
-//        }
-//    }
+
+    func sendMessageNotification(chat: Chat, messageData: [String:Any]) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        let userFullName = currentUser.firstName + " " + currentUser.lastName
+        let message = Message(dictionary: messageData, id: "")
+        
+        var data = [String:Any]()
+
+        if chat.isDm {
+            
+            let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id})
+            data["token"] = chatMember?.fcmToken ?? ""
+            data["title"] = message.type == .Text ? userFullName : ""
+            data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
+            data["metaData"] = ["chatId": chat.id]
+
+        } else {
+            
+            data["topic"] = chat.id
+            data["title"] = message.type == .Text ? "\(userFullName)\nTo \(chat.fullName)" : chat.fullName
+            data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
+            data["metaData"] = ["chatId": chat.id, "userId": currentUser.id]
+        }
+        
+            
+        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
+    }
     
     func setIsSameAsPrevId(messages: [Message]) {
         guard messages.count > 1 else {return}

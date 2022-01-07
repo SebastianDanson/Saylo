@@ -177,28 +177,4 @@ class NewConversationViewModel: ObservableObject {
     func sortedChatMembers(_ members: [ChatMember]) -> [ChatMember] {
         return members.sorted(by: {$0.id < $1.id})
     }
-    
-    func createDefaultGroupName() -> String {
-        
-        var name = ""
-        
-        var ids = [String]()
-
-        addedChats.forEach { chat in
-            chat.chatMembers.forEach { chatMember in
-                if !ids.contains(chatMember.id) {
-                    
-                    if name.isEmpty {
-                        name = chatMember.firstName + " " + chatMember.lastName
-                    } else {
-                        name += ", \(chatMember.firstName + " " + chatMember.lastName)"
-                    }
-                    
-                    ids.append(chatMember.id)
-                }
-            }
-        }
-        
-        return name
-    }
 }

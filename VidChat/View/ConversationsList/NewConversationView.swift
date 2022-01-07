@@ -132,14 +132,11 @@ struct NewConversationView: View {
                 Button {
                                         
                     if viewModel.isCreatingNewChat {
-                        print("!!!!!!!")
                         viewModel.createChat(name: chatName)
                     } else if let chat = viewModel.getSelectedChat() {
-                        print("@@@@@@")
                         ConversationViewModel.shared.setChat(chat: chat)
                         ConversationGridViewModel.shared.showConversation = true
                     } else {
-                        print("#####")
                         viewModel.createChat(name: chatName)
                     }
                     
@@ -187,12 +184,7 @@ struct NewConversationCell: View {
             
             HStack(spacing: 12) {
                 
-                KFImage(URL(string: chat.profileImageUrl))
-                    .resizable()
-                    .scaledToFill()
-                    .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
+                ChatImage(chat: chat, diameter: 40)
                     .padding(.leading, 12)
                 
                 
@@ -332,12 +324,7 @@ struct AddedUserView: View {
             
             VStack(alignment: .center, spacing: 4) {
                 
-                KFImage(URL(string: chat.profileImageUrl))
-                    .resizable()
-                    .scaledToFill()
-                    .background(Color(.systemGray))
-                    .frame(width: 44, height: 44)
-                    .cornerRadius(44/2)
+                ChatImage(chat: chat, diameter: 44)
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 

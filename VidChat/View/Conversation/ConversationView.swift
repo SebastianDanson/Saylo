@@ -75,15 +75,16 @@ struct ConversationView: View {
             }
             .overlay(
                 ZStack {
-                    if !viewModel.showKeyboard {
+                    
+                    VStack {
                         
-                        VStack {
-                            
-                            if !viewModel.showCamera {
-                                ChatOptions(showSettings: $showSettings)
-                            }
-                            
-                            Spacer()
+                        if !viewModel.showCamera {
+                            ChatOptions(showSettings: $showSettings)
+                        }
+                        
+                        Spacer()
+                        
+                        if !viewModel.showKeyboard {
                             
                             OptionsView()
                         }
@@ -165,7 +166,7 @@ struct OptionsView: View {
                                     Button(action: {
                                         
                                         viewModel.photoBaseHeight = viewModel.chatId.isEmpty ? PHOTO_PICKER_SMALL_HEIGHT : PHOTO_PICKER_BASE_HEIGHT
-
+                                        
                                         withAnimation(.linear(duration: 0.15)) {
                                             
                                             viewModel.showPhotos = true
@@ -194,7 +195,7 @@ struct OptionsView: View {
                                     viewModel.showCamera = true
                                     //                                    }
                                     viewModel.pauseVideos()
-
+                                    
                                 }, label: {
                                     CameraCircle().padding(.leading, 15).padding(.trailing, 12)
                                 }).transition(.scale)
@@ -210,7 +211,7 @@ struct OptionsView: View {
                                         
                                         if !viewModel.isRecordingAudio || (viewModel.chatId.isEmpty && viewModel.showAudio && !audioRecorder.recording) {
                                             viewModel.pauseVideos()
-
+                                            
                                             viewModel.audioProgress = 1.0
                                             viewModel.showAudio = true
                                             audioRecorder.startRecording()
@@ -391,23 +392,20 @@ struct ChatOptions: View {
                 Spacer()
                 
                 
-                Button {
-                    withAnimation(.linear(duration: 0.1)) {
-                        showSettings.toggle()
+                if let chat = viewModel.chat {
+                    Button {
+                        withAnimation(.linear(duration: 0.1)) {
+                            showSettings.toggle()
+                        }
+                    } label: {
+                        ChatImage(chat: chat, diameter: 36)
+                            .padding(.vertical, 10)
                     }
-                } label: {
-                    KFImage(URL(string: viewModel.chat?.profileImageUrl ?? ""))
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 36, height: 36)
-                        .clipShape(Circle())
-                        .padding(.vertical, 10)
                 }
-                
             }
             
-            if showSettings {
-                ChatSettingsView()
+            if showSettings, let chat = viewModel.chat {
+                ChatSettingsView(chat: chat)
                     .zIndex(5)
                     .transition(.opacity)
             }
@@ -499,7 +497,7 @@ struct AudioOptions: View {
     private let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
     @StateObject var viewModel = ConversationViewModel.shared
     @StateObject var conversationGridViewModel = ConversationGridViewModel.shared
-
+    
     @Binding var audioRecorder: AudioRecorder
     
     var body: some View {
@@ -526,22 +524,22 @@ struct AudioOptions: View {
                         .padding(32)
                 }.transition(.move(edge: .leading))
             }
-                
-                Spacer()
-                
+            
+            Spacer()
+            
             if !viewModel.showAudio && viewModel.isRecordingAudio {
-
+                
                 Button {
                     audioRecorder.sendRecording()
                     audioRecorder.stopPlayback()
                     if ConversationViewModel.shared.chatId.isEmpty {
                         viewModel.showAudio = true
                     } else {
-                    withAnimation {
-                        viewModel.isRecordingAudio = false
+                        withAnimation {
+                            viewModel.isRecordingAudio = false
+                        }
                     }
-                    }
-                        
+                    
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .resizable()
@@ -557,7 +555,7 @@ struct AudioOptions: View {
     }
     
     func canSend() -> Bool {
-                
+        
         if conversationGridViewModel.isSelectingChats {
             return conversationGridViewModel.selectedChats.count > 0
         }
@@ -576,65 +574,57 @@ struct KeyboardView: View {
     var body: some View {
         
         HStack(alignment: .bottom) {
+            
+            Button {
+                UIApplication.shared.endEditing()
                 
-                Button {
-                    UIApplication.shared.endEditing()
-
-                    withAnimation {
-                        viewModel.showKeyboard = false
-                        ConversationGridViewModel.shared.stopSelectingChats()
-                    }
-                   
-                } label: {
-                    
-                            Image(systemName: "xmark.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 32, height: 32)
-                                .foregroundColor(Color.bottomGray)
-                                .transition(.move(edge: .trailing))
-                        
-                    
+                withAnimation {
+                    viewModel.showKeyboard = false
+                    ConversationGridViewModel.shared.stopSelectingChats()
                 }
-                .padding(.leading, 16)
-                .padding(.bottom, 8)
-
-                //                KFImage(URL(string: authViewModel.currentUser?.profileImageUrl ?? ""))
-                //                    .resizable()
-                //                    .scaledToFill()
-                //                    .frame(width: 30, height: 30)
-                //                    .clipShape(Circle())
-                //                VStack(alignment: .leading, spacing: 2) {
-                //                    Text(authViewModel.currentUser?.firstName ?? "")
-                //                        .font(.system(size: 14, weight: .semibold))
-                MultilineTextField("Message...",text: $text) {
-                   
-                }
-                .padding(.vertical, 5)
-                .padding(.horizontal, 3)
-
-                Spacer()
-        
+                
+            } label: {
+                
+                Image(systemName: "xmark.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(Color.bottomGray)
+                    .transition(.move(edge: .trailing))
+                
+                
+            }
+            .padding(.leading, 16)
+            .padding(.bottom, 8)
+            
+            MultilineTextField("Message...",text: $text) {
+                
+            }
+            .padding(.vertical, 5)
+            .padding(.horizontal, 3)
+            
+            Spacer()
+            
             
             Button {
                 if !text.trimmingCharacters(in: [" "]).isEmpty {
                     withAnimation(.linear(duration: 0.15)) {
-                       
+                        
                         viewModel.sendMessage(text: text, type: .Text)
                         text = ""
                     }
                 }
             } label: {
                 
-                        Image(systemName: "arrow.up.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 32, height: 32)
-                            .foregroundColor(Color.mainBlue)
-                            .opacity(getIsSendButtonEnabled() ? 1 : 0.3)
-                            .transition(.move(edge: .trailing))
-                            .disabled(!getIsSendButtonEnabled())
-                    
+                Image(systemName: "arrow.up.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(Color.mainBlue)
+                    .opacity(getIsSendButtonEnabled() ? 1 : 0.3)
+                    .transition(.move(edge: .trailing))
+                    .disabled(!getIsSendButtonEnabled())
+                
             }
             .padding(.trailing, 16)
             .padding(.bottom, 8)
@@ -652,7 +642,7 @@ struct KeyboardView: View {
 
 struct ChatSettingsView: View {
     
-    let chat = ConversationViewModel.shared.chat
+    let chat: Chat
     
     var body: some View {
         
@@ -662,13 +652,9 @@ struct ChatSettingsView: View {
                 
                 HStack(spacing: 12) {
                     
-                    KFImage(URL(string: chat?.profileImageUrl ?? ""))
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 36, height: 36)
-                        .clipShape(Circle())
+                    ChatImage(chat: chat, diameter: 36)
                     
-                    Text(chat?.name ?? "")
+                    Text(chat.name)
                         .lineLimit(1)
                         .font(.system(size: 18, weight: .semibold))
                 }
