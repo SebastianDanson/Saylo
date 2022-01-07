@@ -72,7 +72,7 @@ struct ConversationFeedView: View {
                         }
                     })
             }
-            .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 60 + BOTTOM_PADDING : -20)
+            .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 72 + BOTTOM_PADDING : -20)
             .padding(.bottom, 100)
             
         }

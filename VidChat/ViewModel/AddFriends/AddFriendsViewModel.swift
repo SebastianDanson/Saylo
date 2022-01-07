@@ -181,7 +181,7 @@ class AddFriendsViewModel: ObservableObject {
         COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData,friendData], "isDm":true])
         
         let chatData = ["id":chatId,
-                        "lastVisited": Int(Date().timeIntervalSince1970 * 1000),
+                        "lastVisited": Timestamp(date: Date()),
                         "notificationsEnabled": true] as [String: Any]
         
         ConversationGridViewModel.shared.addConversation(withId: chatId)

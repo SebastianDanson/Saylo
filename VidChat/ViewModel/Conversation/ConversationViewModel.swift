@@ -169,14 +169,21 @@ class ConversationViewModel: ObservableObject {
                     self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                 }
             }
-        } else {
-            self.sendingMessageDic = dictionary
-            withAnimation {
-                ConversationGridViewModel.shared.isSelectingChats = true
-                ConversationGridViewModel.shared.cameraViewZIndex = 1
-            }
+        } 
+    }
+    
+    func sendCameraMessage(chatId: String?, chat: Chat?) {
+        let cameraViewModel = CameraViewModel.shared
+        addMessage(url: cameraViewModel.videoUrl, image: cameraViewModel.photo,
+                   type: cameraViewModel.videoUrl == nil ? .Photo : .Video,
+                   isFromPhotoLibrary: false, shouldExport: false, chatId: chatId)
+        
+        
+        if let chat = chat {
+            ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
         }
     }
+    
     
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})

@@ -450,7 +450,15 @@ struct SelectedChatsView: View {
                 
                 if conversationViewModel.showCamera {
                     Button {
-                        //                        viewModel.selectedChats.forEach({ConversationViewModel.shared.addMessage(type: .Video)})
+                        withAnimation {
+                            viewModel.selectedChats.forEach { chat in
+                                conversationViewModel.sendCameraMessage(chatId: chat.id, chat: chat)
+                            }
+                            
+                            CameraViewModel.shared.reset(hideCamera: true)
+                            viewModel.cameraViewZIndex = 3
+                            viewModel.stopSelectingChats()
+                        }
                     } label: {
                         Image(systemName: "location.circle.fill")
                             .resizable()

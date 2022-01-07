@@ -15,6 +15,7 @@ class Chat: ObservableObject {
     
     //info
     let name: String
+    let fullName: String
     let profileImageUrl: String
     var isDm = true
     
@@ -53,10 +54,12 @@ class Chat: ObservableObject {
             let friend = chatMembers.first(where: {$0.id != currentUid})
             
             self.name = friend?.firstName ?? ""
+            self.fullName = self.name + " " + (friend?.lastName ?? "")
             self.profileImageUrl = friend?.profileImage ?? ""
             
         } else {
             self.name = dictionary["name"] as? String ?? ""
+            self.fullName = self.name
             self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
         }
         
@@ -98,4 +101,7 @@ struct ChatMember {
         self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
         self.profileImage = dictionary["profileImage"] as? String ?? ""
     }
+    
 }
+
+

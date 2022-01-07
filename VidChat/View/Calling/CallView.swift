@@ -29,7 +29,7 @@ struct CallView: View {
             }
             
             if callsController.remoteUserIDs.count == 0  {
-                DialingView(profileImage: AuthViewModel.shared.profileImageUrl ?? "", name: "James Crossland")
+                DialingView(profileImage: CallManager.shared.currentChat?.profileImageUrl ?? "", name: CallManager.shared.currentChat?.name ?? "")
             }
         }
     }

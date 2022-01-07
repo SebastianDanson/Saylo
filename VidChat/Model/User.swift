@@ -71,14 +71,14 @@ class User: ObservableObject  {
     }
 }
 
-struct UserChat: Decodable {
+struct UserChat {
     let id: String
-    let lastVisited: String
+    let lastVisited: Timestamp
     let notificationsEnbaled: Bool
     
     init(dictionary: [String:Any]) {
         self.id = dictionary["id"] as? String ?? ""
-        self.lastVisited = dictionary["lastVisited"] as? String ?? ""
+        self.lastVisited = dictionary["lastVisited"] as? Timestamp ?? Timestamp(date: Date())
         self.notificationsEnbaled = dictionary["notificationsEnbaled"] as? Bool ?? true
     }
 }

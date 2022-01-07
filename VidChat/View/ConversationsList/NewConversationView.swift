@@ -7,14 +7,17 @@
 
 import SwiftUI
 import Kingfisher
+import Combine
 
 struct NewConversationView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
-    
+    @StateObject var gridViewModel = ConversationGridViewModel.shared
+
     @State var searchText: String = ""
-    @State var users = [User]()
-    
+    @State var chatName: String = ""
+    @State private var keyboardHeight: CGFloat = 0
+
     var body: some View {
         
         ZStack {
@@ -26,20 +29,24 @@ struct NewConversationView: View {
                         
                         Button {
                             
-                            if viewModel.isCreatingNewGroup {
+                            if viewModel.isCreatingNewChat {
                                 withAnimation {
-                                    viewModel.isCreatingNewGroup = false
+                                    viewModel.isCreatingNewChat = false
                                     viewModel.isTypingName = false
                                 }
                             } else {
                                 withAnimation {
-                                    ConversationGridViewModel.shared.showNewChat = false
+                                    gridViewModel.showNewChat = false
                                 }
+                                
+                                viewModel.addedChats.removeAll()
+                                viewModel.isCreatingNewChat = false
+                                searchText = ""
                             }
                             
                         } label: {
                             
-                            if viewModel.isCreatingNewGroup {
+                            if viewModel.isCreatingNewChat {
                                 
                                 Text("Cancel")
                                     .foregroundColor(Color(.systemBlue))
@@ -78,11 +85,11 @@ struct NewConversationView: View {
                     
                     VStack(alignment: .leading) {
                         
-                        CreateNewGroupView()
+                        CreateNewGroupView(chatName: $chatName)
                         
-                        if viewModel.addedUsers.count > 0 {
+                        if viewModel.addedChats.count > 0 {
                             
-                            AddedUsersView()
+                            AddedChatsView()
                                 .padding(.top, 12)
                                 .padding(.bottom, 4)
                         }
@@ -97,9 +104,9 @@ struct NewConversationView: View {
                         
                         VStack(spacing: 0) {
                             
-                            ForEach(Array(users.enumerated()), id: \.1.id) { i, user in
+                            ForEach(gridViewModel.chats, id: \.id) { chat in
                                 
-                                NewConversationCell(user: user)
+                                NewConversationCell(chat: chat)
                                 
                             }
                             
@@ -119,22 +126,50 @@ struct NewConversationView: View {
             .ignoresSafeArea()
             
             VStack {
+                
                 Spacer()
                 
                 Button {
+                                        
+                    if viewModel.isCreatingNewChat {
+                        print("!!!!!!!")
+                        viewModel.createChat(name: chatName)
+                    } else if let chat = viewModel.getSelectedChat() {
+                        print("@@@@@@")
+                        ConversationViewModel.shared.setChat(chat: chat)
+                        ConversationGridViewModel.shared.showConversation = true
+                    } else {
+                        print("#####")
+                        viewModel.createChat(name: chatName)
+                    }
+                    
+                    viewModel.isCreatingNewChat = false
+                    viewModel.addedChats.removeAll()
+                    
+                    chatName = ""
+                    
+                    withAnimation {
+                        gridViewModel.showNewChat = false
+                    }
                     
                 } label: {
                     
-                    Text(viewModel.isCreatingNewGroup ? "Create Group" : (viewModel.addedUsers.count > 1) ? "Chat with Group" : "Chat")
+                    Text(viewModel.isCreatingNewChat ? "Create Group" : (viewModel.addedChats.count > 1) ? "Chat with Group" : "Chat")
                         .font(.system(size: 19, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(width: 180, height: 52)
                         .background(Color.mainBlue)
+                        .opacity(isButtonEnabled() ? 1 : 0.3)
                         .clipShape(Capsule())
+                        .disabled(!isButtonEnabled())
                 }
-                .padding(.bottom, viewModel.isTypingName || viewModel.isSearching ? 12 : BOTTOM_PADDING + 16)
+                .padding(.bottom, viewModel.isTypingName || viewModel.isSearching ? keyboardHeight + 20 : BOTTOM_PADDING + 16)
             }
-        }
+        }.onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
+    }
+    
+    func isButtonEnabled() -> Bool {
+        return viewModel.isCreatingNewChat || viewModel.addedChats.count > 0
     }
 }
 
@@ -142,17 +177,17 @@ struct NewConversationCell: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
     
-    let user: User
+    let chat: Chat
     
     var body: some View {
         
         Button {
-            viewModel.handleUserSelected(user: user)
+            viewModel.handleChatSelected(chat: chat)
         } label: {
             
             HStack(spacing: 12) {
                 
-                KFImage(URL(string: user.profileImageUrl))
+                KFImage(URL(string: chat.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .foregroundColor(.white)
@@ -161,18 +196,19 @@ struct NewConversationCell: View {
                     .padding(.leading, 12)
                 
                 
-                Text(user.firstName + " " + user.lastName)
+                Text(chat.fullName)
+                    .lineLimit(2)
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.black)
                 
                 Spacer()
                 
                 Circle()
-                    .stroke(viewModel.containsUser(user: user) ? Color.white : Color.lighterGray, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                    .stroke(viewModel.containsChat(chat) ? Color.white : Color.lighterGray, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .frame(width: 28, height: 28)
                     .overlay(
                         ZStack {
-                            if viewModel.containsUser(user: user) {
+                            if viewModel.containsChat(chat) {
                                 Image(systemName: "checkmark.circle.fill")
                                     .resizable()
                                     .scaledToFit()
@@ -183,9 +219,9 @@ struct NewConversationCell: View {
                     )
                     .padding(.horizontal)
                 
-                
             }.frame(height: 52)
         }
+
     }
 }
 
@@ -194,7 +230,7 @@ struct CreateNewGroupView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
     
-    @State var groupName: String = ""
+    @Binding var chatName: String
     
     var body: some View {
         
@@ -204,21 +240,21 @@ struct CreateNewGroupView: View {
                 
                 Circle()
                     .frame(width: 36, height: 36)
-                    .foregroundColor(showCreateGroup() ? .white : .mainBlue)
+                    .foregroundColor(showCreateChat() ? .white : .mainBlue)
                 
-                Image(systemName: showCreateGroup() ? "pencil" : "person.2.fill")
+                Image(systemName: showCreateChat() ? "pencil" : "person.2.fill")
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(showCreateGroup() ? .black : .white)
-                    .frame(width: showCreateGroup() ? 20 : 24, height: showCreateGroup() ? 20 : 24)
+                    .foregroundColor(showCreateChat() ? .black : .white)
+                    .frame(width: showCreateChat() ? 20 : 24, height: showCreateChat() ? 20 : 24)
                 
             }.padding(.leading, 12)
             
-            if showCreateGroup() {
+            if showCreateChat() {
                 
                 HStack {
                     
-                    TextField("Group Name", text: $groupName)
+                    TextField("Group Name", text: $chatName)
                         .onTapGesture {
                             viewModel.isTypingName = true
                         }
@@ -241,10 +277,10 @@ struct CreateNewGroupView: View {
         .cornerRadius(10)
         .onTapGesture(perform: {
             
-            if !viewModel.isCreatingNewGroup {
+            if !viewModel.isCreatingNewChat {
                 
                 withAnimation {
-                    viewModel.isCreatingNewGroup = true
+                    viewModel.isCreatingNewChat = true
                 }
             }
         })
@@ -252,12 +288,12 @@ struct CreateNewGroupView: View {
         .shadow(color: Color(.init(white: 0, alpha: 0.07)), radius: 16, x: 0, y: 2)
     }
     
-    func showCreateGroup() -> Bool {
-        viewModel.isCreatingNewGroup || viewModel.addedUsers.count > 1
+    func showCreateChat() -> Bool {
+        viewModel.isCreatingNewChat || viewModel.addedChats.count > 1
     }
 }
 
-struct AddedUsersView: View {
+struct AddedChatsView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
     
@@ -268,10 +304,10 @@ struct AddedUsersView: View {
             ZStack() {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(Array(viewModel.addedUsers.enumerated()), id: \.1.id) { i, user in
-                            AddedUserView(user: user)
+                        ForEach(Array(viewModel.addedChats.enumerated()), id: \.1.id) { i, chat in
+                            AddedUserView(chat: chat)
                                 .padding(.leading, i == 0 ? 20 : 5)
-                                .padding(.trailing, i == viewModel.addedUsers.count - 1 ? 80 : 5)
+                                .padding(.trailing, i == viewModel.addedChats.count - 1 ? 80 : 5)
                                 .transition(.scale)
                             
                         }
@@ -288,7 +324,7 @@ struct AddedUserView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
     
-    let user: User
+    let chat: Chat
     
     var body: some View {
         
@@ -296,7 +332,7 @@ struct AddedUserView: View {
             
             VStack(alignment: .center, spacing: 4) {
                 
-                KFImage(URL(string: user.profileImageUrl))
+                KFImage(URL(string: chat.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .background(Color(.systemGray))
@@ -305,7 +341,7 @@ struct AddedUserView: View {
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 
-                Text(user.firstName)
+                Text(chat.name)
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
                     .frame(maxWidth: 50)
@@ -313,7 +349,7 @@ struct AddedUserView: View {
             
             Button {
                 withAnimation {
-                    viewModel.addedUsers.removeAll(where: { $0.id == user.id})
+                    viewModel.addedChats.removeAll(where: { $0.id == chat.id})
                 }
             } label: {
                 

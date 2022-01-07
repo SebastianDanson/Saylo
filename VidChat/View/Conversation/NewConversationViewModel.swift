@@ -7,30 +7,198 @@
 
 
 import SwiftUI
+import Firebase
 
 class NewConversationViewModel: ObservableObject {
     
-    @Published var isCreatingNewGroup: Bool = false
+    @Published var isCreatingNewChat: Bool = false
     @Published var isSearching: Bool = true
     @Published var isTypingName: Bool = false
-    @Published var addedUsers = [User]()
+    @Published var addedChats = [Chat]()
 
     static let shared = NewConversationViewModel()
     
     private init() {}
     
-    func handleUserSelected(user: User) {
+    func handleChatSelected(chat: Chat) {
         
         withAnimation {
-            if !addedUsers.contains(where: { $0.id == user.id }) {
-                addedUsers.append(user)
+            if !addedChats.contains(where: { $0.id == chat.id }) {
+                addedChats.append(chat)
             } else {
-                addedUsers.removeAll(where: { $0.id == user.id })
+                addedChats.removeAll(where: { $0.id == chat.id })
             }
         }
     }
     
-    func containsUser(user: User) -> Bool {
-        addedUsers.contains(where: { $0.id == user.id })
+    func containsChat(_ chat: Chat) -> Bool {
+        addedChats.contains(where: { $0.id == chat.id })
+    }
+    
+    
+    func removeDuplicateChatMembers(chatMembers: [ChatMember]) -> [ChatMember] {
+        
+        var chatMemberSet = [ChatMember]()
+                
+        chatMembers.forEach { member in
+            if !chatMemberSet.contains(where: { $0.id == member.id }) {
+                chatMemberSet.append(member)
+            }
+        }
+        
+        return chatMemberSet
+    }
+    
+    func createChat(name: String) {
+        
+
+        guard let user = AuthViewModel.shared.currentUser else {return}
+        
+        
+        var ref: DocumentReference? = nil
+      
+        
+        var chatMembers = [ChatMember]()
+        addedChats.forEach({chatMembers.append(contentsOf: $0.chatMembers)})
+        
+        chatMembers = removeDuplicateChatMembers(chatMembers: chatMembers)
+        
+        
+
+        
+        var userInfo = [[String:Any]]()
+        
+        chatMembers.forEach { chatMember in
+            
+            let info = ["firstName":chatMember.firstName,
+                        "lastName":chatMember.lastName,
+                        "username":chatMember.username,
+                        "profileImage":chatMember.profileImage,
+                        "userId":chatMember.id,
+                        "fcmToken":chatMember.fcmToken,
+                        "pushKitToken": chatMember.pushKitToken]
+            
+            userInfo.append(info)
+        }
+       
+                
+        //create dictionary to send to DB
+        let data = [
+            "admin": [user.id],
+            "name": name,
+            "users":userInfo,
+        ] as [String : Any]
+        
+        
+        //Add group info to DB
+        ref = COLLECTION_CONVERSATIONS.addDocument(data: data) { _ in
+            
+            //Once finished add the group data to the user doc
+            
+            guard let id = ref?.documentID else {return}
+            
+            let chat = Chat(dictionary: data, id: id)
+            
+            ConversationViewModel.shared.addMessage(text: "Created the group", type: .Text, chatId: id)
+            ConversationViewModel.shared.setChat(chat: chat)
+            
+            ConversationGridViewModel.shared.allChats.append(chat)
+            ConversationGridViewModel.shared.chats.append(chat)
+            ConversationGridViewModel.shared.showConversation = true
+
+            
+            let groupData = ["lastVisited": Timestamp(date: Date()),
+                             "notificationsEnabled": true,
+                             "id":id] as [String: Any]
+            
+            Messaging.messaging().subscribe(toTopic: id)
+
+            var fcmTokens = [String]()
+            chatMembers.forEach({fcmTokens.append($0.fcmToken)})
+            
+            let data = ["tokens": fcmTokens, "chatId": id] as [String : Any]
+            Functions.functions().httpsCallable("subscribeToTopic").call(data) { (result, error) in}
+            
+            //Update Current User doc with new group
+            COLLECTION_USERS.document(user.id).updateData(["conversations": FieldValue.arrayUnion([groupData])])
+
+            //Update other users docs
+            chatMembers.forEach { chatMember in
+                COLLECTION_USERS.document(chatMember.id).updateData(["conversations": FieldValue.arrayUnion([groupData])])
+            }
+        }
+    }
+    
+    func getSelectedChat() -> Chat? {
+                
+        let allChats = ConversationGridViewModel.shared.allChats
+        
+        var chatMembers = [ChatMember]()
+        
+        addedChats.forEach({chatMembers.append(contentsOf: $0.chatMembers)})
+        
+        chatMembers = removeDuplicateChatMembers(chatMembers: chatMembers)
+        chatMembers = sortedChatMembers(chatMembers)
+                
+        for chat in allChats {
+            
+            if hasTheSameChatMembers(members1: chatMembers, members2: sortedChatMembers(chat.chatMembers)) {
+                return chat
+            }
+        }
+        
+        return nil
+    }
+    
+    func hasTheSameChatMembers(members1: [ChatMember], members2: [ChatMember]) -> Bool {
+        
+        print(members1.count, members2.count)
+        if members1.count != members2.count {
+            print("NOPE")
+            return false
+        }
+        
+        print("YUP")
+        
+        
+        for i in 0..<members1.count {
+            
+            print(members1[i].id, "1" , members2[i].id, "2")
+            
+            if members1[i].id != members2[i].id {
+                return false
+            }
+            
+        }
+            
+         return true
+    }
+    
+    func sortedChatMembers(_ members: [ChatMember]) -> [ChatMember] {
+        return members.sorted(by: {$0.id < $1.id})
+    }
+    
+    func createDefaultGroupName() -> String {
+        
+        var name = ""
+        
+        var ids = [String]()
+
+        addedChats.forEach { chat in
+            chat.chatMembers.forEach { chatMember in
+                if !ids.contains(chatMember.id) {
+                    
+                    if name.isEmpty {
+                        name = chatMember.firstName + " " + chatMember.lastName
+                    } else {
+                        name += ", \(chatMember.firstName + " " + chatMember.lastName)"
+                    }
+                    
+                    ids.append(chatMember.id)
+                }
+            }
+        }
+        
+        return name
     }
 }

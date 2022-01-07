@@ -71,6 +71,7 @@ struct MakeCallView: View {
         guard let currentUser = AuthViewModel.shared.currentUser else {return}
         guard let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id}) else {return}
         
+        CallManager.shared.currentChat = chat
          
         callsController.startOutgoingCall(of: currentUser.username, pushKitToken: chatMember.pushKitToken)
     }

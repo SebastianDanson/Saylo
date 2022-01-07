@@ -188,15 +188,17 @@ struct SendButton: View {
         Button(action: {
             withAnimation(.linear(duration: 0.2)) {
                 
+                
                 let conversationVM = ConversationViewModel.shared
-                
-                conversationVM.sendMessage(url: viewModel.videoUrl, image: viewModel.photo,
-                                                        type: viewModel.videoUrl == nil ? .Photo : .Video,
-                                          isFromPhotoLibrary: false, shouldExport: false, chatId: conversationVM.selectedChat?.id)
-                
                 viewModel.videoPlayerView?.player.pause()
-                
-                if conversationVM.chatId != "" {
+
+                if conversationVM.chatId.isEmpty {
+                    withAnimation {
+                        ConversationGridViewModel.shared.isSelectingChats = true
+                        ConversationGridViewModel.shared.cameraViewZIndex = 1
+                    }
+                } else {
+                    conversationVM.sendCameraMessage(chatId: conversationVM.chatId, chat: conversationVM.selectedChat)
                     viewModel.reset(hideCamera: true)
                 }
             }

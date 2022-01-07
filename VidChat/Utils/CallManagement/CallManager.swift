@@ -28,6 +28,7 @@ final class CallManager: NSObject, ObservableObject {
     var channelName: String?
     weak var delegate: CallManagerDelegate?
     var currentCall: Call?
+    var currentChat: Chat?
     
     static var shared = CallManager()
     
@@ -107,7 +108,7 @@ final class CallManager: NSObject, ObservableObject {
             
             let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "token": pushKitToken] as [String : Any]
             
-            Firebase.Functions.functions().httpsCallable("test").call(data) { result, error in
+            Firebase.Functions.functions().httpsCallable("makeCall").call(data) { result, error in
                 print(error?.localizedDescription, "FUNCTION ERROR")
             }
         }

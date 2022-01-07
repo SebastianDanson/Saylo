@@ -117,7 +117,7 @@ class ConversationGridViewModel: ObservableObject {
         
         COLLECTION_CONVERSATIONS.document(id).getDocument { snapshot, _ in
             if let data = snapshot?.data() {
-                var chat = Chat(dictionary: data, id: id)
+                let chat = Chat(dictionary: data, id: id)
                 
                 if !self.allChats.contains(where: {$0.id == chat.id}) {
                     self.chats.append(chat)

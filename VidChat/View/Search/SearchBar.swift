@@ -27,7 +27,7 @@ struct SearchBar: View {
         
         HStack {
             
-            SearchTextField(text: $text, isFirstResponder: isFirstResponder, placeHolderText: placeHolder, showSearchReturnKey: showSearchReturnKey)
+            SearchTextField(text: $text, isEditing: $isEditing, isFirstResponder: isFirstResponder, placeHolderText: placeHolder, showSearchReturnKey: showSearchReturnKey)
                 .padding(8)
                 .padding(.horizontal, 26)
                 .background(Color(.systemGray5))
@@ -72,14 +72,16 @@ struct SearchTextField: UIViewRepresentable {
     class Coordinator: NSObject, UITextFieldDelegate {
         
         @Binding var text: String
-        
+        @Binding var isEditing: Bool
+
         var didBecomeFirstResponder = false
         var showSearchReturnKey: Bool
         var searchText = ""
         var lastPerformArgument: NSString? = nil
         
-        init(text: Binding<String>, showSearchReturnKey: Bool) {
+        init(text: Binding<String>, isEditing: Binding<Bool>, showSearchReturnKey: Bool) {
             _text = text
+            _isEditing = isEditing
             self.showSearchReturnKey = showSearchReturnKey
         }
         
@@ -98,6 +100,11 @@ struct SearchTextField: UIViewRepresentable {
             }
             
             text = ""
+            
+            isEditing = false
+            text = ""
+            ConversationGridViewModel.shared.showAllChats()
+            UIApplication.shared.endEditing()
             
             return true
         }
@@ -119,6 +126,9 @@ struct SearchTextField: UIViewRepresentable {
                     }
                 }
                 
+            } else {
+                text = textField.text ?? "" + string
+                ConversationGridViewModel.shared.filterUsers(withText: text)
             }
             
             return true
@@ -140,6 +150,8 @@ struct SearchTextField: UIViewRepresentable {
     }
     
     @Binding var text: String
+    @Binding var isEditing: Bool
+
     var isFirstResponder: Bool
     var placeHolderText: String
     var showSearchReturnKey: Bool
@@ -159,7 +171,7 @@ struct SearchTextField: UIViewRepresentable {
     }
     
     func makeCoordinator() -> SearchTextField.Coordinator {
-        return Coordinator(text: $text, showSearchReturnKey: showSearchReturnKey)
+        return Coordinator(text: $text, isEditing: $isEditing, showSearchReturnKey: showSearchReturnKey)
     }
     
     func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<SearchTextField>) {
