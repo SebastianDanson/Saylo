@@ -57,7 +57,7 @@ struct SearchBar: View {
                     }
                 }, label: {
                     Text("Cancel")
-                        .foregroundColor(.black)
+                        .foregroundColor(.systemBlack)
                 })
                     .padding(.trailing, 8)
                     .transition(.move(edge: .trailing))
@@ -165,7 +165,7 @@ struct SearchTextField: UIViewRepresentable {
         
         textField.attributedPlaceholder = NSAttributedString(
             string: placeHolderText,
-            attributes: [NSAttributedString.Key.foregroundColor: UIColor.grayText]
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.textGray]
         )
         return textField
     }

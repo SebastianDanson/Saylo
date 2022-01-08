@@ -106,14 +106,14 @@ struct ConversationView: View {
             
             if viewModel.showSavedPosts {
                 ConversationFeedView(showSavedPosts: true)
-                    .background(Color.white)
+                    .background(Color.systemWhite)
                     .overlay(SavedPostsOptionsView(), alignment: .bottom)
                     .transition(.move(edge: .bottom))
                     .zIndex(6)
             }
             
         }
-        .background(Color.white)
+        .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             if let chat = viewModel.chat {
@@ -291,15 +291,23 @@ struct OptionsView: View {
         }
         
         .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 70)
-        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? Color(white: 1, opacity: 0.7) : Color.clear)
+        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? .point7AlphaSystemWhite : Color.clear)
         
     }
 }
 
 struct VisualEffectView: UIViewRepresentable {
     var effect: UIVisualEffect?
-    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
-    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
+    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView {
+        let visualEffectView = UIVisualEffectView()
+        visualEffectView.subviews.forEach({ if $0.backgroundColor != nil { $0.backgroundColor = .clear}})
+        return visualEffectView
+    }
+    
+    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) {
+        uiView.effect = effect
+        uiView.subviews.forEach({ if $0.backgroundColor != nil { $0.backgroundColor = .clear}})
+    }
 }
 
 /* The button that records video */
@@ -329,7 +337,7 @@ struct CameraCircle: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 27, height: 27)
-                                .foregroundColor(.white)
+                                .foregroundColor(.systemWhite)
                         }
                     } else {
                         Circle()
@@ -385,12 +393,12 @@ struct ChatOptions: View {
                     ZStack {
                         Circle()
                             .frame(width: 35, height: 35)
-                            .foregroundColor(Color(white: 0, opacity: 0.3))
+                            .foregroundColor(.point3AlphaSystemBlack)
                         
                         Image(systemName: "chevron.backward")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(.white)
+                            .foregroundColor(.iconSystemWhite)
                             .frame(width: 18, height: 18)
                             .padding(.trailing, 3)
                         
@@ -425,7 +433,7 @@ struct ChatOptions: View {
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(width: width/3, height: width/3)
-                                                .foregroundColor(.white)
+                                                .foregroundColor(.systemWhite)
                                         }.transition(.opacity)
                                         
                                     }
@@ -466,14 +474,26 @@ struct ChatOptions: View {
                             
                             Circle()
                                 .frame(width: 36, height: 36)
-                                .foregroundColor(Color(white: 0, opacity: 0.3))
+                                .foregroundColor(.point3AlphaSystemBlack)
                             
-                            Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                                .resizable()
-                                .renderingMode(.template)
-                                .scaledToFit()
-                                .foregroundColor(.white)
-                                .frame(width: 20, height: 24)
+                            
+                            
+                            if cameraViewModel.isRotating {
+                                
+                                Image(systemName: "arrow.triangle.2.circlepath.camera")
+                                    .resizable()
+                                    .foregroundColor(.iconSystemWhite)
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                
+                            } else {
+                                Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundColor(.iconSystemWhite)
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                            }
                         }
                     }
                     
@@ -487,12 +507,12 @@ struct ChatOptions: View {
                             ZStack {
                                 Circle()
                                     .frame(width: 36, height: 36)
-                                    .foregroundColor(Color(white: 0, opacity: 0.3))
+                                    .foregroundColor(.point3AlphaSystemBlack)
                                 
                                 Image(systemName: "film")
                                     .resizable()
                                     .scaledToFit()
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.iconSystemWhite)
                                     .frame(width: 20, height: 20)
                             }
                         }
@@ -526,6 +546,7 @@ struct ActionView: View {
             .mask(image
                     .resizable()
                     .scaledToFit()
+                    .foregroundColor(.white)
                     .frame(width: imageDimension, height: imageDimension)
                     .aspectRatio(contentMode: .fit))
     }
@@ -647,7 +668,7 @@ struct KeyboardView: View {
             
             
             Button {
-                if !text.trimmingCharacters(in: [" "]).isEmpty {
+                if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     withAnimation(.linear(duration: 0.15)) {
                         
                         viewModel.sendMessage(text: text, type: .Text)
@@ -705,12 +726,12 @@ struct ChatSettingsView: View {
                     
                     Circle()
                         .frame(width: 40, height: 40)
-                        .foregroundColor(Color(white: 0, opacity: 0.3))
+                        .foregroundColor(.iconSystemWhite)
                     
                     Image(systemName: "video")
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(.white)
+                        .foregroundColor(.systemWhite)
                         .frame(width: 22, height: 22)
                     
                 }.padding(.trailing, 20)
@@ -737,14 +758,14 @@ struct ChatSettingsView: View {
                         Image(systemName: "bookmark.fill")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(Color.black)
+                            .foregroundColor(Color.systemBlack)
                             .frame(width: 36, height: 20)
                             .padding(.leading, 8)
                         
                         Text("View saved messages")
                             .lineLimit(1)
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                     }
                     
                     Spacer()
@@ -757,7 +778,7 @@ struct ChatSettingsView: View {
                         .padding(.trailing, 2)
                 }
                 .padding(.vertical)
-                .background(Color.white)
+                .background(Color.systemWhite)
                 .cornerRadius(12)
                 .padding(.horizontal)
             }
@@ -817,12 +838,11 @@ struct SavedPostsOptionsView: View {
                             ZStack {
                                 Circle()
                                     .frame(width: 38, height: 38)
-                                    .foregroundColor(Color(white: 0, opacity: 0.0))
                                 
                                 Image(systemName: "chevron.backward")
                                     .resizable()
                                     .scaledToFit()
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.systemBlack)
                                     .frame(width: 22, height: 22)
                                     .padding(.trailing, 3)
                                 
@@ -842,7 +862,7 @@ struct SavedPostsOptionsView: View {
         }
         
         .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 70)
-        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? Color(white: 1, opacity: 0.7) : Color.clear)
+        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? .point7AlphaSystemWhite : Color.clear)
         
     }
 }

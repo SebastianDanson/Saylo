@@ -11,7 +11,7 @@ import Kingfisher
 struct ImageDetailView: View {
     
     @State var showImageOptions = true
-    @State var backGroundColor: Color = .white
+    @State var backGroundColor: Color = .systemWhite
     @State var dragOffset: CGSize = .zero
     @State var lastScaleValue: CGFloat = 1.0
     @State var scale: CGFloat = 1.0
@@ -49,7 +49,7 @@ struct ImageDetailView: View {
                 showImageOptions.toggle()
             }
             
-            backGroundColor = backGroundColor == .white ? .black : .white
+            backGroundColor = backGroundColor == .systemWhite ? .systemBlack : .systemWhite
         }
         .gesture(
             
@@ -95,7 +95,8 @@ struct ImageOptionsView: View {
                     
                     Rectangle()
                         .frame(width: SCREEN_WIDTH, height: TOP_PADDING + 44)
-                        .foregroundColor(Color(white: 0.97, opacity: 1.0 - (dragOffset.height/100)))
+                        .foregroundColor(.systemWhite)
+                        .opacity(1.0 - (dragOffset.height/100))
                     
                     HStack {
                         

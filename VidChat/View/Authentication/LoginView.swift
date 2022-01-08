@@ -33,7 +33,7 @@ struct LoginView: View {
                     NavigationLink(
                         destination: RegistrationView().navigationBarBackButtonHidden(true),
                         label: {
-                            Text("or ").foregroundColor(.black) +
+                            Text("or ").foregroundColor(.systemBlack) +
                             
                             Text("Sign up")
                                 .foregroundColor(.mainBlue)
@@ -44,13 +44,13 @@ struct LoginView: View {
                 }.padding(.bottom, 6)
                 
                 
-                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope")
-                    .foregroundColor(.white)
+                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope", allowSpaces: true)
+                    .foregroundColor(.systemWhite)
                 
                 //password field
                 
                 CustomSecureField(text: $password)
-                    .foregroundColor(.white)
+                    .foregroundColor(.systemWhite)
             }.padding(.horizontal, 32)
             
             
@@ -88,7 +88,7 @@ struct LoginView: View {
                 
                 isLoading = true
                 
-                viewModel.login(withEmail: email.trimmingCharacters(in: [" "]), password: password) { error in
+                viewModel.login(withEmail: email.replacingOccurrences(of: " ", with: ""), password: password) { error in
                     
                     isLoading = false
                     

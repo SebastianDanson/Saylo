@@ -58,7 +58,7 @@ struct NewConversationView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 20, height: 20)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.systemBlack)
                                     .padding(.horizontal, 20)
                             }
                         }
@@ -68,7 +68,7 @@ struct NewConversationView: View {
                     
                     
                     Text("New Chat")
-                        .foregroundColor(.black)
+                        .foregroundColor(.systemBlack)
                         .fontWeight(.semibold)
                     
                 }
@@ -76,7 +76,7 @@ struct NewConversationView: View {
                 .background(Color.backgroundGray)
                 .padding(.top, TOP_PADDING)
                 
-                SearchBar(text: $searchText, isEditing: $viewModel.isSearching, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
+                SearchBar(text: $searchText, isEditing: $viewModel.isSearching, isFirstResponder: false, placeHolder: "Search", showSearchReturnKey: false)
                     .padding(.horizontal, 20)
                     .padding(.bottom)
                 
@@ -111,7 +111,7 @@ struct NewConversationView: View {
                             }
                             
                         }.frame(width: SCREEN_WIDTH - 40)
-                            .background(Color.white)
+                            .background(Color.popUpSystemWhite)
                             .cornerRadius(12)
                             .padding(.horizontal, 20)
                             .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
@@ -153,7 +153,7 @@ struct NewConversationView: View {
                     
                     Text(viewModel.isCreatingNewChat ? "Create Group" : (viewModel.addedChats.count > 1) ? "Chat with Group" : "Chat")
                         .font(.system(size: 19, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(.systemWhite)
                         .frame(width: 180, height: 52)
                         .background(Color.mainBlue)
                         .opacity(isButtonEnabled() ? 1 : 0.3)
@@ -191,12 +191,12 @@ struct NewConversationCell: View {
                 Text(chat.fullName)
                     .lineLimit(2)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
                 
                 Spacer()
                 
                 Circle()
-                    .stroke(viewModel.containsChat(chat) ? Color.white : Color.lighterGray, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                    .stroke(viewModel.containsChat(chat) ? Color.systemWhite : Color.lighterGray, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .frame(width: 28, height: 28)
                     .overlay(
                         ZStack {
@@ -232,12 +232,12 @@ struct CreateNewGroupView: View {
                 
                 Circle()
                     .frame(width: 36, height: 36)
-                    .foregroundColor(showCreateChat() ? .white : .mainBlue)
+                    .foregroundColor(showCreateChat() ? .systemWhite : .mainBlue)
                 
                 Image(systemName: showCreateChat() ? "pencil" : "person.2.fill")
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(showCreateChat() ? .black : .white)
+                    .foregroundColor(showCreateChat() ? .systemBlack : .systemWhite)
                     .frame(width: showCreateChat() ? 20 : 24, height: showCreateChat() ? 20 : 24)
                 
             }.padding(.leading, 12)
@@ -258,14 +258,14 @@ struct CreateNewGroupView: View {
                 
                 Text("Create a new group")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
             }
             
             Spacer()
             
         }
         .frame(width: SCREEN_WIDTH - 40, height: 50)
-        .background(Color.white)
+        .background(Color.popUpSystemWhite)
         .cornerRadius(10)
         .onTapGesture(perform: {
             

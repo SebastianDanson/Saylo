@@ -25,7 +25,7 @@ struct AddFriendCell: View {
             KFImage(URL(string: user.profileImageUrl))
                 .resizable()
                 .scaledToFill()
-                .foregroundColor(.white)
+                .foregroundColor(.systemWhite)
                 .frame(width: 44, height: 44)
                 .clipShape(Circle())
                 .padding(.leading, 12)
@@ -35,7 +35,7 @@ struct AddFriendCell: View {
                 
                 Text(user.firstName + " " + user.lastName)
                     .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
                 
                 Text(user.username)
                     .font(.system(size: 12, weight: .medium))

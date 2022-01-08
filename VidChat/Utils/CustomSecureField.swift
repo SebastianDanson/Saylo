@@ -17,7 +17,8 @@ struct CustomSecureField: View {
             ZStack(alignment: .leading) {
                 
                 if text.isEmpty {
-                    Text("Password").foregroundColor(Color(.init(white: 0, alpha: 0.6)))
+                    Text("Password").foregroundColor(.systemBlack)
+                        .opacity(0.6)
                         .padding(.leading, 30)
                 }
                 
@@ -26,10 +27,10 @@ struct CustomSecureField: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 19, height: 19)
-                        .foregroundColor(.black)
+                        .foregroundColor(.systemBlack)
                     
                     SecureField("", text: $text)
-                        .foregroundColor(.black)
+                        .foregroundColor(.systemBlack)
                         .frame(height: 35)
                 }
             }

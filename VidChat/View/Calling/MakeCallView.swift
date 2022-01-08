@@ -51,7 +51,7 @@ struct MakeCallView: View {
                             
                         }
                     }
-                    .background(Color.white)
+                    .background(Color.systemWhite)
                     .padding(.vertical, BOTTOM_PADDING + 20)
                     .flippedUpsideDown()
                     .scaleEffect(x: -1, y: 1, anchor: .center)
@@ -98,7 +98,7 @@ struct CallNavView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                             .padding(.leading, 16)
                             .padding(.top, -3)
                     }

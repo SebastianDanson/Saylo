@@ -47,8 +47,8 @@ struct ResetPasswordView: View {
                 
                 
                 //email field
-                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope")
-                    .foregroundColor(.white)
+                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope", allowSpaces: true)
+                    .foregroundColor(.systemWhite)
                     .padding(.bottom, 24)
                 
                 

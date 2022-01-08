@@ -11,6 +11,7 @@ struct CustomTextField: View {
     @Binding var text: String
     let placeholder: Text
     let imageName: String
+    let allowSpaces: Bool
     
     var body: some View {
         
@@ -19,7 +20,8 @@ struct CustomTextField: View {
             ZStack(alignment: .leading) {
                 
                 if text.isEmpty {
-                    placeholder.foregroundColor(Color(.init(white: 0, alpha: 0.6)))
+                    placeholder.foregroundColor(.systemBlack)
+                        .opacity(0.6)
                         .padding(.leading, 30)
                 }
                 
@@ -29,11 +31,18 @@ struct CustomTextField: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 19, height: 19)
-                        .foregroundColor(.black)
+                        .foregroundColor(.systemBlack)
                     
                     TextField("", text: $text)
-                        .foregroundColor(.black)
+                        .foregroundColor(.systemBlack)
                         .frame(height: 35)
+                        .onChange(of: text) {
+                            
+                            if !allowSpaces {
+                                self.text = $0.replacingOccurrences(of: " ", with: "")
+                            }
+                            // Result: "Helloworld"
+                        }
                 }
             }
             
@@ -42,11 +51,5 @@ struct CustomTextField: View {
                 .foregroundColor(.lightGray)
             
         }
-    }
-}
-
-struct CustomTextField_Previews: PreviewProvider {
-    static var previews: some View {
-        CustomTextField(text: .constant(""), placeholder: Text("Email"), imageName: "envelope")
     }
 }

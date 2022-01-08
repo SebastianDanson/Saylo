@@ -88,7 +88,7 @@ struct VideoCell: View {
                                 if showReactions {
                                     Circle()
                                         .frame(width: 46, height: 46)
-                                        .foregroundColor(Color(white: 0, opacity: 0.3))
+                                        .foregroundColor(.point3AlphaSystemBlack)
                                 }
                                 
                                 Image(systemName: "face.smiling")
@@ -108,7 +108,7 @@ struct VideoCell: View {
                                     
                                     Circle()
                                         .frame(width: 30, height: 30)
-                                        .foregroundColor(Color(white: 0, opacity: 0.3))
+                                        .foregroundColor(.point3AlphaSystemBlack)
                                     
                                     Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
                                         .resizable()
@@ -348,7 +348,7 @@ struct MessageInfoView: View {
                 .foregroundColor(.white)
             + Text(" • \(date.getFormattedDate())")
                 .font(.system(size: 12, weight: .regular))
-                .foregroundColor(Color.white)
+                .foregroundColor(.white)
         }
   
     }

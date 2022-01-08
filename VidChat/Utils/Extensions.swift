@@ -16,22 +16,30 @@ extension UIApplication {
 }
 
 extension Color {
-    static let mainGreen = Color(red: 0, green: 206/255, blue: 201/255)
-    static let mainBlue = Color(red: 15/255, green: 188/255, blue: 249/255)
-    static let lightGray = Color(red: 0.67, green: 0.67, blue: 0.67)
-    static let lighterGray = Color(red: 228/255, green: 228/255, blue: 228/255)
-    static let iconGray = Color(red: 153/255, green: 153/255, blue: 153/255)
-    static let mainGray = Color(red: 83/255, green: 92/255, blue: 104/255)
-    static let topGray = Color(red: 165/255, green: 170/255, blue: 183/255)
-    static let bottomGray = Color(red: 135/255, green: 140/255, blue: 150/255)
-    static let lightestGray = Color(red: 248/255, green: 248/255, blue: 248/255)
-    static let toolBarIconGray = Color(red: 241/255, green: 242/255, blue: 244/255)
-    static let toolBarIconDarkGray = Color(red: 100/255, green: 109/255, blue: 120/255)
-    static let videoPlayerGray = Color(red: 115/255, green: 115/255, blue: 115/255)
-    static let backgroundGray = Color(red: 248/255, green: 248/255, blue: 248/255)
-    static let chevronGray = Color(red: 204/255, green: 204/255, blue: 204/255)
-    static let dividerGray = Color(red: 225/255, green: 225/255, blue: 225/255)
-    static let textGray = Color(red: 83/255, green: 92/255, blue: 104/255)
+        
+    static let mainBlue = Color(UIColor.mainBlue)
+    static let lightGray = Color(UIColor.lightGray)
+    static let lighterGray = Color(UIColor.lighterGray)
+    static let iconGray = Color(UIColor.iconGray)
+    static let mainGray = Color(UIColor.mainGray)
+    static let topGray = Color(UIColor.topGray)
+    static let bottomGray = Color(UIColor.bottomGray)
+    static let lightestGray = Color(UIColor.lightestGray)
+    static let toolBarIconGray = Color(UIColor.toolBarIconGray)
+    static let toolBarIconDarkGray = Color(UIColor.toolBarIconDarkGray)
+    static let videoPlayerGray = Color(UIColor.videoPlayerGray)
+    static let backgroundGray = Color(UIColor.backgroundGray)
+    static let chevronGray = Color(UIColor.chevronGray)
+    static let dividerGray = Color(UIColor.dividerGray)
+    static let textGray = Color(UIColor.textGray)
+    static let borderGray = Color(UIColor.borderGray)
+    static let systemWhite = Color(UIColor.systemWhite)
+    static let systemBlack = Color(UIColor.systemBlack)
+    static let point7AlphaSystemWhite = Color(UIColor.point7AlphaSystemWhite)
+    static let point3AlphaSystemBlack = Color(UIColor.point3AlphaSystemBlack)
+    static let popUpSystemWhite = Color(UIColor.popUpSystemWhite)
+    static let iconSystemWhite = Color(UIColor.iconSystemWhite)
+
 }
 
 extension UIImage {
@@ -73,8 +81,92 @@ extension UIImage {
 
 extension UIColor {
     
+    static let systemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .black : .white
+    }
+    
+    static let systemBlack = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .white : .black
+    }
+    
     static let mainBlue = UIColor(red: 15/255, green: 188/255, blue: 249/255, alpha: 1)
-    static let grayText = UIColor(red: 83/255, green: 92/255, blue: 104/255, alpha: 1)
+
+    
+    static let lightGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray2 : UIColor(red: 0.67, green: 0.67, blue: 0.67, alpha: 1)
+    }
+    
+    static let lighterGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray5 : UIColor(red: 228/255, green: 228/255, blue: 228/255, alpha: 1)
+    }
+    
+    static let iconGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 153/255, green: 153/255, blue: 153/255, alpha: 1)
+    }
+    
+    static let mainGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 83/255, green: 92/255, blue: 104/255, alpha: 1)
+    }
+    
+    static let topGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray2 : UIColor(red: 165/255, green: 170/255, blue: 183/255, alpha: 1)
+    }
+    
+    static let bottomGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 135/255, green: 140/255, blue: 150/255, alpha: 1)
+    }
+    
+    static let lightestGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray6 : UIColor(red: 248/255, green: 248/255, blue: 248/255, alpha: 1)
+    }
+    
+    static let toolBarIconGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray6 : UIColor(red: 241/255, green: 242/255, blue: 244/255, alpha: 1)
+    }
+    
+    static let toolBarIconDarkGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 100/255, green: 109/255, blue: 120/255, alpha: 1)
+    }
+    
+    static let videoPlayerGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 115/255, green: 115/255, blue: 115/255, alpha: 1)
+    }
+    
+    static let backgroundGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .black : UIColor(red: 248/255, green: 248/255, blue: 248/255, alpha: 1)
+    }
+    
+    static let chevronGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray3 : UIColor(red: 204/255, green: 204/255, blue: 204/255, alpha: 1)
+    }
+    
+    static let dividerGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray5 : UIColor(red: 225/255, green: 225/255, blue: 225/255, alpha: 1)
+    }
+    
+    static let borderGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray5 : UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1)
+    }
+    
+    static let textGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 83/255, green: 92/255, blue: 104/255, alpha: 1)
+    }
+    
+    static let point7AlphaSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(white: 0, alpha: 0.7) : UIColor(white: 1, alpha: 0.7)
+    }
+    
+    static let point3AlphaSystemBlack = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 0.3) : UIColor(white: 0, alpha: 0.3)
+    }
+
+    static let popUpSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 28/255, green: 28/255, blue: 30/255, alpha: 1) : .white
+    }
+    
+    static let iconSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1) : .white
+    }
     
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
@@ -99,7 +191,7 @@ extension UIColor {
         0.7152 * luminanceArray[1] +
         0.0722 * luminanceArray[2]
         
-        return luminance > 0.179 ? UIColor.black : UIColor.white
+        return luminance > 0.179 ? UIColor.systemBlack : UIColor.systemWhite
     }
 }
 

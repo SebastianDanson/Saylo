@@ -42,7 +42,7 @@ class PhotosCollectionView: UIView {
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 64, weight: .regular, scale: .medium)
         button.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: largeConfig), for: .normal)
         button.tintColor = .mainBlue
-        button.backgroundColor = .white
+        button.backgroundColor = .systemWhite
         let width: CGFloat = 64
         button.setDimensions(height: width, width: width)
         button.layer.cornerRadius = width / 2
@@ -95,7 +95,7 @@ class PhotosCollectionView: UIView {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(AssetCell.self, forCellWithReuseIdentifier: AssetCollectionViewCellReuseIdentifier)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .systemWhite
         collectionView.allowsMultipleSelection = true
         addSubview(collectionView)
         collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 20)

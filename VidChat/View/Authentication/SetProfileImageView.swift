@@ -130,7 +130,7 @@ struct SetProfileImageView: View {
                                         showCamera = false
                                     }
                                 } label: {
-                                    CamereraOptionView(image: Image("x"), imageDimension: 14).padding()
+                                    CameraOptionView(image: Image("x"), imageDimension: 14).padding()
                                 }
 
                             }

@@ -22,7 +22,7 @@ struct ImageCell: View {
     let isFromPhotoLibrary: Bool
 
     @State var isSaved: Bool
-    @State var backGroundColor = Color.white
+    @State var backGroundColor = Color.systemWhite
     @State var showAlert = false
     
     init(message: Message, url: String?, image: UIImage?, showName: Bool) {
@@ -109,12 +109,12 @@ struct ImageCell: View {
                             
                             Circle()
                                 .frame(width: 30, height: 30)
-                                .foregroundColor(Color(white: 0, opacity: 0.3))
+                                .foregroundColor(.point3AlphaSystemBlack)
                             
                             Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(.white)
+                                .foregroundColor(.systemWhite)
                                 .frame(width: 16, height: 16)
                         }
                         .padding(.horizontal, 6)

@@ -37,7 +37,7 @@ struct ConversationFeedView: View {
                             .offset(x: 0, y: -28)
                             .background(
                                 getMessages()[i].type == .Video ? GeometryReader { geo in
-                                    Color.white.preference(
+                                    Color.systemWhite.preference(
                                         key: ViewOffsetsKey.self,
                                         value: [i: geo.frame(in: .named("scrollView")).origin.y]) } : nil)
                             .onAppear {
@@ -87,7 +87,7 @@ struct ConversationFeedView: View {
         
         .flippedUpsideDown()
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-        .background(Color.white)
+        .background(Color.systemWhite)
         .coordinateSpace(name: "scrollView")
         
         //TODO if no saved messages show an alert saying no saved message and telling them how to do it

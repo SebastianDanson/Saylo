@@ -16,7 +16,7 @@ struct ContentView: View {
         
         Group {
             
-            //if not logged in -> show login
+            //if not logged in -> show landing page
             // else show main interface
             if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
                 LandingPageView()
@@ -30,7 +30,6 @@ struct ContentView: View {
 //                }
             }
             
-//            MakeCallView()
         }
     }
 }

@@ -46,7 +46,7 @@ struct RegistrationView: View {
                     NavigationLink(
                         destination: LoginView(),
                         label: {
-                            Text("or ").foregroundColor(.black) +
+                            Text("or ").foregroundColor(.systemBlack) +
                             
                             Text("Login")
                                 .foregroundColor(.mainBlue)
@@ -58,15 +58,15 @@ struct RegistrationView: View {
                 
                 
                 //email field
-                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope")
-                    .foregroundColor(.white)
+                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope", allowSpaces: true)
+                    .foregroundColor(.systemWhite)
                 
                 
                 if showPassword {
                     
                     //password field
                     CustomSecureField(text: $password)
-                        .foregroundColor(.white)
+                        .foregroundColor(.systemWhite)
                 }
                 
                 
@@ -82,7 +82,7 @@ struct RegistrationView: View {
                     label: {
                         Text("Forgot Password?")
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(.white)
+                            .foregroundColor(.systemWhite)
                             .padding(.top)
                             .padding(.trailing, 28)
                     })
@@ -96,7 +96,7 @@ struct RegistrationView: View {
             Button(action: {
                 
                 if !showPassword {
-                    if isValidEmail(email) {
+                    if isValidEmail(email.replacingOccurrences(of: " ", with: "")) {
                         withAnimation {
                             showPassword = true
                         }
@@ -107,7 +107,7 @@ struct RegistrationView: View {
                     
                     isLoading = true
                     
-                    viewModel.register(withEmail: email.trimmingCharacters(in: [" "]), password: password) { error in
+                    viewModel.register(withEmail: email.replacingOccurrences(of: " ", with: ""), password: password) { error in
                         
                         isLoading = false
                         

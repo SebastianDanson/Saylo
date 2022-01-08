@@ -75,7 +75,7 @@ struct VideoPlayerView: View {
         }
         
         if showName {
-            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.white, style: StrokeStyle(lineWidth: 10))
+            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.systemWhite, style: StrokeStyle(lineWidth: 10))
                 .frame(width: width + 10, height: height + 20)
         }
         

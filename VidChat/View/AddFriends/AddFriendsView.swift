@@ -37,7 +37,7 @@ struct AddFriendsView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                             .padding(.horizontal, 20)
                     }
                     
@@ -48,7 +48,7 @@ struct AddFriendsView: View {
                 .background(Color.backgroundGray)
                 
                 Text("Add Friends")
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
                     .fontWeight(.semibold)
                 
             }
@@ -69,7 +69,7 @@ struct AddFriendsView: View {
                     if viewModel.searchedUsers.count > 0 {
                         
                         Text("Add Friends")
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
                             .padding(.leading, 20)
                         
@@ -83,7 +83,7 @@ struct AddFriendsView: View {
                             }
                             
                         } .frame(width: SCREEN_WIDTH - 40)
-                            .background(Color.white)
+                            .background(Color.popUpSystemWhite)
                             .cornerRadius(12)
                             .padding(.horizontal, 20)
                             .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
@@ -92,7 +92,7 @@ struct AddFriendsView: View {
                     
                     if viewModel.friendRequests.count > 0 && viewModel.searchedUsers.count == 0 {
                         Text("Added Me")
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
                             .padding(.leading, 20)
                     }
@@ -109,14 +109,14 @@ struct AddFriendsView: View {
                         }
                         
                     } .frame(width: SCREEN_WIDTH - 40)
-                        .background(Color.white)
+                        .background(Color.popUpSystemWhite)
                         .cornerRadius(12)
                         .padding(.horizontal, 20)
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
                     
                     if suggestedUsers.count > 0 && viewModel.searchedUsers.count == 0 {
                         Text("Quick Add")
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
                             .padding(.top, 28)
                             .padding(.leading, 20)
@@ -134,7 +134,7 @@ struct AddFriendsView: View {
                         }
                         
                     } .frame(width: SCREEN_WIDTH - 40)
-                        .background(Color.white)
+                        .background(Color.popUpSystemWhite)
                         .cornerRadius(12)
                         .padding(.horizontal, 20)
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
@@ -151,7 +151,6 @@ struct AddFriendsView: View {
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .ignoresSafeArea()
         .onAppear {
-            print("APPREAR")
             AddFriendsViewModel.shared.fetchFriendRequests()
             AddFriendsViewModel.shared.setSeenFriendRequests()
         }

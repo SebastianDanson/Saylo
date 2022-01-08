@@ -64,8 +64,8 @@ struct SetUsernameView: View {
                 
                 //Username field
                 
-                CustomTextField(text: $username, placeholder: Text("Username"), imageName: "person")
-                    .foregroundColor(.white)
+                CustomTextField(text: $username, placeholder: Text("Username"), imageName: "person", allowSpaces: false)
+                    .foregroundColor(.systemWhite)
                     .padding(.top, 2)
                     .padding(.bottom)
                     .padding(.horizontal)
@@ -88,7 +88,7 @@ struct SetUsernameView: View {
                     //TODO ensure no spaces when they're typing in username
                     
                     
-                    viewModel.setUsername(username: username.trimmingCharacters(in: [" "])) { alreadyTaken in
+                    viewModel.setUsername(username: username.trimmingCharacters(in: .whitespacesAndNewlines)) { alreadyTaken in
                         
                         if alreadyTaken {
                             showInvalidUsername = false
@@ -109,9 +109,9 @@ struct SetUsernameView: View {
                     .frame(width: SCREEN_WIDTH - 92, height: 50)
                     .background(Color.mainBlue)
                     .clipShape(Capsule())
-                    .opacity(username.trimmingCharacters(in: [" "]).count < 4 ? 0.5 : 1)
+                    .opacity(username.trimmingCharacters(in: .whitespacesAndNewlines).count < 4 ? 0.5 : 1)
             })
-                .disabled(username.trimmingCharacters(in: [" "]).count < 4)
+                .disabled(username.trimmingCharacters(in: .whitespacesAndNewlines).count < 4)
                 .padding(.vertical, 20)
                 .alert(isPresented: $showError) {
                     

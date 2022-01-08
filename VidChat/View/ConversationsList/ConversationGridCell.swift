@@ -49,7 +49,7 @@ struct ConversationGridCell: View {
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: width/3, height: width/3)
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.systemWhite)
                                     }.transition(.opacity)
                                                                 
                                 }
@@ -93,7 +93,7 @@ struct ConversationGridCell: View {
                         Image(systemName: "checkmark.circle.fill")
                             .resizable()
                             .frame(width: 32, height: 32)
-                            .background(Circle().frame(width: 30, height: 30).foregroundColor(.white))
+                            .background(Circle().frame(width: 30, height: 30).foregroundColor(.systemWhite))
                             .scaledToFit()
                             .foregroundColor(.mainBlue)
                             .transition(.scale)
@@ -181,7 +181,7 @@ struct TimeView: View {
             //            } else {
             Text("1d").padding(.trailing, isSent ? 8 : 0)
                 .font(.system(size: 10, weight: .bold))
-                .foregroundColor(isOpened ? .gray : .white)
+                .foregroundColor(isOpened ? .gray : .systemWhite)
             
             // }
         }

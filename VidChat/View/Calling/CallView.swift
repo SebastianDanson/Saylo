@@ -50,7 +50,7 @@ struct CallOptionsView: View {
     var body: some View {
         HStack {
             
-            CamereraOptionView(image: Image(systemName: showVideo ? "video.fill" : "video.slash.fill"),
+            CameraOptionView(image: Image(systemName: showVideo ? "video.fill" : "video.slash.fill"),
                                imageDimension: 28, circleDimension: 60, color: $videoColor)
                 .onTapGesture {
                     showVideo.toggle()
@@ -59,13 +59,13 @@ struct CallOptionsView: View {
             
             Spacer()
             
-            CamereraOptionView(image: Image(systemName: "arrow.triangle.2.circlepath.camera.fill"),
+            CameraOptionView(image: Image(systemName: "arrow.triangle.2.circlepath.camera.fill"),
                                imageDimension: 28, circleDimension: 60)
                 .onTapGesture {isFrontFacing.toggle() }
             
             Spacer()
             
-            CamereraOptionView(image: Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill"),
+            CameraOptionView(image: Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill"),
                                imageDimension: 28, circleDimension: 60, color: $muteColor)
                 .onTapGesture {
                     isMuted.toggle()
@@ -115,6 +115,6 @@ struct DialingView: View {
                 .foregroundColor(.white)
                 .font(.system(size: 15))
             
-        }.padding(.top, UIScreen.main.bounds.height / 8)
+        }.padding(.top, SCREEN_HEIGHT / 8)
     }
 }

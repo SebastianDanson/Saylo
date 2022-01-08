@@ -24,13 +24,11 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textView.isSelectable = true
         textView.isUserInteractionEnabled = true
         textView.isScrollEnabled = true
-        textView.backgroundColor = UIColor.clear
         textView.textContainer.lineFragmentPadding = 0
 //        textView.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
         textView.returnKeyType = .default
         
-        textView.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.4)
-        textView.layer.borderColor = UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1).cgColor
+        textView.layer.borderColor = UIColor.borderGray.cgColor
         textView.layer.borderWidth = 0.9
         textView.layer.cornerRadius = 18
         textView.textContainerInset = UIEdgeInsets(top: 9, left: 10, bottom: 9, right: 34)
@@ -128,13 +126,13 @@ struct MultilineTextField: View {
     var body: some View {
         UITextViewWrapper(text: self.internalText, calculatedHeight: $dynamicHeight, onDone: onCommit)
             .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
-            .background(placeholderView.padding(.top, 0).padding(.leading, 10), alignment: .leading)
+            .overlay(placeholderView.padding(.top, 0).padding(.leading, 10), alignment: .leading)
     }
 
     var placeholderView: some View {
         Group {
             if showingPlaceholder {
-                Text(placeholder).foregroundColor(.gray)
+                Text(placeholder).foregroundColor(Color(.systemGray))
             }
         }
     }

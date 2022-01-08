@@ -50,14 +50,14 @@ struct SetNameView: View {
                     
                     //first name field
                     
-                    CustomTextField(text: $firstName, placeholder: Text("First name"), imageName: "person")
-                        .foregroundColor(.white)
+                    CustomTextField(text: $firstName, placeholder: Text("First name"), imageName: "person", allowSpaces: true)
+                        .foregroundColor(.systemWhite)
                     
                     
                     //last name field
                     
-                    CustomTextField(text: $lastName, placeholder: Text("Last name"), imageName: "person")
-                        .foregroundColor(.white)
+                    CustomTextField(text: $lastName, placeholder: Text("Last name"), imageName: "person", allowSpaces: true)
+                        .foregroundColor(.systemWhite)
                     
                     
                 }.padding(.horizontal, 32)
@@ -116,7 +116,7 @@ struct SetNameView: View {
                 
                 Button(action: {
                     
-                    if firstName.trimmingCharacters(in: [" "]).count + lastName.trimmingCharacters(in: [" "]).count >= 50 {
+                    if firstName.replacingOccurrences(of: " ", with: "").count + lastName.replacingOccurrences(of: " ", with: "").count >= 50 {
                         showInvalidName = true
                     } else {
                         viewModel.setName(firstName: firstName, lastName: lastName)
@@ -145,7 +145,7 @@ struct SetNameView: View {
     }
     
     func hasValidName() -> Bool {
-        return !firstName.trimmingCharacters(in: [" "]).isEmpty && !lastName.trimmingCharacters(in: [" "]).isEmpty
+        return !firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !lastName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 

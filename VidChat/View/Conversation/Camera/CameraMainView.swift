@@ -155,7 +155,7 @@ struct MediaOptions: View {
                         viewModel.reset()
                         //}
                     } label: {
-                        CamereraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                        CameraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
                     }
                     
                     Spacer()
@@ -166,7 +166,7 @@ struct MediaOptions: View {
                 
                 HStack {
                     
-                    CamereraOptionView(image: Image(systemName: "square.and.arrow.down"), imageDimension: 25, circleDimension: 44)
+                    CameraOptionView(image: Image(systemName: "square.and.arrow.down"), imageDimension: 25, circleDimension: 44)
                     
                     Spacer()
                     
@@ -266,7 +266,7 @@ struct CameraOptions: View {
                         viewModel.reset()
                         //}
                     } label: {
-                        CamereraOptionView(image: Image("x"), imageDimension: 14)
+                        CameraOptionView(image: Image("x"), imageDimension: 14)
                     }
                     
                     Spacer()
@@ -275,7 +275,7 @@ struct CameraOptions: View {
                     Button {
                         self.viewModel.hasFlash.toggle()
                     } label: {
-                        CamereraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
+                        CameraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
                     }
                     
                 }
@@ -291,7 +291,7 @@ struct CameraOptions: View {
                         cameraView.switchCamera()
                         isFrontFacing.toggle()
                     }, label: {
-                        CamereraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
+                        CameraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
                     })
                 }
             }
@@ -304,7 +304,7 @@ struct CameraOptions: View {
 }
 
 
-struct CamereraOptionView: View {
+struct CameraOptionView: View {
     let image: Image
     let imageDimension: CGFloat
     let circleDimension: CGFloat

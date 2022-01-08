@@ -21,7 +21,7 @@ class AssetCell: UICollectionViewCell {
         label.setDimensions(height: height, width: 44)
         label.layer.cornerRadius = height/2
         label.textAlignment = .center
-        label.textColor = .white
+        label.textColor = .systemWhite
         label.backgroundColor = UIColor(white: 0, alpha: 0.4)
         label.clipsToBounds = true
         label.isHidden = true
@@ -53,9 +53,9 @@ class AssetCell: UICollectionViewCell {
         numberLabel.backgroundColor = .systemBlue
         numberLabel.layer.cornerRadius = 10
         numberLabel.clipsToBounds = true
-        numberLabel.tintColor = .white
+        numberLabel.tintColor = .systemWhite
         numberLabel.textAlignment = .center
-        numberLabel.textColor = .white
+        numberLabel.textColor = .systemWhite
         
         let width: CGFloat = 28
         numberLabel.setDimensions(height: width, width: width)

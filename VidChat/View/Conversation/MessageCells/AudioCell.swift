@@ -50,13 +50,24 @@ struct AudioCell: View {
                         audioPlayer.pause()
                     }
                 } label: {
-                    Image(systemName: audioPlayer.isPlaying ?
-                          "pause.circle.fill" : "play.circle.fill")
-                        .resizable()
-                        .frame(width: 70, height: 70)
-                        .foregroundColor(.topGray)
-                        .scaledToFill()
-                        .padding(.top, 8)
+                    
+                    ZStack {
+                        
+                        Circle()
+                            .foregroundColor(.topGray)
+                            .frame(width: 90, height: 90)
+                        
+                        Image(systemName: audioPlayer.isPlaying ?
+                              "pause.fill" : "play.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.white)
+                            .padding(.leading, audioPlayer.isPlaying ? 0 : 7)
+                            
+                    }.padding(.top, 8)
+                   
+                        
                 }
             }
             
@@ -72,12 +83,12 @@ struct AudioCell: View {
                             
                             Circle()
                                 .frame(width: 24, height: 24)
-                                .foregroundColor(Color(white: 0, opacity: 0.3))
+                                .foregroundColor(.point3AlphaSystemBlack)
                             
                             Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(.white)
+                                .foregroundColor(.systemWhite)
                                 .frame(width: 13, height: 13)
                         }
                         .padding(.horizontal, 8)
@@ -89,7 +100,7 @@ struct AudioCell: View {
                 }
             }
             ,alignment: .topTrailing)
-        .background(Color.white)
+        .background(Color.systemWhite)
         .padding(.trailing, 10)
         .padding(.leading, 17)
         .padding(.bottom, 12)

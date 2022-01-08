@@ -48,7 +48,7 @@ struct ConversationGridView: View {
                 
                 VStack {
                     
-                    if viewModel.chats.count < 5 && !conversationViewModel.showCamera && !viewModel.isSelectingChats {
+                    if viewModel.chats.count < 10 && !conversationViewModel.showCamera && !viewModel.isSelectingChats {
                         
                         PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
                             
@@ -128,7 +128,7 @@ struct ConversationGridView: View {
                                 }.padding(.top, getConversationGridPadding())
                                 
                             }
-                            .background(Color.white)
+                            .background(Color.systemWhite)
                             .flippedUpsideDown()
                             .scaleEffect(x: -1, y: 1, anchor: .center)
                             .zIndex(2)
@@ -168,7 +168,7 @@ struct ConversationGridView: View {
                     
                     if viewModel.showSearchBar {
                         Rectangle()
-                            .foregroundColor(.white)
+                            .foregroundColor(.systemWhite)
                             .frame(height: 2)
                     }
                 }
@@ -306,15 +306,6 @@ struct NavView: View {
         
         ZStack(alignment: .center) {
             
-            //            VStack {
-            //            Rectangle()
-            //                .frame(width: UIScreen.main.bounds.width, height: topPadding + 50)
-            //                .foregroundColor(.white)
-            //                .shadow(color: Color(white: 0, opacity: (viewModel.chats.count > 15 || viewModel.showSearchBar) ? 0.05 : 0), radius: 2, x: 0, y: 2)
-            //                Spacer()
-            //            }
-            
-            
             VStack {
                 
                 if !viewModel.showSearchBar {
@@ -338,12 +329,24 @@ struct NavView: View {
                                 Button(action: {
                                     cameraViewModel.toggleIsFrontFacing()
                                 }, label: {
-                                    Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .foregroundColor(.toolBarIconDarkGray)
-                                        .scaledToFit()
-                                        .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                    
+                                    if cameraViewModel.isRotating {
+                                        
+                                        Image(systemName: "arrow.triangle.2.circlepath.camera")
+                                            .resizable()
+                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .scaledToFit()
+                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                        
+                                    } else {
+                                        Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .scaledToFit()
+                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                    }
+                                 
                                 })
                             }
                             
@@ -403,11 +406,11 @@ struct NavView: View {
                                         .frame(width: toolBarWidth, height: toolBarWidth)
                                         .foregroundColor(.toolBarIconGray)
                                         .overlay(
-                                            Image("video")
+                                            Image(systemName: "phone.fill")
                                                 .resizable()
                                                 .renderingMode(.template)
                                                 .scaledToFit()
-                                                .frame(height: toolBarWidth - 22)
+                                                .frame(height: toolBarWidth - 18)
                                                 .foregroundColor(.toolBarIconDarkGray)
                                                 .padding(.leading, 1)
                                         )
@@ -457,7 +460,7 @@ struct NavView: View {
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
-                                                .foregroundColor(.black)
+                                                .foregroundColor(.systemBlack)
                                                 .padding(.leading, 8)
                                                 .padding(.top, -3)
                                         }
@@ -483,7 +486,7 @@ struct NavView: View {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
         .frame(width: SCREEN_WIDTH, height: conversationViewModel.showKeyboard ? TOP_PADDING + 40 : TOP_PADDING + 50)
-        .background(Color.white)
+        .background(Color.systemWhite)
         .zIndex(2)
         .ignoresSafeArea()
         
@@ -538,7 +541,7 @@ struct SelectedChatsView: View {
                             .rotationEffect(Angle(degrees: 45))
                             .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
                             .frame(width: 50, height: 50)
-                            .background(Circle().frame(width: 40, height: 40).foregroundColor(.white))
+                            .background(Circle().frame(width: 40, height: 40).foregroundColor(.systemWhite))
                             .scaledToFit()
                             .padding(.horizontal)
                     }.disabled(viewModel.selectedChats.count == 0)

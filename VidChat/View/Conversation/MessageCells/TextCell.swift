@@ -59,7 +59,7 @@ struct TextCell: View {
             
             Spacer()
         }
-        .background(Color.white)
+        .background(Color.systemWhite)
         .padding(.horizontal, 12)
         .padding(.vertical, isSameIdAsPrevMessage ? 0 : 8)
         .onTapGesture {}
@@ -88,12 +88,12 @@ struct TextCell: View {
                             
                             Circle()
                                 .frame(width: 24, height: 24)
-                                .foregroundColor(Color(white: 0, opacity: 0.3))
+                                .foregroundColor(.point3AlphaSystemBlack)
                             
                             Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(.white)
+                                .foregroundColor(.systemWhite)
                                 .frame(width: 13, height: 13)
                         }
                         .padding(.horizontal, 12)

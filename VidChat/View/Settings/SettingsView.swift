@@ -73,7 +73,8 @@ struct SettingsView: View {
             
         }
         .frame(width: SCREEN_WIDTH - 40)
-        .background(Color.white)
+        .background(Color.popUpSystemWhite)
+        .ignoresSafeArea()
         .cornerRadius(10)
         .shadow(color: Color(.init(white: 0, alpha: 0.04)), radius: 16, x: 0, y: 4)
         
@@ -99,12 +100,12 @@ struct SettingsCell: View {
                 Image(systemName: imageName)
                     .resizable()
                     .scaledToFit()
-                    .foregroundColor(.white)
+                    .foregroundColor(.systemWhite)
                     .frame(width: 17, height: 17)
                 
             }.padding(.leading)
             
-            Text(title).foregroundColor(.black)
+            Text(title).foregroundColor(.systemBlack)
             
             Spacer()
             

@@ -42,7 +42,7 @@ struct ContactUsView: View {
                 Spacer()
                 
                 Text("Contact Us")
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
                     .fontWeight(.semibold)
                 
                 Spacer()
@@ -62,7 +62,7 @@ struct ContactUsView: View {
                 }
 
             }
-            .background(Color.white)
+            .background(Color.systemWhite)
             .frame(width: SCREEN_WIDTH, height: 44)
             
             Text("Ask or tell us anything!")

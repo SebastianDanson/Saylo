@@ -18,10 +18,10 @@ struct FindFriendsView: View {
                 
                 Text("Welcome to Saylo")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
                     .padding(.top, 15)
                 
-                Text("Add friends and family to start chatting")
+                Text("Add friends and family to chat")
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.textGray)
                 
@@ -33,7 +33,7 @@ struct FindFriendsView: View {
                 
                 Text("Find Friends")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.systemWhite)
                     .padding(.vertical, 11)
                     .padding(.horizontal, 28)
                     .background(Color.mainBlue)
@@ -43,7 +43,7 @@ struct FindFriendsView: View {
             
         }
         .frame(width: SCREEN_WIDTH - 40, height: 150)
-        .background(Color.white)
+        .background(Color.popUpSystemWhite)
         .cornerRadius(12)
         .padding(.vertical, 28)
         
@@ -64,7 +64,7 @@ struct TipView: View {
                 
                 Text(header)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.systemBlack)
                     .padding(.top, 15)
                 
                 Text(subText)
@@ -82,7 +82,7 @@ struct TipView: View {
             
         }
         .frame(width: SCREEN_WIDTH - 40, height: 150)
-        .background(Color.white)
+        .background(Color.popUpSystemWhite)
         .cornerRadius(12)
         .padding(.vertical, 28)
         

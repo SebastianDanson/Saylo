@@ -52,7 +52,7 @@ struct ConversationPlayerView: View {
                     
                     PlayerQueueView()
                         .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
-                        .background(conversationViewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.black)
+                        .background(conversationViewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.systemBlack)
                         .overlay(
                             ZStack {
                                 if conversationViewModel.messages[viewModel.index].type == .Audio {
@@ -117,7 +117,7 @@ struct ConversationPlayerView: View {
                             viewModel.removePlayerView()
                         }
                     }, label: {
-                        CamereraOptionView(image: Image(systemName: "chevron.down"), imageDimension: 17, circleDimension: 32, topPadding: 3)
+                        CameraOptionView(image: Image(systemName: "chevron.down"), imageDimension: 17, circleDimension: 32, topPadding: 3)
                             .padding(.horizontal, 8)
                             .padding(.top, -28)
                     })

@@ -23,6 +23,7 @@ class CameraViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var isFirstLoad = true
     @Published var isFrontFacing = true
+    @Published var isRotating = false
     @Published var videoPlayerView: VideoPlayerView?
     
     static let shared = CameraViewModel()
@@ -114,8 +115,16 @@ class CameraViewModel: ObservableObject {
     }
     
     func toggleIsFrontFacing() {
+        
+        
         withAnimation {
-            self.isFrontFacing.toggle()
+            
+            self.isRotating = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.isFrontFacing.toggle()
+                self.isRotating = false
+            }
         }
         self.cameraView.switchCamera()
     }
