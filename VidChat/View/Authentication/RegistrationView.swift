@@ -115,6 +115,7 @@ struct RegistrationView: View {
                             self.error = error
                             showError = true
                         } else {
+                          
                             canProceed = true
                         }
                     }

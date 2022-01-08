@@ -68,8 +68,6 @@ class ConversationGridViewModel: ObservableObject {
             chat.isSending = false
             
             
-            
-            
             if let index = sendingChats.firstIndex(where: {$0.id == chat.id}) {
                 sendingChats.remove(at: index)
             } else {
@@ -122,44 +120,6 @@ class ConversationGridViewModel: ObservableObject {
                 if !self.allChats.contains(where: {$0.id == chat.id}) {
                     self.chats.append(chat)
                     self.allChats.append(chat)
-                    
-                    
-                    
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
-                    //
-                    //
-                    //
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
-                    //
-                    //
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
-                    //
-                    //
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
-                    //
-                    //
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
-                    //
-                    //
-                    //
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
-                    //
-                    //
-                    //                    chat = Chat(dictionary: data, id: UUID().uuidString)
-                    //                    self.chats.append(chat)
-                    //                    self.allChats.append(chat)
                 }
             }
             completion()

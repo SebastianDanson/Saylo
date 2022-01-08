@@ -28,6 +28,7 @@ class User: ObservableObject  {
 
     //chat
     @Published var chats = [UserChat]()
+    var conversationsDic: [[String:Any]]
     
     //tokens
     let fcmToken: String
@@ -66,14 +67,14 @@ class User: ObservableObject  {
         self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
 
         //chat
-        let chatDic = dictionary["conversations"] as? [[String:Any]] ?? [[String:Any]]()
-        chatDic.forEach({self.chats.append(UserChat(dictionary: $0))})
+        self.conversationsDic = dictionary["conversations"] as? [[String:Any]] ?? [[String:Any]]()
+        conversationsDic.forEach({self.chats.append(UserChat(dictionary: $0))})
     }
 }
 
 struct UserChat {
     let id: String
-    let lastVisited: Timestamp
+    var lastVisited: Timestamp
     let notificationsEnbaled: Bool
     
     init(dictionary: [String:Any]) {

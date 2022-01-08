@@ -21,13 +21,13 @@ struct ActivityIndicator: View {
         
         ZStack {
             Circle()
-                .stroke(lineWidth: 5)
+                .stroke(lineWidth: max(diameter/20, 4))
                 .fill(Color.init(red: 0.96, green: 0.96, blue: 0.96))
                 .frame(width: diameter, height: diameter)
             
             Circle()
                 .trim(from: animateStart ? 1/3 : 1/9, to: animateEnd ? 2/5 : 1)
-                .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
+                .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: max(diameter/20, 4), lineCap: .round, lineJoin: .round))
                 .rotationEffect(.degrees(isCircleRotating ? 360 : 0))
                 .frame(width: diameter, height: diameter)
                 .onAppear() {

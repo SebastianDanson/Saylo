@@ -198,6 +198,7 @@ struct SendButton: View {
                         ConversationGridViewModel.shared.cameraViewZIndex = 1
                     }
                 } else {
+                    conversationVM.isSending = true
                     conversationVM.sendCameraMessage(chatId: conversationVM.chatId, chat: conversationVM.selectedChat)
                     viewModel.reset(hideCamera: true)
                 }

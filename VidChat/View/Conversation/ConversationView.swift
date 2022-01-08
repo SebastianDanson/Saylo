@@ -115,6 +115,11 @@ struct ConversationView: View {
         }
         .background(Color.white)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            if let chat = viewModel.chat {
+                ConversationService.updateLastVisited(forChat: chat)
+            }
+        }
     }
 }
 
@@ -356,6 +361,7 @@ struct CameraCircle: View {
 /* The top right buttons */
 
 struct ChatOptions: View {
+    
     @Environment(\.presentationMode) var mode
     @Binding var showSettings: Bool
     
@@ -363,6 +369,8 @@ struct ChatOptions: View {
     @StateObject var cameraViewModel = CameraViewModel.shared
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
+    
+    let width: CGFloat = 36
     
     var body: some View {
         
@@ -398,8 +406,40 @@ struct ChatOptions: View {
                             showSettings.toggle()
                         }
                     } label: {
-                        ChatImage(chat: chat, diameter: 36)
+                        
+                        ChatImage(chat: chat, diameter: width)
                             .padding(.vertical, 10)
+                            .overlay(
+                                
+                                ZStack {
+                                    
+                                    if viewModel.hasSent {
+                                        
+                                        ZStack {
+                                            Circle()
+                                                .frame(width: width, height: width)
+                                                .foregroundColor(.mainBlue)
+                                                .opacity(0.9)
+                                            
+                                            Image(systemName: "checkmark")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: width/3, height: width/3)
+                                                .foregroundColor(.white)
+                                        }.transition(.opacity)
+                                        
+                                    }
+                                    
+                                    
+                                    
+                                    if viewModel.isSending {
+                                        
+                                        ActivityIndicator(shouldAnimate: $viewModel.isSending, diameter: width + 3)
+                                            .transition(.opacity)
+                                    }
+                                }
+                                
+                            )
                     }
                 }
             }

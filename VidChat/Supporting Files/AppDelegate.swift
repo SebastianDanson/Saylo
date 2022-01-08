@@ -188,7 +188,31 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        let userInfo = notification.request.content.userInfo
+        
+        let data = userInfo["data"] as? [String:Any]
+        let chatId = data?["chatId"] as? String
+        let userId = data?["userId"] as? String
+
+        let fromCurrentUser = AuthViewModel.shared.currentUser?.id == userId
+        
+        let defaults = UserDefaults.init(suiteName: "group.com.SebastianDanson.CourseLnk")
+        var notificationArray = defaults?.object(forKey: "notifications") as? [String] ?? [String]()
+        
+        if let chatId = chatId, ConversationViewModel.shared.chatId != chatId && !notificationArray.contains(chatId) && !fromCurrentUser {
+            notificationArray.append(chatId)
+            defaults?.set(notificationArray, forKey: "notifications")
+            UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
+        }
+        
+        if chatId != ConversationViewModel.shared.chatId && !fromCurrentUser {
             completionHandler([.badge, .banner])
+        } else {
+            completionHandler([])
+        }
+        
+        completionHandler([.badge, .banner])
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {

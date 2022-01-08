@@ -30,10 +30,14 @@ class AuthViewModel: ObservableObject {
     func login(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
         
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
+            
+            guard let user = result?.user else {
                 completion(error)
                 return
             }
+            
+            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+            defaults?.set(user.uid, forKey: "userId")
             
             self.isSignedIn = true
             self.fetchUser {}
@@ -55,6 +59,9 @@ class AuthViewModel: ObservableObject {
                         "uid": user.uid] as [String : Any]
             
             self.currentUser = User(dictionary: data, id: user.uid)
+            
+            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+            defaults?.set(user.uid, forKey: "userId")
             
             COLLECTION_USERS.document(user.uid).setData(data) { _ in
                 //self.userSession = user

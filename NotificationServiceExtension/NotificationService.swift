@@ -16,11 +16,35 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        if let bestAttemptContent = bestAttemptContent {
-            // Modify the notification content here...
-            bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
+        let defaults = UserDefaults.init(suiteName: "group.com.SebastianDanson.saylo")
+        var notificationArray = defaults?.object(forKey: "notifications") as? [String] ?? [String]()
+        
+        let data = bestAttemptContent?.userInfo["data"] as? [String:Any]
+        
+        if let bestAttemptContent = bestAttemptContent, let id = data?["chatId"] as? String, id != "" {
             
+            if !notificationArray.contains(id) {
+                notificationArray.append(id)
+                defaults?.set(notificationArray, forKey: "notifications")
+            }
+            
+            var mutedChats = defaults?.object(forKey: "mutedChats") as? [String:Any] ?? [String:Any]()
+
+            if let time = mutedChats[id] as? Int {
+                let now = Int(Date().timeIntervalSince1970*1000)
+                if time > now {
+                    contentHandler(UNNotificationContent())
+                } else {
+                    mutedChats.removeValue(forKey: id)
+                }
+                defaults?.set(mutedChats, forKey: "mutedChats")
+            }
+            
+            
+            bestAttemptContent.badge = notificationArray.count as? NSNumber
             contentHandler(bestAttemptContent)
+        } else {
+            contentHandler(bestAttemptContent ?? UNNotificationContent())
         }
     }
     

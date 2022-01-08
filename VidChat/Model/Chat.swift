@@ -20,16 +20,18 @@ class Chat: ObservableObject {
     var isDm = true
     
     //messages
-    let lastMessagedCreatedAt: Timestamp //the date when the most recent message was created
+//    let lastMessagedCreatedAt: Timestamp //the date when the most recent message was created
     var messages = [Message]()
     
-    //users
+    //user info
     let userIds: [String]
     var chatMembers = [ChatMember]()
+    
     
     @Published var isSelected = false
     @Published var isSending = false
     @Published var hasSent = false
+    @Published var hasUnreadMessage = false
 
     init(dictionary: [String:Any], id: String) {
         
@@ -68,12 +70,12 @@ class Chat: ObservableObject {
         self.isDm = isDm
         
         //messages
-        self.lastMessagedCreatedAt = dictionary["lastMessagedCreatedAt"] as? Timestamp ?? Timestamp(date: Date())
+//        self.lastMessagedCreatedAt = dictionary["lastMessagedCreatedAt"] as? Timestamp ?? Timestamp(date: Date())
         
         //users
         self.userIds = dictionary["userIds"] as? [String] ?? [String]()
         
-        
+
         //messages
         let messagesDic = dictionary["messages"] as? [[String:Any]] ?? [[String:Any]]()
         messagesDic.forEach({ self.messages.append(Message(dictionary: $0, id: $0["id"] as? String ?? "")) })
@@ -85,10 +87,18 @@ class Chat: ObservableObject {
             let userFullname = (currentUser?.firstName ?? "") + " " + (currentUser?.lastName ?? "")
             self.fullName = self.name + ", " + userFullname
         }
+        
+        self.hasUnreadMessage = getHasUnreadMessage()
+
     }
     
     func getDateOfLastPost() -> Int {
         return Int(self.messages.last?.timestamp.dateValue().timeIntervalSince1970 ?? 0)
+    }
+    
+    func getHasUnreadMessage() -> Bool {
+        guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}) else {return false}
+        return Int(chat.lastVisited.dateValue().timeIntervalSince1970) < getDateOfLastPost()
     }
     
     func getDefaultChatName() -> String {

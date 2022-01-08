@@ -27,16 +27,16 @@ struct ConversationService {
 //        }
     }
     
-    static func fetchMessages(forDocWithId docId: String, completion: @escaping(([Message]) -> Void)) {
-        COLLECTION_CONVERSATIONS.document(docId).getDocument { snapshot, _ in
-            
-            if let data = snapshot?.data() {
-                
-                let messages = self.getMessagesFromData(data: data)
-                completion(messages)
-            }
-        }
-    }
+//    static func fetchMessages(forDocWithId docId: String, completion: @escaping(([Message]) -> Void)) {
+//        COLLECTION_CONVERSATIONS.document(docId).getDocument { snapshot, _ in
+//
+//            if let data = snapshot?.data() {
+//
+//                let messages = self.getMessagesFromData(data: data)
+//                completion(messages)
+//            }
+//        }
+//    }
     
     static func fetchSavedMessages(forDocWithId docId: String, completion: @escaping(([Message]) -> Void)) {
         var messages = [Message]()
@@ -104,4 +104,21 @@ struct ConversationService {
         }
     }
     
+    static func updateLastVisited(forChat chat: Chat) {
+        
+        guard let user = AuthViewModel.shared.currentUser else {return}
+        guard let userChatIndex = user.chats.firstIndex(where: { $0.id == chat.id }) else {return}
+        
+        let now = Timestamp(date: Date())
+        user.chats[userChatIndex].lastVisited = now
+        user.conversationsDic[userChatIndex]["lastVisited"] = now
+        
+        let userRef = COLLECTION_USERS.document(user.id)
+        
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["conversations" : user.conversationsDic], forDocument: userRef)
+            return nil
+        }) { (_, error) in }
+        
+    }
 }

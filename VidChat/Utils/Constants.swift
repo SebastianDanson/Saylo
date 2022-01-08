@@ -37,3 +37,5 @@ let BOTTOM_PADDING = UIApplication.shared.windows[0].safeAreaInsets.bottom
 let TOP_PADDING = UIApplication.shared.windows[0].safeAreaInsets.top
 
 
+//NSE
+let SERVICE_EXTENSION_SUITE_NAME = "group.com.SebastianDanson.saylo"

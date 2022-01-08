@@ -26,9 +26,10 @@ struct ConversationGridCell: View {
                 
                 ZStack {
                     
-                    //                    Circle().strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 2.5))
-                    //                        .frame(width: width + 10, height: width + 10)
-                    
+                    if chat.hasUnreadMessage {
+                        Circle().strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 3))
+                            .frame(width: width + 11, height: width + 11)
+                    }
                     
                     ChatImage(chat: chat, diameter: width)
                     .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
@@ -67,10 +68,22 @@ struct ConversationGridCell: View {
                 }
                 
                 
+                
                 Text(chat.name)
                     .font(.system(size: 13, weight: .regular))
                     .lineLimit(1)
                     .foregroundColor(textColor)
+                    .overlay(
+                        ZStack {
+                            if chat.hasUnreadMessage {
+                                Circle()
+                                    .frame(width: 10, height: 10)
+                                    .foregroundColor(.mainBlue)
+                            }
+                        }.padding(.leading, -15)
+                        
+                        , alignment: .leading
+                    )
                 
             }.overlay(
                 ZStack {

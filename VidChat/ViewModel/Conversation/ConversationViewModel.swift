@@ -58,6 +58,9 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
+    @Published var isSending = false
+    @Published var hasSent = false
+    
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?
@@ -79,14 +82,25 @@ class ConversationViewModel: ObservableObject {
         self.setIsSameAsPrevId(messages: chat.messages)
         self.messages = chat.messages
         self.addListener()
+        self.updateNoticationsArray()
+        self.chat?.hasUnreadMessage = false
+        ConversationService.updateLastVisited(forChat: chat)
     }
     
     func removeChat() {
+        let chat = self.chat!
+        ConversationService.updateLastVisited(forChat: chat)
         self.players = [MessagePlayer]()
         self.chat = nil
         self.chatId = ""
         self.messages = [Message]()
         self.removeListener()
+        
+        withAnimation {
+            self.showKeyboard = false
+            self.showPhotos = false
+            self.showAudio = false
+        }
     }
     
     func addPlayer(_ player: MessagePlayer) {
@@ -153,6 +167,7 @@ class ConversationViewModel: ObservableObject {
             uploadQueue.append(dictionary)
             
             if let url = url {
+                
                 if type == .Video {
                     MediaUploader.shared.uploadVideo(url: url) { newURL in
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
@@ -216,7 +231,17 @@ class ConversationViewModel: ObservableObject {
                     
                     
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
-                        ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
+                        
+                        if self.chatId.isEmpty {
+                            ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
+                        } else {
+                            self.isSending = false
+                            self.hasSent = true
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                self.hasSent = false
+                            }
+                        }
                         self.sendMessageNotification(chat: chat, messageData: data)
                     }
                 }
@@ -334,7 +359,24 @@ class ConversationViewModel: ObservableObject {
             }
 
         } else {
+            isSending = true
             addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
+        }
+    }
+    
+    func updateNoticationsArray() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        
+        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
+        
+        if var notificationArray = notificationArray {
+            notificationArray.removeAll { notif in
+                notif == chatId
+            }
+            
+            defaults?.set(notificationArray, forKey: "notifications")
+            UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
         }
     }
 }
