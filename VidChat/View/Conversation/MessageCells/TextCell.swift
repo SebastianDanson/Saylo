@@ -11,66 +11,64 @@ import Kingfisher
 
 struct TextCell: View {
     
-    let text: String
-    let messageId: String
-    let isSameIdAsPrevMessage: Bool
-    let date: Date
-    let profileImageUrl: String
-    let name: String
-    @State var isSaved: Bool
+    var message: Message
+    
     @State var showAlert = false
     
-    init(message: Message) {
-        self.text = message.text ?? ""
-        self.messageId = message.id
-        self.isSameIdAsPrevMessage = message.isSameIdAsPrevMessage
-        self.date = message.timestamp.dateValue()
-        self.name = message.username
-        self.profileImageUrl = message.userProfileImageUrl
-        self._isSaved = State(initialValue: message.isSaved)
-    }
+//    init(message: Binding<Message>) {
+//        self._message = message
+//    }
     
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            if !isSameIdAsPrevMessage {
+        ZStack {
+            HStack(alignment: .bottom, spacing: 10) {
                 
-                KFImage(URL(string: profileImageUrl))
+                KFImage(URL(string: message.userProfileImageUrl))
                     .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 30, height: 30)
-                                    .clipShape(Circle())
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(name)
-                                        .font(.system(size: 14, weight: .semibold))
-                                    + Text(" • \(date.getFormattedDate())")
-                                        .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(.mainGray)
-                                    
-                                    Text(text)
-                                        .font(.system(size: 16))
-                                }
+                    .scaledToFill()
+                    .frame(width: 30, height: 30)
+                    .clipShape(Circle())
+                    .opacity(message.isSameIdAsNextMessage ? 0 : 1)
                 
-            } else {
-                Text(text)
-                    .font(.system(size: 16))
-                    .padding(.leading, 30 + 10)
+                HStack {
                     
-            }
+                    VStack(alignment: .leading, spacing: 8) {
+                        if !message.isSameIdAsPrevMessage {
+                        Text(message.username)
+                            .font(.system(size: 14, weight: .semibold))
+                        + Text(" • \(message.timestamp.dateValue().getFormattedDate())")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
+                        }
+                        Text(message.text ?? "")
+                            .font(.system(size: 16))
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.leading, 12)
+
+                    Spacer()
+                }
+                .frame(width: SCREEN_WIDTH - 60)
+                .background(message.isFromCurrentUser ? .mainBlue : Color.textBackground)
+                .cornerRadius(16)
+                
+                Spacer()
+            }.padding(.leading)
             
-            Spacer()
+            
         }
-        .background(Color.systemWhite)
         .padding(.horizontal, 12)
-        .padding(.vertical, isSameIdAsPrevMessage ? 0 : 8)
+        .padding(.top, message.isSameIdAsPrevMessage ? 2 : 6)
+        .padding(.bottom, message.isSameIdAsNextMessage ? 2 : 6)
         .onTapGesture {}
         .onLongPressGesture(perform: {
             withAnimation {
-                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+                if let i = getMessages().firstIndex(where: {$0.id == message.id}) {
                     if getMessages()[i].isSaved {
                         showAlert = true
                     } else {
                         ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                        isSaved.toggle()
+                        message.isSaved.toggle()
                     }
                     
                 }
@@ -79,7 +77,7 @@ struct TextCell: View {
         .frame(width: SCREEN_WIDTH)
         .overlay(
             ZStack {
-                if isSaved {
+                if message.isSaved {
                     
                     Button {
                         showAlert = true
@@ -99,8 +97,8 @@ struct TextCell: View {
                         .padding(.horizontal, 12)
                     }
                     .alert(isPresented: $showAlert) {
-                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
-                            self.isSaved = isSaved
+                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
+                            message.isSaved = isSaved
                         })
                     }
                     

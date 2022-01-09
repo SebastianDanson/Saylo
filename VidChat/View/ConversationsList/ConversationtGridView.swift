@@ -88,16 +88,16 @@ struct ConversationGridView: View {
                                             ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
-                                                .onTapGesture(count: 2, perform: {
-                                                    
-                                                    if !conversationViewModel.showKeyboard {
-                                                        withAnimation {
-                                                            conversationViewModel.showKeyboard = true
-                                                            viewModel.isSelectingChats = true
-                                                            viewModel.toggleSelectedChat(chat: chat)
-                                                        }
-                                                    }
-                                                })
+//                                                .onTapGesture(count: 2, perform: {
+//                                                    
+//                                                    if !conversationViewModel.showKeyboard {
+//                                                        withAnimation {
+//                                                            conversationViewModel.showKeyboard = true
+//                                                            viewModel.isSelectingChats = true
+//                                                            viewModel.toggleSelectedChat(chat: chat)
+//                                                        }
+//                                                    }
+//                                                })
                                                 .onTapGesture(count: 1, perform: {
                                                     if viewModel.isSelectingChats {
                                                         withAnimation(.linear(duration: 0.15)) {

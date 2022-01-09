@@ -29,20 +29,23 @@ struct AudioCell: View {
     }
     
     var body: some View {
+        ZStack {
         HStack(alignment: .top, spacing: 9) {
             
-            KFImage(URL(string: self.profileImageUrl))
-                .resizable()
-                .scaledToFill()
-                .frame(width: 30, height: 30)
-                .clipShape(Circle())
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(name)
-                    .font(.system(size: 14, weight: .semibold))
-                + Text(" • \(date.getFormattedDate())")
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.mainGray)
+//            KFImage(URL(string: self.profileImageUrl))
+//                .resizable()
+//                .scaledToFill()
+//                .frame(width: 30, height: 30)
+//                .clipShape(Circle())
+//
+//            VStack(alignment: .leading, spacing: 2) {
+//                Text(name)
+//                    .font(.system(size: 14, weight: .semibold))
+//                + Text(" • \(date.getFormattedDate())")
+//                    .font(.system(size: 12, weight: .regular))
+//                    .foregroundColor(.mainGray)
+            Spacer()
+
                 Button {
                     if !audioPlayer.isPlaying {
                         audioPlayer.hasFinished ? audioPlayer.startPlayback(audio: self.audioURL) : audioPlayer.resume()
@@ -51,28 +54,30 @@ struct AudioCell: View {
                     }
                 } label: {
                     
-                    ZStack {
-                        
-                        Circle()
-                            .foregroundColor(.topGray)
-                            .frame(width: 90, height: 90)
                         
                         Image(systemName: audioPlayer.isPlaying ?
                               "pause.fill" : "play.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 40, height: 40)
+                            .frame(width: 80, height: 80)
                             .foregroundColor(.white)
-                            .padding(.leading, audioPlayer.isPlaying ? 0 : 7)
-                            
-                    }.padding(.top, 8)
-                   
+                            .padding(.leading, audioPlayer.isPlaying ? 0 : 10)
+                                               
                         
-                }
+//                }
             }
             
             Spacer()
         }
+        .frame(width: SCREEN_WIDTH - 10, height: SCREEN_WIDTH * 16/18)
+        .overlay(
+            MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 26), alignment: .bottomLeading)
+        }
+//        .frame(width: SCREEN_WIDTH - 10, height: SCREEN_WIDTH * 16/18)
+        .background(Color.mainBlue)
+        .cornerRadius(12)
         .overlay(
             ZStack {
                 if isSaved {
@@ -100,24 +105,25 @@ struct AudioCell: View {
                 }
             }
             ,alignment: .topTrailing)
-        .background(Color.systemWhite)
-        .padding(.trailing, 10)
-        .padding(.leading, 17)
-        .padding(.bottom, 12)
-        .padding(.top, 4)
-        .onLongPressGesture(perform: {
-            withAnimation {
-                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
-                    if getMessages()[i].isSaved {
-                        showAlert = true
-                    } else {
-                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                        isSaved.toggle()
-                    }
-                    
-                }
-            }
-        })
+        .padding(.vertical, 8)
+//        .background(Color.systemWhite)
+//        .padding(.trailing, 10)
+//        .padding(.leading, 17)
+//        .padding(.bottom, 12)
+//        .padding(.top, 4)
+//        .onLongPressGesture(perform: {
+//            withAnimation {
+//                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+//                    if getMessages()[i].isSaved {
+//                        showAlert = true
+//                    } else {
+//                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
+//                        isSaved.toggle()
+//                    }
+//
+//                }
+//            }
+//        })
     }
 }
 

@@ -36,7 +36,7 @@ struct ConversationFeedView: View {
                             .transition(.move(edge: .bottom))
                             .offset(x: 0, y: -28)
                             .background(
-                                getMessages()[i].type == .Video ? GeometryReader { geo in
+                                getMessages()[i].type != .Text ? GeometryReader { geo in
                                     Color.systemWhite.preference(
                                         key: ViewOffsetsKey.self,
                                         value: [i: geo.frame(in: .named("scrollView")).origin.y]) } : nil)
@@ -63,6 +63,7 @@ struct ConversationFeedView: View {
                                 currentPlayer?.pause()
                                 currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
                                 currentPlayer?.play()
+                                
                                 withAnimation {
                                     reader.scrollTo(getMessages()[middleItemNo].id, anchor: .center)
                                 }

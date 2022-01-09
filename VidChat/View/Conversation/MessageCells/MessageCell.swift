@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MessageCell: View {
     
-    @State var message: Message
+    var message: Message
     
         //TODO add time stamps for images and audio cells
     

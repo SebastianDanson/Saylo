@@ -48,7 +48,7 @@ struct ConversationService {
                     let id = message["id"] as? String ?? ""
                     messages.append(Message(dictionary: message, id: id, isSaved: true))
                 }
-                ConversationViewModel.shared.setIsSameAsPrevId(messages: messages)
+                ConversationViewModel.shared.setIsSameId(messages: messages)
                 completion(messages)
             }
         }
@@ -80,6 +80,7 @@ struct ConversationService {
             messages.first(where: {$0.id == messageId})?.reactions.append(reaction)
         })
         
+                
         return messages
     }
     

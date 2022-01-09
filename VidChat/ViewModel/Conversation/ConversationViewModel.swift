@@ -79,7 +79,7 @@ class ConversationViewModel: ObservableObject {
     func setChat(chat: Chat) {
         self.chat = chat
         self.chatId = chat.id
-        self.setIsSameAsPrevId(messages: chat.messages)
+        self.setIsSameId(messages: chat.messages)
         self.messages = chat.messages
         self.addListener()
         self.updateNoticationsArray()
@@ -159,9 +159,13 @@ class ConversationViewModel: ObservableObject {
             message.image = image
             
             if let lastMessage = messages.last {
-                message.isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: lastMessage, nextMessage: message)
+                message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
+                lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
             }
+                
+                
             self.messages.append(message)
+                
             }
             
             uploadQueue.append(dictionary)
@@ -284,16 +288,29 @@ class ConversationViewModel: ObservableObject {
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
-    func setIsSameAsPrevId(messages: [Message]) {
+    func setIsSameId(messages: [Message]) {
+        
         guard messages.count > 1 else {return}
         for i in 1..<messages.count  {
-            messages[i].isSameIdAsPrevMessage = getIsSameAsPrevId(prevMessage: messages[i - 1],
-                                                                  nextMessage: messages[i])
+            
+            messages[i].isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: messages[i - 1],
+                                                                      currentMessage: messages[i])
+            
+            if i == 1 {
+                messages[i].isSameIdAsNextMessage = isSameIdAsNextMessage(currentMessage: messages[i - 1],
+                                                                          nextMessage: messages[i])
+            } else {
+                messages[i-1].isSameIdAsNextMessage = messages[i].isSameIdAsPrevMessage
+            }
         }
     }
     
-    func getIsSameAsPrevId(prevMessage: Message, nextMessage: Message) -> Bool {
-        return prevMessage.type == .Text && nextMessage.type == .Text && prevMessage.userId == nextMessage.userId
+    func isSameIdAsPrevMessage(prevMessage: Message, currentMessage: Message) -> Bool {
+        return prevMessage.type == .Text && currentMessage.type == .Text && prevMessage.userId == currentMessage.userId
+    }
+    
+    func isSameIdAsNextMessage(currentMessage: Message, nextMessage: Message) -> Bool {
+        return currentMessage.type == .Text && nextMessage.type == .Text && currentMessage.userId == nextMessage.userId
     }
     
     func updateIsSaved(atIndex i: Int) {
@@ -304,7 +321,7 @@ class ConversationViewModel: ObservableObject {
     
     func fetchSavedMessages() {
         ConversationService.fetchSavedMessages(forDocWithId: self.chatId) { messages in
-            self.setIsSameAsPrevId(messages: messages)
+            self.setIsSameId(messages: messages)
             self.savedMessages = messages
         }
     }
@@ -329,12 +346,13 @@ class ConversationViewModel: ObservableObject {
         listener = COLLECTION_CONVERSATIONS.document(chatId)
             .addSnapshotListener { snapshot, _ in
                 if let data = snapshot?.data() {
-                    print("1")
                     let messages = ConversationService.getMessagesFromData(data: data)
 
                     //TODO handle reactions
                     
                     self.messages = messages
+                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
+
                 }
             }
         

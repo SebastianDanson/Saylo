@@ -43,7 +43,7 @@ enum MessageType {
     }
 }
 
-class Message: Identifiable {
+class Message: ObservableObject {
     
     //ids
     let id: String
@@ -64,8 +64,10 @@ class Message: Identifiable {
     var reactions = [Reaction]()
 
     //data
-    var isSaved: Bool
-    var isSameIdAsPrevMessage = false
+    @Published var isSaved: Bool
+    @Published var isSameIdAsPrevMessage = false
+    @Published var isSameIdAsNextMessage = false
+    var isFromCurrentUser: Bool
     
     //date
     let timestamp: Timestamp
@@ -81,8 +83,10 @@ class Message: Identifiable {
                 
         if userId == AuthViewModel.shared.currentUser?.id ?? "" {
             self.username = "Me"
+            self.isFromCurrentUser = true
         } else {
             self.username = dictionary["username"] as? String ?? ""
+            self.isFromCurrentUser = false
         }
         
         self.userProfileImageUrl = dictionary["userProfileImageUrl"] as? String ?? ""
@@ -98,6 +102,7 @@ class Message: Identifiable {
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true
         
         self.isSaved = isSaved
+        
         
         
         //checkCache

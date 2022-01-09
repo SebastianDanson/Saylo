@@ -39,7 +39,8 @@ extension Color {
     static let point3AlphaSystemBlack = Color(UIColor.point3AlphaSystemBlack)
     static let popUpSystemWhite = Color(UIColor.popUpSystemWhite)
     static let iconSystemWhite = Color(UIColor.iconSystemWhite)
-
+    static let textBackground = Color(UIColor.textBackground)
+    
 }
 
 extension UIImage {
@@ -89,7 +90,7 @@ extension UIColor {
         return trait.userInterfaceStyle == .dark ? .white : .black
     }
     
-    static let mainBlue = UIColor(red: 15/255, green: 188/255, blue: 249/255, alpha: 1)
+    static let mainBlue = UIColor(red: 15/255, green: 168/255, blue: 246/255, alpha: 1)
 
     
     static let lightGray = UIColor { (trait: UITraitCollection) -> UIColor in
@@ -167,6 +168,14 @@ extension UIColor {
     static let iconSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1) : .white
     }
+    
+    static let textBackground = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ?
+        UIColor(red: 28/255, green: 28/255, blue: 30/255, alpha: 1) :
+        UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+    }
+    
+    
     
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
