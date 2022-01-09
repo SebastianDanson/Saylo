@@ -21,7 +21,6 @@ struct ConversationFeedView: View {
     @State var middleItemNo = -1
     @StateObject private var viewModel = ConversationViewModel.shared
     let showSavedPosts: Bool
-    @State var currentPlayer: AVPlayer?
     
     var body: some View {
         
@@ -44,33 +43,45 @@ struct ConversationFeedView: View {
                                 if let last = getMessages().last {
                                     reader.scrollTo(last.id, anchor: .center)
                                 }
-                                
                             }
+                        
                     }
                 }.flippedUpsideDown()
-                   
-                
                     .onPreferenceChange( ViewOffsetsKey.self, perform: { prefs in
                         let prevMiddleItemNo = middleItemNo
                         middleItemNo = prefs.first(where: { $1 > 40 && $1 < 90 })?.key ?? -1
-                        
                         
                         //                        viewModel.showKeyboard = false
                         //                        UIApplication.shared.endEditing()
                         
                         if middleItemNo >= 0 {
                             if prevMiddleItemNo != middleItemNo {
-                                currentPlayer?.pause()
-                                currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
-                                currentPlayer?.play()
+                                viewModel.currentPlayer?.pause()
+                                viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
+                                
+                                viewModel.currentPlayer?.play()
                                 
                                 withAnimation {
                                     reader.scrollTo(getMessages()[middleItemNo].id, anchor: .center)
                                 }
                             }
                         } else {
-                            currentPlayer?.pause()
+                            
+                            viewModel.currentPlayer?.pause()
                         }
+                    }) .onChange(of: viewModel.index, perform: { newValue in
+                        print("CGANGED", middleItemNo)
+                        middleItemNo += 1
+                        
+                        if middleItemNo < 1 || middleItemNo >= getMessages().count {return}
+                        
+                        let message = getMessages()[middleItemNo]
+                        
+                        reader.scrollTo(message.id, anchor: .center)
+                        viewModel.currentPlayer?.pause()
+                        viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
+                        viewModel.currentPlayer?.play()
+                        
                     })
             }
             .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 72 + BOTTOM_PADDING : -20)

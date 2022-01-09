@@ -16,6 +16,11 @@ struct MessagePlayer {
     let messageId: String
 }
 
+struct AudioMessagePlayer {
+    var player: AudioPlayer
+    let messageId: String
+}
+
 class ConversationViewModel: ObservableObject {
     
     var chat: Chat?
@@ -27,6 +32,8 @@ class ConversationViewModel: ObservableObject {
     @Published var savedMessages = [Message]()
     
     @Published var players = [MessagePlayer]()
+    @Published var audioPlayers = [AudioMessagePlayer]()
+
     //    @Published var chatId = "Chat"
     
     
@@ -61,6 +68,9 @@ class ConversationViewModel: ObservableObject {
     @Published var isSending = false
     @Published var hasSent = false
     
+    @Published var index = 0
+    @Published var currentPlayer: AVPlayer?
+
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?
@@ -107,6 +117,13 @@ class ConversationViewModel: ObservableObject {
         
         if !self.players.contains(where: {$0.messageId == player.messageId}) {
             self.players.append(player)
+        }
+    }
+    
+    func addAudioPlayer(_ player: AudioMessagePlayer) {
+        
+        if !self.audioPlayers.contains(where: {$0.messageId == player.messageId}) {
+            self.audioPlayers.append(player)
         }
     }
     

@@ -55,6 +55,13 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
             audioPlayer.seek(to: .zero)
         }
         
+        print("ok")
+
+        if !ConversationViewModel.shared.chatId.isEmpty && !recording {
+            print("YESSIR")
+            ConversationViewModel.shared.index += 1  
+        }
+        
         hasFinished = false
         isPlaying = false
     }

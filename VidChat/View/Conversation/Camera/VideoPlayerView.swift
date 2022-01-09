@@ -33,8 +33,10 @@ struct VideoPlayerView: View {
         player.automaticallyWaitsToMinimizeStalling = false
         
        
+       
         if let id = message?.id, let lastMessageId = ConversationViewModel.shared.messages.last?.id, id == lastMessageId {
             player.play()
+            ConversationViewModel.shared.currentPlayer = player
         }
         
 //        setResolutionForLocalVideo(assest: asset)
@@ -317,6 +319,8 @@ class PlayerUIView: UIView {
     
     @objc
     func playerItemDidReachEnd(notification: Notification) {
+        
+        ConversationViewModel.shared.index += 1
         
         if shouldLoop {
             playerLayer.player?.seek(to: CMTime.zero)

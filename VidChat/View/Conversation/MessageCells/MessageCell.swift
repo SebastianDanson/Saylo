@@ -19,6 +19,8 @@ struct MessageCell: View {
                 VideoCell(message: message)
             } else if message.type == .Audio, let urlString = message.url, let url = URL(string: urlString)  {
                 AudioCell(message: message, audioUrl: url)
+//                VideoCell(message: message)
+
             } else if message.type == .Text {
                 TextCell(message: message)
             } else if message.type == .Photo {
