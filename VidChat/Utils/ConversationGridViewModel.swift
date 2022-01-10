@@ -32,14 +32,14 @@ class ConversationGridViewModel: ObservableObject {
     private init() {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        let chats = defaults?.object(forKey: "chats") as? [[String:Any]]
+        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
         
-//        print(chats)
-        chats?.forEach({
-//            let chatId = $0["id"] as? String ?? UUID().uuidString
-//            print(chatId, "OKOJ")
-            self.chats.append(Chat(dictionary: $0, id: UUID().uuidString))
+        var chats = [Chat]()
+        chatDic?.forEach({
+            chats.append(Chat(dictionary: $0, id: UUID().uuidString))
         })
+        
+        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
         
         
     }
@@ -132,7 +132,6 @@ class ConversationGridViewModel: ObservableObject {
                 let chat = Chat(dictionary: data, id: id)
                 
                 if !self.allChats.contains(where: {$0.id == chat.id}) {
-                    self.chats.append(chat)
                     self.allChats.append(chat)
                 }
             }
@@ -142,21 +141,23 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func fetchConversations() {
-        
+//        return
         guard let user = AuthViewModel.shared.currentUser else {return}
         var count = 0
         
         var chatDictionary = [[String:Any]]()
         
         user.chats.forEach { chat in
+            
             addConversation(withId: chat.id) { chatData in
+                
                 count += 1
 
                 var messages = chatData["messages"] as? [[String:Any]] ?? [[String:Any]]()
 
                 for i in 0..<messages.count {
                     let timeStamp = messages[i]["timestamp"] as? Timestamp
-                    messages[i]["timestamp"] = timeStamp?.dateValue().timeIntervalSince1970
+                    messages[i]["timestamp"] = Int(timeStamp?.dateValue().timeIntervalSince1970 ?? 0)
                 }
 
                 var chatData = chatData
@@ -168,11 +169,10 @@ class ConversationGridViewModel: ObservableObject {
 
                     let chats = self.allChats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
 
+                    self.allChats = chats
+
                     withAnimation {
-                        
-                        self.allChats = chats
                         self.chats = chats
-                        
                     }
 
                     let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)

@@ -13,7 +13,7 @@ struct CameraMainView: View {
     
     @StateObject var viewModel = CameraViewModel.shared
     @State var isFrontFacing = true
-    
+    @State var dragOffset: CGSize = .zero
     var cameraView = CameraView()
     
     let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
@@ -69,7 +69,35 @@ struct CameraMainView: View {
             
             //            }
         }
-        
+        .gesture(
+            
+            DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                .onChanged { gesture in
+                    dragOffset.height = max(0, gesture.translation.height)
+                    print(gesture.translation.height)
+                }
+                .onEnded { gesture in
+                    
+                    withAnimation(.linear(duration: 0.2)) {
+                        
+                        if dragOffset.height > SCREEN_HEIGHT / 4 {
+                            ConversationViewModel.shared.showCamera = false
+                            viewModel.isShowingPhotoCamera = false
+                            viewModel.isRecording = false
+                                                    //                            if !viewModel.isShowingPhotoCamera {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                viewModel.reset(hideCamera: true)
+                            }
+                            //                            }
+                            
+                        } else {
+                            dragOffset.height = 0
+                        }
+                    }
+                    
+                    
+                }
+        )
         .overlay(
             ZStack {
                 VStack{
@@ -92,6 +120,8 @@ struct CameraMainView: View {
         .ignoresSafeArea()
         .background(Color(white: 0, opacity: 1))
         .navigationBarHidden(true)
+        .offset(dragOffset)
+        
     }
     
     func switchCamera() {
@@ -187,7 +217,7 @@ struct MediaOptions: View {
                     } label: {
                         CameraOptionView(image: Image(systemName: hasSaved ? "checkmark" : "square.and.arrow.down"), imageDimension: hasSaved ? 20 : 25, circleDimension: 44)
                     }.disabled(hasSaved)
-
+                    
                     
                     Spacer()
                     
@@ -213,7 +243,7 @@ struct SendButton: View {
                 
                 let conversationVM = ConversationViewModel.shared
                 viewModel.videoPlayerView?.player.pause()
-
+                
                 if conversationVM.chatId.isEmpty {
                     withAnimation {
                         ConversationGridViewModel.shared.isSelectingChats = true

@@ -30,7 +30,7 @@ struct ConversationFeedView: View {
                 
                 VStack(spacing: 0) {
                     
-                    ForEach(viewModel.showSavedPosts ? Array(viewModel.savedMessages.enumerated()) : Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
+                    ForEach(showSavedPosts ? Array(viewModel.savedMessages.enumerated()) : Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
                         MessageCell(message: getMessages()[i])
                             .transition(.move(edge: .bottom))
                             .offset(x: 0, y: -28)
@@ -44,7 +44,6 @@ struct ConversationFeedView: View {
                                     reader.scrollTo(last.id, anchor: .center)
                                 }
                             }
-                        
                     }
                 }.flippedUpsideDown()
                     .onPreferenceChange( ViewOffsetsKey.self, perform: { prefs in
@@ -88,6 +87,7 @@ struct ConversationFeedView: View {
             .padding(.bottom, 100)
             
         }
+     
         
         
         //TODO if the last message is a view (aka the fist cell u see), make sure it starts playing right away
@@ -105,4 +105,7 @@ struct ConversationFeedView: View {
         //TODO if no saved messages show an alert saying no saved message and telling them how to do it
     }
     
+    func getMessages() -> [Message] {
+        showSavedPosts ? viewModel.savedMessages : viewModel.messages
+    }
 }

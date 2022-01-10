@@ -96,7 +96,6 @@ class Message: ObservableObject {
         self.type = MessageType.getType(forString: dictionary["type"] as? String ?? "")
         
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date(timeIntervalSince1970: TimeInterval(dictionary["timestamp"] as? Int ?? 0)))
-        
         self.text = dictionary["text"] as? String
         
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true

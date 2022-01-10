@@ -93,6 +93,7 @@ class Chat: ObservableObject {
     }
     
     func getDateOfLastPost() -> Int {
+        print(self.messages.last?.timestamp.dateValue(), "TIME")
         return Int(self.messages.last?.timestamp.dateValue().timeIntervalSince1970 ?? 0)
     }
     

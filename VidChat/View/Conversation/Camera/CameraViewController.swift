@@ -263,7 +263,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 AVVideoWidthKey : 720,
                 AVVideoHeightKey : 1280,
                 AVVideoCompressionPropertiesKey : [
-                    AVVideoAverageBitRateKey : 1024 * 1024 * 3,
+                    AVVideoAverageBitRateKey : 1024 * 1024 * 4,
                 ],
             ])
             

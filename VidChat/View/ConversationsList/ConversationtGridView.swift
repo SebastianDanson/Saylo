@@ -26,7 +26,8 @@ struct ConversationGridView: View {
     
     @State var contentOffset: CGFloat = 0
     @State var initialOffset: CGFloat = 0
-
+    @State var recognizeSwipeUp = false
+    
     var body: some View {
         
         let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight, height: $conversationViewModel.photoBaseHeight)
@@ -60,7 +61,7 @@ struct ConversationGridView: View {
                                     subText: "To start recording a video for that chat",
                                     imageName: "record.circle.fill").tag(1)
                             
-                            TipView(header: "Swipe Up on the Chats View",
+                            TipView(header: "Swipe Up",
                                     subText: "To open the video camera",
                                     imageName: "video.fill").tag(2)
                             
@@ -80,26 +81,26 @@ struct ConversationGridView: View {
                     ZStack(alignment: .top) {
                         
                         if !viewModel.hideFeed {
-
+                            
                             TrackableScrollView(.vertical, showIndicators: false, contentOffset: $contentOffset, content: {
                                 
-                           
+                                
                                 VStack {
                                     LazyVGrid(columns: items, spacing: 14, content: {
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                             ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
-//                                                .onTapGesture(count: 2, perform: {
-//                                                    
-//                                                    if !conversationViewModel.showKeyboard {
-//                                                        withAnimation {
-//                                                            conversationViewModel.showKeyboard = true
-//                                                            viewModel.isSelectingChats = true
-//                                                            viewModel.toggleSelectedChat(chat: chat)
-//                                                        }
-//                                                    }
-//                                                })
+                                            //                                                .onTapGesture(count: 2, perform: {
+                                            //
+                                            //                                                    if !conversationViewModel.showKeyboard {
+                                            //                                                        withAnimation {
+                                            //                                                            conversationViewModel.showKeyboard = true
+                                            //                                                            viewModel.isSelectingChats = true
+                                            //                                                            viewModel.toggleSelectedChat(chat: chat)
+                                            //                                                        }
+                                            //                                                    }
+                                            //                                                })
                                                 .onTapGesture(count: 1, perform: {
                                                     if viewModel.isSelectingChats {
                                                         withAnimation(.linear(duration: 0.15)) {
@@ -129,30 +130,36 @@ struct ConversationGridView: View {
                                     
                                 }.padding(.top, getConversationGridPadding())
                                     .onChange(of: contentOffset, perform: { value in
-                                            // Do something
-                                        if initialOffset == 0 && contentOffset < 0 {
-                                            initialOffset = contentOffset
-                                        }
+                                        // Do something
+                                        if recognizeSwipeUp {
+                                            if initialOffset == 0 && contentOffset < 0 {
+                                                initialOffset = contentOffset
+                                            }
                                         
-//                                        print("scrollViewContentOffset", contentOffset, initialOffset)
-
-                                        
-                                        if contentOffset > initialOffset && contentOffset < 0{
-                                            withAnimation {
-                                                conversationViewModel.showCamera = true
+                                            if contentOffset > initialOffset && contentOffset < 0{
+                                                withAnimation {
+                                                    conversationViewModel.showCamera = true
+                                                }
                                             }
                                         }
                                     })
                                 
                             })
-                            .background(Color.systemWhite)
-                            .flippedUpsideDown()
-                            .scaleEffect(x: -1, y: 1, anchor: .center)
-                            .zIndex(2)
-                            .transition(.move(edge: .bottom))
-                           
-                           
-
+                                .background(Color.systemWhite)
+                                .flippedUpsideDown()
+                                .scaleEffect(x: -1, y: 1, anchor: .center)
+                                .zIndex(2)
+                                .transition(.move(edge: .bottom))
+                                .onAppear {
+                                    recognizeSwipeUp = false
+                                    initialOffset = 0
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        recognizeSwipeUp = true
+                                    }
+                                }
+                            
+                            
+                            
                             
                         }
                         
@@ -367,7 +374,7 @@ struct NavView: View {
                                             .scaledToFit()
                                             .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
                                     }
-                                 
+                                    
                                 })
                             }
                             
@@ -552,7 +559,7 @@ struct SelectedChatsView: View {
                             viewModel.selectedChats.forEach { chat in
                                 conversationViewModel.sendCameraMessage(chatId: chat.id, chat: chat)
                                 ConversationService.updateLastVisited(forChat: chat)
-
+                                
                             }
                             
                             CameraViewModel.shared.reset(hideCamera: true)

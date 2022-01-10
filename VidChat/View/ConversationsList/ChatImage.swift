@@ -1,5 +1,5 @@
 //
-//  DefaultGroupImage.swift
+//  ChatImage.swift
 //  Saylo
 //
 //  Created by Sebastian Danson on 2022-01-07.

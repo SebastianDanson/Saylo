@@ -49,8 +49,9 @@ struct ConversationService {
                     messages.append(Message(dictionary: message, id: id, isSaved: true))
                 }
                 ConversationViewModel.shared.setIsSameId(messages: messages)
-                completion(messages)
             }
+            
+            completion(messages)
         }
     }
     

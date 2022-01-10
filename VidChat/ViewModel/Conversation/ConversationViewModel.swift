@@ -30,7 +30,9 @@ class ConversationViewModel: ObservableObject {
     
     @Published var messages = [Message]()
     @Published var savedMessages = [Message]()
-    
+    @Published var noSavedMessages = false
+    @Published var noMessages = false
+
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
 
@@ -70,6 +72,8 @@ class ConversationViewModel: ObservableObject {
     
     @Published var index = 0
     @Published var currentPlayer: AVPlayer?
+    
+    
 
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
@@ -94,6 +98,7 @@ class ConversationViewModel: ObservableObject {
         self.addListener()
         self.updateNoticationsArray()
         self.chat?.hasUnreadMessage = false
+        self.noMessages = false
         ConversationService.updateLastVisited(forChat: chat)
     }
     
@@ -337,9 +342,12 @@ class ConversationViewModel: ObservableObject {
     }
     
     func fetchSavedMessages() {
+        print("STARTED")
         ConversationService.fetchSavedMessages(forDocWithId: self.chatId) { messages in
+            print("FINISHED")
             self.setIsSameId(messages: messages)
             self.savedMessages = messages
+            self.noSavedMessages = messages.count == 0
         }
     }
     
@@ -369,7 +377,8 @@ class ConversationViewModel: ObservableObject {
                     
                     self.messages = messages
                     ConversationViewModel.shared.setIsSameId(messages: self.messages)
-
+                    
+                    self.noMessages = messages.count == 0
                 }
             }
         

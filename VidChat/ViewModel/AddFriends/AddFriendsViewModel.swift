@@ -179,7 +179,8 @@ class AddFriendsViewModel: ObservableObject {
         ]
         
         COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData,friendData], "isDm":true])
-        
+        COLLECTION_SAVED_POSTS.document(chatId).setData([:])
+
         let chatData = ["id":chatId,
                         "lastVisited": Timestamp(date: Date()),
                         "notificationsEnabled": true] as [String: Any]

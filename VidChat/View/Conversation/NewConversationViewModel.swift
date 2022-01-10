@@ -91,6 +91,7 @@ class NewConversationViewModel: ObservableObject {
         
         
         //Add group info to DB
+        
         ref = COLLECTION_CONVERSATIONS.addDocument(data: data) { _ in
             
             //Once finished add the group data to the user doc
@@ -106,6 +107,7 @@ class NewConversationViewModel: ObservableObject {
             ConversationGridViewModel.shared.chats.append(chat)
             ConversationGridViewModel.shared.showConversation = true
 
+            COLLECTION_SAVED_POSTS.document(id).setData([:])
             
             let groupData = ["lastVisited": Timestamp(date: Date()),
                              "notificationsEnabled": true,

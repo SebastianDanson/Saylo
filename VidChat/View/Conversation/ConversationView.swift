@@ -39,12 +39,28 @@ struct ConversationView: View {
                     if !viewModel.showSavedPosts {
                         
                         ConversationFeedView(showSavedPosts: false)
+                            .overlay(
+                                VStack {
+                                    if viewModel.noMessages, let chat = viewModel.chat {
+                                        
+                                        Spacer()
+                                        
+                                        NoMessagesView(chat: chat).frame(width: SCREEN_WIDTH, height: 200)
+                                        
+                                        Spacer()
+                                        Spacer()
+                                        Spacer()
+                                        
+                                    }
+                                }
+                            )
                         
                     }
                     //Camera
                     if viewModel.showCamera {
                         CameraViewModel.shared.cameraView
                             .zIndex(6)
+                            .transition(.move(edge: .bottom))
                     }
                     
                     if showSettings {
@@ -76,17 +92,19 @@ struct ConversationView: View {
             .overlay(
                 ZStack {
                     
-                    VStack {
-                        
-                        if !viewModel.showCamera {
-                            ChatOptions(showSettings: $showSettings)
-                        }
-                        
-                        Spacer()
-                        
-                        if !viewModel.showKeyboard {
+                    if !viewModel.showSavedPosts {
+                        VStack {
                             
-                            OptionsView()
+                            if !viewModel.showCamera {
+                                ChatOptions(showSettings: $showSettings)
+                            }
+                            
+                            Spacer()
+                            
+                            if !viewModel.showKeyboard {
+                                
+                                OptionsView()
+                            }
                         }
                     }
                 }
@@ -107,10 +125,31 @@ struct ConversationView: View {
             if viewModel.showSavedPosts {
                 ConversationFeedView(showSavedPosts: true)
                     .background(Color.systemWhite)
-                    .overlay(SavedPostsOptionsView(), alignment: .bottom)
+                    .overlay(
+                        VStack {
+                            
+                            Spacer()
+                            
+                            
+                            if viewModel.noSavedMessages {
+                                NoSavedMessagesView()
+                                    .frame(width: SCREEN_WIDTH, height: 200)
+                            }
+                            
+                            Spacer()
+                            
+                            SavedPostsOptionsView()
+                        }
+                        , alignment: .center)
                     .transition(.move(edge: .bottom))
                     .zIndex(6)
             }
+            //                .overlay(
+//                    ZStack {
+//                        //                if showSavedPosts && viewModel.noSavedMessages {
+//                        //                }
+//                    } , alignment: .center
+//                )
             
         }
         .background(Color.systemWhite)
@@ -838,6 +877,7 @@ struct SavedPostsOptionsView: View {
                             ZStack {
                                 Circle()
                                     .frame(width: 38, height: 38)
+                                    .foregroundColor(.systemWhite)
                                 
                                 Image(systemName: "chevron.backward")
                                     .resizable()
