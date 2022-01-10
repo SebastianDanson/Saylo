@@ -126,7 +126,7 @@ extension UIColor {
     }
     
     static let toolBarIconDarkGray = UIColor { (trait: UITraitCollection) -> UIColor in
-        return trait.userInterfaceStyle == .dark ? .systemGray : UIColor(red: 100/255, green: 109/255, blue: 120/255, alpha: 1)
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 222/255, green: 222/255, blue: 222/255, alpha: 1) : UIColor(red: 80/255, green: 89/255, blue: 100/255, alpha: 1)
     }
     
     static let videoPlayerGray = UIColor { (trait: UITraitCollection) -> UIColor in
@@ -395,4 +395,42 @@ extension Notification {
     var keyboardHeight: CGFloat {
         return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
+}
+
+extension UINavigationController: UIGestureRecognizerDelegate {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return viewControllers.count > 1
+    }
+}
+
+
+extension UserDefaults {
+
+   func save<T:Encodable>(customObject object: T, inKey key: String) {
+       let encoder = JSONEncoder()
+       if let encoded = try? encoder.encode(object) {
+           self.set(encoded, forKey: key)
+       }
+   }
+
+   func retrieve<T:Decodable>(object type:T.Type, fromKey key: String) -> T? {
+       if let data = self.data(forKey: key) {
+           let decoder = JSONDecoder()
+           if let object = try? decoder.decode(type, from: data) {
+               return object
+           }else {
+               print("Couldnt decode object")
+               return nil
+           }
+       }else {
+           print("Couldnt find key")
+           return nil
+       }
+   }
+
 }

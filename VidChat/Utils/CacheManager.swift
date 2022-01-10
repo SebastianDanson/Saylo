@@ -14,14 +14,14 @@ class CacheManager {
     
     static func getCachedUrl(_ url: URL, userStoredURL: URL?, isVideo: Bool) -> URL {
         if fileExists(forUrl: url, isVideo: isVideo) {
-            print("EXISTS")
+//            print("EXISTS")
             return createNewPath(lastPath: url.lastPathComponent.appending(isVideo ? ".mov" : ".m4a"))
         } else if let url = userStoredURL, fileExists(forUrl: url, isVideo: isVideo, addComp: false) {
-            print("STORED EXISTS")
+//            print("STORED EXISTS")
             return createNewPath(lastPath: url.lastPathComponent)
         }
         else {
-            print("DOESNT EXIST")
+//            print("DOESNT EXIST")
             isVideo ? (exportSession(forUrl: url)) : (exportAudio(forUrl: url))
             return url
         }

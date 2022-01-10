@@ -24,7 +24,9 @@ struct ConversationGridView: View {
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var viewModel = ConversationGridViewModel.shared
     
-    
+    @State var contentOffset: CGFloat = 0
+    @State var initialOffset: CGFloat = 0
+
     var body: some View {
         
         let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight, height: $conversationViewModel.photoBaseHeight)
@@ -56,11 +58,11 @@ struct ConversationGridView: View {
                             
                             TipView(header: "Tap and Hold on a Chat",
                                     subText: "To start recording a video for that chat",
-                                    imageName: "video.fill").tag(1)
+                                    imageName: "record.circle.fill").tag(1)
                             
-                            TipView(header: "Double Tap on a Chat",
-                                    subText: "To start typing a message for that chat",
-                                    imageName: "message.fill").tag(2)
+                            TipView(header: "Swipe Up on the Chats View",
+                                    subText: "To open the video camera",
+                                    imageName: "video.fill").tag(2)
                             
                             
                         }
@@ -78,10 +80,10 @@ struct ConversationGridView: View {
                     ZStack(alignment: .top) {
                         
                         if !viewModel.hideFeed {
-                            
-                            
-                            
-                            ScrollView(showsIndicators: false) {
+
+                            TrackableScrollView(.vertical, showIndicators: false, contentOffset: $contentOffset, content: {
+                                
+                           
                                 VStack {
                                     LazyVGrid(columns: items, spacing: 14, content: {
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
@@ -126,13 +128,31 @@ struct ConversationGridView: View {
                                         .padding(.horizontal, 12)
                                     
                                 }.padding(.top, getConversationGridPadding())
+                                    .onChange(of: contentOffset, perform: { value in
+                                            // Do something
+                                        if initialOffset == 0 && contentOffset < 0 {
+                                            initialOffset = contentOffset
+                                        }
+                                        
+//                                        print("scrollViewContentOffset", contentOffset, initialOffset)
+
+                                        
+                                        if contentOffset > initialOffset && contentOffset < 0{
+                                            withAnimation {
+                                                conversationViewModel.showCamera = true
+                                            }
+                                        }
+                                    })
                                 
-                            }
+                            })
                             .background(Color.systemWhite)
                             .flippedUpsideDown()
                             .scaleEffect(x: -1, y: 1, anchor: .center)
                             .zIndex(2)
                             .transition(.move(edge: .bottom))
+                           
+                           
+
                             
                         }
                         
@@ -140,6 +160,7 @@ struct ConversationGridView: View {
                         if conversationViewModel.showCamera && !viewModel.isSelectingChats {
                             CameraViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
+                                .transition(.move(edge: .bottom))
                             //                                .overlay(
                             //                                    VStack {
                             //                                        Spacer()
@@ -527,13 +548,17 @@ struct SelectedChatsView: View {
                 if conversationViewModel.showCamera {
                     Button {
                         withAnimation {
+                            
                             viewModel.selectedChats.forEach { chat in
                                 conversationViewModel.sendCameraMessage(chatId: chat.id, chat: chat)
+                                ConversationService.updateLastVisited(forChat: chat)
+
                             }
                             
                             CameraViewModel.shared.reset(hideCamera: true)
                             viewModel.cameraViewZIndex = 3
                             viewModel.stopSelectingChats()
+                            
                         }
                     } label: {
                         Image(systemName: "location.circle.fill")

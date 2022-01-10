@@ -86,6 +86,7 @@ struct CallOptionsView: View {
                 )
                 .onTapGesture {
                     callsController.endCalling()
+                   
                     withAnimation {
                         ConversationViewModel.shared.showCall = false
                     }

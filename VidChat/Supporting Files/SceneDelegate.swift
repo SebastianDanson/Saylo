@@ -28,4 +28,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        print("sceneWillEnterForeground")
+        CameraViewModel.shared.cameraView.setupSession()
+    }
+    
+//    func sceneDidBecomeActive(_ scene: UIScene) {
+//        print("sceneDidBecomeActive")
+//
+//        CameraViewModel.shared.cameraView.setupSession()
+//    }
+//    
+//    func sceneWillResignActive(_ scene: UIScene) {
+//        print("sceneWillResignActive")
+//
+//        CameraViewModel.shared.cameraView.stopSession()
+//    }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        print("sceneDidEnterBackground")
+
+        CameraViewModel.shared.cameraView.stopSession()
+    }
+    
 }

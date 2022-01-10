@@ -9,6 +9,7 @@ import CallKit
 import Combine
 import Firebase
 import AgoraRtcKit
+import SwiftUI
 
 protocol CallManagerDelegate: AnyObject {
     func remoteUserIDsUpdated()
@@ -66,6 +67,10 @@ final class CallManager: NSObject, ObservableObject {
         self.delegate = nil
         self.remoteUserIDs = [UInt]()
         self.inCall = false
+        
+        withAnimation {
+            ConversationViewModel.shared.showCall = false
+        }
     }
     
     // MARK: - Actions

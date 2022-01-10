@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Firebase
 
 class ConversationGridViewModel: ObservableObject {
     
@@ -28,7 +29,20 @@ class ConversationGridViewModel: ObservableObject {
     
     static let shared = ConversationGridViewModel()
     
-    private init() {}
+    private init() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        let chats = defaults?.object(forKey: "chats") as? [[String:Any]]
+        
+//        print(chats)
+        chats?.forEach({
+//            let chatId = $0["id"] as? String ?? UUID().uuidString
+//            print(chatId, "OKOJ")
+            self.chats.append(Chat(dictionary: $0, id: UUID().uuidString))
+        })
+        
+        
+    }
     
     func removeSelectedChat(withId id: String) {
         if let index = selectedChats.firstIndex(where: {$0.id == id}) {
@@ -111,7 +125,7 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func addConversation(withId id: String, completion: @escaping(() -> Void)) {
+    func addConversation(withId id: String, completion: @escaping([String:Any]) -> Void) {
         
         COLLECTION_CONVERSATIONS.document(id).getDocument { snapshot, _ in
             if let data = snapshot?.data() {
@@ -122,7 +136,8 @@ class ConversationGridViewModel: ObservableObject {
                     self.allChats.append(chat)
                 }
             }
-            completion()
+            
+            completion(snapshot?.data() ?? [String:Any]())
         }
     }
     
@@ -130,16 +145,38 @@ class ConversationGridViewModel: ObservableObject {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
         var count = 0
+        
+        var chatDictionary = [[String:Any]]()
+        
         user.chats.forEach { chat in
-            addConversation(withId: chat.id) {
+            addConversation(withId: chat.id) { chatData in
                 count += 1
-                
+
+                var messages = chatData["messages"] as? [[String:Any]] ?? [[String:Any]]()
+
+                for i in 0..<messages.count {
+                    let timeStamp = messages[i]["timestamp"] as? Timestamp
+                    messages[i]["timestamp"] = timeStamp?.dateValue().timeIntervalSince1970
+                }
+
+                var chatData = chatData
+                 chatData["messages"] = messages
+                chatData["id"] = chat.id
+                 chatDictionary.append(chatData)
+
                 if count == user.chats.count {
-                    
+
                     let chats = self.allChats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-                    
-                    self.allChats = chats
-                    self.chats = chats
+
+                    withAnimation {
+                        
+                        self.allChats = chats
+                        self.chats = chats
+                        
+                    }
+
+                    let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+                    defaults?.set(chatDictionary, forKey: "chats")
                 }
             }
         }

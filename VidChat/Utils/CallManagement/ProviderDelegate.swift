@@ -189,6 +189,7 @@ extension ProviderDelegate: CXProviderDelegate {
         callManager.end(call: call)
         callManager.removeCall(call)
         callManager.leaveChannel()
+        callManager.endCalling()
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {

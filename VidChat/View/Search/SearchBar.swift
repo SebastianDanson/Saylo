@@ -114,7 +114,13 @@ struct SearchTextField: UIViewRepresentable {
             if showSearchReturnKey {
                 NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(reload), object: lastPerformArgument)
                 lastPerformArgument = text as NSString
-                self.searchText = textField.text ?? "" + string
+
+                if let text = textField.text,
+                   let textRange = Range(range, in: text) {
+                    let updatedText = text.replacingCharacters(in: textRange,
+                                                               with: string)
+                    self.searchText = updatedText
+                }
                 
                 AddFriendsViewModel.shared.showSearchResults = self.searchText.count > 1
                 
@@ -127,8 +133,22 @@ struct SearchTextField: UIViewRepresentable {
                 }
                 
             } else {
-                text = textField.text ?? "" + string
-                ConversationGridViewModel.shared.filterUsers(withText: text)
+                
+//                if string.isEmpty {
+//                    text
+//                }
+                if let text = textField.text,
+                   let textRange = Range(range, in: text) {
+                    let updatedText = text.replacingCharacters(in: textRange,
+                                                               with: string)
+                    self.text = updatedText
+                    ConversationGridViewModel.shared.filterUsers(withText: updatedText)
+
+                }
+                
+//                let textString = string.isEmpty ?  : text
+                print(string, range.lowerBound, range.upperBound, range.location, range.length, "EMPTY")
+                
             }
             
             return true

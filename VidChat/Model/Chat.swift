@@ -52,13 +52,13 @@ class Chat: ObservableObject {
         //name
         
         if isDm {
-            let currentUid = AuthViewModel.shared.currentUser?.id ?? ""
+            let currentUid = AuthViewModel.shared.currentUser?.id ?? Auth.auth().currentUser?.uid ?? ""
             let friend = chatMembers.first(where: {$0.id != currentUid})
             
             self.name = friend?.firstName ?? ""
             self.fullName = self.name + " " + (friend?.lastName ?? "")
             self.profileImageUrl = friend?.profileImage ?? ""
-            
+            print(name, profileImageUrl, "OOOOOK")
         } else {
             self.name = dictionary["name"] as? String ?? ""
             self.fullName = self.name
@@ -103,7 +103,7 @@ class Chat: ObservableObject {
     
     func getDefaultChatName() -> String {
         
-        guard let currentUserId = AuthViewModel.shared.currentUser?.id else {return ""}
+        guard let currentUserId = AuthViewModel.shared.currentUser?.id ?? Auth.auth().currentUser?.uid else {return ""}
         
         var name = ""
         

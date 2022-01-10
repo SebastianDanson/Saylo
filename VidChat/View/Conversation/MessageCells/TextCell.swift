@@ -36,12 +36,16 @@ struct TextCell: View {
                         if !message.isSameIdAsPrevMessage {
                         Text(message.username)
                             .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
+
                         + Text(" • \(message.timestamp.dateValue().getFormattedDate())")
                             .font(.system(size: 12, weight: .regular))
                             .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
                         }
                         Text(message.text ?? "")
                             .font(.system(size: 16))
+                            .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
+
                     }
                     .padding(.vertical, 8)
                     .padding(.leading, 12)

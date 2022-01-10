@@ -8,6 +8,7 @@
 import Foundation
 import Firebase
 import SwiftUI
+import Photos
 
 class CameraViewModel: ObservableObject {
     
@@ -29,7 +30,7 @@ class CameraViewModel: ObservableObject {
     static let shared = CameraViewModel()
     
     private init() {
-        cameraView.setupSession()
+//        cameraView.setupSession()
     }
     
     func removeVideo() {
@@ -135,5 +136,33 @@ class CameraViewModel: ObservableObject {
         }
      
         
+    }
+    
+//    func requestAuthorization(completion: @escaping ()->Void) {
+//            if PHPhotoLibrary.authorizationStatus() == .notDetermined {
+//                PHPhotoLibrary.requestAuthorization { (status) in
+//                    DispatchQueue.main.async {
+//                        completion()
+//                    }
+//                }
+//            } else if PHPhotoLibrary.authorizationStatus() == .authorized{
+//                completion()
+//            }
+//        }
+    
+    func saveToPhotos(url: URL) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+        }) { saved, error in
+            print(saved, "SAVED", error, "ERROR")
+        }
+    }
+    
+    func saveToPhotos(photo: UIImage) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAsset(from: photo)
+        }) { saved, error in
+            print(saved, "SAVED", error, "ERROR")
+        }
     }
 }

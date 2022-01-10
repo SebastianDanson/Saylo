@@ -30,6 +30,7 @@
 		069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A6A2772D23400996824 /* ConversationFeedView.swift */; };
 		069E95142789376800921593 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E95132789376800921593 /* NotificationService.swift */; };
 		069E95182789376800921593 /* NotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 069E95112789376800921593 /* NotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */; };
 		06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDA277F80480030357B /* ContactUsViewModel.swift */; };
 		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
 		06DFA9CE27738FD800A8CF0C /* SavedPostAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */; };
@@ -173,6 +174,7 @@
 		069E95132789376800921593 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		069E95152789376800921593 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		069E951C2789377600921593 /* NotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationServiceExtension.entitlements; sourceTree = "<group>"; };
+		06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackableScrollView.swift; sourceTree = "<group>"; };
 		06A7FEDA277F80480030357B /* ContactUsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewModel.swift; sourceTree = "<group>"; };
 		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* SavedPostAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostAlert.swift; sourceTree = "<group>"; };
@@ -465,6 +467,7 @@
 				06DFA9CF27739AFD00A8CF0C /* Helpers.swift */,
 				065E93952787755D0025C90C /* AcitivityIndicator.swift */,
 				065D2DF62788C1C1002F3816 /* PageView.swift */,
+				06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -847,6 +850,7 @@
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
 				3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */,
 				3F112B822720B32700BA2A73 /* CallManager.swift in Sources */,
+				06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */,
 				3F1768282714A8080049ADBA /* ConversationViewModel.swift in Sources */,
 				062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */,
 				069E4A652772874000996824 /* ImageDetailView.swift in Sources */,

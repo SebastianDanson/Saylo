@@ -32,7 +32,6 @@ struct CameraMainView: View {
                         .overlay(MediaOptions(), alignment: .bottom)
                         .background(Color.clear)
                         .padding(.top, TOP_PADDING)
-                    
                     //
                     Spacer()
                     
@@ -89,6 +88,7 @@ struct CameraMainView: View {
                 }
             }
         )
+        
         .ignoresSafeArea()
         .background(Color(white: 0, opacity: 1))
         .navigationBarHidden(true)
@@ -125,6 +125,11 @@ struct CameraMainView: View {
         cameraView.setupSession()
     }
     
+    func stopSession() {
+        print("STOPPING SESSION")
+        cameraView.stopSession()
+    }
+    
     func setupWriter() {
         //        cameraView.setupWriter()
     }
@@ -142,6 +147,7 @@ struct FlashView: View {
 struct MediaOptions: View {
     
     @StateObject var viewModel = CameraViewModel.shared
+    @State var hasSaved = false
     
     var body: some View {
         VStack {
@@ -166,7 +172,22 @@ struct MediaOptions: View {
                 
                 HStack {
                     
-                    CameraOptionView(image: Image(systemName: "square.and.arrow.down"), imageDimension: 25, circleDimension: 44)
+                    Button {
+                        
+                        if !hasSaved {
+                            if let url = viewModel.videoUrl {
+                                viewModel.saveToPhotos(url: url)
+                                withAnimation { hasSaved = true }
+                            } else if let photo = viewModel.photo {
+                                viewModel.saveToPhotos(photo: photo)
+                                withAnimation { hasSaved = true }
+                            }
+                        }
+                        
+                    } label: {
+                        CameraOptionView(image: Image(systemName: hasSaved ? "checkmark" : "square.and.arrow.down"), imageDimension: hasSaved ? 20 : 25, circleDimension: 44)
+                    }.disabled(hasSaved)
+
                     
                     Spacer()
                     
@@ -186,6 +207,7 @@ struct SendButton: View {
     var body: some View {
         
         Button(action: {
+            
             withAnimation(.linear(duration: 0.2)) {
                 
                 
@@ -202,7 +224,12 @@ struct SendButton: View {
                     conversationVM.sendCameraMessage(chatId: conversationVM.chatId, chat: conversationVM.selectedChat)
                     viewModel.reset(hideCamera: true)
                 }
+                
+                if let chat = conversationVM.selectedChat {
+                    ConversationService.updateLastVisited(forChat: chat)
+                }
             }
+            
         }, label: {
             
             

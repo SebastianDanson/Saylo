@@ -95,7 +95,7 @@ class Message: ObservableObject {
         self.url = dictionary["url"] as? String
         self.type = MessageType.getType(forString: dictionary["type"] as? String ?? "")
         
-        self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())
+        self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date(timeIntervalSince1970: TimeInterval(dictionary["timestamp"] as? Int ?? 0)))
         
         self.text = dictionary["text"] as? String
         

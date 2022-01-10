@@ -80,6 +80,18 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         return nil
     }
     
+    func stopSession() {
+
+        videoWriterInput.markAsFinished()
+        audioWriterInput.markAsFinished()
+        
+        videoWriter.finishWriting {}
+        
+        captureSession.stopRunning()
+        audioCaptureSession.stopRunning()
+    
+    }
+    
     func setupSession() {
         
         setUpWriter()
@@ -111,8 +123,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         videoDataOutput.setSampleBufferDelegate(self, queue: queue)
         audioDataOutput.setSampleBufferDelegate(self, queue: queue1)
-        captureSession.addOutput(videoDataOutput)
-        captureSession.addOutput(photoOutput)
+        
+        if captureSession.canAddOutput(videoDataOutput) {
+            captureSession.addOutput(videoDataOutput)
+        }
+        
+        if captureSession.canAddOutput(photoOutput) {
+            captureSession.addOutput(photoOutput)
+        }
+ 
         
         captureSession.commitConfiguration()
     }
@@ -189,14 +208,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
     }
     
-    func stopSession() {
-        //      if captureSession.isRunning {
-        //        DispatchQueue.global(qos: .default).async() { [weak self] in
-        //          self?.captureSession.stopRunning()
-        //            print("RUNNING ENDED")
-        //        }
-        //      }
-    }
     
     public func captureMovie(withFlash hasFlash: Bool) {
         

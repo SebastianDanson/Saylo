@@ -55,6 +55,10 @@ struct CameraView: UIViewControllerRepresentable {
        // cameraViewController.setupAudio()
     }
     
+    public func stopSession() {
+        cameraViewController.stopSession()
+    }
+    
     public func setupWriter() {
         cameraViewController.setUpWriter()
     }

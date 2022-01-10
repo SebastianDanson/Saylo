@@ -184,7 +184,7 @@ class AddFriendsViewModel: ObservableObject {
                         "lastVisited": Timestamp(date: Date()),
                         "notificationsEnabled": true] as [String: Any]
         
-        ConversationGridViewModel.shared.addConversation(withId: chatId) {}
+        ConversationGridViewModel.shared.addConversation(withId: chatId) {_ in }
         
         COLLECTION_USERS.document(user.id)
             .updateData(
