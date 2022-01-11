@@ -74,7 +74,7 @@ class ConversationViewModel: ObservableObject {
     @Published var currentPlayer: AVPlayer?
     
     @Published var scrollToBottom = false
-
+    @Published var isPlaying = false
 
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
@@ -82,7 +82,6 @@ class ConversationViewModel: ObservableObject {
     
     var selectedChat: Chat?
     var hasSelectedAssets = false
-
     static let shared = ConversationViewModel()
     
     private init() {

@@ -27,6 +27,8 @@ class CameraViewModel: ObservableObject {
     @Published var isRotating = false
     @Published var videoPlayerView: VideoPlayerView?
     
+    var timer: Timer?
+    
     static let shared = CameraViewModel()
     
     private init() {
@@ -87,8 +89,13 @@ class CameraViewModel: ObservableObject {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 self.cameraView.startRecording()
             }
+            
         } else {
             self.cameraView.startRecording()
+        }
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
+            self.stopRecording()
         }
     }
     
@@ -96,6 +103,8 @@ class CameraViewModel: ObservableObject {
         self.cameraView.stopRecording()
         self.isRecording = false
         self.progress = 0
+        
+        timer?.invalidate()
     }
     
     func handleTap() {

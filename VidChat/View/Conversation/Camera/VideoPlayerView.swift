@@ -33,11 +33,6 @@ struct VideoPlayerView: View {
         player.automaticallyWaitsToMinimizeStalling = false
         
        
-       
-        if let id = message?.id, let lastMessageId = ConversationViewModel.shared.messages.last?.id, id == lastMessageId {
-            player.play()
-            ConversationViewModel.shared.currentPlayer = player
-        }
         
 //        setResolutionForLocalVideo(assest: asset)
        
@@ -72,6 +67,12 @@ struct VideoPlayerView: View {
                 .onAppear {
                     if let id = message?.id {
                         ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
+                        
+                        if let chat = ConversationViewModel.shared.chat, chat.messages[chat.lastReadMessageIndex].id == id {
+                            print("YESSIR")
+                            ConversationViewModel.shared.currentPlayer = self.player
+                            ConversationViewModel.shared.currentPlayer?.play()
+                        }
                     }
                 }
         }

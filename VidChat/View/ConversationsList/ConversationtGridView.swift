@@ -37,7 +37,7 @@ struct ConversationGridView: View {
             ZStack(alignment: .top) {
                 
                 
-                NavigationLink(destination: ConversationView()
+                NavigationLink(destination: ConversationView().environment(\.colorScheme, .dark)
                                 .navigationBarHidden(true), isActive: $viewModel.showConversation) { EmptyView() }
                 
                 
@@ -131,12 +131,13 @@ struct ConversationGridView: View {
                                 }.padding(.top, getConversationGridPadding())
                                     .onChange(of: contentOffset, perform: { value in
                                         // Do something
-                                        if recognizeSwipeUp && !conversationViewModel.showCamera {
+                                        if recognizeSwipeUp && !conversationViewModel.showCamera && !conversationViewModel.isRecordingAudio && !conversationViewModel.showPhotos{
                                             if initialOffset == 0 && contentOffset < 0 {
                                                 initialOffset = contentOffset
                                             }
                                         
                                             print(contentOffset)
+                                            
                                             if contentOffset > initialOffset && contentOffset < 0{
                                                 withAnimation {
                                                     conversationViewModel.showCamera = true
@@ -355,32 +356,53 @@ struct NavView: View {
                                         .clipShape(Circle())
                                 }
                                 
-                                Button(action: {
-                                    cameraViewModel.toggleIsFrontFacing()
-                                }, label: {
-                                    
-                                    if cameraViewModel.isRotating {
-                                        
-                                        Image(systemName: "arrow.triangle.2.circlepath.camera")
-                                            .resizable()
-                                            .foregroundColor(.toolBarIconDarkGray)
-                                            .scaledToFit()
-                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
-                                        
-                                    } else {
-                                        Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .foregroundColor(.toolBarIconDarkGray)
-                                            .scaledToFit()
-                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                Button {
+                                    withAnimation {
+                                        viewModel.isCalling = true
                                     }
+                                } label: {
                                     
-                                })
+                                    Circle()
+                                        .frame(width: toolBarWidth, height: toolBarWidth)
+                                        .foregroundColor(.toolBarIconGray)
+                                        .overlay(
+                                            Image(systemName: "phone.fill")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .scaledToFit()
+                                                .frame(height: toolBarWidth - 18)
+                                                .foregroundColor(.toolBarIconDarkGray)
+                                                .padding(.leading, 1)
+                                        )
+                                        .padding(.leading, -2)
+                                }
+                                
+//                                Button(action: {
+//                                    cameraViewModel.toggleIsFrontFacing()
+//                                }, label: {
+//
+//                                    if cameraViewModel.isRotating {
+//
+//                                        Image(systemName: "arrow.triangle.2.circlepath.camera")
+//                                            .resizable()
+//                                            .foregroundColor(.toolBarIconDarkGray)
+//                                            .scaledToFit()
+//                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+//
+//                                    } else {
+//                                        Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
+//                                            .resizable()
+//                                            .renderingMode(.template)
+//                                            .foregroundColor(.toolBarIconDarkGray)
+//                                            .scaledToFit()
+//                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+//                                    }
+//
+//                                })
                             }
                             
                             Spacer()
-                            HStack(alignment: .top, spacing: 14) {
+                            HStack(alignment: .top, spacing: 12) {
                                 
                                 Button {
                                     withAnimation {
@@ -425,26 +447,6 @@ struct NavView: View {
                                 }
                                 
                                 
-                                Button {
-                                    withAnimation {
-                                        viewModel.isCalling = true
-                                    }
-                                } label: {
-                                    
-                                    Circle()
-                                        .frame(width: toolBarWidth, height: toolBarWidth)
-                                        .foregroundColor(.toolBarIconGray)
-                                        .overlay(
-                                            Image(systemName: "phone.fill")
-                                                .resizable()
-                                                .renderingMode(.template)
-                                                .scaledToFit()
-                                                .frame(height: toolBarWidth - 18)
-                                                .foregroundColor(.toolBarIconDarkGray)
-                                                .padding(.leading, 1)
-                                        )
-                                        .padding(.leading, -2)
-                                }
                                 
                                 Button {
                                     withAnimation {

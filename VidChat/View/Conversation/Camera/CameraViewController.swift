@@ -257,6 +257,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             let url = getTempUrl()!
             outputURL = url
             videoWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.mov)
+            
             // add video input
             videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: [
                 AVVideoCodecKey : AVVideoCodecType.h264,

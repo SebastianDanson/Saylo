@@ -67,7 +67,13 @@ struct TextCell: View {
                                 + Text(" • \(message.timestamp.dateValue().getFormattedDate())")
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
+                                    
                             }
+                            
+//                            TextView(text: message.text ?? "", isFromCurrentUser: message.isFromCurrentUser)
+////                                .frame(maxWidth: SCREEN_WIDTH - 100)
+//                                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+
                             Text(message.text ?? "")
                                 .font(.system(size: 16))
                                 .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)

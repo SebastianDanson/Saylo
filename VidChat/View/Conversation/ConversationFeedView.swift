@@ -19,6 +19,8 @@ struct ConversationFeedView: View {
     
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var middleItemNo = -1
+    @State var updatePreference = false
+
     @StateObject private var viewModel = ConversationViewModel.shared
     let showSavedPosts: Bool
     
@@ -40,13 +42,21 @@ struct ConversationFeedView: View {
                                         key: ViewOffsetsKey.self,
                                         value: [i: geo.frame(in: .named("scrollView")).origin.y]) } : nil)
                             .onAppear {
-                                if let last = getMessages().last {
-                                    reader.scrollTo(last.id, anchor: .center)
+                                
+                                if let chat = viewModel.chat {
+                                    if i == chat.lastReadMessageIndex {
+                                        reader.scrollTo(getMessages()[i].id, anchor: .center)
+                                    }
                                 }
+                            
                             }
                     }
                 }.flippedUpsideDown()
                     .onPreferenceChange( ViewOffsetsKey.self, perform: { prefs in
+                        
+                        guard updatePreference else { return }
+                        
+                        print(middleItemNo)
                         let prevMiddleItemNo = middleItemNo
                         middleItemNo = prefs.first(where: { $1 > 40 && $1 < 90 })?.key ?? -1
                         
@@ -54,6 +64,7 @@ struct ConversationFeedView: View {
                         //                        UIApplication.shared.endEditing()
                         
                         if middleItemNo >= 0 {
+                            viewModel.isPlaying = true
                             if prevMiddleItemNo != middleItemNo {
                                 viewModel.currentPlayer?.pause()
                                 viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
@@ -65,7 +76,7 @@ struct ConversationFeedView: View {
                                 }
                             }
                         } else {
-                            
+                            viewModel.isPlaying = false
                             viewModel.currentPlayer?.pause()
                         }
                     }) .onChange(of: viewModel.index, perform: { newValue in
@@ -74,12 +85,27 @@ struct ConversationFeedView: View {
                         
                         if middleItemNo < 1 || middleItemNo >= getMessages().count {return}
                         
+                        updatePreference = false
+                        
                         let message = getMessages()[middleItemNo]
                         
-                        reader.scrollTo(message.id, anchor: .center)
+                        if message.type == .Text {
+                            withAnimation {
+                                reader.scrollTo(message.id, anchor: .center)
+                            }
+                        } else {
+                            reader.scrollTo(message.id, anchor: .center)
+                        }
+                     
+                        
                         viewModel.currentPlayer?.pause()
+
                         viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
                         viewModel.currentPlayer?.play()
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            updatePreference = true
+                        }
                         
                     })
                     .onChange(of: viewModel.scrollToBottom) { newValue in
@@ -106,6 +132,17 @@ struct ConversationFeedView: View {
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.systemWhite)
         .coordinateSpace(name: "scrollView")
+        .onAppear {
+            self.middleItemNo = viewModel.chat?.lastReadMessageIndex ?? -1
+            
+            if getMessages()[middleItemNo].type == .Video || getMessages()[middleItemNo].type == .Audio {
+                viewModel.isPlaying = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.updatePreference = true
+            }
+        }
         
         //TODO if no saved messages show an alert saying no saved message and telling them how to do it
     }

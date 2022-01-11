@@ -139,3 +139,34 @@ struct MultilineTextField: View {
 }
 
 
+struct TextView: UIViewRepresentable {
+    
+    typealias UIViewType = UITextView
+
+    let text: String
+    let isFromCurrentUser: Bool
+
+    func makeUIView(context: UIViewRepresentableContext<TextView>) -> UITextView {
+        
+        let textView = UITextView()
+
+        textView.isEditable = false
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.isSelectable = false
+        textView.isUserInteractionEnabled = true
+        textView.isScrollEnabled = false
+        textView.dataDetectorTypes = .all
+        textView.text = text
+        textView.textColor = isFromCurrentUser ? .white : .systemBlack
+        textView.backgroundColor = .clear
+        textView.setWidth(width: SCREEN_WIDTH - 100)
+        
+        return textView
+    }
+
+    func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<TextView>) {
+   
+    }
+}
+
+

@@ -33,6 +33,8 @@ class Chat: ObservableObject {
     @Published var hasSent = false
     @Published var hasUnreadMessage = false
 
+    var lastReadMessageIndex = 0
+
     init(dictionary: [String:Any], id: String) {
         
         //Doc info
@@ -88,11 +90,10 @@ class Chat: ObservableObject {
         }
         
         self.hasUnreadMessage = getHasUnreadMessage()
-
+        self.lastReadMessageIndex = getLastReadMessageIndex()
     }
     
     func getDateOfLastPost() -> Int {
-        print(self.messages.last?.timestamp.dateValue(), "TIME")
         return Int(self.messages.last?.timestamp.dateValue().timeIntervalSince1970 ?? 0)
     }
     
@@ -100,6 +101,22 @@ class Chat: ObservableObject {
         guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}), let last = messages.last else {return false}
         return Int(chat.lastVisited.dateValue().timeIntervalSince1970) < getDateOfLastPost() && !last.isFromCurrentUser
     }
+    
+    func getLastReadMessageIndex() -> Int {
+        
+        guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}) else {return messages.count - 1}
+
+        let lastVisited = chat.lastVisited
+        
+        for i in 0..<messages.count {
+            if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
+                return i
+            }
+        }
+        
+        return messages.count - 1
+    }
+    
     
     func getDefaultChatName() -> String {
         

@@ -34,6 +34,16 @@ struct ConversationView: View {
                 
                 ZStack {
                     
+                    if viewModel.isPlaying {
+                    VStack {
+                        Rectangle()
+                            .frame(width: SCREEN_WIDTH, height: TOP_PADDING)
+                            .foregroundColor(.systemWhite)
+                        
+                        Spacer()
+                    }.zIndex(5)
+                    }
+                    
                     //Feed
                     //                LazyVStack(spacing: 12) {
                     
@@ -53,7 +63,7 @@ struct ConversationView: View {
                                         Spacer()
                                         
                                     }
-                                }
+                                }.background(Color.systemWhite)
                             )
                         
                     }
@@ -177,6 +187,7 @@ struct OptionsView: View {
             if !viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard {
                 VisualEffectView(effect: UIBlurEffect(style: .regular))
             }
+            
             VStack {
                 
                 
@@ -330,7 +341,7 @@ struct OptionsView: View {
         }
         
         .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 70)
-        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? .point7AlphaSystemWhite : Color.clear)
+        .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? (viewModel.isPlaying ? .systemWhite : .point7AlphaSystemWhite) : Color.clear)
         
     }
 }
@@ -503,38 +514,38 @@ struct ChatOptions: View {
                 
                 VStack(spacing: 12) {
                     
-                    Button {
-                        withAnimation {
-                            cameraViewModel.toggleIsFrontFacing()
-                        }
-                    } label: {
-                        
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 36, height: 36)
-                                .foregroundColor(.point3AlphaSystemBlack)
-                            
-                            
-                            
-                            if cameraViewModel.isRotating {
-                                
-                                Image(systemName: "arrow.triangle.2.circlepath.camera")
-                                    .resizable()
-                                    .foregroundColor(.iconSystemWhite)
-                                    .scaledToFit()
-                                    .frame(width: 24, height: 24)
-                                
-                            } else {
-                                Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(.iconSystemWhite)
-                                    .scaledToFit()
-                                    .frame(width: 24, height: 24)
-                            }
-                        }
-                    }
+//                    Button {
+//                        withAnimation {
+//                            cameraViewModel.toggleIsFrontFacing()
+//                        }
+//                    } label: {
+//                        
+//                        ZStack {
+//                            
+//                            Circle()
+//                                .frame(width: 36, height: 36)
+//                                .foregroundColor(.point3AlphaSystemBlack)
+//                            
+//                            
+//                            
+//                            if cameraViewModel.isRotating {
+//                                
+//                                Image(systemName: "arrow.triangle.2.circlepath.camera")
+//                                    .resizable()
+//                                    .foregroundColor(.iconSystemWhite)
+//                                    .scaledToFit()
+//                                    .frame(width: 24, height: 24)
+//                                
+//                            } else {
+//                                Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
+//                                    .resizable()
+//                                    .renderingMode(.template)
+//                                    .foregroundColor(.iconSystemWhite)
+//                                    .scaledToFit()
+//                                    .frame(width: 24, height: 24)
+//                            }
+//                        }
+//                    }
                     
                     if viewModel.messages.count > 0 {
                         
@@ -611,10 +622,11 @@ struct AudioOptions: View {
                         viewModel.isRecordingAudio = false
                     }
                     
-                    ConversationGridViewModel.shared.stopSelectingChats()
                     audioRecorder.stopRecording(startPlayback: false)
                     viewModel.audioProgress = 0.0
                     viewModel.showAudio = false
+                    ConversationGridViewModel.shared.stopSelectingChats()
+
                 } label: {
                     Image(systemName: "x.circle.fill")
                         .resizable()
