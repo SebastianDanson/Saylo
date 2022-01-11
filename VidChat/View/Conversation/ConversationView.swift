@@ -21,7 +21,8 @@ struct ConversationView: View {
     @State private var dragOffset = CGSize.zero
     @State private var text = ""
     @State private var showSettings = false
-    
+    @State private var scrollToBottom = false
+
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
     
@@ -154,11 +155,6 @@ struct ConversationView: View {
         }
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-            if let chat = viewModel.chat {
-                ConversationService.updateLastVisited(forChat: chat)
-            }
-        }
     }
 }
 
@@ -309,6 +305,10 @@ struct OptionsView: View {
                                             
                                             if viewModel.chatId.isEmpty {
                                                 ConversationGridViewModel.shared.isSelectingChats = true
+                                            } else {
+                                                withAnimation {
+                                                    viewModel.scrollToBottomOfFeed()
+                                                }
                                             }
                                         }
                                     }, label: {

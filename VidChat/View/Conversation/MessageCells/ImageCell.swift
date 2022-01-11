@@ -10,34 +10,24 @@ import Kingfisher
 
 struct ImageCell: View {
     
+    let message: Message
     let url: String?
     let image: UIImage?
-    
-    let messageId: String
     let showName: Bool
-    let profileImageUrl: String
-    let name: String
-    let date: Date
     
-    let isFromPhotoLibrary: Bool
-
+    
     @State var isSaved: Bool
     @State var backGroundColor = Color.systemWhite
     @State var showAlert = false
     
     init(message: Message, url: String?, image: UIImage?, showName: Bool) {
-        self.messageId = message.id
         self.showName = showName
-        self.isFromPhotoLibrary = message.isFromPhotoLibrary
-        self.name = message.username
-        self.profileImageUrl = message.userProfileImageUrl
-        self.date = message.timestamp.dateValue()
-        
+        self.message = message
         self.image = image
         self.url = url
         self._isSaved = State(initialValue: message.isSaved)
     }
-
+    
     var body: some View {
         
         ZStack(alignment: .bottomLeading) {
@@ -59,7 +49,7 @@ struct ImageCell: View {
             
             HStack {
                 if showName {
-                    MessageInfoView(date: date, profileImage: profileImageUrl, name: name)
+                    MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userProfileImageUrl, name: message.username)
                         .padding(.vertical, 0)
                         .padding(.horizontal, 3)
                 }
@@ -74,7 +64,7 @@ struct ImageCell: View {
         })
         .onTapGesture {
             
-            if isFromPhotoLibrary {
+            if message.isFromPhotoLibrary {
                 ConversationViewModel.shared.selectedImage = image
                 ConversationViewModel.shared.selectedUrl = url
                 
@@ -82,19 +72,22 @@ struct ImageCell: View {
                     ConversationViewModel.shared.showImageDetailView = true
                 }
             }
-           
+            
         }
         .onLongPressGesture(perform: {
             
             withAnimation {
-                if let i = getMessages().firstIndex(where: {$0.id == messageId}) {
+                if let i = getMessages().firstIndex(where: {$0.id == message.id}) {
                     if getMessages()[i].isSaved {
-                        showAlert = true
+                        if getMessages()[i].savedByCurrentUser {
+                            showAlert = true
+                        }
+                        
                     } else {
-                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                        isSaved.toggle()
-                    }
-               
+                            ConversationViewModel.shared.updateIsSaved(atIndex: i)
+                            isSaved.toggle()
+                        }
+                    
                 }
             }
         })
@@ -103,24 +96,24 @@ struct ImageCell: View {
             ZStack {
                 if isSaved {
                     Button {
-                           showAlert = true
+                        showAlert = true
                     } label: {
                         ZStack {
                             
                             Circle()
-                                .frame(width: 30, height: 30)
-                                .foregroundColor(.point3AlphaSystemBlack)
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(message.savedByCurrentUser ? .mainBlue : .lightGray)
                             
-                            Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
+                            Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
                                 .resizable()
                                 .scaledToFit()
                                 .foregroundColor(.systemWhite)
-                                .frame(width: 16, height: 16)
+                                .frame(width: 18, height: 18)
                         }
                         .padding(.horizontal, 6)
                         .padding(.vertical, 18)
                     }.alert(isPresented: $showAlert) {
-                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == messageId}), completion: { isSaved in
+                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
                             self.isSaved = isSaved
                         })
                     }
@@ -128,7 +121,7 @@ struct ImageCell: View {
                 }
             }
             ,alignment: .bottomTrailing)
-            
+        
     }
     
     func setAverageColor() {

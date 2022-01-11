@@ -39,6 +39,7 @@ class ConversationGridViewModel: ObservableObject {
             chats.append(Chat(dictionary: $0, id: UUID().uuidString))
         })
         
+        
         self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
         
         

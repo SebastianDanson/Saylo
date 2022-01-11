@@ -67,12 +67,15 @@ class Message: ObservableObject {
     @Published var isSaved: Bool
     @Published var isSameIdAsPrevMessage = false
     @Published var isSameIdAsNextMessage = false
+    
     var isFromCurrentUser: Bool
+    var savedByCurrentUser: Bool
+    
     
     //date
     let timestamp: Timestamp
     
-    init(dictionary: [String:Any], id: String, exportVideo: Bool = true, isSaved: Bool = false) {
+    init(dictionary: [String:Any], id: String, exportVideo: Bool = true, isSaved: Bool = false, savedByUid: String = "") {
         
         //ids
         self.id = id
@@ -101,7 +104,7 @@ class Message: ObservableObject {
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true
         
         self.isSaved = isSaved
-        
+        self.savedByCurrentUser = savedByUid == Auth.auth().currentUser?.uid
         
         
         //checkCache

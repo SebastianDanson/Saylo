@@ -73,7 +73,8 @@ class ConversationViewModel: ObservableObject {
     @Published var index = 0
     @Published var currentPlayer: AVPlayer?
     
-    
+    @Published var scrollToBottom = false
+
 
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
@@ -422,5 +423,9 @@ class ConversationViewModel: ObservableObject {
             defaults?.set(notificationArray, forKey: "notifications")
             UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
         }
+    }
+    
+    func scrollToBottomOfFeed() {
+        scrollToBottom.toggle()
     }
 }

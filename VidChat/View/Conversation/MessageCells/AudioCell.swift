@@ -14,7 +14,7 @@ struct AudioCell: View {
 //    var audioURL: URL
     var message: Message
     @ObservedObject var audioPlayer = AudioPlayer()
-    @State var isSaved: Bool
+//    @State var isSaved: Bool
     @State var showAlert = false
     @State var player: AVPlayer
     
@@ -22,7 +22,7 @@ struct AudioCell: View {
         self.message = message
 //        self.audioURL = audioUrl
         
-        self._isSaved = State(initialValue: message.isSaved)
+//        self._isSaved = State(initialValue: message.isSaved)
 
 //        let player = AVPlayer(url: audioUrl)
         self.player = AVPlayer(url: audioUrl)
@@ -37,11 +37,13 @@ struct AudioCell: View {
     }
     
     var body: some View {
+        
+        let videoCell = VideoCell(message: message)
+        
         ZStack {
             
-           VideoCell(message: message)
-               
-                .overlay(
+           videoCell
+               .overlay(
                     
                     VStack {
                         

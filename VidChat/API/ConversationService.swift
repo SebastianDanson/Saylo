@@ -59,14 +59,20 @@ struct ConversationService {
         
         var messages = [Message]()
 
-        let savedMessages = data["savedMessages"] as? [String] ?? [String]()
+        let savedMessages = data["savedMessages"] as? [[String:Any]] ?? [[String:Any]]()
         let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
         let reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
 
+
         messagesDic.forEach { message in
             let id = message["id"] as? String ?? ""
-            let isSaved = savedMessages.contains(id)
-            messages.append(Message(dictionary: message, id: id, isSaved: isSaved))
+             
+            let savedData = savedMessages.first(where: { $0["messageId"] as? String == id })
+            let isSaved = savedData != nil
+            let savedByUid = savedData?["userId"] as? String ?? ""
+            
+            messages.append(Message(dictionary: message, id: id, isSaved: isSaved, savedByUid: savedByUid))
+
         }
         
         
@@ -86,11 +92,16 @@ struct ConversationService {
     }
     
     static func updateIsSaved(forMessage message: Message, chatId: String) {
+        
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        
+        let data = ["messageId":message.id, "userId":uid]
+        
         if message.isSaved {
-            COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayUnion([message.id])])
+            COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayUnion([data])])
             COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayUnion([message.getDictionary()])])
         } else {
-            COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayRemove([message.id])])
+            COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayRemove([data])])
             COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayRemove([message.getDictionary()])])
         }
     }

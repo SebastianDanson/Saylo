@@ -77,8 +77,7 @@ class Chat: ObservableObject {
         
 
         //messages
-        let messagesDic = dictionary["messages"] as? [[String:Any]] ?? [[String:Any]]()
-        messagesDic.forEach({ self.messages.append(Message(dictionary: $0, id: $0["id"] as? String ?? "")) })
+        self.messages = ConversationService.getMessagesFromData(data: dictionary)
         
         if self.name.isEmpty {
             self.name = getDefaultChatName()
@@ -98,8 +97,8 @@ class Chat: ObservableObject {
     }
     
     func getHasUnreadMessage() -> Bool {
-        guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}) else {return false}
-        return Int(chat.lastVisited.dateValue().timeIntervalSince1970) < getDateOfLastPost()
+        guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}), let last = messages.last else {return false}
+        return Int(chat.lastVisited.dateValue().timeIntervalSince1970) < getDateOfLastPost() && !last.isFromCurrentUser
     }
     
     func getDefaultChatName() -> String {

@@ -14,13 +14,36 @@ struct TextCell: View {
     var message: Message
     
     @State var showAlert = false
+    @State var isSaved: Bool
     
-//    init(message: Binding<Message>) {
-//        self._message = message
-//    }
+    init(message: Message) {
+        self.message = message
+        self._isSaved = State(initialValue: message.isSaved)
+    }
     
     var body: some View {
+        
+        let gesture = LongPressGesture()
+            .onEnded { _ in
+                withAnimation {
+                    
+                    if let i = getMessages().firstIndex(where: {$0.id == message.id}) {
+                        
+                        if getMessages()[i].isSaved {
+                            if getMessages()[i].savedByCurrentUser{
+                                showAlert = true
+                            }
+                        } else {
+                            ConversationViewModel.shared.updateIsSaved(atIndex: i)
+                            isSaved.toggle()
+                        }
+                        
+                    }
+                }
+            }
+        
         ZStack {
+            
             HStack(alignment: .bottom, spacing: 10) {
                 
                 KFImage(URL(string: message.userProfileImageUrl))
@@ -30,85 +53,80 @@ struct TextCell: View {
                     .clipShape(Circle())
                     .opacity(message.isSameIdAsNextMessage ? 0 : 1)
                 
-                HStack {
+                HStack(alignment: .center, spacing: 10) {
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        if !message.isSameIdAsPrevMessage {
-                        Text(message.username)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
-
-                        + Text(" • \(message.timestamp.dateValue().getFormattedDate())")
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
+                    HStack {
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            if !message.isSameIdAsPrevMessage {
+                                
+                                Text(message.username)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
+                                
+                                + Text(" • \(message.timestamp.dateValue().getFormattedDate())")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
+                            }
+                            Text(message.text ?? "")
+                                .font(.system(size: 16))
+                                .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
+                            
                         }
-                        Text(message.text ?? "")
-                            .font(.system(size: 16))
-                            .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
-
+                        .padding(.vertical, 8)
+                        .padding(.leading, 12)
+                        
+                        Spacer()
                     }
-                    .padding(.vertical, 8)
-                    .padding(.leading, 12)
-
-                    Spacer()
+                    //                .frame(width: message.isSaved ? SCREEN_WIDTH - 90 : SCREEN_WIDTH - 60)
+                    .background(message.isFromCurrentUser ? .mainBlue : Color.textBackground)
+                    .cornerRadius(16)
+                    
+                    
+                    if isSaved {
+                        
+                        Button {
+                            showAlert = true
+                        } label: {
+                            ZStack {
+                                
+                                Circle()
+                                    .frame(width: 28, height: 28)
+                                    .foregroundColor(message.savedByCurrentUser ? .mainBlue : .lightGray)
+                                
+                                Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.systemWhite)
+                                    .frame(width: 16, height: 16)
+                            }
+                        }
+                        .alert(isPresented: $showAlert) {
+                            savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
+                                withAnimation {
+                                    self.isSaved = isSaved
+                                    message.isSaved = isSaved
+                                }
+                            })
+                        }
+                        
+                    }
                 }
-                .frame(width: SCREEN_WIDTH - 60)
-                .background(message.isFromCurrentUser ? .mainBlue : Color.textBackground)
-                .cornerRadius(16)
                 
                 Spacer()
-            }.padding(.leading)
+                
+            }
+//            .padding(.leading)
             
             
         }
-        .padding(.horizontal, 12)
+        .padding(.leading, 12)
         .padding(.top, message.isSameIdAsPrevMessage ? 2 : 6)
         .padding(.bottom, message.isSameIdAsNextMessage ? 2 : 6)
         .onTapGesture {}
-        .onLongPressGesture(perform: {
-            withAnimation {
-                if let i = getMessages().firstIndex(where: {$0.id == message.id}) {
-                    if getMessages()[i].isSaved {
-                        showAlert = true
-                    } else {
-                        ConversationViewModel.shared.updateIsSaved(atIndex: i)
-                        message.isSaved.toggle()
-                    }
-                    
-                }
-            }
-        })
+        .gesture(gesture)
         .frame(width: SCREEN_WIDTH)
-        .overlay(
-            ZStack {
-                if message.isSaved {
-                    
-                    Button {
-                        showAlert = true
-                    } label: {
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(.point3AlphaSystemBlack)
-                            
-                            Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.systemWhite)
-                                .frame(width: 13, height: 13)
-                        }
-                        .padding(.horizontal, 12)
-                    }
-                    .alert(isPresented: $showAlert) {
-                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
-                            message.isSaved = isSaved
-                        })
-                    }
-                    
-                }
-            }
-            ,alignment: .topTrailing)
+        
     }
 }
 

@@ -131,11 +131,12 @@ struct ConversationGridView: View {
                                 }.padding(.top, getConversationGridPadding())
                                     .onChange(of: contentOffset, perform: { value in
                                         // Do something
-                                        if recognizeSwipeUp {
+                                        if recognizeSwipeUp && !conversationViewModel.showCamera {
                                             if initialOffset == 0 && contentOffset < 0 {
                                                 initialOffset = contentOffset
                                             }
                                         
+                                            print(contentOffset)
                                             if contentOffset > initialOffset && contentOffset < 0{
                                                 withAnimation {
                                                     conversationViewModel.showCamera = true

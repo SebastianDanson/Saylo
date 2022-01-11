@@ -24,7 +24,7 @@ struct VideoCell: View {
     init(message: Message) {
         self.message = message
         self.reactions = message.reactions
-        self.isSaved = message.isSaved
+        self._isSaved = State(initialValue: message.isSaved)
 //        self.videoPlayerView =
 //        self.videoPlayerView.player.pause()
     }
@@ -35,8 +35,11 @@ struct VideoCell: View {
             .onEnded { _ in
                 withAnimation {
                     if let i = getMessages().firstIndex(where: {$0.id == message.id}) {
-                        if getMessages()[i].isSaved {
-                            showAlert = true
+                        
+                        if getMessages()[i].isSaved   {
+                            if getMessages()[i].savedByCurrentUser{
+                                showAlert = true
+                            }
                         } else {
                             ConversationViewModel.shared.updateIsSaved(atIndex: i)
                             isSaved.toggle()
@@ -107,14 +110,14 @@ struct VideoCell: View {
                                 ZStack {
                                     
                                     Circle()
-                                        .frame(width: 30, height: 30)
-                                        .foregroundColor(.point3AlphaSystemBlack)
+                                        .frame(width: 36, height: 36)
+                                        .foregroundColor(message.savedByCurrentUser ? (message.type == .Video ? .mainBlue : .white) : .lightGray)
                                     
-                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash" : "bookmark")
+                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(.white)
-                                        .frame(width: 16, height: 16)
+                                        .foregroundColor(message.type == .Video || !message.savedByCurrentUser ? .white : .mainBlue)
+                                        .frame(width: 18, height: 18)
                                 }
                             }.alert(isPresented: $showAlert) {
                                 savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in

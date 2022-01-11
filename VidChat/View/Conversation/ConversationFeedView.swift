@@ -82,6 +82,11 @@ struct ConversationFeedView: View {
                         viewModel.currentPlayer?.play()
                         
                     })
+                    .onChange(of: viewModel.scrollToBottom) { newValue in
+                        if let last = getMessages().last {
+                            reader.scrollTo(last.id, anchor: .bottom)
+                        }
+                    }
             }
             .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 72 + BOTTOM_PADDING : -20)
             .padding(.bottom, 100)
