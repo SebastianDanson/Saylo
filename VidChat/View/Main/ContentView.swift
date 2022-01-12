@@ -19,7 +19,11 @@ struct ContentView: View {
             //if not logged in -> show landing page
             // else show main interface
             if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
-                LandingPageView()
+                NavigationView {
+                    LandingPageView()
+                        .navigationViewStyle(StackNavigationViewStyle())
+                }
+
             } else {
 //                if viewModel.currentUser != nil {
                 if conversationViewModel.showCall {

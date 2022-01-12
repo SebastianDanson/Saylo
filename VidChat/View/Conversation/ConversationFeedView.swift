@@ -20,7 +20,7 @@ struct ConversationFeedView: View {
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var middleItemNo = -1
     @State var updatePreference = false
-
+    
     @StateObject private var viewModel = ConversationViewModel.shared
     let showSavedPosts: Bool
     
@@ -48,7 +48,7 @@ struct ConversationFeedView: View {
                                         reader.scrollTo(getMessages()[i].id, anchor: .center)
                                     }
                                 }
-                            
+                                
                             }
                     }
                 }.flippedUpsideDown()
@@ -96,10 +96,10 @@ struct ConversationFeedView: View {
                         } else {
                             reader.scrollTo(message.id, anchor: .center)
                         }
-                     
+                        
                         
                         viewModel.currentPlayer?.pause()
-
+                        
                         viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
                         viewModel.currentPlayer?.play()
                         
@@ -118,7 +118,7 @@ struct ConversationFeedView: View {
             .padding(.bottom, 100)
             
         }
-     
+        
         
         
         //TODO if the last message is a view (aka the fist cell u see), make sure it starts playing right away
@@ -135,12 +135,15 @@ struct ConversationFeedView: View {
         .onAppear {
             self.middleItemNo = viewModel.chat?.lastReadMessageIndex ?? -1
             
-            if getMessages()[middleItemNo].type == .Video || getMessages()[middleItemNo].type == .Audio {
-                viewModel.isPlaying = true
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.updatePreference = true
+            let messages = getMessages()
+            if messages.count > middleItemNo && middleItemNo >= 0 {
+                if messages[middleItemNo].type == .Video || messages[middleItemNo].type == .Audio {
+                    viewModel.isPlaying = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.updatePreference = true
+                }
             }
         }
         

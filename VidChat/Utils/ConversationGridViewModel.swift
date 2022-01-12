@@ -41,8 +41,6 @@ class ConversationGridViewModel: ObservableObject {
         
         
         self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-        
-        
     }
     
     func removeSelectedChat(withId id: String) {
@@ -56,6 +54,7 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func toggleSelectedChat(chat: Chat) {
+        
         //TODO handle isSelected
         chat.isSelected.toggle()
         if let index = selectedChats.firstIndex(where: {$0.id == chat.id}) {
@@ -141,8 +140,29 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
+    func setConversation(withId id: String, completion: @escaping([String:Any]) -> Void) {
+        
+        COLLECTION_CONVERSATIONS.document(id).getDocument { snapshot, _ in
+            if let data = snapshot?.data() {
+                
+                let chat = Chat(dictionary: data, id: id)
+                
+                for i in 0..<self.chats.count {
+                    
+                    if self.chats[i].id == chat.id {
+                        
+                        self.chats[i] = chat
+                        self.allChats = self.chats
+                    }
+                }
+            }
+            
+            completion(snapshot?.data() ?? [String:Any]())
+        }
+    }
+    
     func fetchConversations() {
-//        return
+
         guard let user = AuthViewModel.shared.currentUser else {return}
         var count = 0
         
@@ -191,4 +211,31 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
+    func refetchCurrentUser() {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else {return}
+        
+        let numChats = currentUser.chats.count
+        
+        AuthViewModel.shared.fetchUser {
+            
+            if let updatedCurrentUser = AuthViewModel.shared.currentUser {
+                if updatedCurrentUser.chats.count != numChats {
+                    self.fetchConversations()
+                }
+            }
+        }
+    }
+    
+    func fetchConversation(withId chatId: String) {
+        
+        self.setConversation(withId: chatId) { data in
+//            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//            var chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
+//            
+//            for i in 0..<chatDic?.count {
+//                if chatDic[""]
+//            }
+        }
+    }
 }

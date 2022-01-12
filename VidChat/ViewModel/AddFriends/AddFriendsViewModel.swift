@@ -131,6 +131,16 @@ class AddFriendsViewModel: ObservableObject {
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
         COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayUnion([currentUser.id]),
                                                        "hasUnseenFriendRequest":true])
+        
+        var data = [String:Any]()
+        
+        data["token"] = user.fcmToken
+        data["title"] = currentUser.firstName + " " + currentUser.lastName
+        data["body"] = "Sent you a friend request"
+        data["metaData"] = [:]
+      
+        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
+        
     }
     
     func removeFriendRequest(toUser user: User) {
@@ -191,7 +201,9 @@ class AddFriendsViewModel: ObservableObject {
             .updateData(
                 ["friendRequests" : FieldValue.arrayRemove([friend.id]),
                  "friends": FieldValue.arrayUnion([friend.id]),
-                 "conversations": FieldValue.arrayUnion([chatData])])
+                 "conversations": FieldValue.arrayUnion([chatData])]) { error in
+                     ConversationGridViewModel.shared.fetchConversations()
+                 }
         
         user.friends.append(friend.id)
         user.chats.append(UserChat(dictionary: chatData))
@@ -201,6 +213,15 @@ class AddFriendsViewModel: ObservableObject {
             .updateData(
                 ["friends": FieldValue.arrayUnion([user.id]),
                  "conversations": FieldValue.arrayUnion([chatData])])
+        
+        var data = [String:Any]()
+        
+        data["token"] = friend.fcmToken
+        data["title"] = user.firstName + " " + user.lastName
+        data["body"] = "Accepted your friend request"
+        data["metaData"] = [:]
+      
+        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
     func fetchFriendRequests() {

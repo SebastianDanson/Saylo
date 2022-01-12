@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            }
         
         askToSendNotifications()
-        
+                
         return true
     }
 
@@ -205,8 +205,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             defaults?.set(notificationArray, forKey: "notifications")
             UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
         }
-        
+    
         if chatId != ConversationViewModel.shared.chatId && !fromCurrentUser {
+            
+            if let chatId = chatId, !chatId.isEmpty {
+                ConversationGridViewModel.shared.fetchConversation(withId: chatId)
+            }
+            
             completionHandler([.badge, .banner])
         } else {
             completionHandler([])

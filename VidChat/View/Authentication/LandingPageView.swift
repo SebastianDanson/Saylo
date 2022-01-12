@@ -12,9 +12,7 @@ struct LandingPageView: View {
     @StateObject var viewModel = LandingPageViewModel.shared
 
     var body: some View {
-        
-        NavigationView {
-            
+                    
                 VStack {
                     
                     NavigationLink(destination: SetNameView()
@@ -49,7 +47,7 @@ struct LandingPageView: View {
                     
                     NavigationLink {
                         LoginView()
-                            .navigationBarBackButtonHidden(true)                        
+                            .navigationBarBackButtonHidden(true)
                     } label: {
                         
                         Text("Log in")
@@ -63,7 +61,7 @@ struct LandingPageView: View {
             .background(Color.mainBlue)
             .ignoresSafeArea()
             
-        }
+
     }
 }
 

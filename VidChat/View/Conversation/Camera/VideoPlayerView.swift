@@ -69,7 +69,6 @@ struct VideoPlayerView: View {
                         ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
                         
                         if let chat = ConversationViewModel.shared.chat, chat.messages[chat.lastReadMessageIndex].id == id {
-                            print("YESSIR")
                             ConversationViewModel.shared.currentPlayer = self.player
                             ConversationViewModel.shared.currentPlayer?.play()
                         }
@@ -79,7 +78,7 @@ struct VideoPlayerView: View {
         
         if showName {
             RoundedRectangle(cornerRadius: 24).strokeBorder(Color.systemWhite, style: StrokeStyle(lineWidth: 10))
-                .frame(width: width + 10, height: height + 20)
+                .frame(width: width + 20, height: height + 20)
         }
         
     }

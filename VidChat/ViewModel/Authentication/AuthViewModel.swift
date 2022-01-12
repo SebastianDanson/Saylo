@@ -40,7 +40,9 @@ class AuthViewModel: ObservableObject {
             defaults?.set(user.uid, forKey: "userId")
             
             self.isSignedIn = true
-            self.fetchUser {}
+            self.fetchUser {
+                ConversationGridViewModel.shared.fetchConversations()
+            }
             
             completion(error)
         }
@@ -65,7 +67,7 @@ class AuthViewModel: ObservableObject {
             
             COLLECTION_USERS.document(user.uid).setData(data) { _ in
                 //self.userSession = user
-                self.fetchUser { }
+//                self.fetchUser { }
             }
             
             completion(error)
@@ -140,7 +142,6 @@ class AuthViewModel: ObservableObject {
     func setProfileImage(image: UIImage) {
         
         guard let currentUser = currentUser else { return }
-        hasCompletedSignUp = true
         CameraViewModel.shared.photo = nil
         MediaUploader.uploadImage(image: image, type: .profile) { imageUrl in
             currentUser.profileImageUrl = imageUrl

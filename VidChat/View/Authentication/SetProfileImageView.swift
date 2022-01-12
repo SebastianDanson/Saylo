@@ -146,7 +146,7 @@ struct SetProfileImageView: View {
                                     .foregroundColor(.white)
                                     .frame(width: 60, height: 60)
                                     .padding(.bottom)
-                            })
+                            }) 
                         }.frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9).padding(.top, TOP_PADDING).ignoresSafeArea()
                         , alignment: .top)
                 

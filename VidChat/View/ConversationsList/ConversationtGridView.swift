@@ -201,6 +201,14 @@ struct ConversationGridView: View {
                     
                     if conversationViewModel.showKeyboard {
                         KeyboardView(text: $text)
+                            .onAppear(perform: {
+                                recognizeSwipeUp = false
+                            })
+                            .onDisappear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    recognizeSwipeUp = true
+                                }
+                            }
                     }
                     
                     if viewModel.showSearchBar {
@@ -235,6 +243,11 @@ struct ConversationGridView: View {
                         .transition(.move(edge: .bottom))
                 }
             }
+            .onAppear(perform: {
+                if AuthViewModel.shared.isSignedIn {
+                    AuthViewModel.shared.fetchUser { }
+                }
+            })
             .navigationBarHidden(true)
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
