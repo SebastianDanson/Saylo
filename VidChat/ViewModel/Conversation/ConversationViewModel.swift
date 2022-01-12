@@ -153,7 +153,10 @@ class ConversationViewModel: ObservableObject {
             dictionary["url"] = url.absoluteString
             
             if type == .Video {
-                dictionary["userStoredUrl"] = url.absoluteString
+                
+                if !isFromPhotoLibrary {
+                    dictionary["userStoredUrl"] = url.absoluteString
+                }
                 dictionary["type"] = "video"
             } else {
                 dictionary["type"] = "audio"
@@ -175,7 +178,7 @@ class ConversationViewModel: ObservableObject {
         }
         
         if chatId != "" {
-            
+            print("4")
             if !self.chatId.isEmpty {
             let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
             message.image = image
@@ -195,7 +198,10 @@ class ConversationViewModel: ObservableObject {
             if let url = url {
                 
                 if type == .Video {
-                    MediaUploader.shared.uploadVideo(url: url) { newURL in
+                    print("5")
+
+                    MediaUploader.shared.uploadVideo(url: url, isFromPhotoLibrary: isFromPhotoLibrary) { newURL in
+                        print("6")
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                     }
                 } else {
@@ -368,12 +374,20 @@ class ConversationViewModel: ObservableObject {
     }
     
     func addListener() {
+        
         listener = COLLECTION_CONVERSATIONS.document(chatId)
             .addSnapshotListener { snapshot, _ in
                 if let data = snapshot?.data() {
+
                     let messages = ConversationService.getMessagesFromData(data: data)
 
                     //TODO handle reactions
+                    
+                    self.messages.forEach { message in
+                        if let image = message.image {
+                            messages.first(where: {$0.id == message.id})?.image = image
+                        }
+                    }
                     
                     self.messages = messages
                     ConversationViewModel.shared.setIsSameId(messages: self.messages)
@@ -398,6 +412,7 @@ class ConversationViewModel: ObservableObject {
         if self.chatId.isEmpty {
             
             ConversationGridViewModel.shared.selectedChats.forEach { chat in
+                print("3")
                 addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
                 ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
             }

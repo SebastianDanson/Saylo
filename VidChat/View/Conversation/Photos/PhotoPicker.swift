@@ -17,7 +17,8 @@ struct PhotoPickerView: UIViewRepresentable {
     
     let baseHeight: CGFloat
     @Binding var height: CGFloat
-    
+    @Binding var showVideoLengthAlert: Bool
+
     func makeUIView(context: Context) -> PhotosCollectionView {
         let photosCollectionView = PhotosCollectionView()
         photosCollectionView.delegate = context.coordinator
@@ -37,6 +38,11 @@ struct PhotoPickerView: UIViewRepresentable {
 //    }
 
     class Coordinator: NSObject, UINavigationControllerDelegate, PhotosCollectioViewDelegate {
+      
+        func showAlert() {
+            self.parent.showVideoLengthAlert = true
+        }
+        
         
         func resetHeight() {
             withAnimation(.linear(duration: 0.2)) {

@@ -22,6 +22,7 @@ struct ConversationView: View {
     @State private var text = ""
     @State private var showSettings = false
     @State private var scrollToBottom = false
+    @State var showPhotoPickerAlert = false
 
     private var isFirstLoad = true
     private let cameraHeight = SCREEN_WIDTH * 1.25
@@ -88,9 +89,10 @@ struct ConversationView: View {
                 }
                 
                 if viewModel.showPhotos {
-                    PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight)
+                    PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
                         .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
                         .transition(.move(edge: .bottom))
+                        .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
                 }
                 
                 
@@ -618,6 +620,7 @@ struct AudioOptions: View {
                 
                 Button {
                     audioRecorder.stopPlayback()
+                    
                     withAnimation {
                         viewModel.isRecordingAudio = false
                     }

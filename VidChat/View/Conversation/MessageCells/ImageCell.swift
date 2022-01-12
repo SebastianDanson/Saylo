@@ -31,20 +31,19 @@ struct ImageCell: View {
     var body: some View {
         
         ZStack(alignment: .bottomLeading) {
-            if let url = url {
-                KFImage(URL(string: url))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
-                    .cornerRadius(12)
-                    .clipped()
-            } else if let image = image {
+           if let image = image {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
                     .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
                     .cornerRadius(12)
-                    .clipped()
+
+            } else if let url = url {
+                KFImage(URL(string: url))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                    .cornerRadius(12)
             }
             
             HStack {
@@ -59,9 +58,9 @@ struct ImageCell: View {
             
             
         }
-        .onAppear(perform: {
-            setAverageColor()
-        })
+//        .onAppear(perform: {
+//            setAverageColor()
+//        })
         .onTapGesture {
             
             if message.isFromPhotoLibrary {
@@ -124,16 +123,16 @@ struct ImageCell: View {
         
     }
     
-    func setAverageColor() {
-        if let url = url {
-            let imageView = UIImageView()
-            
-            imageView.kf.setImage(with: URL(string: url)) { _ in
-                if let image = imageView.image, let uiColor = image.averageColor {
-                    backGroundColor = Color(uiColor.contrastColor())
-                }
-            }
-        }
-    }
+//    func setAverageColor() {
+//        if let url = url {
+//            let imageView = UIImageView()
+//
+//            imageView.kf.setImage(with: URL(string: url)) { _ in
+//                if let image = imageView.image, let uiColor = image.averageColor {
+//                    backGroundColor = Color(uiColor.contrastColor())
+//                }
+//            }
+//        }
+//    }
 }
 

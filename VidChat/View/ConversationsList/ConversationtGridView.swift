@@ -27,10 +27,16 @@ struct ConversationGridView: View {
     @State var contentOffset: CGFloat = 0
     @State var initialOffset: CGFloat = 0
     @State var recognizeSwipeUp = false
-    
+    @State var showPhotoPickerAlert = false
+
     var body: some View {
         
-        let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight, height: $conversationViewModel.photoBaseHeight)
+        let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight,
+                                          height: $conversationViewModel.photoBaseHeight,
+                                          showVideoLengthAlert: $showPhotoPickerAlert)
+            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
+            
+                
         
         NavigationView {
             
@@ -55,16 +61,15 @@ struct ConversationGridView: View {
                         
                         PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
                             
-                            FindFriendsView().tag(0)
+//                            FindFriendsView().tag(0)
                             
                             TipView(header: "Tap and Hold on a Chat",
                                     subText: "To start recording a video for that chat",
-                                    imageName: "record.circle.fill").tag(1)
+                                    imageName: "record.circle.fill").tag(0)
                             
                             TipView(header: "Swipe Up",
                                     subText: "To open the video camera",
                                     imageName: "video.fill").tag(2)
-                            
                             
                         }
                         .frame(width: SCREEN_WIDTH - 40, height: 300)
@@ -131,7 +136,8 @@ struct ConversationGridView: View {
                                 }.padding(.top, getConversationGridPadding())
                                     .onChange(of: contentOffset, perform: { value in
                                         // Do something
-                                        if recognizeSwipeUp && !conversationViewModel.showCamera && !conversationViewModel.isRecordingAudio && !conversationViewModel.showPhotos{
+                                        if recognizeSwipeUp && !conversationViewModel.showCamera && !conversationViewModel.isRecordingAudio && !conversationViewModel.showPhotos {
+                                            
                                             if initialOffset == 0 && contentOffset < 0 {
                                                 initialOffset = contentOffset
                                             }
@@ -170,13 +176,6 @@ struct ConversationGridView: View {
                             CameraViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
                                 .transition(.move(edge: .bottom))
-                            //                                .overlay(
-                            //                                    VStack {
-                            //                                        Spacer()
-                            //
-                            //                                        SelectUsersPopUpView()
-                            //                                    }
-                            //                                )
                         }
                     }
                     
@@ -189,6 +188,14 @@ struct ConversationGridView: View {
                         photoPicker
                             .frame(width: SCREEN_WIDTH, height: conversationViewModel.photoBaseHeight)
                             .transition(.move(edge: .bottom))
+                            .onAppear(perform: {
+                                recognizeSwipeUp = false
+                            })
+                            .onDisappear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    recognizeSwipeUp = true
+                                }
+                            }
                     }
                     
                     
@@ -538,6 +545,7 @@ struct SelectedChatsView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(Array(viewModel.selectedChats.enumerated()), id: \.1.id) { i, chat in
+                            
                             SelectedChatView(chat: chat)
                                 .padding(.leading, i == 0 ? 20 : 5)
                                 .padding(.trailing, i == viewModel.selectedChats.count - 1 ? 80 : 5)
@@ -571,14 +579,23 @@ struct SelectedChatsView: View {
                             
                         }
                     } label: {
-                        Image(systemName: "location.circle.fill")
-                            .resizable()
-                            .rotationEffect(Angle(degrees: 45))
-                            .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
-                            .frame(width: 50, height: 50)
-                            .background(Circle().frame(width: 40, height: 40).foregroundColor(.systemWhite))
-                            .scaledToFit()
-                            .padding(.horizontal)
+                        
+                        ZStack {
+                            
+                           Circle().frame(width: 48, height: 48)
+                                .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
+                            
+                            Image(systemName: "location.north.fill")
+                                .resizable()
+                                .rotationEffect(Angle(degrees: 90))
+                                .foregroundColor(.systemWhite)
+                                .padding(.leading, 4)
+                                .frame(width: 30, height: 30)
+                                .scaledToFit()
+                                .padding(.horizontal)
+
+                        }
+                       
                     }.disabled(viewModel.selectedChats.count == 0)
                     
                 }

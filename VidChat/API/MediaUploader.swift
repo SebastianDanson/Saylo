@@ -84,7 +84,7 @@ class MediaUploader {
     
     func uploadAudio(url: URL, completion: @escaping(String) -> Void) {
         let ref = UploadType.audio.filePath
-
+        
         ref.putFile(from: url, metadata: nil) { _, error in
             if let error = error {
                 print("DEBUG: Failed to upload audio \(error.localizedDescription)")
@@ -103,24 +103,50 @@ class MediaUploader {
         }
     }
     
-    func uploadVideo(url: URL, completion: @escaping(String) -> Void) {
+    func uploadVideo(url: URL, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
         let ref = UploadType.video.filePath
-                
-        ref.putFile(from: url, metadata: nil) { _, error in
-           
-            if let error = error {
-                print("DEBUG: Failed to upload video \(error.localizedDescription)")
-                return
-            }
+        print(url.absoluteString, "URL")
+        
+        if isFromPhotoLibrary {
+            let videoData = try! Data(contentsOf: url)
             
-            ref.downloadURL { url, error in
+            let metadata = StorageMetadata()
+            metadata.contentType = "video/quicktime"
+            
+            ref.putData(videoData, metadata: metadata) { _, error in
                 if let error = error {
-                    print("DEBUG: Failed to download video URL \(error.localizedDescription)")
+                    print("DEBUG: Failed to upload video \(error.localizedDescription)")
                     return
                 }
                 
-                guard let videoUrl = url?.absoluteString else {return}
-                completion(videoUrl)
+                ref.downloadURL { url, error in
+                    if let error = error {
+                        print("DEBUG: Failed to download video URL \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let videoUrl = url?.absoluteString else {return}
+                    print(videoUrl, "URLL")
+                    completion(videoUrl)
+                }
+            }
+        } else {
+            ref.putFile(from: url, metadata: nil) { _, error in
+                
+                if let error = error {
+                    print("DEBUG: Failed to upload video \(error.localizedDescription)")
+                    return
+                }
+                
+                ref.downloadURL { url, error in
+                    if let error = error {
+                        print("DEBUG: Failed to download video URL \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let videoUrl = url?.absoluteString else {return}
+                    completion(videoUrl)
+                }
             }
         }
     }
@@ -153,6 +179,6 @@ class MediaUploader {
 
 // Angle Conversion Utility
 extension Int {
-     var degreesToRadiansCGFloat: CGFloat { return CGFloat(Double(self) * Double.pi / 180) }
+    var degreesToRadiansCGFloat: CGFloat { return CGFloat(Double(self) * Double.pi / 180) }
 }
 

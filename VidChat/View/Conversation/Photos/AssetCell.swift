@@ -39,6 +39,7 @@ class AssetCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         
+        
         contentView.addSubview(videoLengthLabel)
         videoLengthLabel.anchor(bottom: contentView.bottomAnchor, right: contentView.rightAnchor,
                                 paddingBottom: 8, paddingRight: 8)

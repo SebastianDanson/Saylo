@@ -37,3 +37,14 @@ func savedPostAlert(mesageIndex i: Int?, completion: @escaping((Bool) -> Void)) 
     )
 }
 
+
+func videoTooLongAlert() -> Alert {
+    Alert(
+       title: Text("Video Length Is Too Long"),
+       message: Text("Videos must be under 60 seconds to send"),
+       dismissButton: .default(
+           Text("OK"),
+           action: {}
+       )
+   )
+}

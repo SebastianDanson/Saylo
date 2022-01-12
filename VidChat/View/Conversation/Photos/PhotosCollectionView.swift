@@ -13,6 +13,7 @@ protocol PhotosCollectioViewDelegate: AnyObject {
     func setHeightOffset(offset: CGFloat)
     func resetHeight()
     func hidePhotoPicker()
+    func showAlert()
 }
 
 class PhotosCollectionView: UIView {
@@ -160,9 +161,10 @@ class PhotosCollectionView: UIView {
                     
                 }
             } else {
+                print("1")
                 imageManager.requestAVAsset(forVideo: asset, options: nil) { asset, mix, _  in
                     guard let asset = asset as? AVURLAsset else { return }
-                    
+                    print("2")
                     withAnimation(.easeInOut(duration: 0.2)) {
                         ConversationViewModel.shared.sendMessage(url: asset.url, type: .Video)
                         ConversationGridViewModel.shared.stopSelectingChats()
@@ -233,8 +235,22 @@ class PhotosCollectionView: UIView {
 
 extension PhotosCollectionView: UICollectionViewDelegate {
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let asset = currentAssetAtIndex(indexPath.item)
+        if asset.mediaType == .video && asset.duration > 60 {
+            delegate?.showAlert()
+            return false
+        }
+        
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let asset = currentAssetAtIndex(indexPath.item)
+        
+        
+        
         selectedAssets.append(asset)
         
         if let view = collectionView.cellForItem(at: indexPath) as? AssetCell{
