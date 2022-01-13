@@ -143,7 +143,7 @@ class AuthViewModel: ObservableObject {
         
         guard let currentUser = currentUser else { return }
         CameraViewModel.shared.photo = nil
-        MediaUploader.uploadImage(image: image, type: .profile) { imageUrl in
+        MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
             currentUser.profileImageUrl = imageUrl
             self.profileImageUrl = imageUrl
             COLLECTION_USERS.document(currentUser.id).updateData(["profileImageUrl":imageUrl, "hasCompletedSignUp":true])

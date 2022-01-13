@@ -15,18 +15,18 @@ import QuartzCore
 enum UploadType {
     case profile, video, photo, audio
     
-    var filePath: StorageReference {
-        let filename = NSUUID().uuidString
+    
+    func getFilePath(messageId: String) -> StorageReference {
         
         switch self {
         case .audio:
-            return Storage.storage().reference(withPath: "/audioRecordings/\(filename)")
+            return Storage.storage().reference(withPath: "/audioRecordings/\(messageId)")
         case .video:
-            return Storage.storage().reference(withPath: "/videos/\(filename)")
+            return Storage.storage().reference(withPath: "/videos/\(messageId)")
         case .photo:
-            return Storage.storage().reference(withPath: "/photos/\(filename)")
+            return Storage.storage().reference(withPath: "/photos/\(messageId)")
         case .profile:
-            return Storage.storage().reference(withPath: "/profileImages/\(filename)")
+            return Storage.storage().reference(withPath: "/profileImages/\(messageId)")
         }
     }
 }
@@ -40,7 +40,7 @@ class MediaUploader {
         print(message, (Double(data.length) / 1048576.0), " mb")
     }
     
-    static func uploadImage(image: UIImage, type: UploadType, completion: @escaping(String) -> Void) {
+    static func uploadImage(image: UIImage, type: UploadType, messageId: String, completion: @escaping(String) -> Void) {
         
         var width = image.size.width
         var height = image.size.height
@@ -61,7 +61,7 @@ class MediaUploader {
         
         guard let imageData = shared.resizedImageWith(image: image, targetSize: CGSize(width: width, height: height))?.jpegData(compressionQuality: 0.5) else {return}
         
-        let ref = type.filePath
+        let ref = type.getFilePath(messageId: messageId)
         
         ref.putData(imageData, metadata: nil) { _, error in
             if let error = error {
@@ -82,8 +82,8 @@ class MediaUploader {
         }
     }
     
-    func uploadAudio(url: URL, completion: @escaping(String) -> Void) {
-        let ref = UploadType.audio.filePath
+    func uploadAudio(url: URL, messageId: String, completion: @escaping(String) -> Void) {
+        let ref = UploadType.audio.getFilePath(messageId: messageId)
         
         ref.putFile(from: url, metadata: nil) { _, error in
             if let error = error {
@@ -103,8 +103,8 @@ class MediaUploader {
         }
     }
     
-    func uploadVideo(url: URL, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
-        let ref = UploadType.video.filePath
+    func uploadVideo(url: URL, messageId: String, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
+        let ref = UploadType.video.getFilePath(messageId: messageId)
         print(url.absoluteString, "URL")
         
         if isFromPhotoLibrary {

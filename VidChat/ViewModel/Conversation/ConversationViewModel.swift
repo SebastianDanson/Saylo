@@ -85,7 +85,7 @@ class ConversationViewModel: ObservableObject {
     static let shared = ConversationViewModel()
     
     private init() {
-        //CacheManager.removeOldFiles()
+        CacheManager.removeOldFiles()
         
         //TODO test removeing old files
     }
@@ -177,6 +177,8 @@ class ConversationViewModel: ObservableObject {
             dictionary["type"] = "text"
         }
         
+        let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
+
         if chatId != "" {
             print("4")
             if !self.chatId.isEmpty {
@@ -190,29 +192,36 @@ class ConversationViewModel: ObservableObject {
                 
                 
             self.messages.append(message)
-                
+            
             }
+            
+            for i in 0..<ConversationGridViewModel.shared.chats.count {
+                if ConversationGridViewModel.shared.chats[i].id == chatId {
+                    print("YESSIR")
+                    ConversationGridViewModel.shared.chats[i].messages.append(message)
+                }
+            }
+            
+            
             
             uploadQueue.append(dictionary)
             
             if let url = url {
                 
                 if type == .Video {
-                    print("5")
 
-                    MediaUploader.shared.uploadVideo(url: url, isFromPhotoLibrary: isFromPhotoLibrary) { newURL in
-                        print("6")
+                    MediaUploader.shared.uploadVideo(url: url, messageId: id, isFromPhotoLibrary: isFromPhotoLibrary) { newURL in
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                     }
                 } else {
-                    MediaUploader.shared.uploadAudio(url: url) { newURL in
+                    MediaUploader.shared.uploadAudio(url: url, messageId: id) { newURL in
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                     }
                 }
             } else if text != nil {
                 self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id)
             } else if let image = image {
-                MediaUploader.uploadImage(image: image, type: .photo) { newURL in
+                MediaUploader.uploadImage(image: image, type: .photo, messageId: id) { newURL in
                     self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                 }
             }
@@ -379,7 +388,7 @@ class ConversationViewModel: ObservableObject {
             .addSnapshotListener { snapshot, _ in
                 if let data = snapshot?.data() {
 
-                    let messages = ConversationService.getMessagesFromData(data: data)
+                    let messages = ConversationService.getMessagesFromData(data: data, chatId: self.chatId)
 
                     //TODO handle reactions
                     

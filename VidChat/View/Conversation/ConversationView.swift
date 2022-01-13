@@ -71,6 +71,7 @@ struct ConversationView: View {
                     //Camera
                     if viewModel.showCamera {
                         CameraViewModel.shared.cameraView
+                            .ignoresSafeArea()
                             .zIndex(6)
                             .transition(.move(edge: .bottom))
                     }
@@ -127,6 +128,7 @@ struct ConversationView: View {
                 ConversationPlayerView()
                     .transition(AnyTransition.asymmetric(insertion: .scale, removal: .move(edge: .bottom)))
                     .zIndex(6)
+                    .ignoresSafeArea()
             }
             
             if viewModel.showImageDetailView {
@@ -334,7 +336,7 @@ struct OptionsView: View {
                     }
                 }
                 .frame(height: 70)
-                .padding(.bottom, viewModel.showCamera ? 200 + BOTTOM_PADDING : BOTTOM_PADDING)
+                .padding(.bottom, viewModel.showCamera ? (SCREEN_RATIO > 2 ? 200 + BOTTOM_PADDING : 96 + BOTTOM_PADDING) : BOTTOM_PADDING)
                 .padding(.horizontal, 14)
                 .overlay(AudioOptions(audioRecorder: $audioRecorder))
                 .transition(.opacity)
@@ -573,7 +575,7 @@ struct ChatOptions: View {
             }.padding(.vertical, -6)
         }
         .padding(.horizontal, 16)
-        .padding(.top, topPadding)
+        .padding(.top, topPadding + 4)
     }
 }
 

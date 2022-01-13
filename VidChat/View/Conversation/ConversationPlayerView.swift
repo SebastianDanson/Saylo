@@ -51,7 +51,7 @@ struct ConversationPlayerView: View {
                 if conversationViewModel.messages[viewModel.index].type == .Video || conversationViewModel.messages[viewModel.index].type == .Audio {
                     
                     PlayerQueueView()
-                        .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                        .frame(width: CAMERA_WIDTH, height: CAMERA_HEIGHT)
                         .background(conversationViewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.systemBlack)
                         .overlay(
                             ZStack {
@@ -74,7 +74,7 @@ struct ConversationPlayerView: View {
                             .padding()
                         
                     }
-                    .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                    .frame(width: CAMERA_WIDTH, height: CAMERA_HEIGHT)
                     .background(Color.mainBlue)
                     
                 } else if conversationViewModel.messages[viewModel.index].type == .Photo {
@@ -83,14 +83,14 @@ struct ConversationPlayerView: View {
                         KFImage(URL(string: url))
                             .resizable()
                             .scaledToFill()
-                            .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                            .frame(minWidth: CAMERA_WIDTH, maxWidth: CAMERA_WIDTH, minHeight: 0, maxHeight: SCREEN_HEIGHT)
                             .cornerRadius(12)
                             .clipped()
                     } else if let image = conversationViewModel.messages[viewModel.index].image {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
-                            .frame(minWidth: SCREEN_WIDTH - 10, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                            .frame(minWidth: CAMERA_WIDTH, maxWidth: CAMERA_WIDTH, minHeight: 0, maxHeight:SCREEN_HEIGHT)
                             .cornerRadius(12)
                             .clipped()
                     }
@@ -99,7 +99,7 @@ struct ConversationPlayerView: View {
             
             VStack {
                 RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                    .frame(width: SCREEN_WIDTH + 10, height: (SCREEN_WIDTH * 16/9) + 20)
+                    .frame(width: CAMERA_WIDTH + 10, height: (CAMERA_HEIGHT) + 20)
                     .padding(.top, TOP_PADDING - 10)
                 
                 Spacer()
@@ -141,7 +141,7 @@ struct ConversationPlayerView: View {
 //                .padding(.bottom, viewModel.isPlayable() ? 40 : 24)
                 
             }
-            .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+            .frame(width: CAMERA_WIDTH, height: CAMERA_HEIGHT)
         )
         
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)

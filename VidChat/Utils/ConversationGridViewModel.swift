@@ -31,16 +31,16 @@ class ConversationGridViewModel: ObservableObject {
     
     private init() {
         
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
-        
-        var chats = [Chat]()
-        chatDic?.forEach({
-            chats.append(Chat(dictionary: $0, id: UUID().uuidString))
-        })
-        
-        
-        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
+//        
+//        var chats = [Chat]()
+//        chatDic?.forEach({
+//            chats.append(Chat(dictionary: $0, id: UUID().uuidString))
+//        })
+//        
+//        
+//        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
     }
     
     func removeSelectedChat(withId id: String) {
@@ -237,5 +237,9 @@ class ConversationGridViewModel: ObservableObject {
 //                if chatDic[""]
 //            }
         }
+    }
+    
+    func sortChats() {
+        self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
     }
 }

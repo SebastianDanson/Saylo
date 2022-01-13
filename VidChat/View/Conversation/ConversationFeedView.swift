@@ -20,7 +20,7 @@ struct ConversationFeedView: View {
     @State private var timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State var middleItemNo = -1
     @State var updatePreference = false
-    
+    @State var isFirstLoad = true
     @StateObject private var viewModel = ConversationViewModel.shared
     let showSavedPosts: Bool
     
@@ -34,17 +34,20 @@ struct ConversationFeedView: View {
                     
                     ForEach(showSavedPosts ? Array(viewModel.savedMessages.enumerated()) : Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
                         MessageCell(message: getMessages()[i])
-                            .transition(.move(edge: .bottom))
-                            .offset(x: 0, y: -28)
+//                            .transition(.move(edge: .bottom))
+                            .offset(x: 0, y: -24)
                             .background(
                                 getMessages()[i].type != .Text ? GeometryReader { geo in
                                     Color.systemWhite.preference(
                                         key: ViewOffsetsKey.self,
-                                        value: [i: geo.frame(in: .named("scrollView")).origin.y]) } : nil)
+                                        value: [i: geo.frame(in: .named("scrollView")).midY]) } : nil)
                             .onAppear {
                                 
                                 if let chat = viewModel.chat {
-                                    if i == chat.lastReadMessageIndex {
+                                    if isFirstLoad, i == chat.lastReadMessageIndex {
+                                        isFirstLoad = false
+                                        reader.scrollTo(getMessages()[i].id, anchor: .center)
+                                    } else if !isFirstLoad, i == getMessages().count - 1 {
                                         reader.scrollTo(getMessages()[i].id, anchor: .center)
                                     }
                                 }
@@ -52,35 +55,51 @@ struct ConversationFeedView: View {
                             }
                     }
                 }.flippedUpsideDown()
-                    .onPreferenceChange( ViewOffsetsKey.self, perform: { prefs in
+                    .onPreferenceChange(ViewOffsetsKey.self, perform: { prefs in
                         
+                        
+                        DispatchQueue.main.async {
+
                         guard updatePreference else { return }
                         
-                        print(middleItemNo)
                         let prevMiddleItemNo = middleItemNo
-                        middleItemNo = prefs.first(where: { $1 > 40 && $1 < 90 })?.key ?? -1
-                        
+                        middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1) < 15 })?.key ?? -1
+                        //20
+//                            prefs.forEach({print($1, SCREEN_HEIGHT/2 )})
+//                        middleItemNo = prefs.first(where: { $1 > 20 && $1 < 50 })?.key ?? -1
+
                         //                        viewModel.showKeyboard = false
                         //                        UIApplication.shared.endEditing()
                         
+                        
+                        
                         if middleItemNo >= 0 {
-                            viewModel.isPlaying = true
+                          
                             if prevMiddleItemNo != middleItemNo {
+                                
+//                                withAnimation {
+                                    viewModel.isPlaying = true
+//                                }
+                                
                                 viewModel.currentPlayer?.pause()
                                 viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
-                                
+
                                 viewModel.currentPlayer?.play()
                                 
                                 withAnimation {
                                     reader.scrollTo(getMessages()[middleItemNo].id, anchor: .center)
                                 }
                             }
-                        } else {
-                            viewModel.isPlaying = false
+                        }
+                        else if viewModel.currentPlayer != nil {
+//                            withAnimation {
+                                viewModel.isPlaying = false
+//                            }
                             viewModel.currentPlayer?.pause()
+                            viewModel.currentPlayer = nil
+                        }
                         }
                     }) .onChange(of: viewModel.index, perform: { newValue in
-                        print("CGANGED", middleItemNo)
                         middleItemNo += 1
                         
                         if middleItemNo < 1 || middleItemNo >= getMessages().count {return}

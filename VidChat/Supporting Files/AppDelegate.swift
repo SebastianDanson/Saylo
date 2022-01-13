@@ -44,7 +44,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            }
         
         askToSendNotifications()
-                
+        
+//        try! Auth.auth().signOut()
+        
         return true
     }
 

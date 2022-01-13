@@ -57,7 +57,7 @@ struct ConversationGridView: View {
                 
                 VStack {
                     
-                    if viewModel.chats.count < 10 && !conversationViewModel.showCamera && !viewModel.isSelectingChats {
+                    if viewModel.chats.count < 3 && !conversationViewModel.showCamera && !viewModel.isSelectingChats {
                         
                         PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
                             
@@ -176,6 +176,14 @@ struct ConversationGridView: View {
                             CameraViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
                                 .transition(.move(edge: .bottom))
+                                .onAppear(perform: {
+                                    recognizeSwipeUp = false
+                                })
+                                .onDisappear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        recognizeSwipeUp = true
+                                    }
+                                }
                         }
                     }
                     
@@ -246,7 +254,15 @@ struct ConversationGridView: View {
             .onAppear(perform: {
                 if AuthViewModel.shared.isSignedIn {
                     AuthViewModel.shared.fetchUser { }
+                    viewModel.sortChats()
                 }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    recognizeSwipeUp = true
+                }
+            })
+            .onDisappear(perform: {
+                recognizeSwipeUp = false
             })
             .navigationBarHidden(true)
             .zIndex(1)
@@ -626,7 +642,7 @@ struct SelectedChatsView: View {
             return BOTTOM_PADDING + 80
         }
         
-        return BOTTOM_PADDING
+        return BOTTOM_PADDING + 6
     }
 }
 

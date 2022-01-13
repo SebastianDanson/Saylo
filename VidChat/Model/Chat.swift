@@ -79,7 +79,7 @@ class Chat: ObservableObject {
         
 
         //messages
-        self.messages = ConversationService.getMessagesFromData(data: dictionary)
+        self.messages = ConversationService.getMessagesFromData(data: dictionary, chatId: id)
         
         if self.name.isEmpty {
             self.name = getDefaultChatName()

@@ -44,7 +44,7 @@ struct CameraMainView: View {
                     Image(uiImage: photo)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+                        .frame(width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
                         .overlay(MediaOptions(), alignment: .bottom)
                         .padding(.top, TOP_PADDING)
                     Spacer()
@@ -100,11 +100,16 @@ struct CameraMainView: View {
         )
         .overlay(
             ZStack {
-                VStack{
-                    RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                        .frame(width: SCREEN_WIDTH + 18, height: SCREEN_WIDTH * 16/9 + 20)
-                        .padding(.top, TOP_PADDING - 10)
-                    Spacer()
+                
+                if SCREEN_RATIO > 2 {
+                    VStack{
+                        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                            .frame(width: CAMERA_WIDTH + 20, height: CAMERA_WIDTH * 16/9 + 20)
+                        
+                        
+                        Spacer()
+                    }.padding(.top, TOP_PADDING - 10)
+                    
                 }
                 
                 if (viewModel.isRecording || viewModel.isTakingPhoto) && isFrontFacing && viewModel.hasFlash {
@@ -116,8 +121,8 @@ struct CameraMainView: View {
                 }
             }
         )
-        
-        .ignoresSafeArea()
+//        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+//        .ignoresSafeArea()
         .background(Color(white: 0, opacity: 1))
         .navigationBarHidden(true)
         .offset(dragOffset)
@@ -335,7 +340,7 @@ struct CameraOptions: View {
                         CameraOptionView(image: Image(systemName: viewModel.hasFlash ? "bolt.fill" : "bolt.slash.fill"))
                     }
                     
-                }
+                }.padding(.vertical, 4)
                 
                 Spacer()
                 
@@ -354,7 +359,7 @@ struct CameraOptions: View {
             }
         }
         .padding(.top, TOP_PADDING)
-        .padding(.bottom, BOTTOM_PADDING + 100)
+        .padding(.bottom, SCREEN_RATIO > 2 ? BOTTOM_PADDING + 100 : BOTTOM_PADDING + 48)
         .padding(.horizontal, 6)
         
     }

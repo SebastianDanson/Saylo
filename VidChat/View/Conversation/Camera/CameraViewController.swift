@@ -184,7 +184,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func setupPreview() {
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: 0, y: TOP_PADDING, width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9)
+        previewLayer.frame = CGRect(x: (SCREEN_WIDTH - CAMERA_WIDTH)/2, y: TOP_PADDING, width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
         
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         view.layer.addSublayer(previewLayer)
@@ -329,7 +329,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                    }
                }
            }
-           
+                   
            if writable, output == videoDataOutput,
               (videoWriterInput.isReadyForMoreMediaData) {
                // write video buffer
@@ -337,11 +337,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                //                videoWriterInput.transform = CGAffineTransform(rotationAngle: CGFloat(180.0 * .pi / 180))
                //            }
                videoWriterInput.append(sampleBuffer)
+
                //print("video buffering")
                
            } else if writable, output == audioDataOutput,
                      (audioWriterInput.isReadyForMoreMediaData) {
-               print("ADDING AUDIO")
                // write audio buffer
                audioWriterInput?.append(sampleBuffer)
                //print("audio buffering")

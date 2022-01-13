@@ -17,9 +17,7 @@ struct VideoPlayerView: View {
     @State var player: AVPlayer
         
     private var exporter: AVAssetExportSession?
-    
-    var width: CGFloat = SCREEN_WIDTH
-    var height: CGFloat = SCREEN_WIDTH * 16/9
+
  
     var showName: Bool = false
     var message: Message?
@@ -46,8 +44,7 @@ struct VideoPlayerView: View {
         ZStack {
             
             PlayerView(player: $player)
-                .padding(.vertical, -6)
-                .frame(width: width, height: height)
+                .frame(width: CAMERA_WIDTH, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT)
                 .overlay(
                     HStack {
                         if showName {
@@ -68,7 +65,11 @@ struct VideoPlayerView: View {
                     if let id = message?.id {
                         ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
                         
-                        if let chat = ConversationViewModel.shared.chat, chat.messages[chat.lastReadMessageIndex].id == id {
+                        if let chat = ConversationViewModel.shared.chat,
+                            chat.messages.count > chat.lastReadMessageIndex,
+                            chat.lastReadMessageIndex > -1,
+                            chat.messages[chat.lastReadMessageIndex].id == id {
+                            
                             ConversationViewModel.shared.currentPlayer = self.player
                             ConversationViewModel.shared.currentPlayer?.play()
                         }
@@ -78,7 +79,7 @@ struct VideoPlayerView: View {
         
         if showName {
             RoundedRectangle(cornerRadius: 24).strokeBorder(Color.systemWhite, style: StrokeStyle(lineWidth: 10))
-                .frame(width: width + 20, height: height + 20)
+                .frame(width: CAMERA_WIDTH + 20, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 + 20 : CAMERA_HEIGHT + 20)
         }
         
     }
@@ -182,7 +183,7 @@ class PlayerUIView: UIView {
         super.init(frame: frame)
         // Setup the player
         playerLayer.player = player
-        playerLayer.videoGravity = .resizeAspect
+        playerLayer.videoGravity = .resizeAspectFill
         
         layer.addSublayer(playerLayer)
         

@@ -64,7 +64,7 @@ struct AudioCell: View {
                   
         }
         .background(Color.mainBlue)
-        .frame(width: SCREEN_WIDTH - 10, height: (SCREEN_WIDTH) * 16/9)
+        .frame(width: CAMERA_WIDTH, height: CAMERA_HEIGHT)
         .cornerRadius(16)
         .padding(.vertical, 8)
 //        .highPriorityGesture(TapGesture()

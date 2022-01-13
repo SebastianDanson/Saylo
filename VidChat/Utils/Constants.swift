@@ -17,7 +17,21 @@ let COLLECTION_CONVERSATIONS = Firestore.firestore().collection("conversations")
 let COLLECTION_CONTACTUS = Firestore.firestore().collection("contactUs")
 
 
+
+//Screen
+let SCREEN_WIDTH = UIScreen.main.bounds.width
+let SCREEN_HEIGHT = UIScreen.main.bounds.height
+let HALF_SCREEN_HEIGHT = SCREEN_HEIGHT/2
+
+let BOTTOM_PADDING = UIApplication.shared.windows[0].safeAreaInsets.bottom
+let TOP_PADDING = UIApplication.shared.windows[0].safeAreaInsets.top
+
+
+let SCREEN_RATIO = SCREEN_HEIGHT / SCREEN_WIDTH
+
 //Camera
+let CAMERA_WIDTH = SCREEN_RATIO > 2 ? SCREEN_WIDTH : SCREEN_WIDTH - 10
+let CAMERA_HEIGHT = SCREEN_RATIO > 2 ? CAMERA_WIDTH * 16/9 : CAMERA_WIDTH * 16/10
 
 //Photo
 let PHOTO_PICKER_BASE_HEIGHT = UIScreen.main.bounds.width/4*3 + 20
@@ -29,12 +43,7 @@ let NON_CAMERA_HEIGHT = UIScreen.main.bounds.height - (UIScreen.main.bounds.widt
 //Call
 let TIMEOUT_DURATION = 5
 
-//Screen
-let SCREEN_WIDTH = UIScreen.main.bounds.width
-let SCREEN_HEIGHT = UIScreen.main.bounds.height
 
-let BOTTOM_PADDING = UIApplication.shared.windows[0].safeAreaInsets.bottom
-let TOP_PADDING = UIApplication.shared.windows[0].safeAreaInsets.top
 
 
 //NSE

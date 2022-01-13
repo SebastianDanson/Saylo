@@ -55,7 +55,7 @@ struct ConversationService {
         }
     }
     
-    static func getMessagesFromData(data: [String:Any]) -> [Message] {
+    static func getMessagesFromData(data: [String:Any], chatId: String) -> [Message] {
         
         var messages = [Message]()
 
@@ -63,7 +63,8 @@ struct ConversationService {
         let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
         let reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
 
-
+        var shouldRemoveMessages = false
+        
         messagesDic.forEach { message in
             let id = message["id"] as? String ?? ""
              
@@ -71,8 +72,13 @@ struct ConversationService {
             let isSaved = savedData != nil
             let savedByUid = savedData?["userId"] as? String ?? ""
             
-            messages.append(Message(dictionary: message, id: id, isSaved: isSaved, savedByUid: savedByUid))
-
+            let message = Message(dictionary: message, id: id, isSaved: isSaved, savedByUid: savedByUid)
+            
+            if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 {
+                messages.append(message)
+            } else {
+                shouldRemoveMessages = true
+            }
         }
         
         
@@ -86,6 +92,10 @@ struct ConversationService {
             
             messages.first(where: {$0.id == messageId})?.reactions.append(reaction)
         })
+        
+        if shouldRemoveMessages {
+            removeOldMessages(chatData: data, chatId: chatId)
+        }
         
                 
         return messages
@@ -130,6 +140,48 @@ struct ConversationService {
         
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
             transaction.updateData(["conversations" : user.conversationsDic], forDocument: userRef)
+            return nil
+        }) { (_, error) in }
+        
+    }
+    
+   static func removeOldMessages(chatData data: [String:Any], chatId: String) {
+        
+        let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
+        var reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
+        
+        var updatedMessageDic = [[String:Any]]()
+
+        for messageDic in messagesDic {
+            if let timeStamp = messageDic["timestamp"] as? Timestamp {
+                if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 {
+                    
+                    updatedMessageDic.append(messageDic)
+                } else {
+                    
+                    let id = messageDic["id"] as? String ?? ""
+                    let message = Message(dictionary: messageDic, id: id)
+                    reactionsDic.removeAll(where: {$0["messageId"] as? String == id})
+                    
+                    if message.type != .Text {
+                        if message.type == .Video {
+                            
+                           let storageRef = UploadType.video.getFilePath(messageId: id)
+                            storageRef.delete { error in
+                                if let error = error {
+                                    print("ERROR deleting storage ref: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        let chatRef = COLLECTION_CONVERSATIONS.document(chatId)
+        
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["messages" : updatedMessageDic, "reactions":reactionsDic], forDocument: chatRef)
             return nil
         }) { (_, error) in }
         

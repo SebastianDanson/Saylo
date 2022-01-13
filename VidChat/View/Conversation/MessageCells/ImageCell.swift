@@ -35,14 +35,14 @@ struct ImageCell: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                    .frame(minWidth: CAMERA_WIDTH, maxWidth: CAMERA_WIDTH, minHeight: 0, maxHeight: CAMERA_HEIGHT)
                     .cornerRadius(12)
 
             } else if let url = url {
                 KFImage(URL(string: url))
                     .resizable()
                     .scaledToFill()
-                    .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH - 10, minHeight: 0, maxHeight: SCREEN_WIDTH * 16/9)
+                    .frame(minWidth: CAMERA_WIDTH, maxWidth: CAMERA_WIDTH, minHeight: 0, maxHeight: CAMERA_HEIGHT)
                     .cornerRadius(12)
             }
             
