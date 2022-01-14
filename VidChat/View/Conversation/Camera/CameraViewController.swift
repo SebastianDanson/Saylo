@@ -82,21 +82,24 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func stopSession() {
 
-        videoWriterInput.markAsFinished()
-        audioWriterInput.markAsFinished()
-        
-        videoWriter.finishWriting {}
-        
-        captureSession.stopRunning()
-        audioCaptureSession.stopRunning()
+//        videoWriterInput.markAsFinished()
+//        audioWriterInput.markAsFinished()
+//        
+//        videoWriter.finishWriting {}
+//        
+//        captureSession.stopRunning()
+//        audioCaptureSession.stopRunning()
     
     }
     
     func setupSession() {
         
-        setUpWriter()
+        DispatchQueue.main.async {
+            
+     
+            self.setUpWriter()
         
-        captureSession.beginConfiguration()
+            self.captureSession.beginConfiguration()
         
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
             return
@@ -106,11 +109,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             let videoInput = try AVCaptureDeviceInput(device: camera)
             
-            if captureSession.canAddInput(videoInput) {
-                captureSession.addInput(videoInput)
+            if self.captureSession.canAddInput(videoInput) {
+                self.captureSession.addInput(videoInput)
             }
             
-            activeInput = videoInput
+            self.activeInput = videoInput
             
         } catch {
             print("Error setting device input: \(error)")
@@ -121,19 +124,21 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let queue = DispatchQueue(label: "temp")
         let queue1 = DispatchQueue(label: "temp1")
         
-        videoDataOutput.setSampleBufferDelegate(self, queue: queue)
-        audioDataOutput.setSampleBufferDelegate(self, queue: queue1)
+            self.videoDataOutput.setSampleBufferDelegate(self, queue: queue)
+            self.audioDataOutput.setSampleBufferDelegate(self, queue: queue1)
         
-        if captureSession.canAddOutput(videoDataOutput) {
-            captureSession.addOutput(videoDataOutput)
+            if self.captureSession.canAddOutput(self.videoDataOutput) {
+                self.captureSession.addOutput(self.videoDataOutput)
         }
         
-        if captureSession.canAddOutput(photoOutput) {
-            captureSession.addOutput(photoOutput)
+            if self.captureSession.canAddOutput(self.photoOutput) {
+                self.captureSession.addOutput(self.photoOutput)
         }
  
         
-        captureSession.commitConfiguration()
+            self.captureSession.commitConfiguration()
+            
+        }
     }
     
     
@@ -264,7 +269,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 AVVideoWidthKey : 720,
                 AVVideoHeightKey : 1280,
                 AVVideoCompressionPropertiesKey : [
-                    AVVideoAverageBitRateKey : 1024 * 1024 * 4,
+                    AVVideoAverageBitRateKey : 1024 * 1024 * 3,
                 ],
             ])
             
@@ -315,7 +320,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                // start writing
                sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
                videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
-               //print("Writing")
+               print("Writing")
            }
            
         if !CameraViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
@@ -329,6 +334,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                    }
                }
            }
+        
+//        print(videoDataOutput, output)
                    
            if writable, output == videoDataOutput,
               (videoWriterInput.isReadyForMoreMediaData) {
@@ -338,13 +345,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                //            }
                videoWriterInput.append(sampleBuffer)
 
-               //print("video buffering")
+//               print("video buffering")
                
            } else if writable, output == audioDataOutput,
                      (audioWriterInput.isReadyForMoreMediaData) {
                // write audio buffer
                audioWriterInput?.append(sampleBuffer)
-               //print("audio buffering")
+//               print("audio buffering")
            }
         
            

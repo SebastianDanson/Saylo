@@ -63,7 +63,7 @@ struct ConversationGridView: View {
                             
 //                            FindFriendsView().tag(0)
                             
-                            TipView(header: "Tap and Hold on a Chat",
+                            TipView(header: "Press and Hold on a Chat",
                                     subText: "To start recording a video for that chat",
                                     imageName: "record.circle.fill").tag(0)
                             

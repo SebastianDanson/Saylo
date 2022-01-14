@@ -182,6 +182,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
 
             if let uid = uid  {
                 COLLECTION_USERS.document(uid).updateData(["fcmToken" : fcmToken])
+                AuthViewModel.shared.currentUser?.fcmToken = fcmToken
             }
         }
     }

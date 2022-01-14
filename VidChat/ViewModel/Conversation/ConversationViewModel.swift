@@ -67,7 +67,11 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
-    @Published var isSending = false
+    @Published var isSending = false {
+        didSet {
+            print("WAS SET", isSending)
+        }
+    }
     @Published var hasSent = false
     
     @Published var index = 0
@@ -103,8 +107,13 @@ class ConversationViewModel: ObservableObject {
     }
     
     func removeChat() {
-        let chat = self.chat!
-        ConversationService.updateLastVisited(forChat: chat)
+        
+        if let chat = chat {
+            ConversationService.updateLastVisited(forChat: chat)
+        }
+
+        self.currentPlayer?.pause()
+        self.currentPlayer = nil
         self.players = [MessagePlayer]()
         self.chat = nil
         self.chatId = ""
@@ -321,7 +330,6 @@ class ConversationViewModel: ObservableObject {
             data["metaData"] = ["chatId": chat.id, "userId": currentUser.id]
         }
         
-            
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
@@ -445,7 +453,9 @@ class ConversationViewModel: ObservableObject {
             
             defaults?.set(notificationArray, forKey: "notifications")
             UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
+            
         }
+        
     }
     
     func scrollToBottomOfFeed() {

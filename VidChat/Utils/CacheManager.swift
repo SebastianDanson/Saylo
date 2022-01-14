@@ -14,15 +14,17 @@ class CacheManager {
     
     static func getCachedUrl(_ url: URL, userStoredURL: URL?, isVideo: Bool) -> URL {
         if fileExists(forUrl: url, isVideo: isVideo) {
-//            print("EXISTS")
+            //            print("EXISTS")
             return createNewPath(lastPath: url.lastPathComponent.appending(isVideo ? ".mov" : ".m4a"))
         } else if let url = userStoredURL, fileExists(forUrl: url, isVideo: isVideo, addComp: false) {
-//            print("STORED EXISTS")
+            //            print("STORED EXISTS")
             return createNewPath(lastPath: url.lastPathComponent)
         }
         else {
-//            print("DOESNT EXIST")
-            isVideo ? (exportSession(forUrl: url)) : (exportAudio(forUrl: url))
+            //            print("DOESNT EXIST")
+            DispatchQueue.global(qos: .userInitiated).async {
+                isVideo ? (exportSession(forUrl: url)) : (exportAudio(forUrl: url))
+            }
             return url
         }
     }
@@ -93,7 +95,7 @@ class CacheManager {
         }
     }
     
-    static func exportSession(forUrl url: URL) {
+    static func exportSession(forUrl url: URL, addAudio: Bool = true) {
         let asset = AVURLAsset(url: url)
         
         if !asset.isExportable { return }
@@ -112,13 +114,15 @@ class CacheManager {
             }
         }
         
-        if let compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: CMPersistentTrackID(kCMPersistentTrackID_Invalid)),
-           let sourceAudioTrack = asset.tracks(withMediaType: .audio).first {
-            do {
-                try compositionAudioTrack.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: sourceAudioTrack, at: CMTime.zero)
-            } catch {
-                print("Failed to compose audio")
-                return
+        if addAudio {
+            if let compositionAudioTrack = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: CMPersistentTrackID(kCMPersistentTrackID_Invalid)),
+               let sourceAudioTrack = asset.tracks(withMediaType: .audio).first {
+                do {
+                    try compositionAudioTrack.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: asset.duration), of: sourceAudioTrack, at: CMTime.zero)
+                } catch {
+                    print("Failed to compose audio")
+                    return
+                }
             }
         }
         // ---
@@ -147,6 +151,8 @@ class CacheManager {
             do {
                 //                print("REMOVING", outputURL.lastPathComponent)
                 // try FileManager.default.removeItem(at: outputURL)
+                
+              
             } catch let error {
                 print("Failed to delete file with error: \(error)")
             }
@@ -159,6 +165,10 @@ class CacheManager {
             print("Exporter did finish")
             if let error = exporter.error {
                 print("Error \(error)")
+                
+                if addAudio {
+                    self.exportSession(forUrl: url, addAudio: false)
+                }
             }
         }
     }

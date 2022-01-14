@@ -27,15 +27,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.makeKeyAndVisible()
         }
     }
-//
+////
 //    func sceneWillEnterForeground(_ scene: UIScene) {
 //        print("sceneWillEnterForeground")
-//        CameraViewModel.shared.cameraView.setupSession()
+//
+//
+//
 //    }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
         print("sceneDidBecomeActive")
 
+        ConversationGridViewModel.shared.updateLastRead()
+
+        AuthViewModel.shared.fetchUser {
+            print("1111")
+            ConversationGridViewModel.shared.fetchConversations()
+        }
+        
         CameraViewModel.shared.cameraView.setupSession()
     }
     

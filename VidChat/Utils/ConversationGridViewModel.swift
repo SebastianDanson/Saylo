@@ -31,16 +31,18 @@ class ConversationGridViewModel: ObservableObject {
     
     private init() {
         
-//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
-//        
-//        var chats = [Chat]()
-//        chatDic?.forEach({
-//            chats.append(Chat(dictionary: $0, id: UUID().uuidString))
-//        })
-//        
-//        
-//        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
+        
+        var chats = [Chat]()
+        chatDic?.forEach({
+            if let id = $0["id"] as? String {
+                chats.append(Chat(dictionary: $0, id: id))
+            }
+        })
+        
+        
+        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
     }
     
     func removeSelectedChat(withId id: String) {
@@ -131,8 +133,10 @@ class ConversationGridViewModel: ObservableObject {
             if let data = snapshot?.data() {
                 let chat = Chat(dictionary: data, id: id)
                 
-                if !self.allChats.contains(where: {$0.id == chat.id}) {
-                    self.allChats.append(chat)
+                if let index = self.chats.firstIndex(where: {$0.id == chat.id}) {
+                    self.chats[index] = chat
+                } else {
+                    self.chats.append(chat)
                 }
             }
             
@@ -188,8 +192,8 @@ class ConversationGridViewModel: ObservableObject {
 
                 if count == user.chats.count {
 
-                    let chats = self.allChats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-
+                    let chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+                    print("2222")
                     self.allChats = chats
 
                     withAnimation {
@@ -242,4 +246,26 @@ class ConversationGridViewModel: ObservableObject {
     func sortChats() {
         self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
     }
+    
+    
+    func updateLastRead() {
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        
+        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
+        
+        notificationArray?.forEach({ chatId in
+            print(chatId, "ID YESSIR", chats.count, chats[0].id)
+            if let index = chats.firstIndex(where: { return $0.id == chatId }) {
+                print("YESSIR")
+                DispatchQueue.main.async {
+                    withAnimation {
+                        let chat = self.chats.remove(at: index)
+                        chat.hasUnreadMessage = true
+                        self.chats.append(chat)
+                    }
+                }
+            }
+        })
+    }
 }
+

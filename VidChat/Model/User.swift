@@ -31,7 +31,7 @@ class User: ObservableObject  {
     var conversationsDic: [[String:Any]]
     
     //tokens
-    let fcmToken: String
+    var fcmToken: String
     let pushKitToken: String
     
     //friends

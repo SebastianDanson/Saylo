@@ -169,6 +169,10 @@ struct ConversationView: View {
         }
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
+        .onDisappear {
+            mode.wrappedValue.dismiss()
+            viewModel.removeChat()
+        }
     }
 }
 

@@ -19,13 +19,7 @@ class AuthViewModel: ObservableObject {
     
     static let shared = AuthViewModel()
     
-    private init() {
-        
-        fetchUser() {
-            ConversationGridViewModel.shared.fetchConversations()
-        }
-        
-    }
+    private init() { }
     
     func login(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
         

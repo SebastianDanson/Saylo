@@ -254,15 +254,19 @@ struct SendButton: View {
                         ConversationGridViewModel.shared.isSelectingChats = true
                         ConversationGridViewModel.shared.cameraViewZIndex = 1
                     }
-                } else {
+                } else if let chat = conversationVM.selectedChat {
+                    
+                    conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
+                    viewModel.reset(hideCamera: true)
+                } else if let chat = conversationVM.chat {
                     conversationVM.isSending = true
-                    conversationVM.sendCameraMessage(chatId: conversationVM.chatId, chat: conversationVM.selectedChat)
+                    conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
                     viewModel.reset(hideCamera: true)
                 }
                 
-                if let chat = conversationVM.selectedChat {
-                    ConversationService.updateLastVisited(forChat: chat)
-                }
+//                if let chat = conversationVM.selectedChat {
+//                    ConversationService.updateLastVisited(forChat: chat)
+//                }
             }
             
         }, label: {

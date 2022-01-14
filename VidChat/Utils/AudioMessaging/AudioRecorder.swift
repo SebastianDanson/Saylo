@@ -33,6 +33,15 @@ class AudioRecorder: NSObject,ObservableObject {
         }
     }
     
+    func getTempUrl() -> URL? {
+        let directory = NSTemporaryDirectory() as NSString
+        if directory != "" {
+            let path = directory.appendingPathComponent("\(UUID().uuidString).m4a")
+            return URL(fileURLWithPath: path)
+        }
+        return nil
+    }
+    
     func startRecording() {
         let recordingSession = AVAudioSession.sharedInstance()
         
@@ -43,8 +52,7 @@ class AudioRecorder: NSObject,ObservableObject {
             print("Failed to set up recording session")
         }
         
-        let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        audioUrl = documentPath.appendingPathComponent(UUID().uuidString + ".m4a")
+        audioUrl = getTempUrl()
         
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),

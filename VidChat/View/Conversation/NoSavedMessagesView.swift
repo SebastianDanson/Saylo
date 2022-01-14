@@ -25,7 +25,7 @@ struct NoSavedMessagesView: View {
                 .padding(.bottom, 1)
 
             
-            Text("Tap and hold a message to save it")
+            Text("Press and hold a message to save it")
                 .foregroundColor(Color(.systemGray))
                 .font(.system(size: 20, weight: .medium))
             

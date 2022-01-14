@@ -90,6 +90,7 @@ class Chat: ObservableObject {
         }
         
         self.hasUnreadMessage = getHasUnreadMessage()
+        print(self.hasUnreadMessage, "HAS UNREAD")
         self.lastReadMessageIndex = getLastReadMessageIndex()
     }
     
