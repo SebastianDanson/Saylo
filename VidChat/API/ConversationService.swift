@@ -163,7 +163,7 @@ struct ConversationService {
                     let message = Message(dictionary: messageDic, id: id)
                     reactionsDic.removeAll(where: {$0["messageId"] as? String == id})
                     
-                    if message.type != .Text {
+                    if message.type != .Text && !message.isSaved {
                         if message.type == .Video {
                             
                            let storageRef = UploadType.video.getFilePath(messageId: id)
@@ -172,6 +172,20 @@ struct ConversationService {
                                     print("ERROR deleting storage ref: \(error.localizedDescription)")
                                 }
                             }
+                        } else if message.type == .Audio {
+                            let storageRef = UploadType.audio.getFilePath(messageId: id)
+                             storageRef.delete { error in
+                                 if let error = error {
+                                     print("ERROR deleting storage ref: \(error.localizedDescription)")
+                                 }
+                             }
+                        } else if message.type == .Photo {
+                            let storageRef = UploadType.photo.getFilePath(messageId: id)
+                             storageRef.delete { error in
+                                 if let error = error {
+                                     print("ERROR deleting storage ref: \(error.localizedDescription)")
+                                 }
+                             }
                         }
                     }
                 }

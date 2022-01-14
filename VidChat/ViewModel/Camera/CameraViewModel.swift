@@ -19,16 +19,21 @@ class CameraViewModel: ObservableObject {
     @Published var isRecording = false
     @Published var isShowingPhotoCamera = false
     @Published var isTakingPhoto = false
-    @Published var cameraView = CameraMainView()
     @Published var hasSentWithoutCrop = false
     @Published var isPlaying = false
     @Published var isFirstLoad = true
     @Published var isFrontFacing = true
     @Published var isRotating = false
-    @Published var videoPlayerView: VideoPlayerView?
     
     var timer: Timer?
     
+    var cameraView = CameraMainView()
+    var videoPlayerView: VideoPlayerView? {
+        didSet {
+            videoPlayerView?.player.play()
+        }
+    }
+
     static let shared = CameraViewModel()
     
     private init() {
@@ -52,7 +57,8 @@ class CameraViewModel: ObservableObject {
                 ConversationViewModel.shared.chatId = ""
             }
             
-            
+//            cameraView.cancelRecording()
+//            cameraView.addAudio()
         }
                 
         videoPlayerView = nil
@@ -61,8 +67,6 @@ class CameraViewModel: ObservableObject {
         isRecording = false
         photo = nil
         
-        cameraView.cancelRecording()
-        cameraView.addAudio()
 
         ConversationGridViewModel.shared.stopSelectingChats()
         ConversationGridViewModel.shared.selectedChats = [Chat]()

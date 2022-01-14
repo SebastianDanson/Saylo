@@ -102,8 +102,8 @@ class ConversationViewModel: ObservableObject {
         self.addListener()
         self.updateNoticationsArray()
         self.chat?.hasUnreadMessage = false
+        self.chat?.lastReadMessageIndex = chat.messages.count - 1
         self.noMessages = false
-        ConversationService.updateLastVisited(forChat: chat)
     }
     
     func removeChat() {
@@ -244,7 +244,7 @@ class ConversationViewModel: ObservableObject {
                    isFromPhotoLibrary: false, shouldExport: false, chatId: chatId)
         
         
-        if let chat = chat {
+        if let chat = chat, self.chat == nil {
             ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
         }
     }

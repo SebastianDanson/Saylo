@@ -15,23 +15,24 @@ struct CameraMainView: View {
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
     var cameraView = CameraView()
-    
-    let bottomPadding = UIApplication.shared.windows[0].safeAreaInsets.bottom
-    let screenHeight = UIScreen.main.bounds.height
+ 
     
     var body: some View {
         
         ZStack(alignment: .center) {
             
             //video player
-            if let playerView = viewModel.videoPlayerView {
+            if viewModel.videoUrl != nil {
                 
                 VStack {
                     
-                    playerView
+                    viewModel.videoPlayerView
                         .overlay(MediaOptions(), alignment: .bottom)
                         .background(Color.clear)
                         .padding(.top, TOP_PADDING)
+//                        .onAppear {
+//                            print("ON APPEAR")
+//                        }
                     //
                     Spacer()
                     
@@ -53,7 +54,7 @@ struct CameraMainView: View {
             
             //camera
             cameraView
-                .frame(width: SCREEN_WIDTH, height: screenHeight)
+                .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
                 .onTapGesture(count: 2, perform: {
                     switchCamera()
                 })

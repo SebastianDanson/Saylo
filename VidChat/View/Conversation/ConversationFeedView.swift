@@ -57,11 +57,10 @@ struct ConversationFeedView: View {
                 }.flippedUpsideDown()
                     .onPreferenceChange(ViewOffsetsKey.self, perform: { prefs in
                         
-                        
                         DispatchQueue.main.async {
 
                         guard updatePreference else { return }
-                        
+
                         let prevMiddleItemNo = middleItemNo
                         middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1) < 15 })?.key ?? -1
                         //20
@@ -74,7 +73,7 @@ struct ConversationFeedView: View {
                         
                         
                         if middleItemNo >= 0 {
-                          
+
                             if prevMiddleItemNo != middleItemNo {
                                 
 //                                withAnimation {
@@ -99,13 +98,13 @@ struct ConversationFeedView: View {
                             viewModel.currentPlayer = nil
                         }
                         }
-                    }) .onChange(of: viewModel.index, perform: { newValue in
+                    }).onChange(of: viewModel.index, perform: { newValue in
                         middleItemNo += 1
-                        
+                        print("CHANGE")
                         if middleItemNo < 1 || middleItemNo >= getMessages().count {return}
                         
                         updatePreference = false
-                        
+
                         let message = getMessages()[middleItemNo]
                         
                         if message.type == .Text {

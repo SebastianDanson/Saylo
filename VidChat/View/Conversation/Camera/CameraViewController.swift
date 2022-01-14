@@ -65,11 +65,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     var outputURL: URL!
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        startSession()
-//    }
-
+    //    override func viewWillAppear(_ animated: Bool) {
+    //        super.viewWillAppear(animated)
+    //        startSession()
+    //    }
+    
     
     func getTempUrl() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
@@ -81,61 +81,60 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func stopSession() {
-
-//        videoWriterInput.markAsFinished()
-//        audioWriterInput.markAsFinished()
-//        
-//        videoWriter.finishWriting {}
-//        
-//        captureSession.stopRunning()
-//        audioCaptureSession.stopRunning()
-    
+        
+        //        videoWriterInput.markAsFinished()
+        //        audioWriterInput.markAsFinished()
+        //
+        //        videoWriter.finishWriting {}
+        //
+        //        captureSession.stopRunning()
+        //        audioCaptureSession.stopRunning()
+        
     }
     
     func setupSession() {
         
         DispatchQueue.main.async {
             
-     
+            
             self.setUpWriter()
-        
+            
             self.captureSession.beginConfiguration()
-        
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
-            return
-        }
-        
-        do {
             
-            let videoInput = try AVCaptureDeviceInput(device: camera)
-            
-            if self.captureSession.canAddInput(videoInput) {
-                self.captureSession.addInput(videoInput)
+            guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
+                return
             }
             
-            self.activeInput = videoInput
+            do {
+                
+                let videoInput = try AVCaptureDeviceInput(device: camera)
+                
+                if self.captureSession.canAddInput(videoInput) {
+                    self.captureSession.addInput(videoInput)
+                }
+                
+                self.activeInput = videoInput
+                
+            } catch {
+                print("Error setting device input: \(error)")
+                return
+            }
             
-        } catch {
-            print("Error setting device input: \(error)")
-            return
-        }
-        
-        
-        let queue = DispatchQueue(label: "temp")
-        let queue1 = DispatchQueue(label: "temp1")
-        
+            
+            let queue = DispatchQueue(label: "temp")
+            let queue1 = DispatchQueue(label: "temp1")
+            
             self.videoDataOutput.setSampleBufferDelegate(self, queue: queue)
             self.audioDataOutput.setSampleBufferDelegate(self, queue: queue1)
-        
+            
             if self.captureSession.canAddOutput(self.videoDataOutput) {
                 self.captureSession.addOutput(self.videoDataOutput)
-        }
-        
+            }
+            
             if self.captureSession.canAddOutput(self.photoOutput) {
                 self.captureSession.addOutput(self.photoOutput)
-        }
- 
-        
+            }
+            
             self.captureSession.commitConfiguration()
             
         }
@@ -242,7 +241,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        connection.isVideoMirrored = activeInput.device.position == .front
         
         
-        sessionAtSourceTime = nil
+//        sessionAtSourceTime = nil
         
         
         
@@ -259,6 +258,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func setUpWriter() {
         
         do {
+            
             let url = getTempUrl()!
             outputURL = url
             videoWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.mov)
@@ -285,20 +285,24 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             // add audio input
             let audioSettings : [String : Any] = [
-                                AVFormatIDKey : kAudioFormatMPEG4AAC,
-                                AVSampleRateKey : 44100,
-                                AVEncoderBitRateKey : 64000,
-                                AVNumberOfChannelsKey: 1
-                            ]
+                AVFormatIDKey : kAudioFormatMPEG4AAC,
+                AVSampleRateKey : 44100,
+                AVEncoderBitRateKey : 64000,
+                AVNumberOfChannelsKey: 1
+            ]
+            
             audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
-                        
+            audioWriterInput.expectsMediaDataInRealTime = true
+            
             if videoWriter.canAdd(audioWriterInput!) {
                 videoWriter.add(audioWriterInput!)
                 print("audio input added")
+            } else {
+                print("no audio input added")
             }
             
-            
             videoWriter.startWriting()
+            
         } catch let error {
             debugPrint(error.localizedDescription)
         }
@@ -311,51 +315,54 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-           
-           let writable = canWrite()
-           
-//           guard writable else {return}
-                   
-           if writable, sessionAtSourceTime == nil {
-               // start writing
-               sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-               videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
-               print("Writing")
-           }
-           
+        
+        let writable = canWrite()
+        
+        //           guard writable else {return}
+        
+        //        print(output, videoDataOutput, audioDataOutput)
+        if writable, sessionAtSourceTime == nil {
+            // start writing
+            sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
+            print("Writing")
+        }
+        
         if !CameraViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
-               
-               connection.videoOrientation = .portrait
-               
-               
-               if connection.isVideoMirroringSupported, isFrontFacing {
-                   DispatchQueue.global().async {
-                       connection.isVideoMirrored = self.isFrontFacing
-                   }
-               }
-           }
+            
+            connection.videoOrientation = .portrait
+            
+            
+            if connection.isVideoMirroringSupported, isFrontFacing {
+                DispatchQueue.global().async {
+                    connection.isVideoMirrored = self.isFrontFacing
+                }
+            }
+        }
         
-//        print(videoDataOutput, output)
-                   
-           if writable, output == videoDataOutput,
-              (videoWriterInput.isReadyForMoreMediaData) {
-               // write video buffer
-               //            if isFrontFacing {
-               //                videoWriterInput.transform = CGAffineTransform(rotationAngle: CGFloat(180.0 * .pi / 180))
-               //            }
-               videoWriterInput.append(sampleBuffer)
-
-//               print("video buffering")
-               
-           } else if writable, output == audioDataOutput,
-                     (audioWriterInput.isReadyForMoreMediaData) {
-               // write audio buffer
-               audioWriterInput?.append(sampleBuffer)
-//               print("audio buffering")
-           }
+        //        print(videoDataOutput, output)
         
-           
-       }
+        if writable, output == videoDataOutput,
+           (videoWriterInput.isReadyForMoreMediaData) {
+            // write video buffer
+            //
+            videoWriterInput.append(sampleBuffer)
+            //               print(connection, "VIDEO")
+            
+                           print("video buffering")
+            
+        } else if writable, output == audioDataOutput,
+                  (audioWriterInput.isReadyForMoreMediaData) {
+            // write audio buffer
+            //               print(connection, "AUDIO")
+            
+            audioWriterInput?.append(sampleBuffer)
+            
+                           print("audio buffering")
+        }
+        
+        
+    }
     
     //TODO saved videos that you record in video playback I.e start recording vide and then make download button work when done
     
@@ -363,10 +370,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         let isFirstLoad = CameraViewModel.shared.isFirstLoad
         
-        DispatchQueue.global(qos: .userInteractive).async {
+//        DispatchQueue.main.async {
             
             
             if isFirstLoad {
+                
                 self.audioCaptureSession.beginConfiguration()
                 
                 guard let mic = AVCaptureDevice.default(for: .audio) else {
@@ -374,7 +382,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
                 
                 do {
-                    
                     
                     let audioInput = try AVCaptureDeviceInput(device: mic)
                     
@@ -389,15 +396,17 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
                 
                 
-                self.audioCaptureSession.addOutput(self.audioDataOutput)
+                if self.audioCaptureSession.canAddOutput(self.audioDataOutput) {
+                    self.audioCaptureSession.addOutput(self.audioDataOutput)
+                }
+                
                 self.audioCaptureSession.commitConfiguration()
                 self.audioCaptureSession.startRunning()
                 
             } else {
                 self.audioCaptureSession.startRunning()
-                
             }
-        }
+//        }
         
         CameraViewModel.shared.isFirstLoad = false
         
@@ -424,6 +433,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         videoWriterInput.markAsFinished()
         audioWriterInput.markAsFinished()
         
+        audioCaptureSession.stopRunning()
+
         videoWriter.finishWriting {
             self.sessionAtSourceTime = nil
             DispatchQueue.main.async {
@@ -436,11 +447,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 self.addAudio()
                 //  try! AVAudioSession.sharedInstance().setActive(true)
             }
-            //              self.audioWriterInput
         }
         
         
-        audioCaptureSession.stopRunning()
         
         
         

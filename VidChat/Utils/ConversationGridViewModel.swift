@@ -110,6 +110,8 @@ class ConversationGridViewModel: ObservableObject {
     
     func filterUsers(withText text: String) {
         
+        self.allChats = self.chats
+        
         withAnimation {
             self.chats = self.allChats.filter({
                 
