@@ -65,11 +65,18 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     var outputURL: URL!
     
-    //    override func viewWillAppear(_ animated: Bool) {
-    //        super.viewWillAppear(animated)
-    //        startSession()
-    //    }
+        override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            captureSession.startRunning()
+        }
     
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+            
+        captureSession.stopRunning()
+        audioCaptureSession.stopRunning()
+    }
     
     func getTempUrl() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
@@ -203,13 +210,19 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func startSession() {
         
-        if !captureSession.isRunning {
-            DispatchQueue.global(qos: .default).async { [weak self] in
-                print("RUNNING STARTED")
-                self?.captureSession.startRunning()
-                
-            }
+        self.captureSession.startRunning()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.captureSession.stopRunning()
         }
+//        if !captureSession.isRunning {
+//            DispatchQueue.global(qos: .default).async { [weak self] in
+//                print("RUNNING STARTED")
+//                self?.captureSession.startRunning()
+////                self?.captureSession.stopRunning()
+//
+//            }
+//        }
     }
     
     
@@ -368,12 +381,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func addAudio() {
         
-        let isFirstLoad = CameraViewModel.shared.isFirstLoad
+//        let isFirstLoad = CameraViewModel.shared.isFirstLoad
         
-//        DispatchQueue.main.async {
+        DispatchQueue.global().async {
             
             
-            if isFirstLoad {
+//            if isFirstLoad {
                 
                 self.audioCaptureSession.beginConfiguration()
                 
@@ -385,7 +398,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     
                     let audioInput = try AVCaptureDeviceInput(device: mic)
                     
-                    
+                    self.audioCaptureSession.inputs.forEach({self.audioCaptureSession.removeInput($0)})
+                    self.audioCaptureSession.outputs.forEach({self.audioCaptureSession.removeOutput($0)})
+
                     if self.audioCaptureSession.canAddInput(audioInput) {
                         self.audioCaptureSession.addInput(audioInput)
                     }
@@ -403,12 +418,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 self.audioCaptureSession.commitConfiguration()
                 self.audioCaptureSession.startRunning()
                 
-            } else {
-                self.audioCaptureSession.startRunning()
-            }
-//        }
+//            } else {
+//                self.audioCaptureSession.startRunning()
+//            }
+        }
         
-        CameraViewModel.shared.isFirstLoad = false
+//        CameraViewModel.shared.isFirstLoad = false
         
     }
     

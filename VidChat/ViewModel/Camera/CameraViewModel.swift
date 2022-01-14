@@ -30,14 +30,30 @@ class CameraViewModel: ObservableObject {
     var cameraView = CameraMainView()
     var videoPlayerView: VideoPlayerView? {
         didSet {
-            videoPlayerView?.player.play()
+            playVideo()
         }
     }
-
+    
     static let shared = CameraViewModel()
     
     private init() {
-//        cameraView.setupSession()
+        //        cameraView.setupSession()
+    }
+    
+    
+    func playVideo() {
+        
+        guard let videoPlayerView = videoPlayerView else {
+            return
+        }
+
+        videoPlayerView.player.play()
+        
+        if !videoPlayerView.player.isPlaying {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.playVideo()
+            }
+        }
     }
     
     func removeVideo() {
@@ -57,17 +73,17 @@ class CameraViewModel: ObservableObject {
                 ConversationViewModel.shared.chatId = ""
             }
             
-//            cameraView.cancelRecording()
-//            cameraView.addAudio()
+            //            cameraView.cancelRecording()
+            //            cameraView.addAudio()
         }
-                
+        
         videoPlayerView = nil
         videoUrl = nil
         progress = 0.0
         isRecording = false
         photo = nil
         
-
+        
         ConversationGridViewModel.shared.stopSelectingChats()
         ConversationGridViewModel.shared.selectedChats = [Chat]()
     }
@@ -80,22 +96,27 @@ class CameraViewModel: ObservableObject {
     
     func startRecording(addDelay: Bool = false) {
         
-        withAnimation {
-            self.isRecording = true
-            self.progress = 1
-        }
+       
         
         //TODO keep caached if saved
         //  self.cameraView.addAudio()
         
         if addDelay {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
                 self.cameraView.startRecording()
+                withAnimation {
+                    self.isRecording = true
+                    self.progress = 1
+                }
             }
             
         } else {
             self.cameraView.startRecording()
+            withAnimation {
+                self.isRecording = true
+                self.progress = 1
+            }
         }
         
         timer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
@@ -147,21 +168,21 @@ class CameraViewModel: ObservableObject {
         if let videoUrl = videoUrl {
             videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
         }
-     
+        
         
     }
     
-//    func requestAuthorization(completion: @escaping ()->Void) {
-//            if PHPhotoLibrary.authorizationStatus() == .notDetermined {
-//                PHPhotoLibrary.requestAuthorization { (status) in
-//                    DispatchQueue.main.async {
-//                        completion()
-//                    }
-//                }
-//            } else if PHPhotoLibrary.authorizationStatus() == .authorized{
-//                completion()
-//            }
-//        }
+    //    func requestAuthorization(completion: @escaping ()->Void) {
+    //            if PHPhotoLibrary.authorizationStatus() == .notDetermined {
+    //                PHPhotoLibrary.requestAuthorization { (status) in
+    //                    DispatchQueue.main.async {
+    //                        completion()
+    //                    }
+    //                }
+    //            } else if PHPhotoLibrary.authorizationStatus() == .authorized{
+    //                completion()
+    //            }
+    //        }
     
     func saveToPhotos(url: URL) {
         PHPhotoLibrary.shared().performChanges({
