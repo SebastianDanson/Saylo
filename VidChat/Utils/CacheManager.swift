@@ -26,9 +26,9 @@ class CacheManager {
         }
         
         print("DOESNT EXIST")
-        DispatchQueue.global(qos: .background).async {
-            exportSession(forUrl: url, isVideo: isVideo)
-        }
+//        DispatchQueue.global(qos: .background).async {
+//            exportSession(forUrl: url, isVideo: isVideo)
+//        }
         
         return url
     }
@@ -67,7 +67,7 @@ class CacheManager {
         if let videoData = NSData(contentsOf: url) {
             
             do {
-                try  videoData.write(toFile: outputURL, options: .atomic)
+                try videoData.write(toFile: outputURL, options: .atomic)
             } catch let e {
                 print("ERROR WRITING TO FILE: \(e.localizedDescription)")
             }
@@ -118,8 +118,30 @@ class CacheManager {
         let pathComp = addComp ? (isVideo ? "\(fileName).mov" :"\(fileName).m4a") : "\(fileName)"
         let outputURL = cacheDirectory.appendingPathComponent(pathComp)
         
+        let fileOutputUrl = sharedDirectoryURL().appendingPathComponent(pathComp)
+        
+        print(fileOutputUrl, FileManager.default.fileExists(atPath: fileOutputUrl.path), "CHECKER")
+        
+        if FileManager.default.fileExists(atPath: fileOutputUrl.path) {
+            print("CHEKCING")
+            do {
+                try FileManager.default.moveItem(atPath: fileOutputUrl.path, toPath: outputURL)
+                
+            } catch let e {
+                print("ERROR MOVING FILE: \(e.localizedDescription)")
+                
+                try? FileManager.default.removeItem(at: fileOutputUrl)
+            }
+            
+        }
         
         return FileManager.default.fileExists(atPath: outputURL)
+    }
+    
+    static func sharedDirectoryURL() -> URL {
+        let fileManager = FileManager.default
+        return fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.SebastianDanson.saylo")!
+       
     }
     
     static func removeOldFiles() {

@@ -230,6 +230,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             
             if let chatId = chatId, !chatId.isEmpty {
                 ConversationGridViewModel.shared.fetchConversation(withId: chatId)
+                ConversationGridViewModel.shared.sortChats()
             }
             
             completionHandler([.badge, .banner])

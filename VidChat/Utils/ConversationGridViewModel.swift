@@ -33,7 +33,8 @@ class ConversationGridViewModel: ObservableObject {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
-        
+        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+        print(newMessagesArray, "NEWMES")
         var chats = [Chat]()
         chatDic?.forEach({
             if let id = $0["id"] as? String {
@@ -43,6 +44,12 @@ class ConversationGridViewModel: ObservableObject {
         
         
         self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+    }
+    
+    func sharedDirectoryURL() -> URL {
+        let fileManager = FileManager.default
+        return fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.SebastianDanson.saylo")!
+       
     }
     
     func removeSelectedChat(withId id: String) {

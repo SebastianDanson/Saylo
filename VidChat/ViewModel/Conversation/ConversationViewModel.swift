@@ -309,9 +309,10 @@ class ConversationViewModel: ObservableObject {
     func sendMessageNotification(chat: Chat, messageData: [String:Any]) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        var messageData = messageData
         let userFullName = currentUser.firstName + " " + currentUser.lastName
         let message = Message(dictionary: messageData, id: "")
-        
+        messageData["timestamp"] = message.timestamp.dateValue().timeIntervalSince1970
         var data = [String:Any]()
 
         if chat.isDm {
@@ -320,14 +321,14 @@ class ConversationViewModel: ObservableObject {
             data["token"] = chatMember?.fcmToken ?? ""
             data["title"] = message.type == .Text ? userFullName : ""
             data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
-            data["metaData"] = ["chatId": chat.id]
+            data["metaData"] = ["chatId": chat.id, "messageData":messageData]
 
         } else {
             
             data["topic"] = chat.id
             data["title"] = message.type == .Text ? "\(userFullName)\nTo \(chat.fullName)" : chat.fullName
             data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
-            data["metaData"] = ["chatId": chat.id, "userId": currentUser.id]
+            data["metaData"] = ["chatId": chat.id, "userId": currentUser.id, "messageData":messageData]
         }
         
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
