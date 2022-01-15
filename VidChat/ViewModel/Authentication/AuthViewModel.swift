@@ -16,7 +16,8 @@ class AuthViewModel: ObservableObject {
     @Published var isSignedIn = Auth.auth().currentUser != nil
     @Published var hasCompletedSignUp = true
     @Published var profileImageUrl: String?
-    
+    @Published var hasUnseenFriendRequest: Bool = false
+
     static let shared = AuthViewModel()
     
     private init() { }

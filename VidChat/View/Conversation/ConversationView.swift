@@ -31,6 +31,12 @@ struct ConversationView: View {
         
         ZStack {
             
+            if let chat = viewModel.chat {
+                NavigationLink(destination: ChatSettingsView(showSettings: $showSettings, chat: chat)
+                                .navigationBarHidden(true)
+                               , isActive: $showSettings) { EmptyView() }
+            }
+            
             VStack(spacing: 0) {
                 
                 ZStack {
@@ -72,7 +78,7 @@ struct ConversationView: View {
                     if viewModel.showCamera {
                         CameraViewModel.shared.cameraView
                             .ignoresSafeArea()
-//                            .transition(.move(edge: .bottom))
+                        //                            .transition(.move(edge: .bottom))
                     }
                     
                     if showSettings {
@@ -137,6 +143,7 @@ struct ConversationView: View {
             }
             
             if viewModel.showSavedPosts {
+                
                 ConversationFeedView(showSavedPosts: true)
                     .background(Color.systemWhite)
                     .overlay(
@@ -169,8 +176,7 @@ struct ConversationView: View {
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
         .onDisappear {
-            mode.wrappedValue.dismiss()
-            viewModel.removeChat()
+//            viewModel.removeChat()
         }
     }
 }
@@ -332,7 +338,6 @@ struct OptionsView: View {
                                         ActionView(image: Image(systemName: "textformat.alt"), imageDimension: 32)
                                     }).transition(.scale)
                                 }
-                                
                             }
                         }
                     }
@@ -345,7 +350,6 @@ struct OptionsView: View {
                 
             }
         }
-        
         .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 70)
         .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? (viewModel.isPlaying ? .systemWhite : .point7AlphaSystemWhite) : Color.clear)
         
@@ -369,6 +373,7 @@ struct VisualEffectView: UIViewRepresentable {
 /* The button that records video */
 
 struct CameraCircle: View {
+    
     @StateObject var viewModel = CameraViewModel.shared
     
     var body: some View {
@@ -416,7 +421,6 @@ struct CameraCircle: View {
                                     height: viewModel.isShowingPhotoCamera ? 64 : 56)
                     }
                 }
-                
             )
             .padding(.horizontal, 5)
     }
@@ -508,12 +512,6 @@ struct ChatOptions: View {
                 }
             }
             
-            if showSettings, let chat = viewModel.chat {
-                ChatSettingsView(chat: chat)
-                    .zIndex(5)
-                    .transition(.opacity)
-            }
-            
             
             HStack {
                 Spacer()
@@ -578,6 +576,7 @@ struct ChatOptions: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, topPadding + 4)
+        
     }
 }
 
@@ -759,97 +758,7 @@ struct KeyboardView: View {
     }
 }
 
-struct ChatSettingsView: View {
-    
-    let chat: Chat
-    
-    var body: some View {
-        
-        VStack(spacing: 20) {
-            
-            HStack(alignment: .center) {
-                
-                HStack(spacing: 12) {
-                    
-                    ChatImage(chat: chat, diameter: 36)
-                    
-                    Text(chat.name)
-                        .lineLimit(1)
-                        .font(.system(size: 18, weight: .semibold))
-                }
-                
-                Spacer()
-                
-                ZStack {
-                    
-                    Circle()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.iconSystemWhite)
-                    
-                    Image(systemName: "video")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.systemWhite)
-                        .frame(width: 22, height: 22)
-                    
-                }.padding(.trailing, 20)
-                
-            }
-            .padding(.leading)
-            .padding(.top)
-            
-            
-            
-            Button {
-                
-                if ConversationViewModel.shared.savedMessages.count == 0 {
-                    ConversationViewModel.shared.fetchSavedMessages()
-                }
-                
-                withAnimation {
-                    ConversationViewModel.shared.showSavedPosts = true
-                }
-            } label: {
-                HStack(alignment: .center) {
-                    HStack(spacing: 4) {
-                        
-                        Image(systemName: "bookmark.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color.systemBlack)
-                            .frame(width: 36, height: 20)
-                            .padding(.leading, 8)
-                        
-                        Text("View saved messages")
-                            .lineLimit(1)
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.systemBlack)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color(.systemGray2))
-                        .frame(width: 40, height: 20)
-                        .padding(.trailing, 2)
-                }
-                .padding(.vertical)
-                .background(Color.systemWhite)
-                .cornerRadius(12)
-                .padding(.horizontal)
-            }
-            
-        }
-        .padding(.vertical)
-        .background(Color(.systemGray6))
-        .cornerRadius(20)
-        .padding(.leading)
-        .padding(.bottom)
-        .shadow(color: Color(.init(white: 0, alpha: 0.2)), radius: 16, x: 0, y: 8)
-    }
-}
+
 
 
 struct SavedPostsOptionsView: View {

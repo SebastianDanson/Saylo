@@ -137,7 +137,7 @@ class AddFriendsViewModel: ObservableObject {
         data["token"] = user.fcmToken
         data["title"] = currentUser.firstName + " " + currentUser.lastName
         data["body"] = "Sent you a friend request"
-        data["metaData"] = [:]
+        data["metaData"] = ["isSentFriendRequest":true]
       
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
         
@@ -212,16 +212,18 @@ class AddFriendsViewModel: ObservableObject {
         COLLECTION_USERS.document(friend.id)
             .updateData(
                 ["friends": FieldValue.arrayUnion([user.id]),
-                 "conversations": FieldValue.arrayUnion([chatData])])
-        
-        var data = [String:Any]()
-        
-        data["token"] = friend.fcmToken
-        data["title"] = user.firstName + " " + user.lastName
-        data["body"] = "Accepted your friend request"
-        data["metaData"] = [:]
-      
-        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
+                 "conversations": FieldValue.arrayUnion([chatData])]) { error in
+                     if error == nil {
+                         var data = [String:Any]()
+                         
+                         data["token"] = friend.fcmToken
+                         data["title"] = user.firstName + " " + user.lastName
+                         data["body"] = "Accepted your friend request"
+                         data["metaData"] = ["acceptedFriendRequest":true]
+                       
+                         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
+                     }
+                 }
     }
     
     func fetchFriendRequests() {
@@ -244,9 +246,9 @@ class AddFriendsViewModel: ObservableObject {
     }
     
     func setSeenFriendRequests() {
-        guard let currentUser = AuthViewModel.shared.currentUser else {return}
-        currentUser.hasUnseenFriendRequest = false
-        COLLECTION_USERS.document(currentUser.id).updateData(["hasUnseenFriendRequest":false])
+        guard let currentUserId = AuthViewModel.shared.currentUser?.id else {return}
+        AuthViewModel.shared.hasUnseenFriendRequest = false
+        COLLECTION_USERS.document(currentUserId).updateData(["hasUnseenFriendRequest":false])
     }
     
     func reset() {

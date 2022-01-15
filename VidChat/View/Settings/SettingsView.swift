@@ -44,7 +44,7 @@ struct SettingsView: View {
             Button {
                 showImagePicker = true
             } label: {
-                SettingsCell(image: Image(systemName: "person.fill"), imageColor: .mainBlue, title: "Edit Profile Image", leadingPadding: 0)
+                SettingsCell(image: Image(systemName: "person.fill"), imageColor: .mainBlue, title: "Edit Profile Image", leadingPadding: 0, imageDimension: 17)
             }.sheet(isPresented: $showImagePicker, content: {
                 ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
             })
@@ -55,7 +55,7 @@ struct SettingsView: View {
             Button {
                 showContactUs = true
             } label: {
-                SettingsCell(image: Image(systemName: "envelope.fill"), imageColor: Color(.systemGreen), title: "Contact Us", leadingPadding: 0)
+                SettingsCell(image: Image(systemName: "envelope.fill"), imageColor: Color(.systemGreen), title: "Contact Us", leadingPadding: 0, imageDimension: 17)
             }.sheet(isPresented: $showContactUs, content: {
                 ContactUsView()
             })
@@ -65,7 +65,7 @@ struct SettingsView: View {
             Button {
                 showLogoutAlert = true
             } label: {
-                SettingsCell(image: Image("logout"), imageColor: Color(.systemGray), title: "Logout", leadingPadding: 2)
+                SettingsCell(image: Image("logout"), imageColor: Color(.systemGray), title: "Logout", leadingPadding: 2, imageDimension: 17)
             }.alert(isPresented: $showLogoutAlert) {
                 logoutAlert
             }
@@ -87,6 +87,7 @@ struct SettingsCell: View {
     let imageColor: Color
     let title: String
     let leadingPadding: CGFloat
+    let imageDimension: CGFloat
     
     var body: some View {
         
@@ -100,10 +101,11 @@ struct SettingsCell: View {
                 
                 image
                     .resizable()
+                    .renderingMode(.template)
                     .scaledToFit()
                     .foregroundColor(.systemWhite)
                     .padding(.leading, leadingPadding)
-                    .frame(width: 17, height: 17)
+                    .frame(width: imageDimension, height: imageDimension)
                 
             }.padding(.leading)
             

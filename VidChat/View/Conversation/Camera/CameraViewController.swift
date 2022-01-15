@@ -65,10 +65,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     var outputURL: URL!
     
-        override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            captureSession.startRunning()
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.backgroundColor = .black
+        captureSession.startRunning()
+    }
     
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -383,7 +384,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
 //        let isFirstLoad = CameraViewModel.shared.isFirstLoad
         
-        DispatchQueue.global().async {
             
             
 //            if isFirstLoad {
@@ -406,7 +406,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     }
                     
                 } catch {
-                    print("Error setting device input: \(error)")
+                    print("Error segtting device input: \(error)")
                     return
                 }
                 
@@ -421,7 +421,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //            } else {
 //                self.audioCaptureSession.startRunning()
 //            }
-        }
         
 //        CameraViewModel.shared.isFirstLoad = false
         

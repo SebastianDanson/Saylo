@@ -33,7 +33,7 @@ struct ContentView: View {
                 }
 //                }
             }
-            
+//            ChatSettingsView(showSettings: .constant(true))
         }
     }
 }

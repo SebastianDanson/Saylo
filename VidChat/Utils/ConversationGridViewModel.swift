@@ -174,6 +174,7 @@ class ConversationGridViewModel: ObservableObject {
         
         var chatDictionary = [[String:Any]]()
         
+        
         user.chats.forEach { chat in
             
             addConversation(withId: chat.id) { chatData in

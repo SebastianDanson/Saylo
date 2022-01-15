@@ -26,17 +26,16 @@ struct ConversationGridView: View {
     
     @State var contentOffset: CGFloat = 0
     @State var initialOffset: CGFloat = 0
-    @State var recognizeSwipeUp = false
     @State var showPhotoPickerAlert = false
-
+    
     var body: some View {
         
         let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight,
                                           height: $conversationViewModel.photoBaseHeight,
                                           showVideoLengthAlert: $showPhotoPickerAlert)
             .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
-            
-                
+        
+        
         
         NavigationView {
             
@@ -61,7 +60,7 @@ struct ConversationGridView: View {
                         
                         PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
                             
-//                            FindFriendsView().tag(0)
+                            //                            FindFriendsView().tag(0)
                             
                             TipView(header: "Press and Hold on a Chat",
                                     subText: "To start recording a video for that chat",
@@ -87,7 +86,7 @@ struct ConversationGridView: View {
                         
                         if !viewModel.hideFeed {
                             
-                            TrackableScrollView(.vertical, showIndicators: false, contentOffset: $contentOffset, content: {
+                            ScrollView(showsIndicators: false) {
                                 
                                 
                                 VStack {
@@ -134,40 +133,13 @@ struct ConversationGridView: View {
                                         .padding(.horizontal, 12)
                                     
                                 }.padding(.top, getConversationGridPadding())
-                                    .onChange(of: contentOffset, perform: { value in
-                                        // Do something
-                                        if recognizeSwipeUp && !conversationViewModel.showCamera && !conversationViewModel.isRecordingAudio && !conversationViewModel.showPhotos {
-                                            
-                                            if initialOffset == 0 && contentOffset < 0 {
-                                                initialOffset = contentOffset
-                                            }
-                                        
-                                            print(contentOffset)
-                                            
-                                            if contentOffset > initialOffset && contentOffset < 0{
-                                                withAnimation {
-                                                    conversationViewModel.showCamera = true
-                                                }
-                                            }
-                                        }
-                                    })
                                 
-                            })
-                                .background(Color.systemWhite)
-                                .flippedUpsideDown()
-                                .scaleEffect(x: -1, y: 1, anchor: .center)
-                                .zIndex(2)
-                                .transition(.move(edge: .bottom))
-                                .onAppear {
-                                    recognizeSwipeUp = false
-                                    initialOffset = 0
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                        recognizeSwipeUp = true
-                                    }
-                                }
-                            
-                            
-                            
+                            }
+                            .background(Color.systemWhite)
+                            .flippedUpsideDown()
+                            .scaleEffect(x: -1, y: 1, anchor: .center)
+                            .zIndex(2)
+                            .transition(.move(edge: .bottom))
                             
                         }
                         
@@ -175,15 +147,7 @@ struct ConversationGridView: View {
                         if conversationViewModel.showCamera && !viewModel.isSelectingChats {
                             CameraViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
-                                .transition(.move(edge: .bottom))
-                                .onAppear(perform: {
-                                    recognizeSwipeUp = false
-                                })
-                                .onDisappear {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        recognizeSwipeUp = true
-                                    }
-                                }
+                            
                         }
                     }
                     
@@ -196,27 +160,12 @@ struct ConversationGridView: View {
                         photoPicker
                             .frame(width: SCREEN_WIDTH, height: conversationViewModel.photoBaseHeight)
                             .transition(.move(edge: .bottom))
-                            .onAppear(perform: {
-                                recognizeSwipeUp = false
-                            })
-                            .onDisappear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    recognizeSwipeUp = true
-                                }
-                            }
+                        
                     }
                     
                     
                     if conversationViewModel.showKeyboard {
                         KeyboardView(text: $text)
-                            .onAppear(perform: {
-                                recognizeSwipeUp = false
-                            })
-                            .onDisappear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    recognizeSwipeUp = true
-                                }
-                            }
                     }
                     
                     if viewModel.showSearchBar {
@@ -257,12 +206,6 @@ struct ConversationGridView: View {
                     viewModel.sortChats()
                 }
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    recognizeSwipeUp = true
-                }
-            })
-            .onDisappear(perform: {
-                recognizeSwipeUp = false
             })
             .navigationBarHidden(true)
             .zIndex(1)
@@ -413,28 +356,28 @@ struct NavView: View {
                                         .padding(.leading, -2)
                                 }
                                 
-//                                Button(action: {
-//                                    cameraViewModel.toggleIsFrontFacing()
-//                                }, label: {
-//
-//                                    if cameraViewModel.isRotating {
-//
-//                                        Image(systemName: "arrow.triangle.2.circlepath.camera")
-//                                            .resizable()
-//                                            .foregroundColor(.toolBarIconDarkGray)
-//                                            .scaledToFit()
-//                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
-//
-//                                    } else {
-//                                        Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-//                                            .resizable()
-//                                            .renderingMode(.template)
-//                                            .foregroundColor(.toolBarIconDarkGray)
-//                                            .scaledToFit()
-//                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
-//                                    }
-//
-//                                })
+                                //                                Button(action: {
+                                //                                    cameraViewModel.toggleIsFrontFacing()
+                                //                                }, label: {
+                                //
+                                //                                    if cameraViewModel.isRotating {
+                                //
+                                //                                        Image(systemName: "arrow.triangle.2.circlepath.camera")
+                                //                                            .resizable()
+                                //                                            .foregroundColor(.toolBarIconDarkGray)
+                                //                                            .scaledToFit()
+                                //                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                //
+                                //                                    } else {
+                                //                                        Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
+                                //                                            .resizable()
+                                //                                            .renderingMode(.template)
+                                //                                            .foregroundColor(.toolBarIconDarkGray)
+                                //                                            .scaledToFit()
+                                //                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
+                                //                                    }
+                                //
+                                //                                })
                             }
                             
                             Spacer()
@@ -444,7 +387,7 @@ struct NavView: View {
                                     withAnimation {
                                         viewModel.showAddFriends = true
                                     }
-                                    AuthViewModel.shared.currentUser?.hasUnseenFriendRequest = false
+                                    AuthViewModel.shared.hasUnseenFriendRequest = false
                                 } label: {
                                     ZStack {
                                         
@@ -465,7 +408,7 @@ struct NavView: View {
                                             .padding(.top, -3)
                                         
                                         
-                                        if AuthViewModel.shared.currentUser?.hasUnseenFriendRequest ?? false {
+                                        if authViewModel.hasUnseenFriendRequest {
                                             VStack {
                                                 HStack {
                                                     Spacer()
@@ -611,7 +554,7 @@ struct SelectedChatsView: View {
                         
                         ZStack {
                             
-                           Circle().frame(width: 48, height: 48)
+                            Circle().frame(width: 48, height: 48)
                                 .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
                             
                             Image(systemName: "location.north.fill")
@@ -622,9 +565,9 @@ struct SelectedChatsView: View {
                                 .frame(width: 30, height: 30)
                                 .scaledToFit()
                                 .padding(.horizontal)
-
+                            
                         }
-                       
+                        
                     }.disabled(viewModel.selectedChats.count == 0)
                     
                 }

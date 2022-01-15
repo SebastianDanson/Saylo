@@ -28,7 +28,7 @@ struct ProfileView: View {
                 
                 VStack(spacing: 32) {
                     
-                    ProfileHeaderView(image: $profileImage, showSettings: $showSettings)
+                    ProfileHeaderView(currentImage: AuthViewModel.shared.currentUser?.profileImageUrl ?? "", image: $profileImage, showSettings: $showSettings)
                     
                     SettingsView(profileImage: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
                     

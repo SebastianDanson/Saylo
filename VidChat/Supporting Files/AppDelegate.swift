@@ -197,6 +197,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         let data = userInfo["data"] as? [String:Any]
         let chatId = data?["chatId"] as? String
         let userId = data?["userId"] as? String
+        
+        let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
+        let acceptedFriendRequest = data?["acceptedFriendRequest"] as? Bool ?? false
 
         let fromCurrentUser = AuthViewModel.shared.currentUser?.id == userId
         
@@ -207,6 +210,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             notificationArray.append(chatId)
             defaults?.set(notificationArray, forKey: "notifications")
             UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
+        }
+        
+        if isFriendRequest {
+            print("YESSIR")
+            AuthViewModel.shared.hasUnseenFriendRequest = true
+        }
+        
+        if acceptedFriendRequest {
+            print("YUP")
+            AuthViewModel.shared.fetchUser {
+                print("YUP 2")
+
+                ConversationGridViewModel.shared.fetchConversations()
+            }
         }
     
         if chatId != ConversationViewModel.shared.chatId && !fromCurrentUser {

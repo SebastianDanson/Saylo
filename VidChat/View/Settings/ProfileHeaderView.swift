@@ -12,6 +12,8 @@ struct ProfileHeaderView: View {
     
     let authViewModel = AuthViewModel.shared
     
+    let currentImage: String
+    
     @Binding var image: UIImage?
     @Binding var showSettings: Bool
     
@@ -39,7 +41,7 @@ struct ProfileHeaderView: View {
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
             } else {
-                KFImage(URL(string: AuthViewModel.shared.profileImageUrl ?? ""))
+                KFImage(URL(string: currentImage))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 100, height: 100)

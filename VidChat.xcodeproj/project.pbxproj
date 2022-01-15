@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0616EBFE279248E5006565FE /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EBFD279248E5006565FE /* ChatSettingsView.swift */; };
+		0616EC0227928808006565FE /* AddUserToGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0127928808006565FE /* AddUserToGroupView.swift */; };
+		0616EC04279288D3006565FE /* AddUserToChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC03279288D3006565FE /* AddUserToChatCell.swift */; };
+		0616EC0727928906006565FE /* NewConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0627928906006565FE /* NewConversationCell.swift */; };
+		0616EC0927928978006565FE /* AddedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0827928978006565FE /* AddedChatsView.swift */; };
+		0616EC0B2792899C006565FE /* CreateNewGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0A2792899C006565FE /* CreateNewGroupView.swift */; };
+		0616EC0D27928AD9006565FE /* ChatSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */; };
 		0626343F2780F14D00C3BE39 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0626343E2780F14D00C3BE39 /* Friend.swift */; };
 		062D28DA277AD21E00B25637 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = 062D28D9277AD21E00B25637 /* CropViewController */; };
 		062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062D28DB277AD4C100B25637 /* ImageCropper.swift */; };
@@ -152,6 +159,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0616EBFD279248E5006565FE /* ChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
+		0616EC0127928808006565FE /* AddUserToGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserToGroupView.swift; sourceTree = "<group>"; };
+		0616EC03279288D3006565FE /* AddUserToChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserToChatCell.swift; sourceTree = "<group>"; };
+		0616EC0627928906006565FE /* NewConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationCell.swift; sourceTree = "<group>"; };
+		0616EC0827928978006565FE /* AddedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddedChatsView.swift; sourceTree = "<group>"; };
+		0616EC0A2792899C006565FE /* CreateNewGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGroupView.swift; sourceTree = "<group>"; };
+		0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsViewModel.swift; sourceTree = "<group>"; };
 		0626343E2780F14D00C3BE39 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
 		062D28DB277AD4C100B25637 /* ImageCropper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCropper.swift; sourceTree = "<group>"; };
 		062D28DD277ADCD200B25637 /* ContactUsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsView.swift; sourceTree = "<group>"; };
@@ -296,6 +310,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0616EC00279287DC006565FE /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				0616EBFD279248E5006565FE /* ChatSettingsView.swift */,
+				0616EC0127928808006565FE /* AddUserToGroupView.swift */,
+				0616EC03279288D3006565FE /* AddUserToChatCell.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		0616EC05279288EB006565FE /* NewConversation */ = {
+			isa = PBXGroup;
+			children = (
+				0616EC0827928978006565FE /* AddedChatsView.swift */,
+				0616EC0A2792899C006565FE /* CreateNewGroupView.swift */,
+				063CAABA277BEF1900C84318 /* NewConversationView.swift */,
+				0616EC0627928906006565FE /* NewConversationCell.swift */,
+			);
+			path = NewConversation;
+			sourceTree = "<group>";
+		};
 		063CAAB0277B9CE700C84318 /* AddFriends */ = {
 			isa = PBXGroup;
 			children = (
@@ -363,6 +398,7 @@
 		3F1768242714A3F00049ADBA /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
+				0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */,
 				3F1768272714A8080049ADBA /* ConversationViewModel.swift */,
 				3F712479276FC92C00C8457D /* ConversationPlayerViewModel.swift */,
 			);
@@ -374,7 +410,6 @@
 			children = (
 				3F8B02A62700EDD100841565 /* ConversationtGridView.swift */,
 				3F08F26E2700F768009E0029 /* ConversationGridCell.swift */,
-				063CAABA277BEF1900C84318 /* NewConversationView.swift */,
 				0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */,
 				065D2DF42788A8D6002F3816 /* ChatImage.swift */,
 			);
@@ -435,6 +470,7 @@
 				3F485D8926FD457A0071532B /* Utils */,
 				3F7786BD27234F26005AF9DA /* Supporting Files */,
 				3F485D7E26FD453D0071532B /* Assets.xcassets */,
+				3F485D8126FD453D0071532B /* Preview Assets.xcassets */,
 				3F485D8326FD453D0071532B /* Info.plist */,
 				063A89FE2783CC4E008A8B71 /* GoogleService-Info.plist */,
 				3F485D8026FD453D0071532B /* Preview Content */,
@@ -445,7 +481,6 @@
 		3F485D8026FD453D0071532B /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				3F485D8126FD453D0071532B /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -657,6 +692,8 @@
 		3F8B029F26FF90AF00841565 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
+				0616EC05279288EB006565FE /* NewConversation */,
+				0616EC00279287DC006565FE /* Settings */,
 				069E4A6A2772D23400996824 /* ConversationFeedView.swift */,
 				3FB8B5D7270FAACA00355DB9 /* ConversationView.swift */,
 				3F8BDF3727683CA2005E425F /* ConversationPlayerView.swift */,
@@ -842,13 +879,16 @@
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
 				06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
+				0616EC0927928978006565FE /* AddedChatsView.swift in Sources */,
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
 				06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */,
+				0616EC0D27928AD9006565FE /* ChatSettingsViewModel.swift in Sources */,
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
 				3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */,
 				063CAAB3277B9D0200C84318 /* AddFriendsView.swift in Sources */,
 				3F8B029926FF7DC200841565 /* EditProfileView.swift in Sources */,
 				063CAAB7277BA0C300C84318 /* SettingsView.swift in Sources */,
+				0616EBFE279248E5006565FE /* ChatSettingsView.swift in Sources */,
 				3F4C618127402A09003EE726 /* ConversationService.swift in Sources */,
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
 				3F71247A276FC92C00C8457D /* ConversationPlayerViewModel.swift in Sources */,
@@ -883,6 +923,8 @@
 				06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */,
 				06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */,
 				3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */,
+				0616EC0727928906006565FE /* NewConversationCell.swift in Sources */,
+				0616EC0227928808006565FE /* AddUserToGroupView.swift in Sources */,
 				3F485DCE26FE2A080071532B /* CustomSecureField.swift in Sources */,
 				06F1A32A277D334F00A0F992 /* PrivacyPolicyView.swift in Sources */,
 				3F112B732720716300BA2A73 /* VideoCallView.swift in Sources */,
@@ -902,6 +944,7 @@
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
 				3F485DBE26FE23AB0071532B /* ImagePicker.swift in Sources */,
 				3F485DC626FE28860071532B /* LoginView.swift in Sources */,
+				0616EC0B2792899C006565FE /* CreateNewGroupView.swift in Sources */,
 				3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */,
 				069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */,
 				3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */,
@@ -911,6 +954,7 @@
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,
 				3F112B7E27207AFE00BA2A73 /* VideoCollectionViewCell.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,
+				0616EC04279288D3006565FE /* AddUserToChatCell.swift in Sources */,
 				3FFD034B272CAE6A000BEADE /* VideoHelper.swift in Sources */,
 				065D2DF52788A8D6002F3816 /* ChatImage.swift in Sources */,
 				3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */,

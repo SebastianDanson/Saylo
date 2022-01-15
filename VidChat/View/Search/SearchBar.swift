@@ -132,11 +132,19 @@ struct SearchTextField: UIViewRepresentable {
                     }
                 }
                 
+            } else if ConversationViewModel.shared.chat != nil {
+                
+                if let text = textField.text,
+                   let textRange = Range(range, in: text) {
+                    let updatedText = text.replacingCharacters(in: textRange,
+                                                               with: string)
+                    self.text = updatedText
+                    ChatSettingsViewModel.shared.filterUsers(withText: updatedText)
+
+                }
+                
             } else {
                 
-//                if string.isEmpty {
-//                    text
-//                }
                 if let text = textField.text,
                    let textRange = Range(range, in: text) {
                     let updatedText = text.replacingCharacters(in: textRange,
@@ -145,10 +153,7 @@ struct SearchTextField: UIViewRepresentable {
                     ConversationGridViewModel.shared.filterUsers(withText: updatedText)
 
                 }
-                
-//                let textString = string.isEmpty ?  : text
-                print(string, range.lowerBound, range.upperBound, range.location, range.length, "EMPTY")
-                
+         
             }
             
             return true

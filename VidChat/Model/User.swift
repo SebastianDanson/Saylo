@@ -37,7 +37,6 @@ class User: ObservableObject  {
     //friends
     var friends: [String]
     var friendRequests: [String]
-    @Published var hasUnseenFriendRequest: Bool
 
     init(dictionary: [String:Any], id: String) {
         
@@ -60,7 +59,6 @@ class User: ObservableObject  {
         //friends
         self.friends = dictionary["friends"] as? [String] ?? [String]()
         self.friendRequests = dictionary["friendRequests"] as? [String] ?? [String]()
-        self.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
 
         //tokens
         self.fcmToken = dictionary["fcmToken"] as? String ?? ""
@@ -69,6 +67,9 @@ class User: ObservableObject  {
         //chat
         self.conversationsDic = dictionary["conversations"] as? [[String:Any]] ?? [[String:Any]]()
         conversationsDic.forEach({self.chats.append(UserChat(dictionary: $0))})
+        
+        AuthViewModel.shared.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
+
     }
 }
 
