@@ -8,5 +8,6 @@
 import Foundation
 
 func getMessages() -> [Message] {
-    return ConversationViewModel.shared.showSavedPosts ? ConversationViewModel.shared.savedMessages : ConversationViewModel.shared.messages
+    return ConversationViewModel.shared.showSavedPosts ? ConversationViewModel.shared.savedMessages :
+    (ConversationViewModel.shared.showUnreadMessages ? ConversationViewModel.shared.unreadMessages: ConversationViewModel.shared.messages)
 }

@@ -46,7 +46,7 @@ struct AddedUserView: View {
             
             VStack(alignment: .center, spacing: 4) {
                 
-                ChatImage(chat: chat, diameter: 44)
+                ChatImageCircle(chat: chat, diameter: 44)
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 

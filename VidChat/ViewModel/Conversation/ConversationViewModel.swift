@@ -30,8 +30,10 @@ class ConversationViewModel: ObservableObject {
     
     @Published var messages = [Message]()
     @Published var savedMessages = [Message]()
+    @Published var unreadMessages = [Message]()
     @Published var noSavedMessages = false
     @Published var noMessages = false
+    @Published var showUnreadMessages = false
 
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
@@ -67,11 +69,8 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
-    @Published var isSending = false {
-        didSet {
-            print("WAS SET", isSending)
-        }
-    }
+    @Published var isSending = false
+       
     @Published var hasSent = false
     
     @Published var index = 0
@@ -92,6 +91,27 @@ class ConversationViewModel: ObservableObject {
         CacheManager.removeOldFiles()
         
         //TODO test removeing old files
+//        setUnreadMessages()
+    }
+            
+    func setUnreadMessages() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        
+        self.unreadMessages.removeAll()
+        
+        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+        newMessagesArray.forEach({
+            if let id = $0["id"] as? String {
+                self.unreadMessages.append(Message(dictionary: $0, id: id))
+            }
+        })
+        
+        if unreadMessages.count > 0 {
+            self.showUnreadMessages = true
+        }
+        
+//        defaults?.set(newMessagesArray, forKey: "messages")
     }
     
     func setChat(chat: Chat) {

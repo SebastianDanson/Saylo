@@ -90,7 +90,7 @@ struct ConversationGridView: View {
                                 
                                 
                                 VStack {
-                                    LazyVGrid(columns: items, spacing: 14, content: {
+                                    LazyVGrid(columns: items, spacing: 18, content: {
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                             ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
@@ -211,7 +211,10 @@ struct ConversationGridView: View {
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
             .onAppear {}
-            
+//            .popover(isPresented: $conversationViewModel.showUnreadMessages, content: {
+//               UnreadMessagesView()
+//            })
+           
         }
     }
     
@@ -495,6 +498,7 @@ struct NavView: View {
         .sheet(isPresented: $viewModel.showSettingsView) {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
+    
         .frame(width: SCREEN_WIDTH, height: conversationViewModel.showKeyboard ? TOP_PADDING + 40 : TOP_PADDING + 50)
         .background(Color.systemWhite)
         .zIndex(2)
@@ -597,7 +601,7 @@ struct SelectedChatView: View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .center, spacing: 4) {
                 
-                ChatImage(chat: chat, diameter: 44)
+                ChatImageCircle(chat: chat, diameter: 44)
                     .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
                 
                 

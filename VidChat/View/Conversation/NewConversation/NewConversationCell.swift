@@ -21,7 +21,7 @@ struct NewConversationCell: View {
             
             HStack(spacing: 12) {
                 
-                ChatImage(chat: chat, diameter: 40)
+                ChatImageCircle(chat: chat, diameter: 40)
                     .padding(.leading, 12)
                 
                 

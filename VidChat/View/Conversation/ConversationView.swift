@@ -56,7 +56,7 @@ struct ConversationView: View {
                     
                     if !viewModel.showSavedPosts {
                         
-                        ConversationFeedView(showSavedPosts: false)
+                        ConversationFeedView(messages: $viewModel.messages)
                             .overlay(
                                 VStack {
                                     if viewModel.messages.count == 0, let chat = viewModel.chat {
@@ -144,7 +144,7 @@ struct ConversationView: View {
             
             if viewModel.showSavedPosts {
                 
-                ConversationFeedView(showSavedPosts: true)
+                ConversationFeedView(messages: $viewModel.messages)
                     .background(Color.systemWhite)
                     .overlay(
                         VStack {
@@ -165,13 +165,6 @@ struct ConversationView: View {
                     .transition(.move(edge: .bottom))
                     .zIndex(6)
             }
-            //                .overlay(
-            //                    ZStack {
-            //                        //                if showSavedPosts && viewModel.noSavedMessages {
-            //                        //                }
-            //                    } , alignment: .center
-            //                )
-            
         }
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
@@ -475,7 +468,7 @@ struct ChatOptions: View {
                         }
                     } label: {
                         
-                        ChatImage(chat: chat, diameter: width)
+                        ChatImageCircle(chat: chat, diameter: width)
                             .padding(.vertical, 10)
                             .overlay(
                                 

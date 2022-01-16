@@ -20,6 +20,8 @@ class ConversationGridViewModel: ObservableObject {
     @Published var showAddFriends: Bool = false
     @Published var showNewChat: Bool = false
     @Published var chats = [Chat]()
+    @Published var unreadChats = [Chat]()
+    @Published var showUnreadChats = false
     @Published var showConversation = false
     @Published var isCalling = false
     @Published var temp = false
@@ -33,8 +35,9 @@ class ConversationGridViewModel: ObservableObject {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
-        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
-        print(newMessagesArray, "NEWMES")
+     
+        
+        
         var chats = [Chat]()
         chatDic?.forEach({
             if let id = $0["id"] as? String {

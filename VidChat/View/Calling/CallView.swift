@@ -105,7 +105,7 @@ struct DialingView: View {
         VStack(spacing: 2) {
             VStack(spacing: 8) {
                 
-                ChatImage(chat: chat, diameter: 100)
+                ChatImageCircle(chat: chat, diameter: 100)
            
                 Text("\(chat.name)")
                     .foregroundColor(.white)

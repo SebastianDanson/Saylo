@@ -20,7 +20,7 @@ struct NoMessagesView: View {
             Spacer()
             
             
-            ChatImage(chat: chat, diameter: 110)
+            ChatImageCircle(chat: chat, diameter: 110)
             
             Text(chat.name)
                 .font(.system(size: 24, weight: .bold))

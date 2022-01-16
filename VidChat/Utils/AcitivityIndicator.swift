@@ -57,3 +57,32 @@ struct ActivityIndicator: View {
     
 }
 
+
+struct ActivityIndicatorRectangle: View {
+    
+    @Binding var shouldAnimate: Bool
+    @State private var isLoading = false
+    let width: CGFloat
+
+       var body: some View {
+           ZStack {
+    
+               RoundedRectangle(cornerRadius: 2)
+                   .stroke(Color(.systemGray5), lineWidth: 2)
+                   .frame(width: width, height: 2)
+    
+               RoundedRectangle(cornerRadius: 2)
+                   .stroke(Color.mainBlue, lineWidth: 2)
+                   .frame(width: width/3, height: 2)
+                   .offset(x: isLoading ? (width - width/3)/2 : (-width + width/3)/2, y: 0)
+                   .animation(Animation.linear(duration: 0.5).repeatForever(autoreverses: true))
+           }
+           .onAppear() {
+               self.isLoading = true
+           }
+           .onDisappear() {
+               self.isLoading = false
+           }
+       }
+}
+

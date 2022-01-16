@@ -11,7 +11,7 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
-    let width = SCREEN_WIDTH/4.2
+    let width = SCREEN_WIDTH/3 - 20
     let textColor: Color
     
     init(chat: Binding<Chat>, textColor: Color = Color(red: 136/255, green: 137/255, blue: 141/255)) {
@@ -31,7 +31,8 @@ struct ConversationGridCell: View {
                             .frame(width: width + 11, height: width + 11)
                     }
                     
-                    ChatImage(chat: chat, diameter: width)
+                    ChatImage(chat: chat, width: width)
+                    
                     .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
                         .overlay(
                             
@@ -40,8 +41,8 @@ struct ConversationGridCell: View {
                                 if chat.hasSent {
                                     
                                     ZStack {
-                                        Circle()
-                                            .frame(width: width, height: width)
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .frame(width: width, height: width * 1.35)
                                             .foregroundColor(.mainBlue)
                                             .opacity(0.9)
                                         
@@ -57,9 +58,14 @@ struct ConversationGridCell: View {
                                 
                                 
                                 if chat.isSending {
-                                    
-                                    ActivityIndicator(shouldAnimate: $chat.isSending, diameter: width + 10)
+                                VStack {
+                                    Spacer()
+                                    ActivityIndicatorRectangle(shouldAnimate: $chat.isSending, width: width - 28)
+                                        .padding(.bottom, 10)
                                         .transition(.opacity)
+                                    
+                                }
+                              
                                 }
                             }
                             
@@ -70,7 +76,7 @@ struct ConversationGridCell: View {
                 
                 
                 Text(chat.name)
-                    .font(.system(size: 13, weight: .regular))
+                    .font(.system(size: 14, weight: .regular))
                     .lineLimit(1)
                     .foregroundColor(textColor)
                     .overlay(

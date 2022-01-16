@@ -22,8 +22,8 @@ struct ConversationFeedView: View {
     @State var updatePreference = false
     @State var isFirstLoad = true
     @StateObject private var viewModel = ConversationViewModel.shared
-    let showSavedPosts: Bool
-    
+    @Binding var messages: [Message]
+        
     var body: some View {
         
         ScrollView {
@@ -32,12 +32,12 @@ struct ConversationFeedView: View {
                 
                 VStack(spacing: 0) {
                     
-                    ForEach(showSavedPosts ? Array(viewModel.savedMessages.enumerated()) : Array(viewModel.messages.enumerated()), id: \.1.id) { i, element in
-                        MessageCell(message: getMessages()[i])
+                    ForEach(Array(messages.enumerated()), id: \.1.id) { i, element in
+                        MessageCell(message: messages[i])
 //                            .transition(.move(edge: .bottom))
-                            .offset(x: 0, y: -24)
+//                            .offset(x: 0, y: -24)
                             .background(
-                                getMessages()[i].type != .Text ? GeometryReader { geo in
+                                messages[i].type != .Text ? GeometryReader { geo in
                                     Color.systemWhite.preference(
                                         key: ViewOffsetsKey.self,
                                         value: [i: geo.frame(in: .named("scrollView")).midY]) } : nil)
@@ -46,9 +46,9 @@ struct ConversationFeedView: View {
                                 if let chat = viewModel.chat {
                                     if isFirstLoad, i == chat.lastReadMessageIndex {
                                         isFirstLoad = false
-                                        reader.scrollTo(getMessages()[i].id, anchor: .center)
-                                    } else if !isFirstLoad, i == getMessages().count - 1 {
-                                        reader.scrollTo(getMessages()[i].id, anchor: .center)
+                                        reader.scrollTo(messages[i].id, anchor: .center)
+                                    } else if !isFirstLoad, i == messages.count - 1 {
+                                        reader.scrollTo(messages[i].id, anchor: .center)
                                     }
                                 }
                                 
@@ -62,7 +62,9 @@ struct ConversationFeedView: View {
                         guard updatePreference else { return }
 
                         let prevMiddleItemNo = middleItemNo
-                        middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1) < 15 })?.key ?? -1
+                        middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
+                            
+                            prefs.forEach({print(HALF_SCREEN_HEIGHT - $1, "RRR")})
                         //20
 //                            prefs.forEach({print($1, SCREEN_HEIGHT/2 )})
 //                        middleItemNo = prefs.first(where: { $1 > 20 && $1 < 50 })?.key ?? -1
@@ -81,12 +83,12 @@ struct ConversationFeedView: View {
 //                                }
                                 
                                 viewModel.currentPlayer?.pause()
-                                viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
+                                viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
 
                                 viewModel.currentPlayer?.play()
                                 
                                 withAnimation {
-                                    reader.scrollTo(getMessages()[middleItemNo].id, anchor: .center)
+                                    reader.scrollTo(messages[middleItemNo].id, anchor: .center)
                                 }
                             }
                         }
@@ -101,11 +103,11 @@ struct ConversationFeedView: View {
                     }).onChange(of: viewModel.index, perform: { newValue in
                         middleItemNo += 1
                         print("CHANGE")
-                        if middleItemNo < 1 || middleItemNo >= getMessages().count {return}
+                        if middleItemNo < 1 || middleItemNo >= messages.count {return}
                         
                         updatePreference = false
 
-                        let message = getMessages()[middleItemNo]
+                        let message = messages[middleItemNo]
                         
                         if message.type == .Text {
                             withAnimation {
@@ -118,7 +120,7 @@ struct ConversationFeedView: View {
                         
                         viewModel.currentPlayer?.pause()
                         
-                        viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == getMessages()[middleItemNo].id})?.player
+                        viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
                         viewModel.currentPlayer?.play()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -127,7 +129,7 @@ struct ConversationFeedView: View {
                         
                     })
                     .onChange(of: viewModel.scrollToBottom) { newValue in
-                        if let last = getMessages().last {
+                        if let last = messages.last {
                             reader.scrollTo(last.id, anchor: .bottom)
                         }
                     }
@@ -151,9 +153,9 @@ struct ConversationFeedView: View {
         .background(Color.systemWhite)
         .coordinateSpace(name: "scrollView")
         .onAppear {
-            self.middleItemNo = viewModel.chat?.lastReadMessageIndex ?? -1
+            self.middleItemNo = viewModel.chat?.lastReadMessageIndex ?? 0
             
-            let messages = getMessages()
+            let messages = messages
             if messages.count > middleItemNo && middleItemNo >= 0 {
                 if messages[middleItemNo].type == .Video || messages[middleItemNo].type == .Audio {
                     viewModel.isPlaying = true
@@ -168,7 +170,7 @@ struct ConversationFeedView: View {
         //TODO if no saved messages show an alert saying no saved message and telling them how to do it
     }
     
-    func getMessages() -> [Message] {
-        showSavedPosts ? viewModel.savedMessages : viewModel.messages
-    }
+//    func getMessages() -> [Message] {
+//        showSavedPosts ? viewModel.savedMessages : viewModel.messages
+//    }
 }
