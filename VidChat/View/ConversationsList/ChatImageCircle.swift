@@ -19,7 +19,7 @@ struct ChatImage: View {
     
     init(chat: Chat, width: CGFloat) {
         
-        let currentUserId = AuthViewModel.shared.currentUser?.id ?? ""
+        let currentUserId = AuthViewModel.shared.getUserId()
         
         if chat.isDm || chat.profileImageUrl != "" {
             self.profileImage1 = chat.profileImageUrl
@@ -48,32 +48,34 @@ struct ChatImage: View {
                     
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.lighterGray, lineWidth: addedWidth)
-                        .frame(width: width/2 + addedWidth, height:  (width/2 + addedWidth) * ratio)
+                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth) * ratio)
 
                     KFImage(URL(string: profileImage1))
                         .resizable()
                         .scaledToFill()
-                        .frame(width: width/2 + addedWidth, height:  (width/2 + addedWidth) * ratio)
+                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth) * ratio)
                         .cornerRadius(10)
                     
                 }
-                .padding(.top, width/2 - addedWidth)
-                .padding(.trailing, width/3 - addedWidth)
+                .padding(.top, width/2.3)
+                .padding(.trailing, width/3.2)
                 .zIndex(2)
                       
                 
                 KFImage(URL(string: profileImage2))
                     .resizable()
                     .scaledToFill()
-                    .frame(width: width/2 + addedWidth, height: (width/2 + addedWidth) * ratio)
+                    .frame(width: width/1.8 + addedWidth, height: (width/1.8 + addedWidth) * ratio)
                     .cornerRadius(10)
-                    .padding(.bottom, width/2 - addedWidth)
-                    .padding(.leading, width/3 - addedWidth)
+                    .padding(.bottom, width/2.3)
+                    .padding(.leading, width/3.1)
                 
             }
             .frame(width: width, height: width * 1.35)
             .background(Color.lighterGray)
             .cornerRadius(16)
+            .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 10, x: 0, y: 2)
+
             
         } else {
             
@@ -83,6 +85,7 @@ struct ChatImage: View {
                 .background(Color(.systemGray))
                 .frame(width: width, height: width * ratio)
                 .cornerRadius(16)
+                .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 6)
 //                .clipShape(Circle())
         }
         

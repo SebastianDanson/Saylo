@@ -126,7 +126,7 @@ class AddFriendsViewModel: ObservableObject {
         return s1.lowercased().levenshtein(s2.lowercased())
     }
     
-    func sendFriendRequest(toUser user: User) {
+    func sendFriendRequest(toUser user: ChatMember) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
         COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayUnion([currentUser.id]),
@@ -143,20 +143,20 @@ class AddFriendsViewModel: ObservableObject {
         
     }
     
-    func removeFriendRequest(toUser user: User) {
+    func removeFriendRequest(toUser user: ChatMember) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
         COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayRemove([currentUser.id])])
     }
     
-    func rejectFriendRequest(fromUser user: User) {
+    func rejectFriendRequest(fromUser user: ChatMember) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
         currentUser.friendRequests.removeAll(where: {$0 == user.id})
         COLLECTION_USERS.document(currentUser.id).updateData(["friendRequests": FieldValue.arrayRemove([user.id])])
     }
     
-    func acceptFriendRequest(fromUser friend: User) {
+    func acceptFriendRequest(fromUser friend: ChatMember) {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
         
@@ -180,7 +180,7 @@ class AddFriendsViewModel: ObservableObject {
         
         let friendData = [
             "userId": friend.id,
-            "profileImage": friend.profileImageUrl,
+            "profileImage": friend.profileImage,
             "fcmToken":friend.fcmToken,
             "pushKitToken":friend.pushKitToken,
             "username":friend.username,

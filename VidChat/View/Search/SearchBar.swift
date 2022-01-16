@@ -51,6 +51,7 @@ struct SearchBar: View {
                         isEditing = false
                         text = ""
                         ConversationGridViewModel.shared.showAllChats()
+                        ChatSettingsViewModel.shared.showAllChats()
                         UIApplication.shared.endEditing()
                         
                       
@@ -132,17 +133,6 @@ struct SearchTextField: UIViewRepresentable {
                     }
                 }
                 
-            } else if ConversationViewModel.shared.chat != nil {
-                
-                if let text = textField.text,
-                   let textRange = Range(range, in: text) {
-                    let updatedText = text.replacingCharacters(in: textRange,
-                                                               with: string)
-                    self.text = updatedText
-                    ChatSettingsViewModel.shared.filterUsers(withText: updatedText)
-
-                }
-                
             } else {
                 
                 if let text = textField.text,
@@ -150,8 +140,13 @@ struct SearchTextField: UIViewRepresentable {
                     let updatedText = text.replacingCharacters(in: textRange,
                                                                with: string)
                     self.text = updatedText
+                    
+                    ChatSettingsViewModel.shared.filterUsers(withText: updatedText)
                     ConversationGridViewModel.shared.filterUsers(withText: updatedText)
 
+                } else {
+                    ConversationGridViewModel.shared.showAllChats()
+                    ChatSettingsViewModel.shared.showAllChats()
                 }
          
             }

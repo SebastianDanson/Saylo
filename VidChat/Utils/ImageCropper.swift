@@ -14,9 +14,12 @@ struct ImageCropper: UIViewControllerRepresentable {
     @Binding var showImageCropper: Bool
     @Binding var showImagePicker: Bool
     
-    
+    var onDone: (() -> Void)?
+
     func makeUIViewController(context: Context) -> some UIViewController {
-        let picker = CropViewController(croppingStyle: .circular, image: image ?? UIImage())
+        let picker = CropViewController(croppingStyle: .default, image: image ?? UIImage())
+        picker.aspectRatioLockEnabled = true
+        picker.customAspectRatio = CGSize(width: 1,height: 1)
         picker.delegate = context.coordinator
         return picker
     }
@@ -39,6 +42,11 @@ struct ImageCropper: UIViewControllerRepresentable {
         
         func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
             self.parent.image = image
+            
+            if let onDone = self.parent.onDone {
+                onDone()
+            }
+
             withAnimation {
                 self.parent.showImageCropper = false
             }

@@ -32,7 +32,7 @@ struct ConversationView: View {
         ZStack {
             
             if let chat = viewModel.chat {
-                NavigationLink(destination: ChatSettingsView(showSettings: $showSettings, chat: chat)
+                NavigationLink(destination: ChatSettingsView(chat: chat, showSettings: $showSettings)
                                 .navigationBarHidden(true)
                                , isActive: $showSettings) { EmptyView() }
             }

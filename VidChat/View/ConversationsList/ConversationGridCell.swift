@@ -11,8 +11,9 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
-    let width = SCREEN_WIDTH/3 - 20
+    let width = SCREEN_WIDTH/3 - 32
     let textColor: Color
+    let ratio = 1.35
     
     init(chat: Binding<Chat>, textColor: Color = Color(red: 136/255, green: 137/255, blue: 141/255)) {
         self._chat = chat
@@ -26,14 +27,13 @@ struct ConversationGridCell: View {
                 
                 ZStack {
                     
-                    if chat.hasUnreadMessage {
-                        Circle().strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 3))
-                            .frame(width: width + 11, height: width + 11)
-                    }
+//                    if chat.hasUnreadMessage {
+//                        RoundedRectangle(cornerRadius: 20)
+//                            .strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 3))
+//                            .frame(width: width + 11, height: width * ratio  + 11)
+//                    }
                     
                     ChatImage(chat: chat, width: width)
-                    
-                    .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 8)
                         .overlay(
                             
                             ZStack {
@@ -41,8 +41,9 @@ struct ConversationGridCell: View {
                                 if chat.hasSent {
                                     
                                     ZStack {
+                                        
                                         RoundedRectangle(cornerRadius: 16)
-                                            .frame(width: width, height: width * 1.35)
+                                            .frame(width: width, height: width * ratio)
                                             .foregroundColor(.mainBlue)
                                             .opacity(0.9)
                                         
@@ -83,10 +84,10 @@ struct ConversationGridCell: View {
                         ZStack {
                             if chat.hasUnreadMessage {
                                 Circle()
-                                    .frame(width: 10, height: 10)
+                                    .frame(width: 12, height: 12)
                                     .foregroundColor(.mainBlue)
                             }
-                        }.padding(.leading, -15)
+                        }.padding(.leading, -17)
                         
                         , alignment: .leading
                     )

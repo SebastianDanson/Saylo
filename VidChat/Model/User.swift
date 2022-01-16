@@ -8,68 +8,46 @@
 import Foundation
 import Firebase
 
-class User: ObservableObject  {
+class User: ChatMember, ObservableObject {
     
-    //Doc info
-    let id: String
-    
-    //name
-    var username: String
-    var firstName: String
-    var lastName: String
-
     //contact unfo
     let email: String
     let phoneNumber: String
-
+    
     //profile
     var profileImageUrl: String
     let createdAt: Timestamp
-
+    
     //chat
     @Published var chats = [UserChat]()
     var conversationsDic: [[String:Any]]
     
-    //tokens
-    var fcmToken: String
-    let pushKitToken: String
     
     //friends
     var friends: [String]
     var friendRequests: [String]
-
+    
     init(dictionary: [String:Any], id: String) {
         
-        //Doc info
-        self.id = id
-
-        //name
-        self.username = dictionary["username"] as? String ?? ""
-        self.firstName = dictionary["firstName"] as? String ?? ""
-        self.lastName = dictionary["lastName"] as? String ?? ""
-
         //contact
         self.email = dictionary["email"] as? String ?? ""
         self.phoneNumber = dictionary["phoneNumber"] as? String ?? ""
         
         //profile
-        self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
+        self.profileImageUrl = dictionary["profileImage"] as? String ?? ""
         self.createdAt = dictionary["createdAt"] as? Timestamp ?? Timestamp(date: Date())
-
+        
         //friends
         self.friends = dictionary["friends"] as? [String] ?? [String]()
         self.friendRequests = dictionary["friendRequests"] as? [String] ?? [String]()
-
-        //tokens
-        self.fcmToken = dictionary["fcmToken"] as? String ?? ""
-        self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
-
-        //chat
-        self.conversationsDic = dictionary["conversations"] as? [[String:Any]] ?? [[String:Any]]()
-        conversationsDic.forEach({self.chats.append(UserChat(dictionary: $0))})
         
+        self.conversationsDic = dictionary["conversations"] as? [[String:Any]] ?? [[String:Any]]()
+        
+        super.init(dictionary: dictionary, id: id)
+        
+        //chat
+        conversationsDic.forEach({self.chats.append(UserChat(dictionary: $0))})
         AuthViewModel.shared.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
-
     }
 }
 

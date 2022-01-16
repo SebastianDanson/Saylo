@@ -15,7 +15,8 @@ struct AddUserToGroupView: View {
     @State var isSearching = false
     
     @StateObject var viewModel = ChatSettingsViewModel.shared
-    
+    @Environment(\.presentationMode) var mode
+
     var body: some View {
         
         ZStack {
@@ -42,16 +43,17 @@ struct AddUserToGroupView: View {
                         
                         Button {
                             
-                            
+                            viewModel.addUsersToChat()
+                            mode.wrappedValue.dismiss()
                             
                         } label: {
                             
                             Text("Add")
-                                .foregroundColor(Color(.systemBlue))
+                                .foregroundColor(viewModel.addedChats.isEmpty ? Color.lightGray : Color(.systemBlue))
                                 .fontWeight(.medium)
                                 .padding()
                             
-                        }
+                        }.disabled(viewModel.addedChats.isEmpty)
                     }
                     
                     

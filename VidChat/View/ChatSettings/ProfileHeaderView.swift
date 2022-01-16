@@ -13,6 +13,9 @@ struct ProfileHeaderView: View {
     let authViewModel = AuthViewModel.shared
     
     let currentImage: String
+    let userName: String
+    
+    @Binding var name: String
     
     @Binding var image: UIImage?
     @Binding var showSettings: Bool
@@ -20,18 +23,21 @@ struct ProfileHeaderView: View {
     var body: some View {
         
         VStack {
+            
             HStack {
-               Spacer()
                 
                 Button {
                     self.showSettings = false
                 } label: {
-                    Text("Done")
+                    Image(systemName: "chevron.backward")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
                         .foregroundColor(Color(.systemBlue))
-                        .font(.system(size: 16, weight: .semibold))
-                        .padding(.horizontal)
+                        .padding(.leading, 16)
                 }
-
+                
+                Spacer()
             }
             
             if let image = image {
@@ -40,18 +46,20 @@ struct ProfileHeaderView: View {
                     .scaledToFill()
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
-            } else {
+            } else if currentImage != "" {
                 KFImage(URL(string: currentImage))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
+            } else if let chat = ConversationViewModel.shared.chat{
+                ChatImageCircle(chat: chat, width: 100)
             }
             
-            Text("\(authViewModel.currentUser?.firstName ?? "") \(authViewModel.currentUser?.lastName ?? "")")
+            Text(name)
                 .font(.system(size: 24, weight: .bold))
             
-            Text("\(authViewModel.currentUser?.username ?? "")")
+            Text(userName)
                 .font(.system(size: 15, weight: .medium))
                 .foregroundColor(.mainGray)
         }

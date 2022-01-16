@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddUserToChatCell: View {
     
-    @StateObject var viewModel = NewConversationViewModel.shared
+    @StateObject var viewModel = ChatSettingsViewModel.shared
     
     let chat: Chat
     

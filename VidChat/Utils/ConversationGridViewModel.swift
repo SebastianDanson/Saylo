@@ -45,6 +45,7 @@ class ConversationGridViewModel: ObservableObject {
             }
         })
         
+        chats.forEach({print($0.getDateOfLastPost(), $0.name)})
         
         self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
     }
@@ -188,7 +189,7 @@ class ConversationGridViewModel: ObservableObject {
         user.chats.forEach { chat in
             
             addConversation(withId: chat.id) { chatData in
-                
+
                 count += 1
 
                 var messages = chatData["messages"] as? [[String:Any]] ?? [[String:Any]]()
@@ -206,7 +207,6 @@ class ConversationGridViewModel: ObservableObject {
                 if count == user.chats.count {
 
                     let chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-                    print("2222")
                     self.allChats = chats
 
                     withAnimation {
@@ -267,9 +267,7 @@ class ConversationGridViewModel: ObservableObject {
         let notificationArray = defaults?.object(forKey: "notifications") as? [String]
         
         notificationArray?.forEach({ chatId in
-            print(chatId, "ID YESSIR", chats.count, chats[0].id)
             if let index = chats.firstIndex(where: { return $0.id == chatId }) {
-                print("YESSIR")
                 DispatchQueue.main.async {
                     withAnimation {
                         let chat = self.chats.remove(at: index)

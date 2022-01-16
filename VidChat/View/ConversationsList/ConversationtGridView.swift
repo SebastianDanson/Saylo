@@ -90,7 +90,7 @@ struct ConversationGridView: View {
                                 
                                 
                                 VStack {
-                                    LazyVGrid(columns: items, spacing: 18, content: {
+                                    LazyVGrid(columns: items, spacing: 20, content: {
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                             ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
@@ -130,7 +130,7 @@ struct ConversationGridView: View {
                                                 }
                                         }
                                     })
-                                        .padding(.horizontal, 12)
+                                     .padding(.horizontal, 12)
                                     
                                 }.padding(.top, getConversationGridPadding())
                                 
@@ -147,7 +147,6 @@ struct ConversationGridView: View {
                         if conversationViewModel.showCamera && !viewModel.isSelectingChats {
                             CameraViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
-                            
                         }
                     }
                     
@@ -160,7 +159,6 @@ struct ConversationGridView: View {
                         photoPicker
                             .frame(width: SCREEN_WIDTH, height: conversationViewModel.photoBaseHeight)
                             .transition(.move(edge: .bottom))
-                        
                     }
                     
                     
@@ -320,9 +318,8 @@ struct NavView: View {
             
             VStack {
                 
-                if !viewModel.showSearchBar {
                     
-                    HStack(alignment: .top) {
+                    HStack(alignment: .center) {
                         
                         if !viewModel.isSelectingChats {
                             
@@ -359,29 +356,12 @@ struct NavView: View {
                                         .padding(.leading, -2)
                                 }
                                 
-                                //                                Button(action: {
-                                //                                    cameraViewModel.toggleIsFrontFacing()
-                                //                                }, label: {
-                                //
-                                //                                    if cameraViewModel.isRotating {
-                                //
-                                //                                        Image(systemName: "arrow.triangle.2.circlepath.camera")
-                                //                                            .resizable()
-                                //                                            .foregroundColor(.toolBarIconDarkGray)
-                                //                                            .scaledToFit()
-                                //                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
-                                //
-                                //                                    } else {
-                                //                                        Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                                //                                            .resizable()
-                                //                                            .renderingMode(.template)
-                                //                                            .foregroundColor(.toolBarIconDarkGray)
-                                //                                            .scaledToFit()
-                                //                                            .frame(width: toolBarWidth - 8, height: toolBarWidth - 8)
-                                //                                    }
-                                //
-                                //                                })
+                            
                             }
+                            Spacer()
+                            
+                            Text("Saylo")
+                                .font(.system(size: 19, weight: .semibold))
                             
                             Spacer()
                             HStack(alignment: .top, spacing: 12) {
@@ -486,12 +466,12 @@ struct NavView: View {
                     }
                     .padding(.horizontal)
                     .padding(.top, TOP_PADDING)
-                } else {
-                    SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
-                        .padding(.horizontal)
-                        .padding(.top, TOP_PADDING)
-                    
-                }
+//                } else {
+//                    SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
+//                        .padding(.horizontal)
+//                        .padding(.top, TOP_PADDING)
+//
+//                }
                 Spacer()
             }
         }

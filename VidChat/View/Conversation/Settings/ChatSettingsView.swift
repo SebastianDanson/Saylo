@@ -13,13 +13,22 @@ struct ChatSettingsView: View {
     @State var showImageCropper = false
     @State var showImagePicker = false
     @State var isAddingFriends = false
+    @State var isEditingName = false
+    @State var showGroupMembers = false
+
     @Binding var showSettings: Bool
+    @State var name: String
+
+    let viewModel = ChatSettingsViewModel.shared
     //
-        let chat: Chat
+    let chat: Chat
     
-//        init(chat: Chat) {
-//            self._profileImage = showSettings
-//        }
+    
+    init(chat: Chat, showSettings: Binding<Bool>) {
+        self._showSettings = showSettings
+        self.chat = chat
+        self._name = State(initialValue: chat.name)
+    }
     
     var body: some View {
         
@@ -27,13 +36,14 @@ struct ChatSettingsView: View {
             
             ScrollView {
                 
-                VStack(spacing: 24) {
+                VStack(spacing: 16) {
                     
-                    ProfileHeaderView(currentImage: "https://firebasestorage.googleapis.com:443/v0/b/vidchat-12c32.appspot.com/o/profileImages%2FF6BC0D1C-03FC-4556-B831-FF9517441133?alt=media&token=b6489a28-e534-44ce-be05-9f0fcdedb41e",
+                    ProfileHeaderView(currentImage: chat.profileImageUrl, userName: "", name: $name,
                                       image: $profileImage, showSettings: $showSettings)
                     
-                    NavigationLink(destination: AddUserToGroupView(), isActive: $isAddingFriends) { EmptyView() }
-                    
+                    NavigationLink(destination: AddUserToGroupView().navigationBarHidden(true), isActive: $isAddingFriends) { EmptyView() }
+                    NavigationLink(destination: ChatMembersView(showGroupMembers: $showGroupMembers).navigationBarHidden(true), isActive: $showGroupMembers) { EmptyView() }
+
                     HStack(spacing: 20) {
                         Button {
                             isAddingFriends = true
@@ -42,6 +52,7 @@ struct ChatSettingsView: View {
                         }
 
                         ChatSettingsHeaderButton(imageName: "bell.fill", title: "Mute", leadingPadding: 0, imageDimension: 18)
+                        
                     }.padding(.bottom, 8)
                     
                     VStack(spacing: 0) {
@@ -51,19 +62,23 @@ struct ChatSettingsView: View {
                                 ConversationViewModel.shared.fetchSavedMessages()
                             }
                             
+                            showSettings = false
+                            
                             withAnimation {
                                 ConversationViewModel.shared.showSavedPosts = true
                             }
                             
                         } label: {
-                            SettingsCell(image: Image(systemName: "bookmark.fill"), imageColor: Color(.mainBlue), title: "Edit group name",
+                            SettingsCell(image: Image(systemName: "bookmark.fill"), imageColor: Color(.mainBlue), title: "View saved messages",
                                          leadingPadding: 0, imageDimension: 17)
                         }
                         
                         DividerView()
                         
                         Button {
-                            
+                            withAnimation {
+                                isEditingName = true
+                            }
                         } label: {
                             SettingsCell(image: Image("pencil"), imageColor: Color(.systemGreen), title: "Edit group name",
                                          leadingPadding: 0, imageDimension: 17)
@@ -85,9 +100,9 @@ struct ChatSettingsView: View {
                         
                         
                         Button {
-                            
+                            showGroupMembers = true
                         } label: {
-                            SettingsCell(image: Image(systemName: "person.2.fill"), imageColor: Color(.systemGray), title: "See group Members",
+                            SettingsCell(image: Image(systemName: "person.2.fill"), imageColor: .mainBlue, title: "See group Members",
                                          leadingPadding: 2, imageDimension: 22)
                         }
                         
@@ -103,13 +118,22 @@ struct ChatSettingsView: View {
             .padding(.top)
             
             if showImageCropper {
-                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
+                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker, onDone: {
+                    if let profileImage = profileImage {
+                        viewModel.updateProfileImage(image: profileImage)
+                    }
+                })
                     .ignoresSafeArea()
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
             }
             
+            if isEditingName {
+                EditChatNameView(chatName: "Seb", showEditName: $isEditingName)
+            }
+
         }.background(Color.backgroundGray)
+        
     }
 }
 
@@ -139,6 +163,7 @@ struct ChatSettingsHeaderButton: View {
             }
             
             Text(title)
+                .foregroundColor(.systemBlack)
                 .font(.system(size: 11))
             
         }

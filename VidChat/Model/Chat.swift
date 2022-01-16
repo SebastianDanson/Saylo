@@ -60,11 +60,10 @@ class Chat: ObservableObject {
             self.name = friend?.firstName ?? ""
             self.fullName = self.name + " " + (friend?.lastName ?? "")
             self.profileImageUrl = friend?.profileImage ?? ""
-            print(name, profileImageUrl, "OOOOOK")
         } else {
             self.name = dictionary["name"] as? String ?? ""
             self.fullName = self.name
-            self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
+            self.profileImageUrl = dictionary["profileImage"] as? String ?? ""
         }
         
         
@@ -90,7 +89,6 @@ class Chat: ObservableObject {
         }
         
         self.hasUnreadMessage = getHasUnreadMessage()
-        print(self.hasUnreadMessage, "HAS UNREAD")
         self.lastReadMessageIndex = getLastReadMessageIndex()
     }
     
@@ -122,7 +120,7 @@ class Chat: ObservableObject {
     func getDefaultChatName() -> String {
         
         guard let currentUserId = AuthViewModel.shared.currentUser?.id ?? Auth.auth().currentUser?.uid else {return ""}
-        
+
         var name = ""
         
         self.chatMembers.forEach { chatMember in
@@ -142,28 +140,4 @@ class Chat: ObservableObject {
         return name
     }
 }
-
-struct ChatMember {
-    
-    let id: String
-    let firstName: String
-    let lastName: String
-    let username: String
-    let fcmToken: String
-    let pushKitToken: String
-    let profileImage: String
-    
-    init(dictionary: [String:Any]) {
-        
-        self.id = dictionary["userId"] as? String ?? ""
-        self.firstName = dictionary["firstName"] as? String ?? ""
-        self.lastName = dictionary["lastName"] as? String ?? ""
-        self.username = dictionary["username"] as? String ?? ""
-        self.fcmToken = dictionary["fcmToken"] as? String ?? ""
-        self.pushKitToken = dictionary["pushKitToken"] as? String ?? ""
-        self.profileImage = dictionary["profileImage"] as? String ?? ""
-    }
-    
-}
-
 

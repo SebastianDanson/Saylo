@@ -15,9 +15,9 @@ struct ContentView: View {
     var body: some View {
         
         Group {
-            
-            //if not logged in -> show landing page
-            // else show main interface
+//
+//            //if not logged in -> show landing page
+//            // else show main interface
             if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
                 NavigationView {
                     LandingPageView()
@@ -34,6 +34,8 @@ struct ContentView: View {
 //                }
             }
 //            ChatSettingsView(showSettings: .constant(true))
+            
+//            ChatMembersView(showGroupMemebers: .constant(true))
         }
     }
 }

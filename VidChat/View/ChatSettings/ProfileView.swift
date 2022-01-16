@@ -15,6 +15,8 @@ struct ProfileView: View {
     @State var profileImage: UIImage?
     @State var showImageCropper = false
     @State var showImagePicker = false
+    
+    let currentUser = AuthViewModel.shared.currentUser
 
     init(showSettings: Binding<Bool>) {
         self._showSettings = showSettings
@@ -28,8 +30,11 @@ struct ProfileView: View {
                 
                 VStack(spacing: 32) {
                     
-                    ProfileHeaderView(currentImage: AuthViewModel.shared.currentUser?.profileImageUrl ?? "", image: $profileImage, showSettings: $showSettings)
+                    ProfileHeaderView(currentImage: currentUser?.profileImageUrl ?? "", userName: currentUser?.username ?? "",
+                                      name: .constant((currentUser?.firstName ?? "") + " " + (currentUser?.lastName ?? "")),
+                                      image: $profileImage, showSettings: $showSettings)
                     
+
                     SettingsView(profileImage: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
                     
                 }

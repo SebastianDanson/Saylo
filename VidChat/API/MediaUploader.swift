@@ -13,7 +13,7 @@ import Foundation
 import QuartzCore
 
 enum UploadType {
-    case profile, video, photo, audio
+    case profile, video, photo, audio, chat
     
     
     func getFilePath(messageId: String) -> StorageReference {
@@ -27,6 +27,8 @@ enum UploadType {
             return Storage.storage().reference(withPath: "/photos/\(messageId)")
         case .profile:
             return Storage.storage().reference(withPath: "/profileImages/\(messageId)")
+        case .chat:
+            return Storage.storage().reference(withPath: "/chatProfileImages/\(messageId)")
         }
     }
 }

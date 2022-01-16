@@ -22,6 +22,10 @@ class AuthViewModel: ObservableObject {
     
     private init() { }
     
+    func getUserId() -> String {
+        return Auth.auth().currentUser?.uid ?? ""
+    }
+    
     func login(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
         
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
@@ -141,7 +145,7 @@ class AuthViewModel: ObservableObject {
         MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
             currentUser.profileImageUrl = imageUrl
             self.profileImageUrl = imageUrl
-            COLLECTION_USERS.document(currentUser.id).updateData(["profileImageUrl":imageUrl, "hasCompletedSignUp":true])
+            COLLECTION_USERS.document(currentUser.id).updateData(["profileImage":imageUrl, "hasCompletedSignUp":true])
         }
     }
     
