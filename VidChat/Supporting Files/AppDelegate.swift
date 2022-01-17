@@ -98,7 +98,7 @@ extension AppDelegate: PKPushRegistryDelegate {
         let token = credentials.token.map { String(format: "%02.2hhx", $0) }.joined()
         print("voip token = \(token)")
         let uid = Auth.auth().currentUser?.uid
-        //TODO make this run only when they don't have a pusgkit token
+
         if let uid = uid  {
             COLLECTION_USERS.document(uid).updateData(["pushKitToken" : token])
         }

@@ -16,9 +16,10 @@ class ChatMember {
     var fcmToken: String
     let pushKitToken: String
     let profileImage: String
+    let dictionary: [String:Any]
     
     init(dictionary: [String:Any], id: String? = nil) {
-        
+        self.dictionary = dictionary
         self.id = dictionary["userId"] as? String ?? id ?? ""
         self.firstName = dictionary["firstName"] as? String ?? ""
         self.lastName = dictionary["lastName"] as? String ?? ""

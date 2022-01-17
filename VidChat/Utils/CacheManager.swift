@@ -8,8 +8,7 @@
 import Foundation
 import AVFoundation
 
-//TODO cache audio URLs
-//TODO actually cut off after 20s
+
 class CacheManager {
     
     static func getCachedUrl(_ url: URL, userStoredURL: URL?, isVideo: Bool) -> URL {

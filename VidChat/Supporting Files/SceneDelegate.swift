@@ -46,6 +46,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         CameraViewModel.shared.cameraView.setupSession()
+        ConversationGridViewModel.shared.showCachedChats()
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
@@ -56,6 +57,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         CameraViewModel.shared.cameraView.stopSession()
+        
+        ConversationGridViewModel.shared.setChatCache()
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        defaults?.set([[String:Any]](), forKey: "messages")
+        
     }
     
 //    func sceneWillResignActive(_ scene: UIScene) {

@@ -109,6 +109,5 @@ struct ResetPasswordView: View {
         return emailPred.evaluate(with: email)
     }
     
-    //TODO show loading indicator, after email is entered
 }
 

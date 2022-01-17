@@ -35,7 +35,7 @@ struct ConversationFeedView: View {
                     ForEach(Array(messages.enumerated()), id: \.1.id) { i, element in
                         MessageCell(message: messages[i])
 //                            .transition(.move(edge: .bottom))
-//                            .offset(x: 0, y: -24)
+                            .offset(x: 0, y: -24)
                             .background(
                                 messages[i].type != .Text ? GeometryReader { geo in
                                     Color.systemWhite.preference(
@@ -140,14 +140,6 @@ struct ConversationFeedView: View {
         }
         
         
-        
-        //TODO if the last message is a view (aka the fist cell u see), make sure it starts playing right away
-        
-        //TODO don't scroll if you're high up and ur not the one sending
-        //AKA ur watching an older vid and ur buddy send u don't wanna scroll
-        // if !isFirstLoad {
-        //}
-        
         .flippedUpsideDown()
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .background(Color.systemWhite)
@@ -167,10 +159,6 @@ struct ConversationFeedView: View {
             }
         }
         
-        //TODO if no saved messages show an alert saying no saved message and telling them how to do it
     }
-    
-//    func getMessages() -> [Message] {
-//        showSavedPosts ? viewModel.savedMessages : viewModel.messages
-//    }
+
 }

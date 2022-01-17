@@ -21,7 +21,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let isFrontFacing:Bool
     }
     
-    //TODO flash on photo
     
     //Zoom propertis
     let minimumZoom: CGFloat = 1.0
@@ -378,7 +377,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
     }
     
-    //TODO saved videos that you record in video playback I.e start recording vide and then make download button work when done
     
     func addAudio() {
         
@@ -467,7 +465,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         
         
-        //TODO everywhere u have try! replace with dop catch
         
     }
     

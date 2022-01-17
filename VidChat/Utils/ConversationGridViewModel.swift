@@ -31,23 +31,8 @@ class ConversationGridViewModel: ObservableObject {
     
     static let shared = ConversationGridViewModel()
     
-    private init() {
-        
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
-     
-        
-        var chats = [Chat]()
-        chatDic?.forEach({
-            if let id = $0["id"] as? String {
-                chats.append(Chat(dictionary: $0, id: id))
-            }
-        })
-        
-        chats.forEach({print($0.getDateOfLastPost(), $0.name)})
-        
-        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-    }
+    private init() {}
+    
     
     func sharedDirectoryURL() -> URL {
         let fileManager = FileManager.default
@@ -58,7 +43,6 @@ class ConversationGridViewModel: ObservableObject {
     func removeSelectedChat(withId id: String) {
         if let index = selectedChats.firstIndex(where: {$0.id == id}) {
             withAnimation {
-                //TODO handle isSelected
                 selectedChats[index].isSelected = !selectedChats[index].isSelected
                 selectedChats.removeAll(where: {$0.id == id})
             }
@@ -67,7 +51,6 @@ class ConversationGridViewModel: ObservableObject {
     
     func toggleSelectedChat(chat: Chat) {
         
-        //TODO handle isSelected
         chat.isSelected.toggle()
         if let index = selectedChats.firstIndex(where: {$0.id == chat.id}) {
             selectedChats.remove(at: index)
@@ -77,7 +60,6 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func isSendingChat(chat: Chat, isSending: Bool) {
-        //TODO handle isSelected
         chat.isSending = isSending
         if let index = sendingChats.firstIndex(where: {$0.id == chat.id}) {
             sendingChats.remove(at: index)
@@ -87,7 +69,6 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func hasSentChat(chat: Chat, hasSent: Bool) {
-        //TODO handle isSelected
         
         withAnimation {
             chat.hasSent = hasSent
@@ -108,7 +89,6 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func toggleHasSentChat(chatId: String) {
-        //TODO handle isSelected
         
         selectedChats.first(where: {$0.id == chatId})?.hasSent.toggle()
         temp.toggle()
@@ -139,7 +119,7 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func addConversation(withId id: String, completion: @escaping([String:Any]) -> Void) {
+    func addConversation(withId id: String, completion: @escaping(() -> Void)) {
         
         COLLECTION_CONVERSATIONS.document(id).getDocument { snapshot, _ in
             if let data = snapshot?.data() {
@@ -152,7 +132,7 @@ class ConversationGridViewModel: ObservableObject {
                 }
             }
             
-            completion(snapshot?.data() ?? [String:Any]())
+            completion()
         }
     }
     
@@ -178,30 +158,17 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func fetchConversations() {
-
+        
         guard let user = AuthViewModel.shared.currentUser else {return}
         var count = 0
-        
-        var chatDictionary = [[String:Any]]()
-        
-        
+
+
         user.chats.forEach { chat in
-            
-            addConversation(withId: chat.id) { chatData in
+
+            addConversation(withId: chat.id) {
 
                 count += 1
 
-                var messages = chatData["messages"] as? [[String:Any]] ?? [[String:Any]]()
-
-                for i in 0..<messages.count {
-                    let timeStamp = messages[i]["timestamp"] as? Timestamp
-                    messages[i]["timestamp"] = Int(timeStamp?.dateValue().timeIntervalSince1970 ?? 0)
-                }
-
-                var chatData = chatData
-                 chatData["messages"] = messages
-                chatData["id"] = chat.id
-                 chatDictionary.append(chatData)
 
                 if count == user.chats.count {
 
@@ -212,8 +179,7 @@ class ConversationGridViewModel: ObservableObject {
                         self.chats = chats
                     }
 
-                    let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-                    defaults?.set(chatDictionary, forKey: "chats")
+                    self.setChatCache()
                 }
             }
         }
@@ -276,6 +242,50 @@ class ConversationGridViewModel: ObservableObject {
                 }
             }
         })
+    }
+    
+    func showCachedChats() {
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
+        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+
+        
+        var chats = [Chat]()
+        chatDic?.forEach({
+            if let id = $0["id"] as? String {
+                chats.append(Chat(dictionary: $0, id: id))
+            }
+        })
+        
+        newMessagesArray.forEach { messageData in
+            
+            let id = messageData["id"] as? String ?? ""
+            let message = Message(dictionary: messageData, id: id)
+            
+            if let i = chats.firstIndex(where: {$0.id == message.chatId}) {
+                chats[i].messages.append(message)
+                chats[i].hasUnreadMessage = true
+            }
+        }
+                
+        
+        DispatchQueue.main.async {
+            self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+            self.chats.forEach({print($0.name, $0.getDateOfLastPost())})
+
+        }
+
+        defaults?.set([[String:Any]](), forKey: "messages")
+    }
+    
+    func setChatCache() {
+        
+        var chatDictionary = [[String:Any]]()
+        
+        self.chats.forEach({chatDictionary.append($0.getDictionary())})
+
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        defaults?.set(chatDictionary, forKey: "chats")
     }
 }
 

@@ -167,8 +167,6 @@ extension ProviderDelegate: CXProviderDelegate {
     }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
-        print("ENDEDdDD")
-        //TODO signal to user calling you that u rejected it
         
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {

@@ -11,7 +11,6 @@ struct MessageCell: View {
     
     var message: Message
     
-        //TODO add time stamps for images and audio cells
     
     var body: some View {
         ZStack {

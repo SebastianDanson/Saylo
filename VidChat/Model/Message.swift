@@ -92,7 +92,7 @@ class Message: ObservableObject {
             self.isFromCurrentUser = false
         }
         
-        self.userProfileImageUrl = dictionary["userProfileImageUrl"] as? String ?? ""
+        self.userProfileImageUrl = dictionary["userProfileImage"] as? String ?? ""
         
         //content
         self.url = dictionary["url"] as? String
@@ -101,6 +101,7 @@ class Message: ObservableObject {
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date(timeIntervalSince1970: TimeInterval(dictionary["timestamp"] as? Int ?? 0)))
         self.text = dictionary["text"] as? String
         
+
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true
         
         self.isSaved = isSaved
@@ -120,7 +121,7 @@ class Message: ObservableObject {
             "id":id,
             "userProfileImageUrl":"",
             "username": "Seb",
-            "timestamp": timestamp
+            "timestamp": Int(timestamp.dateValue().timeIntervalSince1970)
         ] as [String: Any]
         
         if let url = url {

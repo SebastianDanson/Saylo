@@ -172,6 +172,4 @@ struct NewConversationView: View {
 
 
 
-//TODO if u try and create a group and there's already a group that contains all of the same users then don't create a new group just go to that group chat.
-//See snapchat for what is expected
 

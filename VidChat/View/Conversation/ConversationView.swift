@@ -451,6 +451,7 @@ struct ChatOptions: View {
                         Image(systemName: "chevron.backward")
                             .resizable()
                             .scaledToFit()
+                            .font(Font.title.weight(.semibold))
                             .foregroundColor(.iconSystemWhite)
                             .frame(width: 18, height: 18)
                             .padding(.trailing, 3)
@@ -459,6 +460,27 @@ struct ChatOptions: View {
                 }
                 
                 Spacer()
+                
+                
+                Button {
+                    guard let chat = viewModel.chat else { return }
+                    MakeCallViewModel.shared.createNewOutgoingCall(toChat: chat)
+                } label: {
+                    
+                    ZStack {
+                        Circle()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.point3AlphaSystemBlack)
+                        
+                        Image(systemName: "phone.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.title.weight(.ultraLight))
+                            .foregroundColor(.iconSystemWhite)
+                            .frame(width: 18, height: 18)
+                        
+                    }.padding(.trailing, 12)
+                }
                 
                 
                 if let chat = viewModel.chat {
@@ -506,66 +528,34 @@ struct ChatOptions: View {
             }
             
             
-            HStack {
-                Spacer()
-                
-                VStack(spacing: 12) {
-                    
-                    //                    Button {
-                    //                        withAnimation {
-                    //                            cameraViewModel.toggleIsFrontFacing()
-                    //                        }
-                    //                    } label: {
-                    //
-                    //                        ZStack {
-                    //
-                    //                            Circle()
-                    //                                .frame(width: 36, height: 36)
-                    //                                .foregroundColor(.point3AlphaSystemBlack)
-                    //
-                    //
-                    //
-                    //                            if cameraViewModel.isRotating {
-                    //
-                    //                                Image(systemName: "arrow.triangle.2.circlepath.camera")
-                    //                                    .resizable()
-                    //                                    .foregroundColor(.iconSystemWhite)
-                    //                                    .scaledToFit()
-                    //                                    .frame(width: 24, height: 24)
-                    //
-                    //                            } else {
-                    //                                Image(cameraViewModel.isFrontFacing ? "frontCamera" : "rearCamera")
-                    //                                    .resizable()
-                    //                                    .renderingMode(.template)
-                    //                                    .foregroundColor(.iconSystemWhite)
-                    //                                    .scaledToFit()
-                    //                                    .frame(width: 24, height: 24)
-                    //                            }
-                    //                        }
-                    //                    }
-                    
-                    if viewModel.messages.count > 0 {
-                        
-                        Button {
-                            withAnimation(.linear(duration: 0.2)) {
-                                viewModel.showConversationPlayer.toggle()
-                            }
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .frame(width: 36, height: 36)
-                                    .foregroundColor(.point3AlphaSystemBlack)
-                                
-                                Image(systemName: "film")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundColor(.iconSystemWhite)
-                                    .frame(width: 20, height: 20)
-                            }
-                        }
-                    }
-                }
-            }.padding(.vertical, -6)
+//            HStack {
+//                Spacer()
+//
+//                VStack(spacing: 12) {
+//
+//
+//                    if viewModel.messages.count > 0 {
+//
+//                        Button {
+//                            withAnimation(.linear(duration: 0.2)) {
+//                                viewModel.showConversationPlayer.toggle()
+//                            }
+//                        } label: {
+//                            ZStack {
+//                                Circle()
+//                                    .frame(width: 36, height: 36)
+//                                    .foregroundColor(.point3AlphaSystemBlack)
+//
+//                                Image(systemName: "film")
+//                                    .resizable()
+//                                    .scaledToFit()
+//                                    .foregroundColor(.iconSystemWhite)
+//                                    .frame(width: 20, height: 20)
+//                            }
+//                        }
+//                    }
+//                }
+//            }.padding(.vertical, -6)
         }
         .padding(.horizontal, 16)
         .padding(.top, topPadding + 4)

@@ -19,7 +19,7 @@ class NotificationService: UNNotificationServiceExtension {
         
         let defaults = UserDefaults.init(suiteName: "group.com.SebastianDanson.saylo")
         var notificationArray = defaults?.object(forKey: "notifications") as? [String] ?? [String]()
-//        var newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+        var newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
 
         let data = bestAttemptContent?.userInfo["data"] as? [String:Any]
         
@@ -29,8 +29,8 @@ class NotificationService: UNNotificationServiceExtension {
                 downloadUrl(url, isVideo: messageData["type"] as? String == "video", fileName: messageId)
             }
             
-//            newMessagesArray.append(messageData)
-//            defaults?.set(newMessagesArray, forKey: "messages")
+            newMessagesArray.append(messageData)
+            defaults?.set(newMessagesArray, forKey: "messages")
         }
         
        

@@ -96,11 +96,6 @@ class CameraViewModel: ObservableObject {
     
     func startRecording(addDelay: Bool = false) {
         
-       
-        
-        //TODO keep caached if saved
-        //  self.cameraView.addAudio()
-        
         if addDelay {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {

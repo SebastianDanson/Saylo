@@ -76,7 +76,6 @@ struct SetUsernameView: View {
             NavigationLink(destination: SetProfileImageView(), isActive: $nameEntered) { EmptyView() }
             
             
-            //TODO if username is already Taken show alert
             Button(action: {
                 
                 if username.count >= 50  {
@@ -84,9 +83,7 @@ struct SetUsernameView: View {
                 } else if !username.isEmpty {
                     
                     isLoading = true
-                    
-                    //TODO ensure no spaces when they're typing in username
-                    
+                                        
                     
                     viewModel.setUsername(username: username.trimmingCharacters(in: .whitespacesAndNewlines)) { alreadyTaken in
                         

@@ -62,9 +62,7 @@ struct SetNameView: View {
                     
                 }.padding(.horizontal, 32)
                 
-                                
-                //TODO missed call notifications
-                
+                                                
                 //sign in
                 
                 NavigationLink(destination: SetUsernameView(), isActive: $namesEntered) { EmptyView() }

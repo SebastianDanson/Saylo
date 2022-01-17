@@ -15,7 +15,7 @@ struct MakeCallView: View {
     @State var isPresentingNewOutgoingCall = false
     @State var isPresentingSimulateIncomingCall = false
     @State var username = ""
-    @StateObject var viewModel = MakeCallViewModel()
+    @StateObject var viewModel = MakeCallViewModel.shared
     
     @StateObject var conversationGridViewModel = ConversationGridViewModel.shared
     
@@ -42,7 +42,7 @@ struct MakeCallView: View {
                                         .flippedUpsideDown()
                                         .scaleEffect(x: -1, y: 1, anchor: .center)
                                         .onTapGesture {
-                                            createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
+                                            viewModel.createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
                                         }
                                     
                                 }
@@ -64,16 +64,6 @@ struct MakeCallView: View {
             }
          
         }.ignoresSafeArea()
-    }
-    
-    func createNewOutgoingCall(toChat chat: Chat) {
-        
-        guard let currentUser = AuthViewModel.shared.currentUser else {return}
-        guard let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id}) else {return}
-        
-        CallManager.shared.currentChat = chat
-         
-        callsController.startOutgoingCall(of: currentUser.username, pushKitToken: chatMember.pushKitToken)
     }
 }
 

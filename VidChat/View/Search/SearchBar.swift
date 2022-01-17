@@ -8,12 +8,6 @@
 import SwiftUI
 
 
-//TODO notifications
-//1. group created
-//2. sent friend request
-//3. accepted friend request
-//4. messages received
-
 struct SearchBar: View {
     
     @Binding var text: String

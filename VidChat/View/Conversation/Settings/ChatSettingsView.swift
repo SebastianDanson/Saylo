@@ -16,20 +16,32 @@ struct ChatSettingsView: View {
     @State var isEditingName = false
     @State var showGroupMembers = false
     @State var showMuteOptions = false
-
+    
     @Binding var showSettings: Bool
     @State var name: String
     @State var isMuted: Bool
+    
     let viewModel = ChatSettingsViewModel.shared
     //
     let chat: Chat
-    
+    let username: String?
     
     init(chat: Chat, showSettings: Binding<Bool>) {
         self._showSettings = showSettings
         self.chat = chat
         self._name = State(initialValue: chat.name)
         self._isMuted = State(initialValue: chat.mutedUsers.contains(AuthViewModel.shared.getUserId()))
+        
+        
+        var username: String?
+        if chat.isDm {
+            if let chatMember = chat.chatMembers.first(where: {$0.id != AuthViewModel.shared.getUserId()}) {
+                username = chatMember.username
+            }
+        }
+        
+        self.username = username
+
     }
     
     var body: some View {
@@ -40,33 +52,36 @@ struct ChatSettingsView: View {
                 
                 VStack(spacing: 0) {
                     
-                    ProfileHeaderView(currentImage: chat.profileImageUrl, userName: "", name: $name,
+                    ProfileHeaderView(currentImage: chat.profileImageUrl, userName: username ?? "", name: $name,
                                       image: $profileImage, showSettings: $showSettings)
                         .padding(.top, TOP_PADDING)
+                        .padding(.bottom, chat.isDm ? 28 : 0)
                     
                     NavigationLink(destination: AddUserToGroupView().navigationBarHidden(true), isActive: $isAddingFriends) { EmptyView() }
                     NavigationLink(destination: ChatMembersView(showGroupMembers: $showGroupMembers).navigationBarHidden(true), isActive: $showGroupMembers) { EmptyView() }
                     
-                    HStack(spacing: 24) {
-                        
-                        Button {
-                            isAddingFriends = true
-                        } label: {
-                            ChatSettingsHeaderButton(imageName: "person.fill.badge.plus", title: "Add",
-                                                     leadingPadding: 2, imageDimension: 24, isHighlighted: .constant(false))
+                
+                    if !chat.isDm {
+                        HStack(spacing: 24) {
+                            
+                            Button {
+                                isAddingFriends = true
+                            } label: {
+                                ChatSettingsHeaderButton(imageName: "person.fill.badge.plus", title: "Add",
+                                                         leadingPadding: 2, imageDimension: 24, isHighlighted: .constant(false))
+                            }
+                            
+                            Button {
+                                viewModel.toggleMuteForGroup()
+                                isMuted.toggle()
+                            } label: {
+                                ChatSettingsHeaderButton(imageName: "bell.fill", title: "Mute",
+                                                         leadingPadding: 0, imageDimension: 21, isHighlighted: $isMuted)
+                            }
+                            
                         }
-                        
-                        Button {
-                            viewModel.toggleMuteForGroup()
-                            isMuted.toggle()
-                        } label: {
-                            ChatSettingsHeaderButton(imageName: "bell.fill", title: "Mute",
-                                                     leadingPadding: 0, imageDimension: 21, isHighlighted: $isMuted)
-                        }
-
+                        .padding(.bottom, 24)
                     }
-                    .padding(.bottom, 24)
-                    .padding(.top, 20)
                     
                     VStack(spacing: 0) {
                         
@@ -95,33 +110,35 @@ struct ChatSettingsView: View {
                                 isEditingName = true
                             }
                         } label: {
-                            SettingsCell(image: Image("pencil"), imageColor: Color(.systemGreen), title: "Edit group name",
+                            SettingsCell(image: Image("pencil"), imageColor: Color(.systemGreen), title: chat.isDm ? "Edit users name" : "Edit group name",
                                          leadingPadding: 0, imageDimension: 17)
                         }
                         
                         DividerView()
                         
-                        Button {
-                            showImagePicker = true
-                        } label: {
-                            SettingsCell(image: Image(systemName: "photo.fill"), imageColor: Color(.systemOrange), title: "Edit group image",
-                                         leadingPadding: 0, imageDimension: 17)
-                        }.sheet(isPresented: $showImagePicker, content: {
-                            ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
-                        })
-                        
-                        
-                        DividerView()
-                        
-                        
-                        Button {
-                            showGroupMembers = true
-                        } label: {
-                            SettingsCell(image: Image(systemName: "person.2.fill"), imageColor: .mainBlue, title: "See group Members",
-                                         leadingPadding: 2, imageDimension: 22)
+                        if !chat.isDm {
+                            Button {
+                                showImagePicker = true
+                            } label: {
+                                SettingsCell(image: Image(systemName: "photo.fill"), imageColor: Color(.systemOrange), title: "Edit group image",
+                                             leadingPadding: 0, imageDimension: 17)
+                            }.sheet(isPresented: $showImagePicker, content: {
+                                ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
+                            })
+                            
+                            
+                            DividerView()
+                            
+                            
+                            
+                            Button {
+                                showGroupMembers = true
+                            } label: {
+                                SettingsCell(image: Image(systemName: "person.2.fill"), imageColor: .mainBlue, title: "See group Members",
+                                             leadingPadding: 2, imageDimension: 22)
+                            }
+                            
                         }
-                        
-                        
                     }
                     .frame(width: SCREEN_WIDTH - 40)
                     .background(Color.popUpSystemWhite)
@@ -148,9 +165,9 @@ struct ChatSettingsView: View {
             }
             
         }
-//        .actionSheet(isPresented: $showMuteOptions, content: {
-//            getActionSheet()
-//        })
+        //        .actionSheet(isPresented: $showMuteOptions, content: {
+        //            getActionSheet()
+        //        })
         .background(Color.backgroundGray)
         .ignoresSafeArea()
         

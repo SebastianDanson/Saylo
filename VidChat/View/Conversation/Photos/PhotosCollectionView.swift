@@ -213,9 +213,7 @@ class PhotosCollectionView: UIView {
                     self.fetchCollections()
                 default:
                     print("NO ACCESS")
-                    
-                    //TODO add alert
-                    // self.showNoAccessAlert()
+              
                 }
             }
         }

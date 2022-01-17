@@ -71,7 +71,6 @@ class MediaUploader {
                 return
             }
             
-            //TODO compress images
             ref.downloadURL { url, error in
                 if let error = error {
                     print("DEBUG: Failed to download image URL \(error.localizedDescription)")

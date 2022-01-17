@@ -10,22 +10,18 @@ import Foundation
 
 class MakeCallViewModel: ObservableObject {
     
-    @Published var users = [User]()
     
-    init() {
-        fetchUsers()
-    }
+    static let shared = MakeCallViewModel()
+    private init() {}
     
-    func fetchUsers() {
-        COLLECTION_USERS.getDocuments { snapshot, error in
-            if let error = error {
-                print("Error fetching users: \(error.localizedDescription)")
-                return
-            }
-            
-            snapshot?.documents.forEach({ snapshot in
-                self.users.append(User(dictionary: snapshot.data(), id: snapshot.documentID))
-            })
-        }
+    
+    func createNewOutgoingCall(toChat chat: Chat) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else {return}
+        guard let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id}) else {return}
+        
+        CallManager.shared.currentChat = chat
+         
+        CallManager.shared.startOutgoingCall(of: currentUser.firstName + " " + currentUser.lastName, pushKitToken: chatMember.pushKitToken)
     }
 }

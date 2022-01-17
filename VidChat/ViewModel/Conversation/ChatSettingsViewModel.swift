@@ -98,15 +98,23 @@ class ChatSettingsViewModel: ObservableObject {
         
         let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
         
-        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
-            transaction.updateData(["name" : name], forDocument: chatRef)
-            return nil
-        }) { (_, error) in }
+        if chat.isDm {
+            Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                transaction.updateData(["name" : [AuthViewModel.shared.getUserId():name]], forDocument: chatRef)
+                return nil
+            }) { (_, error) in }
+            
+        } else  {
+            Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                transaction.updateData(["name" : name], forDocument: chatRef)
+                return nil
+            }) { (_, error) in }
+            
+            
+            ConversationViewModel.shared.addMessage(text: "Changed the group name to \(name)", type: .Text, chatId: chat.id)
+        }
         
         ConversationViewModel.shared.chat?.name = name
-        
-        ConversationViewModel.shared.addMessage(text: "Changed the group name to \(name)", type: .Text, chatId: chat.id)
-
         
     }
     

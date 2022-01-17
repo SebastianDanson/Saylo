@@ -33,8 +33,10 @@ class Chat: ObservableObject {
     @Published var hasUnreadMessage = false
 
     var lastReadMessageIndex = 0
+    
 
     init(dictionary: [String:Any], id: String) {
+
         
         //Doc info
         self.id = id
@@ -51,13 +53,22 @@ class Chat: ObservableObject {
         self.chatMembers = chatMembers
         
         //name
-        
+   
         if isDm {
+            let customNameArray = dictionary["name"] as? [String:Any]
             let currentUid = AuthViewModel.shared.currentUser?.id ?? Auth.auth().currentUser?.uid ?? ""
             let friend = chatMembers.first(where: {$0.id != currentUid})
             
-            self.name = friend?.firstName ?? ""
-            self.fullName = self.name + " " + (friend?.lastName ?? "")
+            let customName = customNameArray?[currentUid] as? String
+
+            if let customName = customName {
+                self.name = customName
+                self.fullName = customName
+            } else {
+                self.name = friend?.firstName ?? ""
+                self.fullName = self.name + " " + (friend?.lastName ?? "")
+            }
+          
             self.profileImageUrl = friend?.profileImage ?? ""
         } else {
             self.name = dictionary["name"] as? String ?? ""
@@ -77,7 +88,7 @@ class Chat: ObservableObject {
 
         //messages
         self.messages = ConversationService.getMessagesFromData(data: dictionary, chatId: id)
-        
+
         if self.name.isEmpty {
             self.name = getDefaultChatName()
             
@@ -88,6 +99,27 @@ class Chat: ObservableObject {
         
         self.hasUnreadMessage = getHasUnreadMessage()
         self.lastReadMessageIndex = getLastReadMessageIndex()
+    }
+    
+    func getDictionary() -> [String:Any] {
+        var users = [[String:Any]]()
+        chatMembers.forEach({users.append($0.dictionary)})
+        
+        var messages = [[String:Any]]()
+        self.messages.forEach({messages.append($0.getDictionary())})
+
+        let dictionary = [
+            "id":id,
+            "profileImage":profileImageUrl,
+            "isDm":isDm,
+            "name":name,
+            "users":users,
+            "mutedUsers":mutedUsers,
+            "userIds":userIds,
+            "username": "Seb",
+        ] as [String: Any]
+        
+        return dictionary
     }
     
     func getDateOfLastPost() -> Int {
@@ -137,5 +169,6 @@ class Chat: ObservableObject {
         
         return name
     }
+
 }
 

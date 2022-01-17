@@ -94,9 +94,7 @@ class AddFriendsViewModel: ObservableObject {
         return users
         
     }
-    
-    //TODO show "added", instead of "add" once friend request has been sent
-    
+        
     
     func getUserSearchResults(searchArray: [String], searchText: String, completion: @escaping([User]) -> Void) {
          
@@ -195,7 +193,7 @@ class AddFriendsViewModel: ObservableObject {
                         "lastVisited": Timestamp(date: Date()),
                         "notificationsEnabled": true] as [String: Any]
         
-        ConversationGridViewModel.shared.addConversation(withId: chatId) {_ in }
+        ConversationGridViewModel.shared.addConversation(withId: chatId) { }
         
         COLLECTION_USERS.document(user.id)
             .updateData(

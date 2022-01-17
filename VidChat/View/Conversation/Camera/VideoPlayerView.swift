@@ -36,9 +36,7 @@ struct VideoPlayerView: View {
        
     }
     
-    //TODO asynchornously load videos
-    //https://bytes.swiggy.com/video-stories-and-caching-mechanism-ios-61fc63cc04f8
-    
+  
     var body: some View {
                 
         ZStack {

@@ -60,7 +60,6 @@ class ConversationViewModel: ObservableObject {
     //Photos
     @Published var showPhotos = false
     
-    //TODO ensure that this shows 3 vertical photos when on chat and 2 otherwise
     @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
     
     //Camera
@@ -89,9 +88,6 @@ class ConversationViewModel: ObservableObject {
     
     private init() {
         CacheManager.removeOldFiles()
-        
-        //TODO test removeing old files
-//        setUnreadMessages()
     }
             
     func setUnreadMessages() {
@@ -332,7 +328,7 @@ class ConversationViewModel: ObservableObject {
         var messageData = messageData
         let userFullName = currentUser.firstName + " " + currentUser.lastName
         let message = Message(dictionary: messageData, id: "")
-        messageData["timestamp"] = message.timestamp.dateValue().timeIntervalSince1970
+        messageData["timestamp"] = Int(message.timestamp.dateValue().timeIntervalSince1970)
         var data = [String:Any]()
 
         if chat.isDm {
@@ -419,7 +415,6 @@ class ConversationViewModel: ObservableObject {
 
                     let messages = ConversationService.getMessagesFromData(data: data, chatId: self.chatId)
 
-                    //TODO handle reactions
                     
                     self.messages.forEach { message in
                         if let image = message.image {
@@ -434,7 +429,6 @@ class ConversationViewModel: ObservableObject {
                 }
             }
         
-        //TODO ensure mic symbol is not in the top left of the screen of ur phone when ur not on the app
     }
     
     func removeListener() {
