@@ -46,7 +46,10 @@ struct EditChatNameView: View {
                 
                 Button {
                     ChatSettingsViewModel.shared.updateChatName(name: chatName)
-                    showEditName = false
+                    
+                    withAnimation {
+                        showEditName = false
+                    }
                 } label: {
                     Text("Save")
                         .fontWeight(.medium)
@@ -59,7 +62,10 @@ struct EditChatNameView: View {
                 
                 
                 Button {
-                    showEditName = false
+                    withAnimation {
+                        showEditName = false
+                    }
+                    
                 } label: {
                     
                     Text("Cancel")

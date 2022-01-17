@@ -213,8 +213,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         }
         
         if isFriendRequest {
-            print("YESSIR")
             AuthViewModel.shared.hasUnseenFriendRequest = true
+            AuthViewModel.shared.fetchUser {}
+
         }
         
         if acceptedFriendRequest {

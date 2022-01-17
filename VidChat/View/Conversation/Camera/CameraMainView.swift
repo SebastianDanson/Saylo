@@ -246,7 +246,6 @@ struct SendButton: View {
             
             withAnimation(.linear(duration: 0.2)) {
                 
-                
                 let conversationVM = ConversationViewModel.shared
                 viewModel.videoPlayerView?.player.pause()
                 

@@ -16,11 +16,10 @@ class Chat: ObservableObject {
     //info
     var name: String
     var fullName: String
-    let profileImageUrl: String
+    var profileImageUrl: String
     var isDm = true
-    
-    //messages
-//    let lastMessagedCreatedAt: Timestamp //the date when the most recent message was created
+    var mutedUsers: [String]
+  
     var messages = [Message]()
     
     //user info
@@ -70,8 +69,7 @@ class Chat: ObservableObject {
         //isDm
         self.isDm = isDm
         
-        //messages
-//        self.lastMessagedCreatedAt = dictionary["lastMessagedCreatedAt"] as? Timestamp ?? Timestamp(date: Date())
+        self.mutedUsers = dictionary["mutedUsers"] as? [String] ?? [String]()
         
         //users
         self.userIds = dictionary["userIds"] as? [String] ?? [String]()

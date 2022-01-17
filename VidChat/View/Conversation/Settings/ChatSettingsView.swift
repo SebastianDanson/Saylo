@@ -15,10 +15,11 @@ struct ChatSettingsView: View {
     @State var isAddingFriends = false
     @State var isEditingName = false
     @State var showGroupMembers = false
+    @State var showMuteOptions = false
 
     @Binding var showSettings: Bool
     @State var name: String
-
+    @State var isMuted: Bool
     let viewModel = ChatSettingsViewModel.shared
     //
     let chat: Chat
@@ -28,6 +29,7 @@ struct ChatSettingsView: View {
         self._showSettings = showSettings
         self.chat = chat
         self._name = State(initialValue: chat.name)
+        self._isMuted = State(initialValue: chat.mutedUsers.contains(AuthViewModel.shared.getUserId()))
     }
     
     var body: some View {
@@ -36,24 +38,35 @@ struct ChatSettingsView: View {
             
             ScrollView {
                 
-                VStack(spacing: 16) {
+                VStack(spacing: 0) {
                     
                     ProfileHeaderView(currentImage: chat.profileImageUrl, userName: "", name: $name,
                                       image: $profileImage, showSettings: $showSettings)
+                        .padding(.top, TOP_PADDING)
                     
                     NavigationLink(destination: AddUserToGroupView().navigationBarHidden(true), isActive: $isAddingFriends) { EmptyView() }
                     NavigationLink(destination: ChatMembersView(showGroupMembers: $showGroupMembers).navigationBarHidden(true), isActive: $showGroupMembers) { EmptyView() }
-
-                    HStack(spacing: 20) {
+                    
+                    HStack(spacing: 24) {
+                        
                         Button {
                             isAddingFriends = true
                         } label: {
-                            ChatSettingsHeaderButton(imageName: "person.fill.badge.plus", title: "Add", leadingPadding: 2, imageDimension: 22)
+                            ChatSettingsHeaderButton(imageName: "person.fill.badge.plus", title: "Add",
+                                                     leadingPadding: 2, imageDimension: 24, isHighlighted: .constant(false))
+                        }
+                        
+                        Button {
+                            viewModel.toggleMuteForGroup()
+                            isMuted.toggle()
+                        } label: {
+                            ChatSettingsHeaderButton(imageName: "bell.fill", title: "Mute",
+                                                     leadingPadding: 0, imageDimension: 21, isHighlighted: $isMuted)
                         }
 
-                        ChatSettingsHeaderButton(imageName: "bell.fill", title: "Mute", leadingPadding: 0, imageDimension: 18)
-                        
-                    }.padding(.bottom, 8)
+                    }
+                    .padding(.bottom, 24)
+                    .padding(.top, 20)
                     
                     VStack(spacing: 0) {
                         
@@ -62,7 +75,9 @@ struct ChatSettingsView: View {
                                 ConversationViewModel.shared.fetchSavedMessages()
                             }
                             
-                            showSettings = false
+                            withAnimation {
+                                showSettings = false
+                            }
                             
                             withAnimation {
                                 ConversationViewModel.shared.showSavedPosts = true
@@ -129,10 +144,44 @@ struct ChatSettingsView: View {
             }
             
             if isEditingName {
-                EditChatNameView(chatName: "Seb", showEditName: $isEditingName)
+                EditChatNameView(chatName: chat.name, showEditName: $isEditingName)
             }
-
-        }.background(Color.backgroundGray)
+            
+        }
+//        .actionSheet(isPresented: $showMuteOptions, content: {
+//            getActionSheet()
+//        })
+        .background(Color.backgroundGray)
+        .ignoresSafeArea()
+        
+    }
+    
+    
+    
+    func getActionSheet() ->ActionSheet {
+        let now = Int(Date().timeIntervalSince1970)
+        
+        return ActionSheet(title: Text("Mute this chat"),
+                           message: Text(""),
+                           buttons: [
+                            .default(Text("For 15 Minutes")) {
+                                viewModel.muteChat(timeLength: (now+900) * 1000)
+                            },
+                            .default(Text("For 1 Hour")) {
+                                viewModel.muteChat(timeLength: (now+3600) * 1000)
+                            },
+                            .default(Text("For 8 Hours")) {
+                                viewModel.muteChat(timeLength: (now+(8*3600)) * 1000)
+                                
+                            },
+                            .default(Text("For 24 Hours")) {
+                                viewModel.muteChat(timeLength: (now+86400) * 1000)
+                            },
+                            .default(Text("Until I turn it back on")) {
+                                viewModel.toggleMuteForGroup()
+                            },
+                            .cancel()
+                           ])
         
     }
 }
@@ -143,7 +192,9 @@ struct ChatSettingsHeaderButton: View {
     let title: String
     let leadingPadding: CGFloat
     let imageDimension: CGFloat
-
+    
+    @Binding var isHighlighted: Bool
+    
     var body: some View {
         
         VStack(spacing: 4) {
@@ -151,13 +202,13 @@ struct ChatSettingsHeaderButton: View {
             ZStack {
                 
                 Circle()
-                    .foregroundColor(.toolBarIconGray)
-                    .frame(width: 36, height: 36)
+                    .foregroundColor(isHighlighted ? .mainBlue : Color(.systemGray5))
+                    .frame(width: 40, height: 40)
                 
-                Image(systemName: imageName)
+                Image(systemName: isHighlighted ? "bell.slash.fill" : imageName)
                     .resizable()
                     .frame(width: imageDimension, height: imageDimension)
-                    .foregroundColor(.systemBlack)
+                    .foregroundColor(isHighlighted ? .white : .systemBlack)
                     .padding(.leading, leadingPadding)
                 
             }
@@ -170,94 +221,3 @@ struct ChatSettingsHeaderButton: View {
     }
 }
 
-//struct ChatSettingsView: View {
-//
-//    let chat: Chat
-//
-//    var body: some View {
-//
-//        VStack(spacing: 20) {
-//
-//            HStack(alignment: .center) {
-//
-//                HStack(spacing: 12) {
-//
-//                    ChatImage(chat: chat, diameter: 36)
-//
-//                    Text(chat.name)
-//                        .lineLimit(1)
-//                        .font(.system(size: 18, weight: .semibold))
-//                }
-//
-//                Spacer()
-//
-//                ZStack {
-//
-//                    Circle()
-//                        .frame(width: 40, height: 40)
-//                        .foregroundColor(.iconSystemWhite)
-//
-//                    Image(systemName: "video")
-//                        .resizable()
-//                        .scaledToFit()
-//                        .foregroundColor(.systemWhite)
-//                        .frame(width: 22, height: 22)
-//
-//                }.padding(.trailing, 20)
-//
-//            }
-//            .padding(.leading)
-//            .padding(.top)
-//
-//
-//
-//            Button {
-//
-//                if ConversationViewModel.shared.savedMessages.count == 0 {
-//                    ConversationViewModel.shared.fetchSavedMessages()
-//                }
-//
-//                withAnimation {
-//                    ConversationViewModel.shared.showSavedPosts = true
-//                }
-//            } label: {
-//                HStack(alignment: .center) {
-//                    HStack(spacing: 4) {
-//
-//                        Image(systemName: "bookmark.fill")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .foregroundColor(Color.systemBlack)
-//                            .frame(width: 36, height: 20)
-//                            .padding(.leading, 8)
-//
-//                        Text("View saved messages")
-//                            .lineLimit(1)
-//                            .font(.system(size: 16, weight: .medium))
-//                            .foregroundColor(.systemBlack)
-//                    }
-//
-//                    Spacer()
-//
-//                    Image(systemName: "chevron.right")
-//                        .resizable()
-//                        .scaledToFit()
-//                        .foregroundColor(Color(.systemGray2))
-//                        .frame(width: 40, height: 20)
-//                        .padding(.trailing, 2)
-//                }
-//                .padding(.vertical)
-//                .background(Color.systemWhite)
-//                .cornerRadius(12)
-//                .padding(.horizontal)
-//            }
-//
-//        }
-//        .padding(.vertical)
-//        .background(Color(.systemGray6))
-//        .cornerRadius(20)
-//        .padding(.leading)
-//        .padding(.bottom)
-//        .shadow(color: Color(.init(white: 0, alpha: 0.2)), radius: 16, x: 0, y: 8)
-//    }
-//}

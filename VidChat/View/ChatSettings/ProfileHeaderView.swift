@@ -19,7 +19,8 @@ struct ProfileHeaderView: View {
     
     @Binding var image: UIImage?
     @Binding var showSettings: Bool
-    
+    @Environment(\.presentationMode) var mode
+
     var body: some View {
         
         VStack {
@@ -28,6 +29,7 @@ struct ProfileHeaderView: View {
                 
                 Button {
                     self.showSettings = false
+                    mode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "chevron.backward")
                         .resizable()
@@ -38,7 +40,7 @@ struct ProfileHeaderView: View {
                 }
                 
                 Spacer()
-            }
+            }.frame(height: 44)
             
             if let image = image {
                 Image(uiImage: image)
@@ -53,15 +55,17 @@ struct ProfileHeaderView: View {
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
             } else if let chat = ConversationViewModel.shared.chat{
-                ChatImageCircle(chat: chat, width: 100)
+                ChatImageCircle(chat: chat, diameter: 100)
             }
             
             Text(name)
                 .font(.system(size: 24, weight: .bold))
             
+            if !userName.isEmpty {
             Text(userName)
                 .font(.system(size: 15, weight: .medium))
                 .foregroundColor(.mainGray)
+            }
         }
     }
 }

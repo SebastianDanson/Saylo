@@ -16,6 +16,7 @@ struct NameTextField: UIViewRepresentable {
     func makeUIView(context: UIViewRepresentableContext<NameTextField>) -> UITextField {
         textField.text = text
         textField.layer.cornerRadius = 5
+        textField.delegate = context.coordinator
         return textField
     }
     

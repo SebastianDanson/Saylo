@@ -43,6 +43,8 @@ class ChatSettingsViewModel: ObservableObject {
             
             userInfo.append(info)
         }
+        
+        ConversationViewModel.shared.chat?.chatMembers.append(contentsOf: chatMembers)
        
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["users":FieldValue.arrayUnion(userInfo)])
         //create dictionary to send to DB
@@ -63,6 +65,11 @@ class ChatSettingsViewModel: ObservableObject {
         //Update the added users docs
         chatMembers.forEach { chatMember in
             COLLECTION_USERS.document(chatMember.id).updateData(["conversations": FieldValue.arrayUnion([groupData])])
+          
+            var data = [String:Any]()
+            data["token"] = chatMember.fcmToken
+            data["body"] = user.firstName + " " + user.lastName + " added you to a group"
+            Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
         }
         
         var names = ""
@@ -96,6 +103,11 @@ class ChatSettingsViewModel: ObservableObject {
             return nil
         }) { (_, error) in }
         
+        ConversationViewModel.shared.chat?.name = name
+        
+        ConversationViewModel.shared.addMessage(text: "Changed the group name to \(name)", type: .Text, chatId: chat.id)
+
+        
     }
     
     func updateProfileImage(image: UIImage) {
@@ -109,20 +121,43 @@ class ChatSettingsViewModel: ObservableObject {
                 transaction.updateData(["profileImage" : url], forDocument: chatRef)
                 return nil
             }) { (_, error) in }
+            
+            ConversationViewModel.shared.chat?.profileImageUrl = url
+            ConversationViewModel.shared.addMessage(text: "Changed the group image", type: .Text, chatId: chat.id)
         }
+        
+
     }
     
     func setChats() {
-        self.chats = ConversationGridViewModel.shared.chats.filter({$0.isDm})
+        guard let chat = ConversationViewModel.shared.chat else { return }
+        let currentUserId = AuthViewModel.shared.getUserId()
+        let dms = ConversationGridViewModel.shared.chats.filter({$0.isDm})
+        
+        dms.forEach { dm in
+            
+            //get user
+            if let friend = dm.chatMembers.first(where: { $0.id != currentUserId }) {
+                
+                //Ensure user is not already in the group
+                if !chat.chatMembers.contains(where: { chatMember in
+                    chatMember.id == friend.id
+                }) {
+                    self.chats.append(dm)
+                }
+            }
+
+        }
+       
+//        self.chats =
         self.allChats = chats
         
     }
     
     func handleChatSelected(chat: Chat) {
-        print("@@@")
+
         withAnimation {
             if !addedChats.contains(where: { $0.id == chat.id }) {
-                print("AAADED")
                 addedChats.append(chat)
             } else {
                 addedChats.removeAll(where: { $0.id == chat.id })
@@ -156,5 +191,40 @@ class ChatSettingsViewModel: ObservableObject {
     
     func containsChat(_ chat: Chat) -> Bool {
         addedChats.contains(where: { $0.id == chat.id })
+    }
+    
+    func toggleMuteForGroup() {
+        
+        guard let chat = ConversationViewModel.shared.chat else { return }
+        let currentUserId = AuthViewModel.shared.getUserId()
+        
+        let isMuted = chat.mutedUsers.contains(currentUserId)
+                
+        if isMuted {
+            Messaging.messaging().subscribe(toTopic: chat.id)
+            ConversationViewModel.shared.chat?.mutedUsers.removeAll(where: {$0 == currentUserId})
+        } else {
+            Messaging.messaging().unsubscribe(fromTopic: chat.id)
+            ConversationViewModel.shared.chat?.mutedUsers.append(currentUserId)
+        }
+        
+        if isMuted {
+            COLLECTION_CONVERSATIONS.document(chat.id).updateData(["mutedUsers":FieldValue.arrayRemove([currentUserId])])
+        } else {
+            COLLECTION_CONVERSATIONS.document(chat.id).updateData(["mutedUsers":FieldValue.arrayUnion([currentUserId])])
+        }
+        
+    }
+    
+    
+    func muteChat(timeLength: Int) {
+        
+        guard let chat = ConversationViewModel.shared.chat else { return }
+
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        var mutedChats = defaults?.object(forKey: "mutedChats") as? [String : Any] ?? [String:Any]()
+        
+        mutedChats[chat.id] = timeLength
+        defaults?.set(mutedChats, forKey: "mutedChats")
     }
 }

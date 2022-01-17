@@ -64,11 +64,11 @@ struct ConversationGridView: View {
                             
                             TipView(header: "Press and Hold on a Chat",
                                     subText: "To start recording a video for that chat",
-                                    imageName: "record.circle.fill").tag(0)
+                                    imageName: "video.fill").tag(0)
                             
-                            TipView(header: "Swipe Up",
-                                    subText: "To open the video camera",
-                                    imageName: "video.fill").tag(2)
+                            TipView(header: "Press and Hold on a Message",
+                                    subText: "To save that message",
+                                    imageName: "bookmark.fill").tag(2)
                             
                         }
                         .frame(width: SCREEN_WIDTH - 40, height: 300)
@@ -175,7 +175,7 @@ struct ConversationGridView: View {
                 
                 ZStack(alignment: .bottom) {
                     
-                    if !ConversationViewModel.shared.showKeyboard && !viewModel.showSearchBar {
+                    if !ConversationViewModel.shared.showKeyboard {
                         
                         VStack {
                             

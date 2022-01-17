@@ -37,7 +37,6 @@ class ConversationGridViewModel: ObservableObject {
         let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
      
         
-        
         var chats = [Chat]()
         chatDic?.forEach({
             if let id = $0["id"] as? String {

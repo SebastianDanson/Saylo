@@ -255,7 +255,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        connection.isVideoMirrored = activeInput.device.position == .front
         
         
-//        sessionAtSourceTime = nil
+        sessionAtSourceTime = nil
         
         
         

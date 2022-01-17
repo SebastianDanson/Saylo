@@ -13,6 +13,8 @@ struct ChatMembersView: View {
     
     @State var chatMembers = ConversationViewModel.shared.chat?.chatMembers ?? [ChatMember]()
     
+    @Environment(\.presentationMode) var mode
+
     var body: some View {
         
         VStack {
@@ -23,6 +25,7 @@ struct ChatMembersView: View {
                     
                     Button {
                         showGroupMembers = false
+                        mode.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "chevron.backward")
                             .resizable()
