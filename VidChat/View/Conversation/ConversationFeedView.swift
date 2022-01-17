@@ -1,6 +1,6 @@
 //
 //  ConversationFeedView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-21.
 //
@@ -23,7 +23,7 @@ struct ConversationFeedView: View {
     @State var isFirstLoad = true
     @StateObject private var viewModel = ConversationViewModel.shared
     @Binding var messages: [Message]
-        
+    
     var body: some View {
         
         ScrollView {
@@ -34,7 +34,7 @@ struct ConversationFeedView: View {
                     
                     ForEach(Array(messages.enumerated()), id: \.1.id) { i, element in
                         MessageCell(message: messages[i])
-//                            .transition(.move(edge: .bottom))
+                        //                            .transition(.move(edge: .bottom))
                             .offset(x: 0, y: -24)
                             .background(
                                 messages[i].type != .Text ? GeometryReader { geo in
@@ -45,10 +45,14 @@ struct ConversationFeedView: View {
                                 
                                 if let chat = viewModel.chat {
                                     if isFirstLoad, i == chat.lastReadMessageIndex {
-                                        isFirstLoad = false
                                         reader.scrollTo(messages[i].id, anchor: .center)
-                                    } else if !isFirstLoad, i == messages.count - 1 {
-                                        reader.scrollTo(messages[i].id, anchor: .center)
+                                    } else if i == messages.count - 1 {
+                                        
+                                        if !isFirstLoad {
+                                            reader.scrollTo(messages[i].id, anchor: .center)
+                                        }
+                                        
+                                        isFirstLoad = true
                                     }
                                 }
                                 
@@ -58,58 +62,59 @@ struct ConversationFeedView: View {
                     .onPreferenceChange(ViewOffsetsKey.self, perform: { prefs in
                         
                         DispatchQueue.main.async {
-
-                        guard updatePreference else { return }
-
-                        let prevMiddleItemNo = middleItemNo
-                        middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
                             
-                            prefs.forEach({print(HALF_SCREEN_HEIGHT - $1, "RRR")})
-                        //20
-//                            prefs.forEach({print($1, SCREEN_HEIGHT/2 )})
-//                        middleItemNo = prefs.first(where: { $1 > 20 && $1 < 50 })?.key ?? -1
-
-                        //                        viewModel.showKeyboard = false
-                        //                        UIApplication.shared.endEditing()
-                        
-                        
-                        
-                        if middleItemNo >= 0 {
-
-                            if prevMiddleItemNo != middleItemNo {
+                            guard updatePreference else { return }
+                            
+                            let prevMiddleItemNo = middleItemNo
+                            middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
+                            
+                            //20
+                            //                            prefs.forEach({print($1, SCREEN_HEIGHT/2 )})
+                            //                        middleItemNo = prefs.first(where: { $1 > 20 && $1 < 50 })?.key ?? -1
+                            
+                            //                        viewModel.showKeyboard = false
+                            //                        UIApplication.shared.endEditing()
+                            
+                            
+                            
+                            if middleItemNo >= 0 {
                                 
-//                                withAnimation {
+                                if prevMiddleItemNo != middleItemNo {
+                                    
+                                    //                                withAnimation {
                                     viewModel.isPlaying = true
-//                                }
-                                
-                                viewModel.currentPlayer?.pause()
-                                viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
-
-                                viewModel.currentPlayer?.play()
-                                
-                                withAnimation {
-                                    reader.scrollTo(messages[middleItemNo].id, anchor: .center)
+                                    //                                }
+                                    
+                                    viewModel.currentPlayer?.pause()
+                                    viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
+                                    
+                                    viewModel.currentPlayer?.play()
+                                    
+                                    withAnimation {
+                                        reader.scrollTo(messages[middleItemNo].id, anchor: .center)
+                                    }
                                 }
                             }
-                        }
-                        else if viewModel.currentPlayer != nil {
-//                            withAnimation {
+                            else if viewModel.currentPlayer != nil {
+                                //                            withAnimation {
                                 viewModel.isPlaying = false
-//                            }
-                            viewModel.currentPlayer?.pause()
-                            viewModel.currentPlayer = nil
-                        }
+                                //                            }
+                                viewModel.currentPlayer?.pause()
+                                viewModel.currentPlayer = nil
+                            }
                         }
                     }).onChange(of: viewModel.index, perform: { newValue in
+                        
+                        guard !viewModel.isShowingReactions else {return}
+                        
                         middleItemNo += 1
-                        print("CHANGE")
                         if middleItemNo < 1 || middleItemNo >= messages.count {return}
                         
                         updatePreference = false
-
+                        
                         let message = messages[middleItemNo]
                         
-                        if message.type == .Text {
+                        if message.type == .Text || message.type == .Photo {
                             withAnimation {
                                 reader.scrollTo(message.id, anchor: .center)
                             }
@@ -158,7 +163,5 @@ struct ConversationFeedView: View {
                 }
             }
         }
-        
     }
-
 }

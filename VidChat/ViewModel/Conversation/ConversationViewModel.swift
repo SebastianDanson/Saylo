@@ -1,6 +1,6 @@
 //
 //  ConversationViewModel.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-10-11.
 //
@@ -84,6 +84,7 @@ class ConversationViewModel: ObservableObject {
     
     var selectedChat: Chat?
     var hasSelectedAssets = false
+    var isShowingReactions = false
     static let shared = ConversationViewModel()
     
     private init() {
@@ -118,7 +119,6 @@ class ConversationViewModel: ObservableObject {
         self.addListener()
         self.updateNoticationsArray()
         self.chat?.hasUnreadMessage = false
-        self.chat?.lastReadMessageIndex = chat.messages.count - 1
         self.noMessages = false
     }
     
@@ -126,6 +126,9 @@ class ConversationViewModel: ObservableObject {
         
         if let chat = chat {
             ConversationService.updateLastVisited(forChat: chat)
+            if let index = ConversationGridViewModel.shared.chats.firstIndex(where: {$0.id ==  chat.id}) {
+                ConversationGridViewModel.shared.chats[index].lastReadMessageIndex = chat.messages.count - 1
+            }
         }
 
         self.currentPlayer?.pause()
@@ -135,7 +138,7 @@ class ConversationViewModel: ObservableObject {
         self.chatId = ""
         self.messages = [Message]()
         self.removeListener()
-        
+
         withAnimation {
             self.showKeyboard = false
             self.showPhotos = false
@@ -168,7 +171,7 @@ class ConversationViewModel: ObservableObject {
         var dictionary = [
             "id":id,
             "chatId": chatId,
-            "userProfileImageUrl":AuthViewModel.shared.currentUser?.profileImageUrl ?? "",
+            "userProfileImage":AuthViewModel.shared.currentUser?.profileImage ?? "",
             "username": AuthViewModel.shared.currentUser?.firstName ?? "",
             "timestamp": Timestamp(date: Date()),
             "userId": AuthViewModel.shared.currentUser?.id

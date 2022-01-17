@@ -1,6 +1,6 @@
 //
 //  VideoPlayerView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-27.
 //
@@ -47,7 +47,7 @@ struct VideoPlayerView: View {
                     HStack {
                         if showName {
                             MessageInfoView(date: message?.timestamp.dateValue() ?? Date(),
-                                            profileImage: message?.userProfileImageUrl ?? "",
+                                            profileImage: message?.userProfileImage ?? "",
                                             name: message?.username ?? "")
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 26)

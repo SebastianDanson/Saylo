@@ -1,6 +1,6 @@
 //
 //  TextCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-10-07.
 //
@@ -46,7 +46,7 @@ struct TextCell: View {
             
             HStack(alignment: .bottom, spacing: 10) {
                 
-                KFImage(URL(string: message.userProfileImageUrl))
+                KFImage(URL(string: message.userProfileImage))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 30, height: 30)

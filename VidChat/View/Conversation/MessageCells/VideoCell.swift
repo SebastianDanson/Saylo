@@ -1,6 +1,6 @@
 //
 //  VideoCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-10-11.
 //
@@ -82,6 +82,7 @@ struct VideoCell: View {
                         Button {
                             withAnimation(.linear(duration: 0.2)) {
                                 showReactions.toggle()
+                                ConversationViewModel.shared.isShowingReactions.toggle()
                             }
                         } label: {
                             
@@ -326,6 +327,7 @@ struct ReactionView: View {
         }
         
         showReactions = false
+        viewModel.isShowingReactions = false
     }
 }
 

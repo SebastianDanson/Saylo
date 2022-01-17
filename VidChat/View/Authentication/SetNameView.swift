@@ -1,6 +1,6 @@
 //
 //  SetNameView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-29.
 //
@@ -71,7 +71,7 @@ struct SetNameView: View {
                     
                     VStack(alignment: .leading) {
                         
-                        Text("By clicking Agree & Join you agree to VidChat's")
+                        Text("By clicking Agree & Join you agree to Saylo's")
                             .foregroundColor(.mainGray)
                             .font(.system(size: 12, weight: .regular))
                         

@@ -21,8 +21,8 @@ struct ChatImage: View {
         
         let currentUserId = AuthViewModel.shared.getUserId()
         
-        if chat.isDm || chat.profileImageUrl != "" {
-            self.profileImage1 = chat.profileImageUrl
+        if chat.isDm || chat.profileImage != "" {
+            self.profileImage1 = chat.profileImage
             self.profileImage2 = nil
         } else {
             var chatMembers = chat.chatMembers
@@ -106,8 +106,8 @@ struct ChatImageCircle: View {
         
         let currentUserId = AuthViewModel.shared.currentUser?.id ?? ""
         
-        if chat.isDm || chat.profileImageUrl != "" {
-            self.profileImage1 = chat.profileImageUrl
+        if chat.isDm || chat.profileImage != "" {
+            self.profileImage1 = chat.profileImage
             self.profileImage2 = nil
         } else {
             var chatMembers = chat.chatMembers

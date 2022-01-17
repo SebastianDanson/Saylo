@@ -1,6 +1,6 @@
 //
 //  User.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-24.
 //
@@ -15,7 +15,6 @@ class User: ChatMember, ObservableObject {
     let phoneNumber: String
     
     //profile
-    var profileImageUrl: String
     let createdAt: Timestamp
     
     //chat
@@ -34,7 +33,6 @@ class User: ChatMember, ObservableObject {
         self.phoneNumber = dictionary["phoneNumber"] as? String ?? ""
         
         //profile
-        self.profileImageUrl = dictionary["profileImage"] as? String ?? ""
         self.createdAt = dictionary["createdAt"] as? Timestamp ?? Timestamp(date: Date())
         
         //friends

@@ -130,7 +130,7 @@ class ChatSettingsViewModel: ObservableObject {
                 return nil
             }) { (_, error) in }
             
-            ConversationViewModel.shared.chat?.profileImageUrl = url
+            ConversationViewModel.shared.chat?.profileImage = url
             ConversationViewModel.shared.addMessage(text: "Changed the group image", type: .Text, chatId: chat.id)
         }
         

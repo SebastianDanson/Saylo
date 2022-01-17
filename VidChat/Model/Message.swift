@@ -1,6 +1,6 @@
 //
 //  Post.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-24.
 //
@@ -52,7 +52,7 @@ class Message: ObservableObject {
     //userInfo
     let username: String
     let userId: String
-    let userProfileImageUrl: String
+    let userProfileImage: String
     
     //Content
     let type: MessageType
@@ -92,7 +92,7 @@ class Message: ObservableObject {
             self.isFromCurrentUser = false
         }
         
-        self.userProfileImageUrl = dictionary["userProfileImage"] as? String ?? ""
+        self.userProfileImage = dictionary["userProfileImage"] as? String ?? ""
         
         //content
         self.url = dictionary["url"] as? String
@@ -119,7 +119,7 @@ class Message: ObservableObject {
                 
         var dictionary = [
             "id":id,
-            "userProfileImageUrl":"",
+            "userProfileImage":"",
             "username": "Seb",
             "timestamp": Int(timestamp.dateValue().timeIntervalSince1970)
         ] as [String: Any]

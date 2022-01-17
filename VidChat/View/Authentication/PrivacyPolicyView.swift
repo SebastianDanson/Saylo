@@ -1,6 +1,6 @@
 //
 //  PrivacyPolicyView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-29.
 //
@@ -14,7 +14,7 @@ struct PrivacyPolicyView: View {
         
         //Section 1
         TextSection(header: "Introduction", subSections: [
-            TextSubSection(title: "", paragraph: "VidChat respects your privacy. This Privacy Policy explains how VidChat collects, uses, discloses, and safeguards your personal information when you access VidChat. Please read this Privacy Policy carefully. In order to use VidChat, you must agree with this Privacy Policy. VidChat reserves the right to make changes to this Privacy Policy at any time. You will become aware of changes by updating the “Last Updated” date of this Privacy Policy. All changes to the Privacy Policy will be effective upon posting. VidChat encourages you to review this Privacy Policy frequently to remain informed of updates. Your continued use of the mobile app after any Privacy Policy alterations will signify that you accept any and all changes made to the Privacy Policy after such changes are posted.")
+            TextSubSection(title: "", paragraph: "Saylo respects your privacy. This Privacy Policy explains how Saylo collects, uses, discloses, and safeguards your personal information when you access Saylo. Please read this Privacy Policy carefully. In order to use Saylo, you must agree with this Privacy Policy. Saylo reserves the right to make changes to this Privacy Policy at any time. You will become aware of changes by updating the “Last Updated” date of this Privacy Policy. All changes to the Privacy Policy will be effective upon posting. Saylo encourages you to review this Privacy Policy frequently to remain informed of updates. Your continued use of the mobile app after any Privacy Policy alterations will signify that you accept any and all changes made to the Privacy Policy after such changes are posted.")
         ]),
         
         //Section 2
@@ -22,9 +22,9 @@ struct PrivacyPolicyView: View {
             
             TextSubSection(title: "", paragraph: "We may collect information about you in a variety of ways. The information we may collect on the mobile application includes:"),
             
-            TextSubSection(title: "Personal Information", paragraph: "Personally identifiable information, such as your name, email address, and friends that you voluntarily give to VidChat when you register or when you choose to participate in various activities on VidChat. You are under no obligation to provide us with personal information, however your refusal to do so may prevent you from using certain features of VidChat."),
+            TextSubSection(title: "Personal Information", paragraph: "Personally identifiable information, such as your name, email address, and friends that you voluntarily give to Saylo when you register or when you choose to participate in various activities on Saylo. You are under no obligation to provide us with personal information, however your refusal to do so may prevent you from using certain features of Saylo."),
             
-            TextSubSection(title: "Derivative Data", paragraph: "Information our servers automatically collect when you access VidChat.org, such as your IP address, your browser type, your operating system and your access times. If you are using our mobile application, this information may also include your device name and type, your operating system, and other interactions with the application and other users via server log files, as well as any other information you choose to provide."),
+            TextSubSection(title: "Derivative Data", paragraph: "Information our servers automatically collect when you access Saylo.org, such as your IP address, your browser type, your operating system and your access times. If you are using our mobile application, this information may also include your device name and type, your operating system, and other interactions with the application and other users via server log files, as well as any other information you choose to provide."),
             
             TextSubSection(title: "Mobile Device Data", paragraph: "Device information, such as your mobile device ID, model, and manufacturer, if you access the site from a mobile device."),
             
@@ -75,7 +75,7 @@ struct PrivacyPolicyView: View {
         
         //Section 8
         TextSection(header: "Contact Us", subSections: [
-            TextSubSection(title: "", paragraph: "If you have questions or comments about these Terms and Conditions, please contact the VidChat Administrator at: Seb@vidchat.org")
+            TextSubSection(title: "", paragraph: "If you have questions or comments about these Terms and Conditions, please contact the Saylo Administrator at: Seb@Saylo.org")
         ]),
     ]
     

@@ -1,6 +1,6 @@
 //
 //  ImageCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-10-19.
 //
@@ -48,7 +48,7 @@ struct ImageCell: View {
             
             HStack {
                 if showName {
-                    MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userProfileImageUrl, name: message.username)
+                    MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userProfileImage, name: message.username)
                         .padding(.vertical, 0)
                         .padding(.horizontal, 3)
                 }

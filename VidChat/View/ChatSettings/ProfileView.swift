@@ -30,7 +30,7 @@ struct ProfileView: View {
                 
                 VStack(spacing: 32) {
                     
-                    ProfileHeaderView(currentImage: currentUser?.profileImageUrl ?? "", userName: currentUser?.username ?? "",
+                    ProfileHeaderView(currentImage: currentUser?.profileImage ?? "", userName: currentUser?.username ?? "",
                                       name: .constant((currentUser?.firstName ?? "") + " " + (currentUser?.lastName ?? "")),
                                       image: $profileImage, showSettings: $showSettings)
                     

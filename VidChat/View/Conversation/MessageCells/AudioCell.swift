@@ -1,6 +1,6 @@
 //
 //  AudioCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-10-14.
 //
@@ -47,7 +47,7 @@ struct AudioCell: View {
                     
                     VStack {
                         
-                    KFImage(URL(string: message.userProfileImageUrl))
+                    KFImage(URL(string: message.userProfileImage))
                         .resizable()
                         .scaledToFit()
                         .frame(width: 120, height: 120)
@@ -80,7 +80,7 @@ struct AudioCell: View {
         
         //            HStack(alignment: .top, spacing: 9) {
         //
-        ////            KFImage(URL(string: self.profileImageUrl))
+        ////            KFImage(URL(string: self.profileImage))
         ////                .resizable()
         ////                .scaledToFill()
         ////                .frame(width: 30, height: 30)
@@ -119,7 +119,7 @@ struct AudioCell: View {
         //        }
         //        .frame(width: SCREEN_WIDTH - 10, height: SCREEN_WIDTH * 16/18)
         //        .overlay(
-        //            MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userProfileImageUrl, name: message.username)
+        //            MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userprofileImage, name: message.username)
         //                .padding(.horizontal, 12)
         //                .padding(.vertical, 26), alignment: .bottomLeading)
         //        }

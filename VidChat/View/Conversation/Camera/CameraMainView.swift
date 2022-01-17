@@ -1,6 +1,6 @@
 //
 //  CameraMainView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-27.
 //
@@ -143,7 +143,7 @@ struct CameraMainView: View {
     }
     
     func addAudio() {
-        cameraView.addAudio()
+//        cameraView.addAudio()
     }
     
     func cancelRecording() {

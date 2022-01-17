@@ -1,6 +1,6 @@
 //
 //  ChatCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-26.
 //
@@ -197,6 +197,6 @@ struct TimeView: View {
 
 //struct ChatCell_Previews: PreviewProvider {
 //    static var previews: some View {
-//        ChatCell(user: TestUser(image: "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1", firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened))
+//        ChatCell(user: TestUser(image: "https://firebasestorage.googleapis.com/v0/b/Saylo-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1", firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened))
 //    }
 //}

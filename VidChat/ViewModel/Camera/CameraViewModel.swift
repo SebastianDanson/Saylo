@@ -1,6 +1,6 @@
 //
 //  CameraViewModel.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-27.
 //
@@ -98,7 +98,7 @@ class CameraViewModel: ObservableObject {
         
         if addDelay {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                 self.cameraView.startRecording()
                 withAnimation {
                     self.isRecording = true

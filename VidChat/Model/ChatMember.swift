@@ -15,7 +15,7 @@ class ChatMember {
     var username: String
     var fcmToken: String
     let pushKitToken: String
-    let profileImage: String
+    var profileImage: String
     let dictionary: [String:Any]
     
     init(dictionary: [String:Any], id: String? = nil) {

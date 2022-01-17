@@ -1,6 +1,6 @@
 //
 //  AddFriendsViewModel.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-29.
 //
@@ -168,7 +168,7 @@ class AddFriendsViewModel: ObservableObject {
         
         let userData = [
             "userId": user.id,
-            "profileImage": user.profileImageUrl,
+            "profileImage": user.profileImage,
             "fcmToken":user.fcmToken,
             "pushKitToken":user.pushKitToken,
             "username":user.username,

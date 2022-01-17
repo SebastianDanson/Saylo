@@ -52,7 +52,7 @@ struct ChatSettingsView: View {
                 
                 VStack(spacing: 0) {
                     
-                    ProfileHeaderView(currentImage: chat.profileImageUrl, userName: username ?? "", name: $name,
+                    ProfileHeaderView(currentImage: chat.profileImage, userName: username ?? "", name: $name,
                                       image: $profileImage, showSettings: $showSettings)
                         .padding(.top, TOP_PADDING)
                         .padding(.bottom, chat.isDm ? 28 : 0)

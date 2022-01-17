@@ -1,6 +1,6 @@
 //
 //  AddFriendCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-28.
 //
@@ -22,7 +22,7 @@ struct AddFriendCell: View {
         
         HStack(spacing: 12) {
             
-            KFImage(URL(string: user.profileImageUrl))
+            KFImage(URL(string: user.profileImage))
                 .resizable()
                 .scaledToFill()
                 .foregroundColor(.systemWhite)

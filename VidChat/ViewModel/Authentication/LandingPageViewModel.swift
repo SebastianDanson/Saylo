@@ -1,6 +1,6 @@
 //
 //  LandingPageViewModel.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-31.
 //
@@ -26,7 +26,7 @@ class LandingPageViewModel: ObservableObject {
             showSetNameView = true
         } else if currentUser.username.isEmpty {
             showSetUsernameView = true
-        } else if currentUser.profileImageUrl == "" {
+        } else if currentUser.profileImage == "" {
             showSetProfileImageView = true
         }
     }

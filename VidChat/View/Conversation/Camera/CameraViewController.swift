@@ -1,6 +1,6 @@
 //
 //  CameraViewController.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-27.
 //
@@ -39,6 +39,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     var previewLayer: AVCaptureVideoPreviewLayer!
     var activeInput: AVCaptureDeviceInput!
+
+    
     //    let movieOutput = AVCaptureMovieFileOutput()
     //    let audioOutput = AVCaptureMovieFileOutput()
     
@@ -107,17 +109,29 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.setUpWriter()
             
             self.captureSession.beginConfiguration()
+            self.audioCaptureSession.beginConfiguration()
+
             
             guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
+                return
+            }
+            
+            guard let mic = AVCaptureDevice.default(for: .audio) else {
                 return
             }
             
             do {
                 
                 let videoInput = try AVCaptureDeviceInput(device: camera)
-                
+                let audioInput = try AVCaptureDeviceInput(device: mic)
+
                 if self.captureSession.canAddInput(videoInput) {
                     self.captureSession.addInput(videoInput)
+                }
+                
+                
+                if self.audioCaptureSession.canAddInput(audioInput) {
+                    self.audioCaptureSession.addInput(audioInput)
                 }
                 
                 self.activeInput = videoInput
@@ -142,8 +156,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 self.captureSession.addOutput(self.photoOutput)
             }
             
-            self.captureSession.commitConfiguration()
+            if self.audioCaptureSession.canAddOutput(self.audioDataOutput) {
+                self.audioCaptureSession.addOutput(self.audioDataOutput)
+            }
             
+            self.captureSession.commitConfiguration()
+            self.audioCaptureSession.commitConfiguration()
         }
     }
     
@@ -231,11 +249,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         self.hasFlash = hasFlash
         
         let device = activeInput.device
+        
         do {
             try device.lockForConfiguration()
+            
             if device.isSmoothAutoFocusEnabled {
                 device.isSmoothAutoFocusEnabled = true
             }
+            
             
             if hasFlash && device.position == .back {
                 try device.setTorchModeOn(level:1.0)
@@ -253,7 +274,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        guard let connection = movieOutput.connection(with: .video) else { return }
         //        connection.isVideoMirrored = activeInput.device.position == .front
         
-        
+//        audioCaptureSession.beginConfiguration()
+//        audioCaptureSession.inputs.forEach({audioCaptureSession.rem})
+//
+        audioCaptureSession.startRunning()
         sessionAtSourceTime = nil
         
         
@@ -274,27 +298,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             let url = getTempUrl()!
             outputURL = url
-            videoWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.mov)
-            
-            // add video input
-            videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: [
-                AVVideoCodecKey : AVVideoCodecType.h264,
-                AVVideoWidthKey : 720,
-                AVVideoHeightKey : 1280,
-                AVVideoCompressionPropertiesKey : [
-                    AVVideoAverageBitRateKey : 1024 * 1024 * 3,
-                ],
-            ])
-            
-            videoWriterInput.expectsMediaDataInRealTime = true
-            
-            if videoWriter.canAdd(videoWriterInput) {
-                videoWriter.add(videoWriterInput)
-                print("video input added")
-            } else {
-                print("no input added")
-            }
-            
+            videoWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.mp4)
             
             // add audio input
             let audioSettings : [String : Any] = [
@@ -314,10 +318,32 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 print("no audio input added")
             }
             
+            // add video input
+            videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: [
+                AVVideoCodecKey : AVVideoCodecType.h264,
+                AVVideoWidthKey : 720,
+                AVVideoHeightKey : 1280,
+                AVVideoCompressionPropertiesKey : [
+                    AVVideoAverageBitRateKey : 1024 * 1024 * 3,
+                ],
+            ])
+            
+            videoWriterInput.expectsMediaDataInRealTime = true
+            
+            if videoWriter.canAdd(videoWriterInput) {
+                videoWriter.add(videoWriterInput)
+                print("video input added")
+            } else {
+                print("no input added")
+            }
+            
+            
+          
+            
             videoWriter.startWriting()
             
         } catch let error {
-            debugPrint(error.localizedDescription)
+            print("ERROR OCCURED SETTING UP WRITER \(error.localizedDescription)")
         }
     }
     
@@ -369,7 +395,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             // write audio buffer
             //               print(connection, "AUDIO")
             
-            audioWriterInput?.append(sampleBuffer)
+            audioWriterInput.append(sampleBuffer)
             
                            print("audio buffering")
         }
@@ -386,35 +412,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
 //            if isFirstLoad {
                 
-                self.audioCaptureSession.beginConfiguration()
-                
-                guard let mic = AVCaptureDevice.default(for: .audio) else {
-                    return
-                }
-                
-                do {
-                    
-                    let audioInput = try AVCaptureDeviceInput(device: mic)
-                    
-                    self.audioCaptureSession.inputs.forEach({self.audioCaptureSession.removeInput($0)})
-                    self.audioCaptureSession.outputs.forEach({self.audioCaptureSession.removeOutput($0)})
-
-                    if self.audioCaptureSession.canAddInput(audioInput) {
-                        self.audioCaptureSession.addInput(audioInput)
-                    }
-                    
-                } catch {
-                    print("Error segtting device input: \(error)")
-                    return
-                }
-                
-                
-                if self.audioCaptureSession.canAddOutput(self.audioDataOutput) {
-                    self.audioCaptureSession.addOutput(self.audioDataOutput)
-                }
-                
-                self.audioCaptureSession.commitConfiguration()
-                self.audioCaptureSession.startRunning()
+              
                 
 //            } else {
 //                self.audioCaptureSession.startRunning()
@@ -445,7 +443,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         videoWriterInput.markAsFinished()
         audioWriterInput.markAsFinished()
         
-        audioCaptureSession.stopRunning()
 
         videoWriter.finishWriting {
             self.sessionAtSourceTime = nil
@@ -456,13 +453,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
                 self.setUpWriter()
-                self.addAudio()
                 //  try! AVAudioSession.sharedInstance().setActive(true)
             }
         }
         
         
-        
+        audioCaptureSession.stopRunning()
         
         
         

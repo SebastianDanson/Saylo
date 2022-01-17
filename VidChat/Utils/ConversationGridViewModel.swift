@@ -1,6 +1,6 @@
 //
 //  ConversationGridViewModel.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-22.
 //
@@ -31,7 +31,9 @@ class ConversationGridViewModel: ObservableObject {
     
     static let shared = ConversationGridViewModel()
     
-    private init() {}
+    private init() {
+        showCachedChats()
+    }
     
     
     func sharedDirectoryURL() -> URL {
@@ -162,7 +164,6 @@ class ConversationGridViewModel: ObservableObject {
         guard let user = AuthViewModel.shared.currentUser else {return}
         var count = 0
 
-
         user.chats.forEach { chat in
 
             addConversation(withId: chat.id) {
@@ -268,12 +269,10 @@ class ConversationGridViewModel: ObservableObject {
             }
         }
                 
-        
-        DispatchQueue.main.async {
+//
+//        DispatchQueue.main.async {
             self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-            self.chats.forEach({print($0.name, $0.getDateOfLastPost())})
-
-        }
+//        }
 
         defaults?.set([[String:Any]](), forKey: "messages")
     }

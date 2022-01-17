@@ -1,6 +1,6 @@
 //
 //  PhotoCell.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-10-15.
 //

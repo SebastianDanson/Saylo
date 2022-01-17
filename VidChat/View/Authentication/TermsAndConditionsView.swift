@@ -1,6 +1,6 @@
 //
 //  TermsAndConditionsView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-29.
 //
@@ -23,28 +23,28 @@ struct TermsAndConditionsView: View {
         
         //Section 1
         TextSection(header: "Section 1: Introduction", subSections: [
-            TextSubSection(title: "", paragraph: "Thank you for choosing VidChat. VidChat is an app that allows you to send video and text messages to your friends and family. VidChat refers to the VidChat mobile app and website. The VidChat Administrator consists of the individual listed in Section 10 of these Terms and Conditions. The VidChat Administrator may update or amend these Terms and Conditions from time to time. By accessing or using any service provided by, or affiliated with VidChat, you are entering into a binding contract with the VidChat Administrator. Please read these terms of use before using VidChat. If you do not agree with the terms of use, you may not use or access VidChat. You are not permitted to access VidChat if your VidChat account has been terminated by the VidChat Administrator.")
+            TextSubSection(title: "", paragraph: "Thank you for choosing Saylo. Saylo is an app that allows you to send video and text messages to your friends and family. Saylo refers to the Saylo mobile app and website. The Saylo Administrator consists of the individual listed in Section 10 of these Terms and Conditions. The Saylo Administrator may update or amend these Terms and Conditions from time to time. By accessing or using any service provided by, or affiliated with Saylo, you are entering into a binding contract with the Saylo Administrator. Please read these terms of use before using Saylo. If you do not agree with the terms of use, you may not use or access Saylo. You are not permitted to access Saylo if your Saylo account has been terminated by the Saylo Administrator.")
         ]),
         
         //Section 2
         TextSection(header: "Section 2: Using Our Service", subSections: [
-            TextSubSection(title: "Account Termination", paragraph: "The VidChat Administrator reserves the right to terminate any account that violates these Terms and Conditions. By registering an account, VidChat grants you limited, revocable permission to use and access its platform. This access will remain in effect until terminated by you or VidChat.")
+            TextSubSection(title: "Account Termination", paragraph: "The Saylo Administrator reserves the right to terminate any account that violates these Terms and Conditions. By registering an account, Saylo grants you limited, revocable permission to use and access its platform. This access will remain in effect until terminated by you or Saylo.")
         ]),
         
         //Section 3
         TextSection(header: "Section 3: Account and Account Security", subSections: [
-            TextSubSection(title: "", paragraph: "To access VidChat, you are required to register an account, by providing an email, and a name. When registering an account, you must use your legal name, or one that you frequently use in everyday life, provide accurate information about yourself, create only one account and keep your password private. You are responsible for all the information associated with, and uploaded to your account. You are also responsible for maintaining the security of your account. If your account is breached, you are required to contact VidChat Administrator immediately. The unauthorized licensing, selling or transfer of your account is prohibited.")
+            TextSubSection(title: "", paragraph: "To access Saylo, you are required to register an account, by providing an email, and a name. When registering an account, you must use your legal name, or one that you frequently use in everyday life, provide accurate information about yourself, create only one account and keep your password private. You are responsible for all the information associated with, and uploaded to your account. You are also responsible for maintaining the security of your account. If your account is breached, you are required to contact Saylo Administrator immediately. The unauthorized licensing, selling or transfer of your account is prohibited.")
         ]),
         
         //Section 4
         TextSection(header: "Section 4: Content", subSections: [
-            TextSubSection(title: "", paragraph: "VidChat is not responsible for, and does not endorse any content uploaded. All suggestions, feedback or ideas that you give to VidChat administration are entirely voluntary, and may be used to improve or modify VidChat functions.")
+            TextSubSection(title: "", paragraph: "Saylo is not responsible for, and does not endorse any content uploaded. All suggestions, feedback or ideas that you give to Saylo administration are entirely voluntary, and may be used to improve or modify Saylo functions.")
         ]),
         
         //Section 5
         TextSection(header: "Section 5: User Guidelines", subSections: [
             
-            TextSubSection(title: "", paragraph: "When using or accessing VidChat, you must respect the rights and privacy of other users. We encourage users to report violations of these terms and conditions and improper use of VidChat. Violations of the following terms and conditions can result in the termination of your account."),
+            TextSubSection(title: "", paragraph: "When using or accessing Saylo, you must respect the rights and privacy of other users. We encourage users to report violations of these terms and conditions and improper use of Saylo. Violations of the following terms and conditions can result in the termination of your account."),
             
             TextSubSection(title: "A. Harassment, Bullying and Violence", paragraph: "You may not post content or make comments that are bullying, marginalizing, harassing or threatening in nature. The promotion of hate is forbidden."),
             
@@ -56,11 +56,11 @@ struct TermsAndConditionsView: View {
             
             TextSubSection(title: "E. Illegal Content", paragraph: "You may not post any illegal content, nor facilitate any illegal acts."),
             
-            TextSubSection(title: "F. Viruses", paragraph: "You may not use VidChat services to send software viruses, worms, or anything else that might interfere with the normal use of a computer or digital device."),
+            TextSubSection(title: "F. Viruses", paragraph: "You may not use Saylo services to send software viruses, worms, or anything else that might interfere with the normal use of a computer or digital device."),
             
-            TextSubSection(title: "G. VidChat Interactions", paragraph: "You may not attempt to break the VidChat website/app, or try to modify our platform in any way."),
+            TextSubSection(title: "G. Saylo Interactions", paragraph: "You may not attempt to break the Saylo website/app, or try to modify our platform in any way."),
             
-            TextSubSection(title: "H. Data Collection", paragraph: "You may not use VidChat to access data for any commercial purposes, without express consent and approval from VidChat Administrator."),
+            TextSubSection(title: "H. Data Collection", paragraph: "You may not use Saylo to access data for any commercial purposes, without express consent and approval from Saylo Administrator."),
             
         ]),
         
@@ -76,17 +76,17 @@ struct TermsAndConditionsView: View {
         
         //Section 8
         TextSection(header: "Section 8: Intellectual Property Rights", subSections: [
-            TextSubSection(title: "", paragraph: "The VidChat Administrator may terminate account for violation of intellectual property rights or other proprietary rights.")
+            TextSubSection(title: "", paragraph: "The Saylo Administrator may terminate account for violation of intellectual property rights or other proprietary rights.")
         ]),
         
         //Section 9
         TextSection(header: "Section 9: Changes", subSections: [
-            TextSubSection(title: "", paragraph: "The VidChat Administrator may change these Terms and Conditions periodically, to adapt to changes to the law, regulatory policies, technology, and other changes. It is the responsibility of users to stay informed about them. By continuing use of VidChat, you agree to abide by the amended Terms and Conditions. It is thus important to review these Terms and Conditions frequently.")
+            TextSubSection(title: "", paragraph: "The Saylo Administrator may change these Terms and Conditions periodically, to adapt to changes to the law, regulatory policies, technology, and other changes. It is the responsibility of users to stay informed about them. By continuing use of Saylo, you agree to abide by the amended Terms and Conditions. It is thus important to review these Terms and Conditions frequently.")
         ]),
         
         //Section 10
         TextSection(header: "Section 10: Contact Us", subSections: [
-            TextSubSection(title: "", paragraph: "If you have questions or comments about these Terms and Conditions, please contact the VidChat Administrator at: Seb@vidchat.org")
+            TextSubSection(title: "", paragraph: "If you have questions or comments about these Terms and Conditions, please contact the Saylo Administrator at: Seb@Saylo.org")
         ]),
     ]
     

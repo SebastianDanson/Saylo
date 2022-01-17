@@ -1,6 +1,6 @@
 //
 //  ConversationPlayerView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-12-13.
 //
@@ -41,7 +41,7 @@ struct ConversationPlayerView: View {
     var body: some View {
         
         let messageInfoView = MessageInfoView(date: conversationViewModel.messages[viewModel.index].timestamp.dateValue(),
-                                              profileImage: conversationViewModel.messages[viewModel.index].userProfileImageUrl,
+                                              profileImage: conversationViewModel.messages[viewModel.index].userProfileImage,
                                               name: conversationViewModel.messages[viewModel.index].username)
         
         

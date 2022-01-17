@@ -1,6 +1,6 @@
 //
 //  ConversationPlayerViewModel.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-12-19.
 //
@@ -10,7 +10,7 @@ import AVFoundation
 
 class ConversationPlayerViewModel: ObservableObject {
     
-    @Published var profileImageUrl = ""
+    @Published var profileImage = ""
     @Published var name = ""
     @Published var dragOffset: CGSize = .zero
     @Published var index: Int = 0

@@ -1,6 +1,6 @@
 //
 //  Chat.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-24.
 //
@@ -16,7 +16,7 @@ class Chat: ObservableObject {
     //info
     var name: String
     var fullName: String
-    var profileImageUrl: String
+    var profileImage: String
     var isDm = true
     var mutedUsers: [String]
   
@@ -26,6 +26,7 @@ class Chat: ObservableObject {
     let userIds: [String]
     var chatMembers = [ChatMember]()
     
+    var nameDictionary: [String:Any]?
     
     @Published var isSelected = false
     @Published var isSending = false
@@ -64,16 +65,17 @@ class Chat: ObservableObject {
             if let customName = customName {
                 self.name = customName
                 self.fullName = customName
+                self.nameDictionary = customNameArray
             } else {
                 self.name = friend?.firstName ?? ""
                 self.fullName = self.name + " " + (friend?.lastName ?? "")
             }
           
-            self.profileImageUrl = friend?.profileImage ?? ""
+            self.profileImage = friend?.profileImage ?? ""
         } else {
             self.name = dictionary["name"] as? String ?? ""
             self.fullName = self.name
-            self.profileImageUrl = dictionary["profileImage"] as? String ?? ""
+            self.profileImage = dictionary["profileImage"] as? String ?? ""
         }
         
         
@@ -108,9 +110,9 @@ class Chat: ObservableObject {
         var messages = [[String:Any]]()
         self.messages.forEach({messages.append($0.getDictionary())})
 
-        let dictionary = [
+        var dictionary = [
             "id":id,
-            "profileImage":profileImageUrl,
+            "profileImage":profileImage,
             "isDm":isDm,
             "name":name,
             "users":users,
@@ -118,6 +120,10 @@ class Chat: ObservableObject {
             "userIds":userIds,
             "username": "Seb",
         ] as [String: Any]
+        
+        if let nameDictionary = nameDictionary {
+            dictionary["name"] = nameDictionary
+        }
         
         return dictionary
     }
@@ -137,9 +143,11 @@ class Chat: ObservableObject {
 
         let lastVisited = chat.lastVisited
         
-        for i in 0..<messages.count {
-            if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
-                return i
+        if messages.count > 1 {
+            for i in 0..<messages.count - 1 {
+                if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
+                    return i + 1
+                }
             }
         }
         

@@ -1,7 +1,7 @@
 
 //
 //  ChatView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-26.
 //
@@ -201,7 +201,10 @@ struct ConversationGridView: View {
             .onAppear(perform: {
                 if AuthViewModel.shared.isSignedIn {
                     AuthViewModel.shared.fetchUser { }
-                    viewModel.sortChats()
+                    
+                    DispatchQueue.main.async {
+                        viewModel.sortChats()
+                    }
                 }
                 
             })
@@ -328,7 +331,7 @@ struct NavView: View {
                                 Button {
                                     viewModel.showSettingsView = true
                                 } label: {
-                                    KFImage(URL(string: authViewModel.profileImageUrl ?? ""))
+                                    KFImage(URL(string: authViewModel.profileImage ?? ""))
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: toolBarWidth, height: toolBarWidth)

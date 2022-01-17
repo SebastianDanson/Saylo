@@ -1,6 +1,6 @@
 //
 //  CameraView.swift
-//  VidChat
+//  Saylo
 //
 //  Created by Student on 2021-09-27.
 //
@@ -46,7 +46,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     public func addAudio() {
         cameraViewController.setUpWriter()
-         cameraViewController.addAudio()
+//         cameraViewController.addAudio()
     }
     
     public func setupSession() {
