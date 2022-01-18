@@ -198,7 +198,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return
         }
         
-        captureSession.addInput(activeInput)
+        if captureSession.canAddInput(activeInput) {
+            captureSession.addInput(activeInput)
+        }
+        
         captureSession.commitConfiguration()
         
         
@@ -246,6 +249,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     public func captureMovie(withFlash hasFlash: Bool) {
         
+        
         self.hasFlash = hasFlash
         
         let device = activeInput.device
@@ -277,11 +281,17 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //        audioCaptureSession.beginConfiguration()
 //        audioCaptureSession.inputs.forEach({audioCaptureSession.rem})
 //
-        audioCaptureSession.startRunning()
+        
+        DispatchQueue.main.async {
+            self.audioCaptureSession.startRunning()
+        }
+       
         sessionAtSourceTime = nil
         
         
-        
+        CameraViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
+            CameraViewModel.shared.stopRecording()
+        }
         
         // Dispatch.main.async {
         
@@ -293,7 +303,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func setUpWriter() {
-        
+                
         do {
             
             let url = getTempUrl()!
@@ -313,9 +323,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             if videoWriter.canAdd(audioWriterInput!) {
                 videoWriter.add(audioWriterInput!)
-                print("audio input added")
-            } else {
-                print("no audio input added")
             }
             
             // add video input
@@ -324,7 +331,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 AVVideoWidthKey : 720,
                 AVVideoHeightKey : 1280,
                 AVVideoCompressionPropertiesKey : [
-                    AVVideoAverageBitRateKey : 1024 * 1024 * 3,
+                    AVVideoAverageBitRateKey : 1024 * 1024 * 4,
                 ],
             ])
             
@@ -332,15 +339,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             if videoWriter.canAdd(videoWriterInput) {
                 videoWriter.add(videoWriterInput)
-                print("video input added")
-            } else {
-                print("no input added")
             }
             
-            
-          
-            
             videoWriter.startWriting()
+            
             
         } catch let error {
             print("ERROR OCCURED SETTING UP WRITER \(error.localizedDescription)")
@@ -364,7 +366,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             // start writing
             sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
-            print("Writing")
         }
         
         if !CameraViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
@@ -387,9 +388,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             //
             videoWriterInput.append(sampleBuffer)
             //               print(connection, "VIDEO")
-            
-                           print("video buffering")
-            
+                        
         } else if writable, output == audioDataOutput,
                   (audioWriterInput.isReadyForMoreMediaData) {
             // write audio buffer
@@ -397,7 +396,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             audioWriterInput.append(sampleBuffer)
             
-                           print("audio buffering")
         }
         
         
@@ -447,9 +445,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         videoWriter.finishWriting {
             self.sessionAtSourceTime = nil
             DispatchQueue.main.async {
+                
                 if showVideo {
                     CameraViewModel.shared.videoUrl = self.outputURL
                     CameraViewModel.shared.setVideoPlayer()
+                } else {
+                    CameraViewModel.shared.videoUrl = nil
                 }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
                 self.setUpWriter()
@@ -457,11 +458,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
         }
         
-        
+        CameraViewModel.shared.timer?.invalidate()
         audioCaptureSession.stopRunning()
-        
-        
-        
+ 
     }
     
     @objc func pinch(_ pinch: UIPinchGestureRecognizer) {

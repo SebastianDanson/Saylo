@@ -107,6 +107,7 @@ class AddFriendsViewModel: ObservableObject {
             .limit(to: 10)
             .getDocuments { snapshots, error in
                 snapshots?.documents.forEach({ snapshot in
+                    
                     let user = User(dictionary: snapshot.data(), id: snapshot.documentID)
                     
                     //Don't show current user in search results

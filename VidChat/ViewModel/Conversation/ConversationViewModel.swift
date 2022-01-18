@@ -130,10 +130,10 @@ class ConversationViewModel: ObservableObject {
                 ConversationGridViewModel.shared.chats[index].lastReadMessageIndex = chat.messages.count - 1
             }
         }
-
-        self.currentPlayer?.pause()
+        
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
+        
         self.chat = nil
         self.chatId = ""
         self.messages = [Message]()
@@ -147,7 +147,6 @@ class ConversationViewModel: ObservableObject {
     }
     
     func addPlayer(_ player: MessagePlayer) {
-        
         if !self.players.contains(where: {$0.messageId == player.messageId}) {
             self.players.append(player)
         }
@@ -208,7 +207,6 @@ class ConversationViewModel: ObservableObject {
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
 
         if chatId != "" {
-            print("4")
             if !self.chatId.isEmpty {
             let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
             message.image = image
@@ -225,7 +223,6 @@ class ConversationViewModel: ObservableObject {
             
             for i in 0..<ConversationGridViewModel.shared.chats.count {
                 if ConversationGridViewModel.shared.chats[i].id == chatId {
-                    print("YESSIR")
                     ConversationGridViewModel.shared.chats[i].messages.append(message)
                 }
             }
@@ -296,8 +293,6 @@ class ConversationViewModel: ObservableObject {
                 if let error = error {
                     print("ERROR uploading message \(error.localizedDescription)")
                 } else {
-                    print("Message uploaded successfully")
-                    
                     
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
                         
@@ -385,9 +380,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func fetchSavedMessages() {
-        print("STARTED")
         ConversationService.fetchSavedMessages(forDocWithId: self.chatId) { messages in
-            print("FINISHED")
             self.setIsSameId(messages: messages)
             self.savedMessages = messages
             self.noSavedMessages = messages.count == 0
@@ -395,9 +388,35 @@ class ConversationViewModel: ObservableObject {
     }
     
     func addReactionToMessage(withId id: String, reaction: Reaction) {
-        if let message = self.messages.first(where: {$0.id == id}) {
-            message.reactions.append(reaction)
-            ConversationService.addReaction(reaction: reaction,  chatId: self.chatId)
+        guard let message = self.messages.first(where: {$0.id == id}),
+              let user = AuthViewModel.shared.currentUser,
+              let chat = ConversationViewModel.shared.chat else {return}
+        
+        message.reactions.append(reaction)
+        ConversationService.addReaction(reaction: reaction,  chatId: self.chatId)
+        
+        //No notification if u react to your own video
+        if message.userId != user.id {
+            var data = [String:Any]()
+            
+            let messageType = message.type == .Video ? "video" : "audio"
+            
+            if chat.isDm {
+                
+                if let friend = chat.chatMembers.first(where: {$0.id != user.id}) {
+                    data["token"] = friend.fcmToken
+                    data["title"] = ""
+                    data["body"] = user.firstName + " \"\(reaction.reactionType.getPastTenseString())\" your \(messageType)"
+                }
+            } else {
+                data["topic"] = message.chatId
+                data["title"] = ""
+                data["body"] = user.firstName + " \"\(reaction.reactionType.getPastTenseString())\" \(message.username)'s \(messageType)"
+                data["metaData"] = ["reactionUserId":message.userId]
+            }
+            
+            
+            Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
         }
     }
     
@@ -447,7 +466,6 @@ class ConversationViewModel: ObservableObject {
         if self.chatId.isEmpty {
             
             ConversationGridViewModel.shared.selectedChats.forEach { chat in
-                print("3")
                 addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
                 ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
             }

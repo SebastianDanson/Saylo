@@ -50,7 +50,6 @@ struct NameTextField: UIViewRepresentable {
                 self.text = ""
             }
             
-            print(self.text, "TEXT")
             return true
         }
     }

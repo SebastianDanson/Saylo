@@ -258,7 +258,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     func joinChannel() {
         if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
-            print("JOINING")
+
             getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
                 print(sid, uid, "JOINING")
                 self?.inCall = true
@@ -275,7 +275,6 @@ extension CallManager: AgoraRtcEngineDelegate {
     }
     
     func leaveChannel() {
-        print("LEAVING")
         agoraKit?.leaveChannel(nil)
     }
     

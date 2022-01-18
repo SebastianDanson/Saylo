@@ -83,10 +83,15 @@ struct VideoPlayerView: View {
     }
     
     func togglePlay() {
+      
+        
         if player.isPlaying {
             player.pause()
         } else {
             player.play()
+            if ConversationViewModel.shared.chat != nil, ConversationViewModel.shared.showCamera == false {
+                ConversationViewModel.shared.currentPlayer = self.player
+            }
         }
     }
     

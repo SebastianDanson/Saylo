@@ -75,7 +75,6 @@ struct CameraMainView: View {
             DragGesture(minimumDistance: 0, coordinateSpace: .global)
                 .onChanged { gesture in
                     dragOffset.height = max(0, gesture.translation.height)
-                    print(gesture.translation.height)
                 }
                 .onEnded { gesture in
                     
@@ -157,12 +156,10 @@ struct CameraMainView: View {
     }
     
     func setupSession() {
-        print("SETTING UP SESSION")
         cameraView.setupSession()
     }
     
     func stopSession() {
-        print("STOPPING SESSION")
         cameraView.stopSession()
     }
     
@@ -186,10 +183,11 @@ struct MediaOptions: View {
     @State var hasSaved = false
     
     var body: some View {
+        
         VStack {
             if viewModel.videoUrl != nil || viewModel.photo != nil {
+                
                 HStack {
-                    
                     
                     // X button
                     Button {
@@ -330,6 +328,7 @@ struct CameraOptions: View {
                     Button {
                         //  withAnimation {
                         viewModel.reset()
+                        cameraView.cancelRecording()
                         //}
                     } label: {
                         CameraOptionView(image: Image("x"), imageDimension: 14)

@@ -106,7 +106,6 @@ class MediaUploader {
     
     func uploadVideo(url: URL, messageId: String, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
         let ref = UploadType.video.getFilePath(messageId: messageId)
-        print(url.absoluteString, "URL")
         
         if isFromPhotoLibrary {
             let videoData = try! Data(contentsOf: url)
@@ -127,7 +126,6 @@ class MediaUploader {
                     }
                     
                     guard let videoUrl = url?.absoluteString else {return}
-                    print(videoUrl, "URLL")
                     completion(videoUrl)
                 }
             }

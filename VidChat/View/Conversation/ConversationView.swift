@@ -169,6 +169,8 @@ struct ConversationView: View {
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
         .onDisappear {
+            viewModel.players.forEach({$0.player.pause()})
+            viewModel.currentPlayer?.pause()
 //            viewModel.removeChat()
         }
     }
@@ -206,6 +208,7 @@ struct OptionsView: View {
                             if !viewModel.showCamera {
                                 
                                 if !viewModel.isRecordingAudio {
+                                    
                                     //Camera button
                                     Button(action: {
                                         withAnimation(.linear(duration: 0.15)) {

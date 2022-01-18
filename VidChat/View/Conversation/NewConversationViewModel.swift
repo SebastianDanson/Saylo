@@ -156,17 +156,12 @@ class NewConversationViewModel: ObservableObject {
         
         print(members1.count, members2.count)
         if members1.count != members2.count {
-            print("NOPE")
             return false
         }
-        
-        print("YUP")
-        
+                
         
         for i in 0..<members1.count {
-            
-            print(members1[i].id, "1" , members2[i].id, "2")
-            
+                        
             if members1[i].id != members2[i].id {
                 return false
             }

@@ -8,7 +8,6 @@
 import AVFoundation
 
 func configureAudioSession() {
-  print("Configuring audio session")
   let session = AVAudioSession.sharedInstance()
   do {
       try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth, .allowAirPlay])

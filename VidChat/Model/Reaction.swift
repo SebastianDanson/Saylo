@@ -47,6 +47,24 @@ enum ReactionType {
             
         }
     }
+    
+    func getPastTenseString() -> String {
+        
+        switch self {
+            
+        case .Love:
+            return "loved"
+        case .Like:
+            return "liked"
+        case .Dislike:
+            return "disliked"
+        case .Emphasize:
+            return "emphasized"
+        case .Laugh:
+            return "laughed at"
+            
+        }
+    }
 }
 
 struct Reaction {

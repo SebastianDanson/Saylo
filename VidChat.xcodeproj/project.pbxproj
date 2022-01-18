@@ -36,6 +36,9 @@
 		0687E9F72794B1E1004E1187 /* ChatMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F62794B1E1004E1187 /* ChatMembersView.swift */; };
 		0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F82794B38A004E1187 /* ChatMemberCell.swift */; };
 		0687E9FB2794B9A0004E1187 /* ChatMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9FA2794B9A0004E1187 /* ChatMember.swift */; };
+		069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11DE2797573F00988829 /* EnableContactsView.swift */; };
+		069D11E12797626100988829 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11E02797626100988829 /* ContactsViewModel.swift */; };
+		069D11E3279762DC00988829 /* PhoneContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11E2279762DC00988829 /* PhoneContact.swift */; };
 		069E4A652772874000996824 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A642772874000996824 /* ImageDetailView.swift */; };
 		069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A662772A2E100996824 /* ActivityViewController.swift */; };
 		069E4A692772A9CC00996824 /* ringtone.wav in Resources */ = {isa = PBXBuildFile; fileRef = 069E4A682772A9CC00996824 /* ringtone.wav */; };
@@ -192,6 +195,9 @@
 		0687E9F62794B1E1004E1187 /* ChatMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMembersView.swift; sourceTree = "<group>"; };
 		0687E9F82794B38A004E1187 /* ChatMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberCell.swift; sourceTree = "<group>"; };
 		0687E9FA2794B9A0004E1187 /* ChatMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMember.swift; sourceTree = "<group>"; };
+		069D11DE2797573F00988829 /* EnableContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableContactsView.swift; sourceTree = "<group>"; };
+		069D11E02797626100988829 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
+		069D11E2279762DC00988829 /* PhoneContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneContact.swift; sourceTree = "<group>"; };
 		069E4A642772874000996824 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		069E4A662772A2E100996824 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
 		069E4A682772A9CC00996824 /* ringtone.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringtone.wav; sourceTree = SOURCE_ROOT; };
@@ -536,6 +542,7 @@
 		3F485D8B26FD45810071532B /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				069D11E02797626100988829 /* ContactsViewModel.swift */,
 				063CAAB1277B9CEF00C84318 /* AddFriends */,
 				3F485D9C26FD469F0071532B /* Authentication */,
 				3F7786BE27245D86005AF9DA /* Call */,
@@ -571,6 +578,7 @@
 				3F95F44F26FE4B9C00F892B7 /* User.swift */,
 				065971F72776AD1200884420 /* Reaction.swift */,
 				0687E9FA2794B9A0004E1187 /* ChatMember.swift */,
+				069D11E2279762DC00988829 /* PhoneContact.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -594,6 +602,7 @@
 		3F485D9526FD461C0071532B /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				069D11DE2797573F00988829 /* EnableContactsView.swift */,
 				06F1A32F277E811800A0F992 /* LandingPageView.swift */,
 				3F485DC526FE28860071532B /* LoginView.swift */,
 				06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */,
@@ -914,7 +923,9 @@
 				3F112B822720B32700BA2A73 /* CallManager.swift in Sources */,
 				06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */,
 				3F1768282714A8080049ADBA /* ConversationViewModel.swift in Sources */,
+				069D11E12797626100988829 /* ContactsViewModel.swift in Sources */,
 				062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */,
+				069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */,
 				069E4A652772874000996824 /* ImageDetailView.swift in Sources */,
 				3F8B027126FEB10E00841565 /* UserService.swift in Sources */,
 				0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */,
@@ -973,6 +984,7 @@
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,
 				3F112B7E27207AFE00BA2A73 /* VideoCollectionViewCell.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,
+				069D11E3279762DC00988829 /* PhoneContact.swift in Sources */,
 				0616EC04279288D3006565FE /* AddUserToChatCell.swift in Sources */,
 				3FFD034B272CAE6A000BEADE /* VideoHelper.swift in Sources */,
 				065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */,
@@ -1011,7 +1023,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.02;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1039,7 +1051,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.02;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1183,6 +1195,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.02;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1209,6 +1222,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.02;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

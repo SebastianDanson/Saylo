@@ -107,8 +107,7 @@ extension AppDelegate: PKPushRegistryDelegate {
     func pushRegistry(_ registry: PKPushRegistry,
                       didReceiveIncomingPushWith payload: PKPushPayload,
                       for type: PKPushType, completion: @escaping () -> Void) {
-        print("RECIEVED")
-        print("PAYLOAD", payload.dictionaryPayload["data"])
+     
         
         let data = payload.dictionaryPayload["data"] as? [String:Any] ?? [String:Any]()
         print(data, "DATA")
@@ -151,7 +150,6 @@ extension AppDelegate: PKPushRegistryDelegate {
 
     /// Display the incoming call to the user.
     func displayIncomingCall(uuid: UUID, handle: String, hasVideo: Bool = false, completion: ((Error?) -> Void)? = nil) {
-        print("INCOMING INCOMING")
         providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: completion)
        
     }
@@ -173,7 +171,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     }
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("FCM TOKEN", fcmToken)
+
         if let fcmToken = fcmToken {
             let dataDict:[String: String] = ["token": fcmToken ?? ""]
             NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
@@ -219,10 +217,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         }
         
         if acceptedFriendRequest {
-            print("YUP")
             AuthViewModel.shared.fetchUser {
-                print("YUP 2")
-
                 ConversationGridViewModel.shared.fetchConversations()
             }
         }

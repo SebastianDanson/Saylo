@@ -49,7 +49,7 @@ class PhotosCollectionView: UIView {
         button.layer.cornerRadius = width / 2
         button.isHidden = false
         button.isEnabled = false
-        button.alpha = 0.3
+        button.alpha = 0.5
         return button
     }()
     
@@ -136,12 +136,12 @@ class PhotosCollectionView: UIView {
                 sendButton.alpha = 1
             } else {
                 sendButton.isEnabled = false
-                sendButton.alpha = 0.3
+                sendButton.alpha = 0.5
             }
             
         } else {
             sendButton.isEnabled = selectedIndexes.isEmpty ? false : true
-            sendButton.alpha = selectedIndexes.isEmpty ? 0.3 : 1
+            sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
         }
         
     }
@@ -161,10 +161,8 @@ class PhotosCollectionView: UIView {
                     
                 }
             } else {
-                print("1")
                 imageManager.requestAVAsset(forVideo: asset, options: nil) { asset, mix, _  in
                     guard let asset = asset as? AVURLAsset else { return }
-                    print("2")
                     withAnimation(.easeInOut(duration: 0.2)) {
                         ConversationViewModel.shared.sendMessage(url: asset.url, type: .Video)
                         ConversationGridViewModel.shared.stopSelectingChats()

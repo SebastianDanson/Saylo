@@ -17,11 +17,7 @@ class AudioRecorder: NSObject,ObservableObject {
     
     var audioRecorder: AVAudioRecorder!
     @Published var audioPlayer = AudioPlayer()
-    @Published var isPlaying = false {
-        didSet {
-            print(isPlaying, "ISPLAYING2")
-        }
-    }
+    @Published var isPlaying = false
     
     var audioUrl: URL!
     
@@ -102,13 +98,11 @@ class AudioRecorder: NSObject,ObservableObject {
     }
     
     func playRecording() {
-        print("PLAYING")
         isPlaying = true
         audioPlayer.resume()
     }
     
     func pauseRecording() {
-        print("PAUSED")
         audioPlayer.pause()
         isPlaying = false
     }

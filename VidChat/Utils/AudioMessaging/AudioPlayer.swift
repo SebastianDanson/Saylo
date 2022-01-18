@@ -30,18 +30,13 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
             print("Playing over the device's speakers failed")
         }
         
-       // do {
             self.audio = audio
             let playerItem = AVPlayerItem(url: audio)
 
             audioPlayer = AVPlayer(playerItem: playerItem)
-           // audioPlayer.delegate = self
             audioPlayer.play()
             hasFinished = false
             isPlaying = true
-//        } catch let e {
-//            print("Playback failed. \(e.localizedDescription)")
-//        }
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidReachEnd(notification:)),
@@ -72,7 +67,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
     
     func resume() {
-        print(isPlaying, "RESUMED")
+
         if !hasFinished {
             audioPlayer.play()
         } else {

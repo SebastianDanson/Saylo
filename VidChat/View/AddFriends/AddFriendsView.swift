@@ -14,7 +14,6 @@ struct AddFriendsView: View {
     @State var searchText: String = ""
     @State var suggestedUsers = [User]()
     
-    
     var body: some View {
         
         VStack(alignment: .leading) {

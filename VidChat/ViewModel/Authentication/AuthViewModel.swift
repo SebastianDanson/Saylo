@@ -146,7 +146,8 @@ class AuthViewModel: ObservableObject {
         guard let currentUser = currentUser else { return }
         CameraViewModel.shared.photo = nil
         MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
-            currentUser.profileImage = imageUrl
+            
+            AuthViewModel.shared.currentUser?.profileImage = imageUrl
             
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
             defaults?.set(imageUrl, forKey: "profileImage")
@@ -160,7 +161,6 @@ class AuthViewModel: ObservableObject {
     func fetchUser(completion: @escaping(() -> Void)) {
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        print(uid, "UID")
         COLLECTION_USERS.document(uid).getDocument { snapshot, _ in
             
             if let data = snapshot?.data() {

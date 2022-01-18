@@ -225,7 +225,6 @@ struct ReactionView: View {
     let messageId: String
     @Binding var reactions: [Reaction]
     @Binding var showReactions: Bool
-
     
     var body: some View {
         

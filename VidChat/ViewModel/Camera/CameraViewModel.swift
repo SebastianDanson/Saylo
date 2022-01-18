@@ -98,7 +98,7 @@ class CameraViewModel: ObservableObject {
         
         if addDelay {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
                 self.cameraView.startRecording()
                 withAnimation {
                     self.isRecording = true
@@ -114,9 +114,6 @@ class CameraViewModel: ObservableObject {
             }
         }
         
-        timer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
-            self.stopRecording()
-        }
     }
     
     func stopRecording() {

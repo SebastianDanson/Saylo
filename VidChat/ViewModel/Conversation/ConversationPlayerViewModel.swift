@@ -29,8 +29,6 @@ class ConversationPlayerViewModel: ObservableObject {
     func handleShowNextMessage(wasInterrupted: Bool) {
                 
         incrementIndex()
-
-        print(index, "INDEX", player.items().count)
                     
         if !isPlayable() {
             
@@ -44,10 +42,8 @@ class ConversationPlayerViewModel: ObservableObject {
         } else {
             if hasGoneBack || !canAdvance {
                 player.play()
-                print("PLAY")
                 canAdvance = true
             } else {
-                print("ADVANCE")
                 player.advanceToNextItem()
             }
             player.seek(to: .zero)
@@ -78,7 +74,6 @@ class ConversationPlayerViewModel: ObservableObject {
             if let currentIndex = playerItems.firstIndex(of: currentItem) {
                 
                 if currentIndex > 0 {
-                    print(currentIndex, "INDEX")
                     let prevItem = playerItems[currentIndex - 1]
                     player.replaceCurrentItem(with: prevItem)
                     player.insert(playerItems[currentIndex], after: prevItem)
@@ -100,7 +95,7 @@ class ConversationPlayerViewModel: ObservableObject {
     }
     
     func addAllVideosToPlayer() {
-        print("ADDDD")
+
         for item in playerItems {
             if player.canInsert(item, after: player.items().last) {
                 player.insert(item, after: player.items().last)
