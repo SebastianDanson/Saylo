@@ -36,7 +36,7 @@ struct ConversationService {
         }
     }
     
-    static func getMessagesFromData(data: [String:Any], chatId: String) -> [Message] {
+    static func getMessagesFromData(data: [String:Any], shouldRemoveMessages: Bool, chatId: String) -> [Message] {
         
         var messages = [Message]()
 
@@ -57,7 +57,7 @@ struct ConversationService {
             
             if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 {
                 messages.append(message)
-            } else {
+            } else if shouldRemoveMessages {
                 shouldRemoveMessages = true
             }
         }

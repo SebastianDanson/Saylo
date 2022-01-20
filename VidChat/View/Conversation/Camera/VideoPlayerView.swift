@@ -24,7 +24,7 @@ struct VideoPlayerView: View {
     
     init(url: URL, showName: Bool = true, message: Message? = nil) {
         let player = AVPlayer(url: url)
-        self.player = player
+        self._player = State(initialValue: player) 
         self.showName = showName
         self.message = message
 
@@ -41,7 +41,7 @@ struct VideoPlayerView: View {
                 
         ZStack {
             
-            PlayerView(player: $player)
+            PlayerView(player: $player, shouldLoop: true)
                 .frame(width: CAMERA_WIDTH, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT)
                 .overlay(
                     HStack {
@@ -75,9 +75,15 @@ struct VideoPlayerView: View {
                 }
         }
         
+        HStack {
+            
+            
+            
+        }
+        
         if showName {
-            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.systemWhite, style: StrokeStyle(lineWidth: 10))
-                .frame(width: CAMERA_WIDTH + 20, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 + 20 : CAMERA_HEIGHT + 20)
+//            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.systemWhite, style: StrokeStyle(lineWidth: 10))
+//                .frame(width: CAMERA_WIDTH + 20, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 + 20 : CAMERA_HEIGHT + 20)
         }
         
     }
@@ -137,26 +143,27 @@ struct VideoPlayer : UIViewControllerRepresentable {
 struct PlayerView: UIViewRepresentable {
     
     @Binding var player : AVPlayer
+    let shouldLoop: Bool
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {
     }
     
     func makeUIView(context: Context) -> UIView {
-        let playerView = PlayerUIView(frame: .zero, player: player)
+        let playerView = PlayerUIView(frame: .zero, player: player, shouldLoop: shouldLoop)
         return playerView
     }
 }
 
-struct PlayerQueueView: UIViewRepresentable {
-    
-    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerQueueView>) {
-    }
-    
-    func makeUIView(context: Context) -> UIView {
-        let playerView = PlayerUIView(frame: .zero, player: ConversationPlayerViewModel.shared.player, shouldLoop: false)
-        return playerView
-    }
-}
+//struct PlayerQueueView: UIViewRepresentable {
+//    
+//    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerQueueView>) {
+//    }
+//    
+//    func makeUIView(context: Context) -> UIView {
+//        let playerView = PlayerUIView(frame: .zero, player: ConversationPlayerViewModel.shared.player, shouldLoop: false)
+//        return playerView
+//    }
+//}
 
 class PlayerUIView: UIView {
     
@@ -181,6 +188,7 @@ class PlayerUIView: UIView {
         removePeriodicTimeObserver()
     }
     
+    
     init(frame: CGRect, player: AVPlayer, shouldLoop: Bool = true) {
         
         super.init(frame: frame)
@@ -188,6 +196,9 @@ class PlayerUIView: UIView {
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspectFill
         
+        playerLayer.cornerRadius = 20
+        self.layer.masksToBounds = true
+        self.layer.cornerRadius = 20
         layer.addSublayer(playerLayer)
         
         playbackSlider.setDimensions(height: 30, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
@@ -205,13 +216,13 @@ class PlayerUIView: UIView {
         
         addPeriodicTimeObserver()
         
-        if ConversationViewModel.shared.chat == nil {
+        if ConversationViewModel.shared.chat == nil && !ConversationGridViewModel.shared.hasUnreadMessages {
             playbackSlider.isHidden = true
         }
         
         // Setup looping
         
-        player.actionAtItemEnd = shouldLoop ? .none : .advance
+//        player.actionAtItemEnd = shouldLoop ? .none : .advance
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidReachEnd(notification:)),
@@ -319,9 +330,9 @@ class PlayerUIView: UIView {
         let xLoc = sender.location(in: self).x
         
         if xLoc > SCREEN_WIDTH/2 {
-            ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: true)
+            ConversationPlayerViewModel.shared.showNextMessage()
         } else  {
-            ConversationPlayerViewModel.shared.handleShowPrevMessage()
+            ConversationPlayerViewModel.shared.showPreviousMessage()
         }
     }
     
@@ -337,7 +348,7 @@ class PlayerUIView: UIView {
                 playerLayer.player?.pause()
             }
         } else {
-            ConversationPlayerViewModel.shared.handleShowNextMessage(wasInterrupted: false)
+            ConversationPlayerViewModel.shared.showNextMessage()
         }
     }
     

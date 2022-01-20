@@ -17,7 +17,7 @@ class Chat: ObservableObject {
     var name: String
     var fullName: String
     var profileImage: String
-    var isDm = true
+    var isDm: Bool
     var mutedUsers: [String]
   
     var messages = [Message]()
@@ -36,7 +36,7 @@ class Chat: ObservableObject {
     var lastReadMessageIndex = 0
     
 
-    init(dictionary: [String:Any], id: String) {
+    init(dictionary: [String:Any], id: String, shouldRemoveOldMessages: Bool = true) {
 
         
         //Doc info
@@ -89,7 +89,7 @@ class Chat: ObservableObject {
         
 
         //messages
-        self.messages = ConversationService.getMessagesFromData(data: dictionary, chatId: id)
+        self.messages = ConversationService.getMessagesFromData(data: dictionary, shouldRemoveMessages: shouldRemoveOldMessages, chatId: id)
 
         if self.name.isEmpty {
             self.name = getDefaultChatName()

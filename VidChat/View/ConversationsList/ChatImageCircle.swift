@@ -46,7 +46,7 @@ struct ChatImage: View {
                 
                 ZStack {
                     
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.lighterGray, lineWidth: addedWidth)
                         .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth) * ratio)
 
@@ -54,7 +54,7 @@ struct ChatImage: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth) * ratio)
-                        .cornerRadius(10)
+                        .cornerRadius(9)
                     
                 }
                 .padding(.top, width/2.3)
@@ -73,7 +73,7 @@ struct ChatImage: View {
             }
             .frame(width: width, height: width * 1.35)
             .background(Color.lighterGray)
-            .cornerRadius(16)
+            .cornerRadius(14)
             .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 10, x: 0, y: 2)
 
             
@@ -84,7 +84,7 @@ struct ChatImage: View {
                 .scaledToFill()
                 .background(Color(.systemGray))
                 .frame(width: width, height: width * ratio)
-                .cornerRadius(16)
+                .cornerRadius(14)
                 .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 6)
 //                .clipShape(Circle())
         }

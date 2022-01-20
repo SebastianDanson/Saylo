@@ -25,7 +25,8 @@ class ConversationGridViewModel: ObservableObject {
     @Published var showConversation = false
     @Published var isCalling = false
     @Published var temp = false
-    
+    @Published var hasUnreadMessages = false
+
     var allChats = [Chat]()
     
     
@@ -170,7 +171,6 @@ class ConversationGridViewModel: ObservableObject {
 
                 count += 1
 
-
                 if count == user.chats.count {
 
                     let chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
@@ -254,7 +254,7 @@ class ConversationGridViewModel: ObservableObject {
         var chats = [Chat]()
         chatDic?.forEach({
             if let id = $0["id"] as? String {
-                chats.append(Chat(dictionary: $0, id: id))
+                chats.append(Chat(dictionary: $0, id: id, shouldRemoveOldMessages: false))
             }
         })
         
@@ -269,12 +269,15 @@ class ConversationGridViewModel: ObservableObject {
             }
         }
                 
+        if newMessagesArray.count > 0 {
+            self.hasUnreadMessages = true
+        }
 
 //        DispatchQueue.main.async {
-        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+        self.chats = chats
 //        }
 
-        defaults?.set([[String:Any]](), forKey: "messages")
+//        defaults?.set([[String:Any]](), forKey: "messages")
     }
     
     func setChatCache() {

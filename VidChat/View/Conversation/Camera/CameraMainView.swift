@@ -47,6 +47,7 @@ struct CameraMainView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
+                        .cornerRadius(20)
                         .padding(.top, TOP_PADDING)
                     Spacer()
                 }.zIndex(3)
@@ -102,13 +103,13 @@ struct CameraMainView: View {
             ZStack {
                 
                 if SCREEN_RATIO > 2 {
-                    VStack{
-                        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                            .frame(width: CAMERA_WIDTH + 20, height: CAMERA_WIDTH * 16/9 + 20)
-                        
-                        
-                        Spacer()
-                    }.padding(.top, TOP_PADDING - 10)
+//                    VStack{
+//                        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+//                            .frame(width: CAMERA_WIDTH + 20, height: CAMERA_WIDTH * 16/9 + 20)
+//                        
+//                        
+//                        Spacer()
+//                    }.padding(.top, TOP_PADDING - 10)
                     
                 }
                 
@@ -117,7 +118,7 @@ struct CameraMainView: View {
                 }
                 
                 if AuthViewModel.shared.hasCompletedSignUp {
-                    CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 4).zIndex(6)
+                    CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 0).zIndex(6)
                 }
                 
                 if viewModel.photo != nil || viewModel.videoUrl != nil {
@@ -237,7 +238,7 @@ struct MediaOptions: View {
                 
                 Spacer()
                 
-                HStack {
+                HStack(spacing: 10) {
                     
                     Button {
                         
@@ -252,15 +253,57 @@ struct MediaOptions: View {
                         }
                         
                     } label: {
-                        CameraOptionView(image: Image(systemName: hasSaved ? "checkmark" : "square.and.arrow.down"), imageDimension: hasSaved ? 20 : 25, circleDimension: 44)
-                    }.disabled(hasSaved)
-                    
+                        
+                        ZStack {
+                        
+                        Image(systemName: hasSaved ? "checkmark" : "square.and.arrow.down")
+                            .resizable()
+                            .font(Font.title.weight(.semibold))
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .frame(width: hasSaved ? 20 : 24, height: hasSaved ? 20 : 24)
+                        }
+                        .frame(width: 64, height: 38)
+                        .background(Color(.systemGray))
+                        .clipShape(Capsule())
+                   
+                    }
+                    .disabled(hasSaved)
+                    .padding(.leading, 12)
+
+                    if viewModel.videoUrl != nil {
+                        
+                        Button {
+                            
+                            viewModel.videoPlayerView = nil
+                            viewModel.videoUrl = nil
+                            viewModel.progress = 0.0
+                            viewModel.isRecording = false
+                            viewModel.handleTap()
+                            
+                        } label: {
+                            
+                            ZStack {
+                             
+                                Image(systemName: "arrow.clockwise")
+                                    .resizable()
+                                    .font(Font.title.weight(.semibold))
+                                    .scaledToFit()
+                                    .foregroundColor(.white)
+                                    .frame(width: 24, height: 24)
+                                
+                            }
+                            .frame(width: 64, height: 38)
+                            .background(Color.mainBlue)
+                            .clipShape(Capsule())
+                        }
+                    }
                     
                     Spacer()
                     
                     SendButton()
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 12)
                 .padding(.bottom, BOTTOM_PADDING + 16)
             }
         }
@@ -429,7 +472,7 @@ struct CameraOptionView: View {
             .background(
                 Circle()
                     .frame(width: circleDimension, height: circleDimension)
-                    .foregroundColor(Color(.init(white: 0, alpha: 0.4)))
+                    .foregroundColor(Color(white: 0, opacity: 0.4))
             )
     }
 }

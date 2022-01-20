@@ -30,6 +30,8 @@
 		065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */; };
 		065D2DF72788C1C1002F3816 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF62788C1C1002F3816 /* PageView.swift */; };
 		065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065E93952787755D0025C90C /* AcitivityIndicator.swift */; };
+		0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */; };
+		0660EE5A279A0CA700704AFE /* UnreadMessagePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */; };
 		0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */; };
 		0687E9EF2793A801004E1187 /* UnreadMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9EE2793A801004E1187 /* UnreadMessagesView.swift */; };
 		0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F227949A49004E1187 /* EditChatNameView.swift */; };
@@ -197,6 +199,8 @@
 		065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatImageCircle.swift; sourceTree = "<group>"; };
 		065D2DF62788C1C1002F3816 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 		065E93952787755D0025C90C /* AcitivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcitivityIndicator.swift; sourceTree = "<group>"; };
+		0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesScrollView.swift; sourceTree = "<group>"; };
+		0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagePlayerView.swift; sourceTree = "<group>"; };
 		0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUsersPopUpView.swift; sourceTree = "<group>"; };
 		0687E9EE2793A801004E1187 /* UnreadMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesView.swift; sourceTree = "<group>"; };
 		0687E9F227949A49004E1187 /* EditChatNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditChatNameView.swift; sourceTree = "<group>"; };
@@ -380,6 +384,16 @@
 				063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */,
 			);
 			path = AddFriends;
+			sourceTree = "<group>";
+		};
+		0660EE562799F06D00704AFE /* UnreadMessages */ = {
+			isa = PBXGroup;
+			children = (
+				3F8BDF3727683CA2005E425F /* ConversationPlayerView.swift */,
+				0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */,
+				0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */,
+			);
+			path = UnreadMessages;
 			sourceTree = "<group>";
 		};
 		069D11EC2798939900988829 /* CountryCodes */ = {
@@ -745,11 +759,11 @@
 		3F8B029F26FF90AF00841565 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
+				0660EE562799F06D00704AFE /* UnreadMessages */,
 				0616EC05279288EB006565FE /* NewConversation */,
 				0616EC00279287DC006565FE /* Settings */,
 				069E4A6A2772D23400996824 /* ConversationFeedView.swift */,
 				3FB8B5D7270FAACA00355DB9 /* ConversationView.swift */,
-				3F8BDF3727683CA2005E425F /* ConversationPlayerView.swift */,
 				06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */,
 				06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */,
 				3F08F27027017A24009E0029 /* Camera */,
@@ -927,6 +941,7 @@
 				063CAAB5277B9D0E00C84318 /* AddFriendCell.swift in Sources */,
 				3F485DCC26FE29FB0071532B /* CustomTextField.swift in Sources */,
 				3F485D9026FD45F00071532B /* ContentView.swift in Sources */,
+				0660EE5A279A0CA700704AFE /* UnreadMessagePlayerView.swift in Sources */,
 				063CAABB277BEF1900C84318 /* NewConversationView.swift in Sources */,
 				3F08F27227017A36009E0029 /* CameraView.swift in Sources */,
 				0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */,
@@ -995,6 +1010,7 @@
 				3F8B027726FEC03100841565 /* Message.swift in Sources */,
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,
+				0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */,
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,

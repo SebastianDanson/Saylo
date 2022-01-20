@@ -435,8 +435,7 @@ class ConversationViewModel: ObservableObject {
             .addSnapshotListener { snapshot, _ in
                 if let data = snapshot?.data() {
 
-                    let messages = ConversationService.getMessagesFromData(data: data, chatId: self.chatId)
-
+                    let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
                     
                     self.messages.forEach { message in
                         if let image = message.image {

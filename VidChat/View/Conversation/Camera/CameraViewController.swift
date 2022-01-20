@@ -232,6 +232,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewLayer.frame = CGRect(x: (SCREEN_WIDTH - CAMERA_WIDTH)/2, y: TOP_PADDING, width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
         
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        previewLayer.cornerRadius = 20
+        self.view.layer.masksToBounds = true
+        self.view.layer.cornerRadius = 20
         view.layer.addSublayer(previewLayer)
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))

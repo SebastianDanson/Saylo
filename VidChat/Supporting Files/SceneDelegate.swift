@@ -60,8 +60,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         ConversationGridViewModel.shared.setChatCache()
         
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        defaults?.set([[String:Any]](), forKey: "messages")
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        defaults?.set([[String:Any]](), forKey: "messages")
         
     }
     

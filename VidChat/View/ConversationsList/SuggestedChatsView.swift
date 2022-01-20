@@ -21,7 +21,6 @@ struct SuggestedChatsView: View {
                         ForEach(Array(chats.enumerated()), id: \.1.id) { i, chat in
                             
                             Button {
-                                ConversationViewModel.shared.isSending = true
                                 ConversationViewModel.shared.sendCameraMessage(chatId: chat.id, chat: chat)
                                 CameraViewModel.shared.reset(hideCamera: true)
                             } label: {

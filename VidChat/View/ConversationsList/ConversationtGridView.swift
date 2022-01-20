@@ -131,7 +131,7 @@ struct ConversationGridView: View {
                                              
                                         }
                                     })
-                                        .padding(.horizontal, 12)
+                                        .padding(.horizontal, 14)
                                     
                                     Rectangle()
                                         .frame(width: SCREEN_WIDTH, height: TOP_PADDING + 70)
@@ -203,6 +203,11 @@ struct ConversationGridView: View {
                         .transition(.move(edge: .bottom))
                 }
                 
+                if viewModel.hasUnreadMessages {
+                    ConversationPlayerView()
+                        .zIndex(3)
+                }
+                
                 
             }
             .onAppear(perform: {
@@ -237,7 +242,7 @@ struct ConversationGridView: View {
             !conversationViewModel.showPhotos &&
             !viewModel.showSearchBar &&
             !viewModel.isSelectingChats {
-            return BOTTOM_PADDING + 90
+            return BOTTOM_PADDING + 85
         }
         
         if viewModel.isSelectingChats {
