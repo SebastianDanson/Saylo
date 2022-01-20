@@ -16,7 +16,9 @@ class AddFriendsViewModel: ObservableObject {
     @Published var isSearching: Bool = false
     @Published var searchedUsers = [User]()
     @Published var friendRequests = [User]()
+    @Published var contacts = [PhoneContact]()
 
+    var allContacts = [PhoneContact]()
     var showSearchResults = false
     
     static let shared = AddFriendsViewModel()
@@ -34,6 +36,14 @@ class AddFriendsViewModel: ObservableObject {
         queryResults(searchText: text.lowercased())
     }
     
+    func setContacts() {
+        var contacts =  ContactsViewModel.shared.getPhoneContacts()
+        contacts.removeAll(where: {$0.name == nil || $0.name?.replacingOccurrences(of: " ", with: "") == ""})
+        self.contacts = contacts
+            .sorted(by: { ($0.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "") < ($1.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "")})
+        
+        self.allContacts = contacts
+    }
     
     func queryResults(searchText: String) {
         if searchText.count == 0 {return}
@@ -255,5 +265,27 @@ class AddFriendsViewModel: ObservableObject {
         friendRequests = [User]()
         isSearching = false
         showSearchResults = false
+    }
+    
+    
+    func filterUsers(withText text: String) {
+                
+        withAnimation {
+            
+            self.contacts = self.allContacts.filter({
+                
+                let wordArray = $0.name?.components(separatedBy: [" "])
+                var contains = false
+                
+                wordArray?.forEach({
+                    if $0.starts(with: text) {
+                        contains = true
+                    }
+                })
+                
+                return contains
+            })
+            
+        }
     }
 }

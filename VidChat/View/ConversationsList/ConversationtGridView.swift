@@ -77,8 +77,6 @@ struct ConversationGridView: View {
                         .onAppear {
                             setSelection()
                         }
-                        
-                        
                     }
                     
                     
@@ -90,31 +88,47 @@ struct ConversationGridView: View {
                                 
                                 
                                 VStack {
+                                    
                                     LazyVGrid(columns: items, spacing: 20, content: {
+                                        
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                            
                                             ConversationGridCell(chat: $viewModel.chats[i])
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
                                                 .onTapGesture(count: 1, perform: {
-                                                    
                                                     if viewModel.isSelectingChats {
                                                         withAnimation(.linear(duration: 0.15)) {
                                                             viewModel.toggleSelectedChat(chat: chat)
                                                         }
-                                                
+
                                                     } else {
                                                         conversationViewModel.setChat(chat: chat)
                                                         viewModel.showConversation = true
                                                     }
+                                                    CameraViewModel.shared.cameraView.stopRunning()
                                                 })
-                                                .onLongPressGesture {
-                                                    withAnimation {
-                                                        CameraViewModel.shared.handleTap()
-                                                        conversationViewModel.selectedChat = chat
-                                                        conversationViewModel.chatId = chat.id
-                                                        conversationViewModel.showCamera = true
-                                                    }
-                                                }
+                            
+//                                                .onLongPressGesture(minimumDuration: 0, pressing: { (isPressing) in
+//                                                            if isPressing {
+//                                                                // called on touch down
+//                                                                print("IS PRESSING")
+//                                                                CameraViewModel.shared.cameraView.startRunning()
+//
+//                                                            } else {
+//                                                                // called on touch up
+//                                                                print("TAP")
+//
+//                                                            }
+//                                                        }, perform: {
+//                                                            print("PERFORM")
+//                                                            CameraViewModel.shared.handleTap()
+//                                                            conversationViewModel.selectedChat = chat
+//                                                            conversationViewModel.chatId = chat.id
+//                                                            conversationViewModel.showCamera = true
+//                                                        })
+                                              
+                                             
                                         }
                                     })
                                         .padding(.horizontal, 12)
@@ -188,6 +202,8 @@ struct ConversationGridView: View {
                         .zIndex(3)
                         .transition(.move(edge: .bottom))
                 }
+                
+                
             }
             .onAppear(perform: {
                 

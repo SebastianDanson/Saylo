@@ -57,6 +57,15 @@ struct CameraView: UIViewControllerRepresentable {
 //        cameraViewController.setupAudio()
     }
     
+    public func startRunning() {
+        cameraViewController.startRunning()
+    }
+    
+    public func stopRunning() {
+        cameraViewController.stopRunning()
+    }
+
+    
     public func stopSession() {
         cameraViewController.stopSession()
     }

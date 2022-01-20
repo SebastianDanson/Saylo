@@ -19,20 +19,27 @@ struct EnableContactsView: View {
             
             Spacer()
             
+            Text("Find your friends")
+                .font(.system(size: 28, weight: .medium))
+               
+
             Image(systemName: "person.2.circle")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 150, height: 150)
                 .foregroundColor(.mainBlue)
-            
-            Text("Find your friends")
-                .font(.system(size: 24, weight: .medium))
                 .padding(.top, 16)
-                .padding(.bottom, 2)
-
+                .padding(.bottom, 16)
+          
             Text("See which of your contacts are \non Saylo")
-                .font(.system(size: 17, weight: .medium))
-                .foregroundColor(Color(.systemGray))
+                .font(.system(size: 20, weight: .medium))
+                .foregroundColor(Color.mainGray)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 8)
+            
+            Text("Saylo never stores or shares your contacts.\nWe respect your privacy")
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(Color(.mainGray))
                 .multilineTextAlignment(.center)
             
             Spacer()

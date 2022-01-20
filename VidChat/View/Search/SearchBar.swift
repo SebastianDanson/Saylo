@@ -115,12 +115,13 @@ struct SearchTextField: UIViewRepresentable {
                     let updatedText = text.replacingCharacters(in: textRange,
                                                                with: string)
                     self.searchText = updatedText
+                    AddFriendsViewModel.shared.filterUsers(withText: updatedText)
                 }
                 
                 AddFriendsViewModel.shared.showSearchResults = self.searchText.count > 1
                 
                 if self.searchText.count > 1 {
-                    perform(#selector(reload), with: lastPerformArgument, afterDelay: 0.8)
+                    perform(#selector(reload), with: lastPerformArgument, afterDelay: 0.6)
                 } else {
                     withAnimation {
                         AddFriendsViewModel.shared.searchedUsers.removeAll()

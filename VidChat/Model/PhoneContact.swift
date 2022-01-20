@@ -16,6 +16,7 @@ class PhoneContact: NSObject {
     var email: [String] = [String]()
     var isSelected: Bool = false
     var isInvited = false
+    var id = UUID().uuidString
 
     init(contact: CNContact) {
         name        = contact.givenName + " " + contact.familyName

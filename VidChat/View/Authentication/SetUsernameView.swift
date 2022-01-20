@@ -64,7 +64,7 @@ struct SetUsernameView: View {
                 
                 //Username field
                 
-                CustomTextField(text: $username, placeholder: Text("Username"), imageName: "person", allowSpaces: false)
+                CustomTextField(text: $username, placeholder: Text("Username"), imageName: "person", allowSpaces: false, keyBoardType: .default)
                     .foregroundColor(.systemWhite)
                     .padding(.top, 2)
                     .padding(.bottom)

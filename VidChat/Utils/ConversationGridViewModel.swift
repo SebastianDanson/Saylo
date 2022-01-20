@@ -269,12 +269,12 @@ class ConversationGridViewModel: ObservableObject {
             }
         }
                 
-//
+
 //        DispatchQueue.main.async {
-//        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+        self.chats = chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
 //        }
 
-//        defaults?.set([[String:Any]](), forKey: "messages")
+        defaults?.set([[String:Any]](), forKey: "messages")
     }
     
     func setChatCache() {

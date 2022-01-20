@@ -12,6 +12,8 @@ import AVFoundation
 struct CameraMainView: View {
     
     @StateObject var viewModel = CameraViewModel.shared
+    @StateObject var conversationViewModel = ConversationViewModel.shared
+
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
     var cameraView = CameraView()
@@ -27,7 +29,6 @@ struct CameraMainView: View {
                 VStack {
                     
                     viewModel.videoPlayerView
-                        .overlay(MediaOptions(), alignment: .bottom)
                         .background(Color.clear)
                         .padding(.top, TOP_PADDING)
 //                        .onAppear {
@@ -46,7 +47,6 @@ struct CameraMainView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
-                        .overlay(MediaOptions(), alignment: .bottom)
                         .padding(.top, TOP_PADDING)
                     Spacer()
                 }.zIndex(3)
@@ -119,6 +119,30 @@ struct CameraMainView: View {
                 if AuthViewModel.shared.hasCompletedSignUp {
                     CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 4).zIndex(6)
                 }
+                
+                if viewModel.photo != nil || viewModel.videoUrl != nil {
+                    
+                    VStack {
+                        
+                        ZStack {
+                        MediaOptions()
+                            .padding(.top, TOP_PADDING)
+                            
+                            VStack {
+                                
+                                Spacer()
+                                
+                                if conversationViewModel.chat == nil {
+                                    SuggestedChatsView(chats: ConversationGridViewModel.shared.chats)
+                                        .padding(.bottom, BOTTOM_PADDING + 16 + 60)
+                                }
+                              
+                            }
+                        }
+                        
+                    }
+                }
+              
             }
         )
 //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
@@ -163,6 +187,14 @@ struct CameraMainView: View {
         cameraView.stopSession()
     }
     
+    func startRunning() {
+        cameraView.startRunning()
+    }
+    
+    func stopRunning() {
+        cameraView.stopRunning()
+    }
+    
     func setupWriter() {
         //        cameraView.setupWriter()
     }
@@ -196,6 +228,7 @@ struct MediaOptions: View {
                         //}
                     } label: {
                         CameraOptionView(image: Image("x"), imageDimension: 14, circleDimension: 32)
+                            .padding(.leading, 8)
                     }
                     
                     Spacer()
@@ -228,7 +261,7 @@ struct MediaOptions: View {
                     SendButton()
                 }
                 .padding(.horizontal, 20)
-                .padding(.vertical, 24)
+                .padding(.bottom, BOTTOM_PADDING + 16)
             }
         }
     }
@@ -270,22 +303,22 @@ struct SendButton: View {
         }, label: {
             
             
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 
                 Text(getSendText())
                     .foregroundColor(.black)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 16, weight: .semibold))
                 
                 Image(systemName: "location.north.fill")
                     .resizable()
                     .rotationEffect(Angle(degrees: 90))
                     .foregroundColor(.black)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 18, height: 18)
                     .scaledToFit()
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 12)
             .frame(height: 40)
-            .background(Color.white)
+            .background(Color.mainBlue)
             .clipShape(Capsule())
             
             
@@ -298,7 +331,7 @@ struct SendButton: View {
         if let chat = viewModel.selectedChat{
             return chat.name
         } else if viewModel.chatId == "" {
-            return "Send To"
+            return "See all"
         } else {
             return "Send"
         }

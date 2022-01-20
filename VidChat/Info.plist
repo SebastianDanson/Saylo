@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSContactsUsageDescription</key>
-	<string>Your contacts will be used so you can find people you know on Saylo, and improve your experience.</string>
+	<string>Your contacts will be used so you can find people you know on Saylo, and improve your experience. Your contacts are not stored or uploaded to our servers.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

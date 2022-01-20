@@ -40,7 +40,9 @@ extension Color {
     static let popUpSystemWhite = Color(UIColor.popUpSystemWhite)
     static let iconSystemWhite = Color(UIColor.iconSystemWhite)
     static let textBackground = Color(UIColor.textBackground)
-    
+    static let systemCyan = Color(UIColor.systemCyan)
+    static let systemMint = Color(UIColor.systemMint)
+
 }
 
 extension UIImage {
@@ -168,6 +170,17 @@ extension UIColor {
     static let iconSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1) : .white
     }
+
+    static let systemMint = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 102/255, green: 212/255, blue: 207/255, alpha: 1) :
+        UIColor(red: 0/255, green: 199/255, blue: 190/255, alpha: 1)
+    }
+    
+    static let systemCyan = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 100/255, green: 210/255, blue: 255/255, alpha: 1) :
+        UIColor(red: 50/255, green: 173/255, blue: 230/255, alpha: 1)
+    }
+
     
     static let textBackground = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ?

@@ -44,7 +44,7 @@ struct LoginView: View {
                 }.padding(.bottom, 6)
                 
                 
-                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope", allowSpaces: true)
+                CustomTextField(text: $email, placeholder: Text("Email"), imageName: "envelope", allowSpaces: true, keyBoardType: .emailAddress)
                     .foregroundColor(.systemWhite)
                 
                 //password field

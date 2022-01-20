@@ -12,6 +12,8 @@ struct CustomTextField: View {
     let placeholder: Text
     let imageName: String
     let allowSpaces: Bool
+    let keyBoardType: UIKeyboardType
+
     
     var body: some View {
         
@@ -36,6 +38,7 @@ struct CustomTextField: View {
                     TextField("", text: $text)
                         .foregroundColor(.systemBlack)
                         .frame(height: 35)
+                        .keyboardType(keyBoardType)
                         .onChange(of: text) {
                             
                             if !allowSpaces {

@@ -50,13 +50,13 @@ struct SetNameView: View {
                     
                     //first name field
                     
-                    CustomTextField(text: $firstName, placeholder: Text("First name"), imageName: "person", allowSpaces: true)
+                    CustomTextField(text: $firstName, placeholder: Text("First name"), imageName: "person", allowSpaces: true, keyBoardType: .default)
                         .foregroundColor(.systemWhite)
                     
                     
                     //last name field
                     
-                    CustomTextField(text: $lastName, placeholder: Text("Last name"), imageName: "person", allowSpaces: true)
+                    CustomTextField(text: $lastName, placeholder: Text("Last name"), imageName: "person", allowSpaces: true, keyBoardType: .default)
                         .foregroundColor(.systemWhite)
                     
                     

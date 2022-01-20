@@ -69,7 +69,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.backgroundColor = .black
-        captureSession.startRunning()
+        
+        if !captureSession.isRunning {
+            captureSession.startRunning()
+        }
     }
     
     
@@ -99,6 +102,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        captureSession.stopRunning()
         //        audioCaptureSession.stopRunning()
         
+    }
+    
+    func startRunning() {
+        if !captureSession.isRunning {
+            captureSession.startRunning()
+        }
+    }
+    
+    func stopRunning() {
+        captureSession.stopRunning()
     }
     
     func setupSession() {

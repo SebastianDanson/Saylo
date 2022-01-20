@@ -205,6 +205,10 @@ class PlayerUIView: UIView {
         
         addPeriodicTimeObserver()
         
+        if ConversationViewModel.shared.chat == nil {
+            playbackSlider.isHidden = true
+        }
+        
         // Setup looping
         
         player.actionAtItemEnd = shouldLoop ? .none : .advance

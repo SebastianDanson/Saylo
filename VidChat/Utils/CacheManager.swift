@@ -12,6 +12,7 @@ import AVFoundation
 class CacheManager {
     
     static func getCachedUrl(_ url: URL, userStoredURL: URL?, isVideo: Bool) -> URL {
+        
         if fileExists(forUrl: url, isVideo: isVideo) {
             if let path = createNewPath(lastPath: url.lastPathComponent.appending(isVideo ? ".mov" : ".m4a")) {
                 return path

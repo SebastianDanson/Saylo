@@ -132,7 +132,31 @@ struct AddFriendsView: View {
                             }
                         }
                         
-                    } .frame(width: SCREEN_WIDTH - 40)
+                    }.frame(width: SCREEN_WIDTH - 40)
+                        .background(Color.popUpSystemWhite)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 20)
+                        .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+                    
+                    if viewModel.contacts.count > 0 {
+                        Text("Contacts")
+                            .foregroundColor(.systemBlack)
+                            .font(.system(size: 18, weight: .semibold))
+                            .padding(.top, 28)
+                            .padding(.leading, 20)
+                    }
+                    
+                    LazyVStack(spacing: 0) {
+                        
+                            
+                            ForEach(Array(viewModel.contacts.enumerated()), id: \.1.id) { i, contact in
+                                
+                                ContactCell(contact: contact, index: i)
+                                
+                            }
+                        
+                        
+                    }.frame(width: SCREEN_WIDTH - 40)
                         .background(Color.popUpSystemWhite)
                         .cornerRadius(12)
                         .padding(.horizontal, 20)
@@ -152,6 +176,7 @@ struct AddFriendsView: View {
         .onAppear {
             AddFriendsViewModel.shared.fetchFriendRequests()
             AddFriendsViewModel.shared.setSeenFriendRequests()
+            AddFriendsViewModel.shared.setContacts()
         }
     }
 }
