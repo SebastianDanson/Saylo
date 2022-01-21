@@ -11,11 +11,14 @@ import AVFoundation
 struct UnreadMessagePlayerView: View {
     
     @State var player: AVPlayer
+    var isVideo: Bool
     
-    init(url: URL) {
+    init(url: URL, isVideo: Bool) {
         let player = AVPlayer(url: url)
         self._player = State(initialValue: player)
         player.automaticallyWaitsToMinimizeStalling = false
+        
+        self.isVideo = isVideo
     }
     
     var body: some View {
@@ -28,7 +31,25 @@ struct UnreadMessagePlayerView: View {
             .onDisappear {
                 player.pause()
             }
+            .background(isVideo ? Color.systemBlack :  Color.mainBlue)
+            .cornerRadius(22)
+            .overlay(
+                ZStack {
+                    if !isVideo {
+                        Image(systemName: "waveform")
+                            .resizable()
+                            .frame(width: 120, height: 120)
+                            .foregroundColor(.white)
+                            .scaledToFill()
+                            .padding(.top, 8)
+                    }
+                }
+            )
             
+    }
+    
+    func setPlayer(_ player: AVPlayer) {
+        self.player = player
     }
 }
 

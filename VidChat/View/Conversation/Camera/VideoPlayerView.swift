@@ -30,10 +30,6 @@ struct VideoPlayerView: View {
 
         player.automaticallyWaitsToMinimizeStalling = false
         
-       
-        
-//        setResolutionForLocalVideo(assest: asset)
-       
     }
     
   
@@ -74,18 +70,7 @@ struct VideoPlayerView: View {
                     }
                 }
         }
-        
-        HStack {
-            
-            
-            
-        }
-        
-        if showName {
-//            RoundedRectangle(cornerRadius: 24).strokeBorder(Color.systemWhite, style: StrokeStyle(lineWidth: 10))
-//                .frame(width: CAMERA_WIDTH + 20, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 + 20 : CAMERA_HEIGHT + 20)
-        }
-        
+     
     }
     
     func togglePlay() {
@@ -101,15 +86,6 @@ struct VideoPlayerView: View {
         }
     }
     
-    private func setResolutionForLocalVideo(assest: AVURLAsset) {
-        
-//        guard let track = assest.tracks(withMediaType: AVMediaType.video).first else { return }
-//        let size = track.naturalSize.applying(track.preferredTransform)
-//
-//        let ratio = size.height/size.width
-//        height = height * ratio
-        
-    }
     
 }
 
@@ -154,16 +130,6 @@ struct PlayerView: UIViewRepresentable {
     }
 }
 
-//struct PlayerQueueView: UIViewRepresentable {
-//    
-//    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerQueueView>) {
-//    }
-//    
-//    func makeUIView(context: Context) -> UIView {
-//        let playerView = PlayerUIView(frame: .zero, player: ConversationPlayerViewModel.shared.player, shouldLoop: false)
-//        return playerView
-//    }
-//}
 
 class PlayerUIView: UIView {
     
@@ -194,13 +160,17 @@ class PlayerUIView: UIView {
         super.init(frame: frame)
         // Setup the player
         playerLayer.player = player
-        playerLayer.videoGravity = .resizeAspectFill
-        
+
+        playerLayer.frame = CGRect(x: 0, y: 0, width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
+
         playerLayer.cornerRadius = 20
+        playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+
         self.layer.masksToBounds = true
         self.layer.cornerRadius = 20
+
         layer.addSublayer(playerLayer)
-        
+
         playbackSlider.setDimensions(height: 30, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
         playbackSlider.minimumValue = 0
         playbackSlider.maximumValue = 1
@@ -213,17 +183,12 @@ class PlayerUIView: UIView {
         self.addSubview(playbackSlider)
         playbackSlider.centerX(inView: self)
         playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 8)
-        
         addPeriodicTimeObserver()
         
         if ConversationViewModel.shared.chat == nil && !ConversationGridViewModel.shared.hasUnreadMessages {
             playbackSlider.isHidden = true
         }
-        
-        // Setup looping
-        
-//        player.actionAtItemEnd = shouldLoop ? .none : .advance
-        
+ 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
@@ -350,11 +315,6 @@ class PlayerUIView: UIView {
         } else {
             ConversationPlayerViewModel.shared.showNextMessage()
         }
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        playerLayer.frame = bounds
     }
 }
 

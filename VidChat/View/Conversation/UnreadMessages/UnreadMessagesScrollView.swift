@@ -13,34 +13,41 @@ struct UnreadMessagesScrollView: View {
     
     var body: some View {
         
-        ZStack {
+        ZStack(alignment: .bottom) {
             
-            ZStack() {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
-                            
-                            Button {
-                                //                                ConversationViewModel.shared.sendCameraMessage(chatId: chat.id, chat: chat)
-                                //                                CameraViewModel.shared.reset(hideCamera: true)
-                            } label: {
-                                ZStack {
-                                    if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == message.chatId}) {
-                                        ChatImageCircle(chat: chat, diameter: 60)
-                                            .environment(\.colorScheme, .dark)
-                                            .padding(.horizontal, 3)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
+                        
+                        Button {
+                            viewModel.index = i
+                        } label: {
+                            ZStack {
+                                if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == message.chatId}) {
+                                    
+                                    ZStack {
+                                        
+                                        if i == viewModel.index {
+                                            
+                                            Circle().stroke(Color.mainBlue, lineWidth: 2)
+                                                .frame(width: 64, height: 64)
+                                                .transition(.opacity)
+                                            
+                                        }
+                                            ChatImageCircle(chat: chat, diameter: 56)
+                                                .environment(\.colorScheme, .dark)
+                                                .padding(.horizontal, 4)
+                                       
                                     }
                                 }
-                            }
-                            
+                            }.frame(width: 68, height: 68)
                         }
-                        
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.leading, 20)
+                .padding(.trailing, 68)
             }
         }
-        .frame(width: SCREEN_WIDTH)
     }
 }
 

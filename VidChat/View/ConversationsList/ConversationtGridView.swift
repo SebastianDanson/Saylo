@@ -180,7 +180,7 @@ struct ConversationGridView: View {
                 
                 ZStack(alignment: .bottom) {
                     
-                    if !conversationViewModel.showKeyboard {
+                    if !conversationViewModel.showKeyboard && !viewModel.hasUnreadMessages{
                         
                         VStack {
                             

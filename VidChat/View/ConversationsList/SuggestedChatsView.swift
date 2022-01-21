@@ -15,7 +15,7 @@ struct SuggestedChatsView: View {
         
         ZStack {
             
-            ZStack() {
+            ZStack {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(Array(chats.enumerated()), id: \.1.id) { i, chat in
@@ -24,7 +24,8 @@ struct SuggestedChatsView: View {
                                 ConversationViewModel.shared.sendCameraMessage(chatId: chat.id, chat: chat)
                                 CameraViewModel.shared.reset(hideCamera: true)
                             } label: {
-                                SuggestedChatView(chat: chat)
+                                ChatImageCircle(chat: chat, diameter: 60)
+                                    .environment(\.colorScheme, .dark)
                                     .padding(.horizontal, 6)
                                     .scaleEffect(x: -1, y: 1, anchor: .center)
                             }
@@ -32,16 +33,17 @@ struct SuggestedChatsView: View {
                         }
                         
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.top, 12)
+                    .padding(.bottom, 10)
+//                    .background(Color(white: 0, opacity: SCREEN_RATIO > 2 ? 0.8 : 0.5))
+                    .cornerRadius(16)
+
                 }
-                .padding(.horizontal, 12)
                 .scaleEffect(x: -1, y: 1, anchor: .center)
             }
         }
-        .frame(width: SCREEN_WIDTH, height:  100)
-        .padding(.top, 12)
-        .padding(.bottom, 10)
-        .background(Color(white: 0, opacity: 0.8))
-        .cornerRadius(16)
+        .frame(height:  100)
         .transition(.identity)
     }
 }

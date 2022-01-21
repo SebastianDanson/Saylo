@@ -299,13 +299,13 @@ struct OptionsView: View {
                                                                 cameraViewModel.isPlaying ?
                                                             "pause.circle.fill" : "play.circle.fill"),
                                                imageDimension: viewModel.showAudio || !viewModel.isRecordingAudio ? 30 : 60, isActive: $viewModel.isRecordingAudio, isAudio: true)
-                                        .foregroundColor(viewModel.isRecordingAudio ? Color.mainBlue : Color(.systemGray))
+                                        .foregroundColor(viewModel.isRecordingAudio ? Color(.systemRed) : Color(.systemGray))
                                         .overlay(
                                             ZStack {
                                                 // if isRecordingAudio {
                                                 Circle()
                                                     .trim(from: 0.0, to: CGFloat(min(viewModel.audioProgress, 1.0)))
-                                                    .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 5,
+                                                    .stroke(Color(.systemRed), style: StrokeStyle(lineWidth: 5,
                                                                                                lineCap: .round,
                                                                                                lineJoin: .round))
                                                     .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : 20), value: viewModel.audioProgress)
@@ -377,7 +377,7 @@ struct CameraCircle: View {
         Circle()
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
             .stroke(Color.white, style: StrokeStyle(lineWidth: 5.5, lineCap: .round, lineJoin: .round))
-            .animation(.linear(duration: viewModel.progress == 0 ? 0 : 20), value: viewModel.progress)
+            .animation(.linear(duration: viewModel.progress == 0 ? 0 : 30), value: viewModel.progress)
             .frame(width: 56, height: 56)
             .rotationEffect(Angle(degrees: 270))
             .overlay(

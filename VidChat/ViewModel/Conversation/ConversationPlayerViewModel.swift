@@ -12,27 +12,31 @@ import AVFoundation
 class ConversationPlayerViewModel: ObservableObject {
     
     @Published var dragOffset: CGSize = .zero
-    @Published var index: Int = 0
+    @Published var index: Int = 0 {
+        didSet {
+            self.hasChanged.toggle()
+        }
+    }
     @Published var messages = [Message]()
-
-    var playerItems = [AVPlayerItem]()
-    
-    var hasGoneBack = false
-    var canAdvance = true
-    
+    @Published var hasChanged = false
     
     static let shared = ConversationPlayerViewModel()
     
     private init() {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-
+        
         let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
         
         newMessagesArray.forEach { messageData in
             let id = messageData["id"] as? String ?? ""
             let message = Message(dictionary: messageData, id: id)
-            self.messages.append(message)
+            
+            if let index = self.messages.lastIndex(where: {$0.chatId == message.chatId }), index < self.messages.count - 1 {
+                self.messages.insert(message, at: index + 1)
+            } else {
+                self.messages.append(message)
+            }
         }
     }
     
@@ -50,7 +54,7 @@ class ConversationPlayerViewModel: ObservableObject {
         index = max(0, index - 1)
     }
     
-   
+    
     
     func removePlayerView() {
         index = 0

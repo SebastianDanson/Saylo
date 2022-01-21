@@ -29,12 +29,8 @@ struct CameraMainView: View {
                 VStack {
                     
                     viewModel.videoPlayerView
-                        .background(Color.clear)
                         .padding(.top, TOP_PADDING)
-//                        .onAppear {
-//                            print("ON APPEAR")
-//                        }
-                    //
+
                     Spacer()
                     
                 }.zIndex(3)
@@ -55,10 +51,10 @@ struct CameraMainView: View {
             
             //camera
             cameraView
-                .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
                 .onTapGesture(count: 2, perform: {
                     switchCamera()
                 })
+            
             
             
             
@@ -304,7 +300,7 @@ struct MediaOptions: View {
                     SendButton()
                 }
                 .padding(.horizontal, 12)
-                .padding(.bottom, BOTTOM_PADDING + 16)
+                .padding(.bottom, SCREEN_RATIO > 2 ? BOTTOM_PADDING + 16 : BOTTOM_PADDING + 24 )
             }
         }
     }

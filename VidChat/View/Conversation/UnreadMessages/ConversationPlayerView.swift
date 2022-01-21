@@ -15,26 +15,6 @@ struct ConversationPlayerView: View {
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
-    init() {
-        
-        //        var playerItems = [AVPlayerItem]()
-        //        var dates = [Date]()
-        //
-        //        viewModel.messages.forEach({
-        //            if ($0.type == .Video || $0.type == .Audio), let urlString = $0.url, let url = URL(string: urlString) {
-        //                let playerItem = AVPlayerItem(asset: AVAsset(url: url))
-        //                playerItems.append(playerItem)
-        //                dates.append($0.timestamp.dateValue())
-        //            }
-        //        })
-        //
-        //        let player = AVQueuePlayer(items: playerItems)
-        //        player.automaticallyWaitsToMinimizeStalling = false
-        //        viewModel.player = player
-        //        //        viewModel.player.play()
-        //        viewModel.playerItems = playerItems
-    }
-    
     
     var body: some View {
         
@@ -43,29 +23,23 @@ struct ConversationPlayerView: View {
                                               name: viewModel.messages[viewModel.index].username)
         
         
-        ZStack(alignment: .top) {
+        ZStack(alignment: .bottom) {
             
             VStack {
+                
+                Spacer()
                 
                 ZStack {
                     
                     if viewModel.isPlayable(), let urlString = viewModel.messages[viewModel.index].url, let url = URL(string: urlString) {
                         
-                        UnreadMessagePlayerView(url: url)
-                            .background(viewModel.messages[viewModel.index].type == .Audio ? Color.mainBlue : Color.systemBlack)
-                            .cornerRadius(22)
-                            .overlay(
-                                ZStack {
-                                    if viewModel.messages[viewModel.index].type == .Audio {
-                                        Image(systemName: "waveform")
-                                            .resizable()
-                                            .frame(width: 120, height: 120)
-                                            .foregroundColor(.white)
-                                            .scaledToFill()
-                                            .padding(.top, 8)
-                                    }
-                                }
-                            )
+                        
+                        if viewModel.hasChanged {
+                            UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
+                        } else {
+                            UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
+                        }
+                       
                         
                     } else if viewModel.messages[viewModel.index].type == .Text, let text = viewModel.messages[viewModel.index].text {
                         
@@ -101,26 +75,11 @@ struct ConversationPlayerView: View {
                     }
                     
                 }
+                .zIndex(3)
+                
                 .overlay(
-                    
                     VStack {
-                        HStack {
-                            
-                            VStack {
-                                Button(action: {
-                                    withAnimation(.linear(duration: 0.2)) {
-                                        viewModel.removePlayerView()
-                                    }
-                                }, label: {
-                                    CameraOptionView(image: Image("x"), imageDimension: 17, circleDimension: 32, topPadding: 3)
-                                        .padding(.horizontal, 8)
-                                })
-                                
-                            }
-                            
-                            Spacer()
-                        }
-                        
+                
                         Spacer()
                         
                         HStack {
@@ -130,17 +89,47 @@ struct ConversationPlayerView: View {
                                 .padding(.vertical, viewModel.isPlayable() ? 36 : 20)
                             
                             Spacer()
+                            
                         }
-                        //                .padding(.horizontal, 16)
-                        //                .padding(.bottom, viewModel.isPlayable() ? 40 : 24)
-                        
                     }
                         .frame(width: CAMERA_SMALL_WIDTH, height: CAMERA_SMALL_HEIGHT)
                         .cornerRadius(20)
                     
                 )
-                
-                UnreadMessagesScrollView().padding(.top, 4)
+            
+//                HStack(alignment: .center) {
+                    
+                ZStack {
+                    
+                    UnreadMessagesScrollView()
+                        .padding(.top, 4)
+                                        
+                    HStack {
+                        Spacer()
+                        
+                        Button(action: {
+                            withAnimation(.linear(duration: 0.2)) {
+                                viewModel.removePlayerView()
+                            }
+                        }, label: {
+                            
+                            ZStack {
+                                
+                                Circle()
+                                    .frame(width: 48, height: 48)
+                                    .foregroundColor(.lightGray)
+                                
+                                Image("x")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                
+                            }.padding(.trailing, 20)
+                            
+                        })
+                    }
+                }.padding(.bottom, BOTTOM_PADDING + 16)
+
             }
         }
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
