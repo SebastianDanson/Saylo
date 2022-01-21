@@ -185,7 +185,7 @@ class PlayerUIView: UIView {
         playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 8)
         addPeriodicTimeObserver()
         
-        if ConversationViewModel.shared.chat == nil && !ConversationGridViewModel.shared.hasUnreadMessages {
+        if ConversationViewModel.shared.showCamera {
             playbackSlider.isHidden = true
         }
  

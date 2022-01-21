@@ -76,7 +76,6 @@ struct ConversationPlayerView: View {
                     
                 }
                 .zIndex(3)
-                
                 .overlay(
                     VStack {
                 
@@ -93,7 +92,7 @@ struct ConversationPlayerView: View {
                         }
                     }
                         .frame(width: CAMERA_SMALL_WIDTH, height: CAMERA_SMALL_HEIGHT)
-                        .cornerRadius(20)
+                        .cornerRadius(24)
                     
                 )
             

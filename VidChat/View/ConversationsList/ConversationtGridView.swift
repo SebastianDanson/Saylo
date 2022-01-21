@@ -228,10 +228,7 @@ struct ConversationGridView: View {
             .navigationBarHidden(true)
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
-            .onAppear {}
-            //            .popover(isPresented: $conversationViewModel.showUnreadMessages, content: {
-            //               UnreadMessagesView()
-            //            })
+       
             
         }
     }

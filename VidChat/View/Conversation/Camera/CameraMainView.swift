@@ -13,11 +13,11 @@ struct CameraMainView: View {
     
     @StateObject var viewModel = CameraViewModel.shared
     @StateObject var conversationViewModel = ConversationViewModel.shared
-
+    
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
     var cameraView = CameraView()
- 
+    
     
     var body: some View {
         
@@ -30,7 +30,7 @@ struct CameraMainView: View {
                     
                     viewModel.videoPlayerView
                         .padding(.top, TOP_PADDING)
-
+                    
                     Spacer()
                     
                 }.zIndex(3)
@@ -81,7 +81,7 @@ struct CameraMainView: View {
                             ConversationViewModel.shared.showCamera = false
                             viewModel.isShowingPhotoCamera = false
                             viewModel.isRecording = false
-                                                    //                            if !viewModel.isShowingPhotoCamera {
+                            //                            if !viewModel.isShowingPhotoCamera {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 viewModel.reset(hideCamera: true)
                             }
@@ -99,13 +99,13 @@ struct CameraMainView: View {
             ZStack {
                 
                 if SCREEN_RATIO > 2 {
-//                    VStack{
-//                        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-//                            .frame(width: CAMERA_WIDTH + 20, height: CAMERA_WIDTH * 16/9 + 20)
-//                        
-//                        
-//                        Spacer()
-//                    }.padding(.top, TOP_PADDING - 10)
+                    //                    VStack{
+                    //                        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
+                    //                            .frame(width: CAMERA_WIDTH + 20, height: CAMERA_WIDTH * 16/9 + 20)
+                    //
+                    //
+                    //                        Spacer()
+                    //                    }.padding(.top, TOP_PADDING - 10)
                     
                 }
                 
@@ -122,28 +122,30 @@ struct CameraMainView: View {
                     VStack {
                         
                         ZStack {
-                        MediaOptions()
-                            .padding(.top, TOP_PADDING)
                             
-                            VStack {
-                                
-                                Spacer()
-                                
-                                if conversationViewModel.chat == nil {
-                                    SuggestedChatsView(chats: ConversationGridViewModel.shared.chats)
-                                        .padding(.bottom, BOTTOM_PADDING + 16 + 60)
-                                }
-                              
-                            }
+                            
+                            MediaOptions()
+                                .padding(.top, TOP_PADDING)
+                            
+                            //                            VStack {
+                            //
+                            //                                Spacer()
+                            //
+                            //                                if conversationViewModel.chat == nil {
+                            //                                    SuggestedChatsView(chats: ConversationGridViewModel.shared.chats)
+                            //                                        .padding(.bottom, BOTTOM_PADDING + 60)
+                            //                                }
+                            //
+                            //                            }
                         }
                         
                     }
                 }
-              
+                
             }
         )
-//        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-//        .ignoresSafeArea()
+        //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        //        .ignoresSafeArea()
         .background(Color(white: 0, opacity: 1))
         .navigationBarHidden(true)
         .offset(dragOffset)
@@ -163,7 +165,7 @@ struct CameraMainView: View {
     }
     
     func addAudio() {
-//        cameraView.addAudio()
+        //        cameraView.addAudio()
     }
     
     func cancelRecording() {
@@ -209,6 +211,7 @@ struct FlashView: View {
 struct MediaOptions: View {
     
     @StateObject var viewModel = CameraViewModel.shared
+    
     @State var hasSaved = false
     
     var body: some View {
@@ -234,74 +237,99 @@ struct MediaOptions: View {
                 
                 Spacer()
                 
-                HStack(spacing: 10) {
+                HStack {
+                    Spacer()
                     
-                    Button {
+                    VStack {
                         
-                        if !hasSaved {
-                            if let url = viewModel.videoUrl {
-                                viewModel.saveToPhotos(url: url)
-                                withAnimation { hasSaved = true }
-                            } else if let photo = viewModel.photo {
-                                viewModel.saveToPhotos(photo: photo)
-                                withAnimation { hasSaved = true }
-                            }
-                        }
-                        
-                    } label: {
-                        
-                        ZStack {
-                        
-                        Image(systemName: hasSaved ? "checkmark" : "square.and.arrow.down")
-                            .resizable()
-                            .font(Font.title.weight(.semibold))
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .frame(width: hasSaved ? 20 : 24, height: hasSaved ? 20 : 24)
-                        }
-                        .frame(width: 64, height: 38)
-                        .background(Color(.systemGray))
-                        .clipShape(Capsule())
-                   
-                    }
-                    .disabled(hasSaved)
-                    .padding(.leading, 12)
-
-                    if viewModel.videoUrl != nil {
+                        Spacer()
                         
                         Button {
                             
-                            viewModel.videoPlayerView = nil
-                            viewModel.videoUrl = nil
-                            viewModel.progress = 0.0
-                            viewModel.isRecording = false
-                            viewModel.handleTap()
+                            if !hasSaved {
+                                if let url = viewModel.videoUrl {
+                                    viewModel.saveToPhotos(url: url)
+                                    withAnimation { hasSaved = true }
+                                } else if let photo = viewModel.photo {
+                                    viewModel.saveToPhotos(photo: photo)
+                                    withAnimation { hasSaved = true }
+                                }
+                            }
                             
                         } label: {
                             
                             ZStack {
-                             
-                                Image(systemName: "arrow.clockwise")
+                                
+                                Image(systemName: hasSaved ? "checkmark" : "square.and.arrow.down")
                                     .resizable()
                                     .font(Font.title.weight(.semibold))
                                     .scaledToFit()
                                     .foregroundColor(.white)
-                                    .frame(width: 24, height: 24)
-                                
+                                    .frame(width: hasSaved ? 26 : 30, height: hasSaved ? 26 : 30)
                             }
-                            .frame(width: 64, height: 38)
-                            .background(Color.mainBlue)
-                            .clipShape(Capsule())
+                            .frame(width: 48, height: 48)
+                            .padding(.trailing, 2)
+                            //                        .background(Color(white: 0, opacity: 0.4))
+                            //                        .clipShape(Circle())
+                            
+                            
                         }
+                        .disabled(hasSaved)
+                        .padding(.leading, 4)
+                        
+                        if viewModel.videoUrl != nil {
+                            
+                            Button {
+                                
+                                viewModel.videoPlayerView = nil
+                                viewModel.videoUrl = nil
+                                viewModel.progress = 0.0
+                                viewModel.isRecording = false
+                                viewModel.handleTap()
+                                
+                            } label: {
+                                
+                                ZStack {
+                                    
+                                    Image(systemName: "video.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(.white)
+                                        .frame(width: 32, height: 32)
+                                    
+                                }
+                                .frame(width: 48, height: 48)
+                                //                            .background(Color(white: 0, opacity: 0.4))
+                                //                            .clipShape(Circle())
+                                .padding(.leading, 2)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 24)
+                .padding(.horizontal, 15)
+                
+                HStack(alignment: .bottom, spacing: 3) {
+                    
+                    if ConversationViewModel.shared.chat == nil {
+                        SuggestedChatsView(chats: ConversationGridViewModel.shared.chats)
                     }
                     
                     Spacer()
                     
                     SendButton()
+                        .padding(.trailing, 12)
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, SCREEN_RATIO > 2 ? BOTTOM_PADDING + 16 : BOTTOM_PADDING + 24 )
+                .padding(.bottom, getBottomPadding())
             }
+        }
+    }
+    
+    func getBottomPadding() -> CGFloat {
+        if ConversationViewModel.shared.chat == nil {
+            return  SCREEN_RATIO > 2 ? BOTTOM_PADDING + 5 : BOTTOM_PADDING + 20
+        } else {
+            return  SCREEN_RATIO > 2 ? BOTTOM_PADDING + 28 : BOTTOM_PADDING + 20
         }
     }
 }
@@ -334,34 +362,51 @@ struct SendButton: View {
                     viewModel.reset(hideCamera: true)
                 }
                 
-//                if let chat = conversationVM.selectedChat {
-//                    ConversationService.updateLastVisited(forChat: chat)
-//                }
+                //                if let chat = conversationVM.selectedChat {
+                //                    ConversationService.updateLastVisited(forChat: chat)
+                //                }
             }
             
         }, label: {
             
             
-            HStack(spacing: 8) {
+            if ConversationViewModel.shared.chat == nil {
                 
-                Text(getSendText())
-                    .foregroundColor(.black)
-                    .font(.system(size: 16, weight: .semibold))
+                VStack(spacing: 2) {
+                    
+                    Image("more")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
+                    
+                }
+                .frame(width: 62, height: 62)
+                .background(Color.mainBlue)
+                .clipShape(Circle())
                 
-                Image(systemName: "location.north.fill")
-                    .resizable()
-                    .rotationEffect(Angle(degrees: 90))
-                    .foregroundColor(.black)
-                    .frame(width: 18, height: 18)
-                    .scaledToFit()
+            } else {
+                HStack(spacing: 8) {
+                    
+                    Text(getSendText())
+                        .foregroundColor(.black)
+                        .font(.system(size: 16, weight: .semibold))
+                    
+                    Image(systemName: "location.north.fill")
+                        .resizable()
+                        .rotationEffect(Angle(degrees: 90))
+                        .foregroundColor(.black)
+                        .frame(width: 18, height: 18)
+                        .scaledToFit()
+                }
+                .padding(.horizontal, 12)
+                .frame(height: 38)
+                .background(Color.mainBlue)
+                .clipShape(Capsule())
+                
             }
-            .padding(.horizontal, 12)
-            .frame(height: 40)
-            .background(Color.mainBlue)
-            .clipShape(Capsule())
-            
             
         })
+        
     }
     
     func getSendText() -> String {

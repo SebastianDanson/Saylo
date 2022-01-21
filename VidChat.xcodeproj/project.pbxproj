@@ -33,7 +33,6 @@
 		0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */; };
 		0660EE5A279A0CA700704AFE /* UnreadMessagePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */; };
 		0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */; };
-		0687E9EF2793A801004E1187 /* UnreadMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9EE2793A801004E1187 /* UnreadMessagesView.swift */; };
 		0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F227949A49004E1187 /* EditChatNameView.swift */; };
 		0687E9F527949B5C004E1187 /* NameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F427949B5C004E1187 /* NameTextField.swift */; };
 		0687E9F72794B1E1004E1187 /* ChatMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F62794B1E1004E1187 /* ChatMembersView.swift */; };
@@ -202,7 +201,6 @@
 		0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesScrollView.swift; sourceTree = "<group>"; };
 		0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagePlayerView.swift; sourceTree = "<group>"; };
 		0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUsersPopUpView.swift; sourceTree = "<group>"; };
-		0687E9EE2793A801004E1187 /* UnreadMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesView.swift; sourceTree = "<group>"; };
 		0687E9F227949A49004E1187 /* EditChatNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditChatNameView.swift; sourceTree = "<group>"; };
 		0687E9F427949B5C004E1187 /* NameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameTextField.swift; sourceTree = "<group>"; };
 		0687E9F62794B1E1004E1187 /* ChatMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMembersView.swift; sourceTree = "<group>"; };
@@ -769,7 +767,6 @@
 				3F08F27027017A24009E0029 /* Camera */,
 				3F1768262714A5630049ADBA /* MessageCells */,
 				3F2A7EBA2719CE1B00179390 /* Photos */,
-				0687E9EE2793A801004E1187 /* UnreadMessagesView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1006,7 +1003,6 @@
 				06F1A32A277D334F00A0F992 /* PrivacyPolicyView.swift in Sources */,
 				3F112B732720716300BA2A73 /* VideoCallView.swift in Sources */,
 				3FB8B5DA270FB6F800355DB9 /* TextCell.swift in Sources */,
-				0687E9EF2793A801004E1187 /* UnreadMessagesView.swift in Sources */,
 				3F8B027726FEC03100841565 /* Message.swift in Sources */,
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,

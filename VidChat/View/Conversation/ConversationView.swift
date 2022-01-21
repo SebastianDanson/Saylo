@@ -171,7 +171,7 @@ struct ConversationView: View {
         .onDisappear {
             viewModel.players.forEach({$0.player.pause()})
             viewModel.currentPlayer?.pause()
-//            viewModel.removeChat()
+            viewModel.removeChat()
         }
     }
 }

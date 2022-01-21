@@ -30,7 +30,6 @@ class ConversationViewModel: ObservableObject {
     
     @Published var messages = [Message]()
     @Published var savedMessages = [Message]()
-    @Published var unreadMessages = [Message]()
     @Published var noSavedMessages = false
     @Published var noMessages = false
     @Published var showUnreadMessages = false
@@ -91,26 +90,7 @@ class ConversationViewModel: ObservableObject {
         CacheManager.removeOldFiles()
     }
             
-    func setUnreadMessages() {
-        
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        
-        self.unreadMessages.removeAll()
-        
-        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
-        newMessagesArray.forEach({
-            if let id = $0["id"] as? String {
-                self.unreadMessages.append(Message(dictionary: $0, id: id))
-            }
-        })
-        
-        if unreadMessages.count > 0 {
-            self.showUnreadMessages = true
-        }
-        
-//        defaults?.set(newMessagesArray, forKey: "messages")
-    }
-    
+ 
     func setChat(chat: Chat) {
         self.chat = chat
         self.chatId = chat.id
@@ -120,6 +100,7 @@ class ConversationViewModel: ObservableObject {
         self.updateNoticationsArray()
         self.chat?.hasUnreadMessage = false
         self.noMessages = false
+        ConversationService.updateLastVisited(forChat: chat)
     }
     
     func removeChat() {

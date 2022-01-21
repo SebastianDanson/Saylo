@@ -246,6 +246,7 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func showCachedChats() {
+        
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
         let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
