@@ -11,6 +11,9 @@ import SwiftUI
 
 struct CountryCodeViewController: UIViewControllerRepresentable {
 
+    @Binding var countryInitials: String
+    @Binding var dialCode: String
+
     func makeUIViewController(context: UIViewControllerRepresentableContext<CountryCodeViewController>) -> DialCountriesController {
         let controller = DialCountriesController(locale: Locale(identifier: "en"))
         controller.delegate = context.coordinator
@@ -28,6 +31,11 @@ struct CountryCodeViewController: UIViewControllerRepresentable {
     class Coordinator: NSObject, DialCountriesControllerDelegate {
         
         func didSelected(with country: Country) {
+            if var dialCode = country.dialCode {
+                dialCode.removeFirst()
+                self.parent.dialCode = dialCode
+                self.parent.countryInitials = country.code
+            }
             print("Selected \(country.name), \(country.code) \(country.flag)")
         }
         

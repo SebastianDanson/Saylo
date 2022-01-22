@@ -37,7 +37,7 @@ struct ContentView: View {
 //            }
             
             NavigationView {
-                SetPhoneNumberView()
+                VerifyPhoneNumberView(phoneNumber: "6479695240", dialCode: "1")
             }
 //            EnableContactsView()
 //            ChatSettingsView(showSettings: .constant(true))

@@ -140,6 +140,41 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    func setPhoneNumber(phoneNumber: String, countryCode: String) {
+        guard let currentUser = currentUser else { return }
+        COLLECTION_USERS.document(currentUser.id).updateData(["phoneNumber":phoneNumber, "countryCode":countryCode])
+        
+        PhoneAuthProvider.provider()
+          .verifyPhoneNumber("+" + countryCode + phoneNumber, uiDelegate: nil) { verificationID, error in
+              if let error = error {
+                  print("ERROR Verifying phone number: \(error.localizedDescription)")
+//                self.showMessagePrompt(error.localizedDescription)
+                return
+              }
+              
+              UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
+
+              
+              print(verificationID)
+              // Sign in using the verificationID and the code sent to the user
+              // ...
+          }
+    }
+    
+    func verifyPhone(verificationCode: String) {
+        
+        guard let verificationID = UserDefaults.standard.string(forKey: "authVerificationID") else { return }
+
+        let credential = PhoneAuthProvider.provider().credential(
+          withVerificationID: verificationID,
+          verificationCode: verificationCode
+        )
+        
+        Auth.auth().signIn(with: credential) { authResult, error in
+            print(authResult, "AUTH RESULT", error?.localizedDescription, "ERROR")
+        }
+    }
+    
     
     func setProfileImage(image: UIImage) {
         

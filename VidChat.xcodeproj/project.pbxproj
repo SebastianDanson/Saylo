@@ -25,6 +25,7 @@
 		063CAABB277BEF1900C84318 /* NewConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABA277BEF1900C84318 /* NewConversationView.swift */; };
 		063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */; };
 		063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */; };
+		063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */; };
 		0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0640D63227990FF500D7A244 /* SuggestedChatsView.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */; };
@@ -196,6 +197,7 @@
 		063CAABA277BEF1900C84318 /* NewConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationView.swift; sourceTree = "<group>"; };
 		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/View/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
 		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
+		063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyPhoneNumberView.swift; sourceTree = "<group>"; };
 		0640D63227990FF500D7A244 /* SuggestedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedChatsView.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatImageCircle.swift; sourceTree = "<group>"; };
@@ -663,6 +665,7 @@
 				069D11E82798837300988829 /* SetPhoneNumberView.swift */,
 				06F1A32D277E7A9E00A0F992 /* SetUsernameView.swift */,
 				06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */,
+				063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -1022,6 +1025,7 @@
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,
+				063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */,
 				3F112C592721B4DF00BA2A73 /* NSUserActivity+StartCallConvertible.swift in Sources */,
 				069D11EB279892E000988829 /* Countries.json in Sources */,
 				0687E9F527949B5C004E1187 /* NameTextField.swift in Sources */,
