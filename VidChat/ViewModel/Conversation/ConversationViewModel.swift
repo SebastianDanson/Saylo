@@ -477,4 +477,17 @@ class ConversationViewModel: ObservableObject {
     func scrollToBottomOfFeed() {
         scrollToBottom.toggle()
     }
+    
+    func updatePlayer(index: Int) {
+        isPlaying = true
+        currentPlayer?.pause()
+        currentPlayer = players.first(where: {$0.messageId == messages[index].id})?.player
+        currentPlayer?.play()
+    }
+    
+    func removeCurrentPlayer() {
+        isPlaying = false
+        currentPlayer?.pause()
+        currentPlayer = nil
+    }
 }

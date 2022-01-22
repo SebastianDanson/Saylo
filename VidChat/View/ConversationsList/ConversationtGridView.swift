@@ -108,30 +108,9 @@ struct ConversationGridView: View {
                                                     }
                                                     CameraViewModel.shared.cameraView.stopRunning()
                                                 })
-                            
-//                                                .onLongPressGesture(minimumDuration: 0, pressing: { (isPressing) in
-//                                                            if isPressing {
-//                                                                // called on touch down
-//                                                                print("IS PRESSING")
-//                                                                CameraViewModel.shared.cameraView.startRunning()
-//
-//                                                            } else {
-//                                                                // called on touch up
-//                                                                print("TAP")
-//
-//                                                            }
-//                                                        }, perform: {
-//                                                            print("PERFORM")
-//                                                            CameraViewModel.shared.handleTap()
-//                                                            conversationViewModel.selectedChat = chat
-//                                                            conversationViewModel.chatId = chat.id
-//                                                            conversationViewModel.showCamera = true
-//                                                        })
-                                              
-                                             
                                         }
                                     })
-                                        .padding(.horizontal, 14)
+                                        .padding(.horizontal, 15)
                                     
                                     Rectangle()
                                         .frame(width: SCREEN_WIDTH, height: TOP_PADDING + 70)
@@ -213,6 +192,7 @@ struct ConversationGridView: View {
             .onAppear(perform: {
                 
                 if AuthViewModel.shared.isSignedIn {
+                    
                     AuthViewModel.shared.fetchUser { }
                     
                     DispatchQueue.main.async {
@@ -222,6 +202,8 @@ struct ConversationGridView: View {
                     conversationViewModel.showCamera = false
                     conversationViewModel.showPhotos = false
                     conversationViewModel.showKeyboard = false
+                    
+
                 }
                 
             })
@@ -239,7 +221,7 @@ struct ConversationGridView: View {
             !conversationViewModel.showPhotos &&
             !viewModel.showSearchBar &&
             !viewModel.isSelectingChats {
-            return BOTTOM_PADDING + 85
+            return BOTTOM_PADDING + 82
         }
         
         if viewModel.isSelectingChats {

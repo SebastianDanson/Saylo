@@ -33,8 +33,8 @@ struct ConversationFeedView: View {
                 VStack(spacing: 0) {
                     
                     ForEach(Array(messages.enumerated()), id: \.1.id) { i, element in
+                        
                         MessageCell(message: messages[i])
-                        //                            .transition(.move(edge: .bottom))
                             .offset(x: 0, y: -24)
                             .background(
                                 messages[i].type != .Text ? GeometryReader { geo in
@@ -44,51 +44,51 @@ struct ConversationFeedView: View {
                             .onAppear {
                                 
                                 if let chat = viewModel.chat {
+                                    
                                     if isFirstLoad, i == chat.lastReadMessageIndex {
+                                        
                                         reader.scrollTo(messages[i].id, anchor: .center)
-                                    } else if i == messages.count - 1 {
+                                        
+                                    }
+                                    
+                                    if i == messages.count - 1 {
                                         
                                         if !isFirstLoad {
-                                            reader.scrollTo(messages[i].id, anchor: .center)
+                                            
+                                            self.temporarilyDisablePreference()
+                                            
+                                            if messages[i].type == .Video || messages[i].type == .Photo  {
+                                                reader.scrollTo(messages[i].id, anchor: .center)
+                                            } else {
+                                                withAnimation {
+                                                    reader.scrollTo(messages[i].id, anchor: .center)
+                                                }
+                                            }
                                         }
-                                        
-                                        isFirstLoad = true
+                                        isFirstLoad = false
                                     }
                                 }
                                 
                             }
                     }
                 }.flippedUpsideDown()
+                
                     .onPreferenceChange(ViewOffsetsKey.self, perform: { prefs in
+                        
+                        guard updatePreference else { return }
                         
                         DispatchQueue.main.async {
                             
-                            guard updatePreference else { return }
-                            
                             let prevMiddleItemNo = middleItemNo
                             middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
-                            
-                            //20
-                            //                            prefs.forEach({print($1, SCREEN_HEIGHT/2 )})
-                            //                        middleItemNo = prefs.first(where: { $1 > 20 && $1 < 50 })?.key ?? -1
-                            
-                            //                        viewModel.showKeyboard = false
-                            //                        UIApplication.shared.endEditing()
-                            
-                            
                             
                             if middleItemNo >= 0 {
                                 
                                 if prevMiddleItemNo != middleItemNo {
                                     
-                                    //                                withAnimation {
-                                    viewModel.isPlaying = true
-                                    //                                }
-                                    
-                                    viewModel.currentPlayer?.pause()
-                                    viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
-                                    
-                                    viewModel.currentPlayer?.play()
+                                   
+                                    viewModel.updatePlayer(index: middleItemNo)
+                                    self.temporarilyDisablePreference()
                                     
                                     withAnimation {
                                         reader.scrollTo(messages[middleItemNo].id, anchor: .center)
@@ -96,21 +96,18 @@ struct ConversationFeedView: View {
                                 }
                             }
                             else if viewModel.currentPlayer != nil {
-                                //                            withAnimation {
-                                viewModel.isPlaying = false
-                                //                            }
-                                viewModel.currentPlayer?.pause()
-                                viewModel.currentPlayer = nil
+                                viewModel.removeCurrentPlayer()
                             }
                         }
-                    }).onChange(of: viewModel.index, perform: { newValue in
+                    })
+                    .onChange(of: viewModel.index, perform: { newValue in
                         
                         guard !viewModel.isShowingReactions else {return}
                         
                         middleItemNo += 1
                         if middleItemNo < 1 || middleItemNo >= messages.count {return}
                         
-                        updatePreference = false
+                        self.temporarilyDisablePreference()
                         
                         let message = messages[middleItemNo]
                         
@@ -128,9 +125,6 @@ struct ConversationFeedView: View {
                         viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
                         viewModel.currentPlayer?.play()
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            updatePreference = true
-                        }
                         
                     })
                     .onChange(of: viewModel.scrollToBottom) { newValue in
@@ -143,17 +137,14 @@ struct ConversationFeedView: View {
             .padding(.bottom, 100)
             
         }
-        
-        
         .flippedUpsideDown()
-        //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-        .background(Color.systemWhite)
         .coordinateSpace(name: "scrollView")
         .onAppear {
             self.middleItemNo = viewModel.chat?.lastReadMessageIndex ?? 0
             
             let messages = messages
             if messages.count > middleItemNo && middleItemNo >= 0 {
+                
                 if messages[middleItemNo].type == .Video || messages[middleItemNo].type == .Audio {
                     viewModel.isPlaying = true
                 }
@@ -162,6 +153,14 @@ struct ConversationFeedView: View {
                     self.updatePreference = true
                 }
             }
+        }
+    }
+    
+    func temporarilyDisablePreference() {
+        self.updatePreference = false
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.updatePreference = true
         }
     }
 }

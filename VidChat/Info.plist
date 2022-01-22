@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSContactsUsageDescription</key>
-	<string>Your contacts will be used so you can find people you know on Saylo, and improve your experience. Your contacts are not stored or uploaded to our servers.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -28,6 +26,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>So you can send messages</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Your contacts will be used so you can find people you know on Saylo, and improve your experience. Your contacts are not stored or uploaded to our servers.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>So your videos can have audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>

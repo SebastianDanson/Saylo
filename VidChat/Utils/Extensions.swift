@@ -16,7 +16,7 @@ extension UIApplication {
 }
 
 extension Color {
-        
+    
     static let mainBlue = Color(UIColor.mainBlue)
     static let lightGray = Color(UIColor.lightGray)
     static let lighterGray = Color(UIColor.lighterGray)
@@ -42,7 +42,7 @@ extension Color {
     static let textBackground = Color(UIColor.textBackground)
     static let systemCyan = Color(UIColor.systemCyan)
     static let systemMint = Color(UIColor.systemMint)
-
+    
 }
 
 extension UIImage {
@@ -93,7 +93,7 @@ extension UIColor {
     }
     
     static let mainBlue = UIColor(red: 15/255, green: 168/255, blue: 246/255, alpha: 1)
-
+    
     
     static let lightGray = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? .systemGray2 : UIColor(red: 0.67, green: 0.67, blue: 0.67, alpha: 1)
@@ -162,7 +162,7 @@ extension UIColor {
     static let point3AlphaSystemBlack = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 0.3) : UIColor(white: 0, alpha: 0.3)
     }
-
+    
     static let popUpSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? UIColor(red: 28/255, green: 28/255, blue: 30/255, alpha: 1) : .white
     }
@@ -170,7 +170,7 @@ extension UIColor {
     static let iconSystemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1) : .white
     }
-
+    
     static let systemMint = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? UIColor(red: 102/255, green: 212/255, blue: 207/255, alpha: 1) :
         UIColor(red: 0/255, green: 199/255, blue: 190/255, alpha: 1)
@@ -180,7 +180,7 @@ extension UIColor {
         return trait.userInterfaceStyle == .dark ? UIColor(red: 100/255, green: 210/255, blue: 255/255, alpha: 1) :
         UIColor(red: 50/255, green: 173/255, blue: 230/255, alpha: 1)
     }
-
+    
     
     static let textBackground = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ?
@@ -385,6 +385,25 @@ extension String {
         }
         return nil
     }
+    
+    
+    func isValidPhoneNumber() -> Bool {
+        let regEx = "^\\+(?:[0-9]?){6,14}[0-9]$"
+        let phoneCheck = NSPredicate(format: "SELF MATCHES[c] %@", regEx)
+        return phoneCheck.evaluate(with: self)
+    }
+    
+    
+    
+    func toEnglishNumber() -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.locale = Locale(identifier: "EN")
+        guard let result = numberFormatter.number(from: self) else {
+            
+            return self
+        }
+        return result.stringValue
+    }
 }
 
 extension Publishers {
@@ -398,9 +417,9 @@ extension Publishers {
             .map { _ in CGFloat(0) }
         
         // 3.
-            return MergeMany(willShow, willHide)
-                .eraseToAnyPublisher()
-      
+        return MergeMany(willShow, willHide)
+            .eraseToAnyPublisher()
+        
     }
 }
 
@@ -415,7 +434,7 @@ extension UINavigationController: UIGestureRecognizerDelegate {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = self
     }
-
+    
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return viewControllers.count > 1
     }
@@ -423,27 +442,27 @@ extension UINavigationController: UIGestureRecognizerDelegate {
 
 
 extension UserDefaults {
-
-   func save<T:Encodable>(customObject object: T, inKey key: String) {
-       let encoder = JSONEncoder()
-       if let encoded = try? encoder.encode(object) {
-           self.set(encoded, forKey: key)
-       }
-   }
-
-   func retrieve<T:Decodable>(object type:T.Type, fromKey key: String) -> T? {
-       if let data = self.data(forKey: key) {
-           let decoder = JSONDecoder()
-           if let object = try? decoder.decode(type, from: data) {
-               return object
-           }else {
-               print("Couldnt decode object")
-               return nil
-           }
-       }else {
-           print("Couldnt find key")
-           return nil
-       }
-   }
-
+    
+    func save<T:Encodable>(customObject object: T, inKey key: String) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(object) {
+            self.set(encoded, forKey: key)
+        }
+    }
+    
+    func retrieve<T:Decodable>(object type:T.Type, fromKey key: String) -> T? {
+        if let data = self.data(forKey: key) {
+            let decoder = JSONDecoder()
+            if let object = try? decoder.decode(type, from: data) {
+                return object
+            }else {
+                print("Couldnt decode object")
+                return nil
+            }
+        }else {
+            print("Couldnt find key")
+            return nil
+        }
+    }
+    
 }

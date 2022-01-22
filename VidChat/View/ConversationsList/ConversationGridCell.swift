@@ -11,7 +11,7 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
-    let width = SCREEN_WIDTH/3 - 32
+    let width = SCREEN_WIDTH/4
     let textColor: Color
     let ratio = 1.35
     

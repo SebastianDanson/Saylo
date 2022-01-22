@@ -131,7 +131,7 @@ struct VideoCell: View {
                         .padding(.bottom, 36)
                 }
             }
-        }
+        }.padding(.vertical, 12)
     }
 }
 

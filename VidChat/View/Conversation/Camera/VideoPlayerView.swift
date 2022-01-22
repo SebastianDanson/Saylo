@@ -50,11 +50,9 @@ struct VideoPlayerView: View {
                         }
                     },
                     alignment: .bottomLeading)
-                .highPriorityGesture(TapGesture()
-                                        .onEnded { _ in
-                    
+                .onTapGesture {
                     togglePlay()
-                })
+                }
                 .onAppear {
                     if let id = message?.id {
                         ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))

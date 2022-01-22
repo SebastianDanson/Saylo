@@ -46,7 +46,7 @@ class CameraViewModel: ObservableObject {
         guard let videoPlayerView = videoPlayerView else {
             return
         }
-
+        
         videoPlayerView.player.play()
         
         if !videoPlayerView.player.isPlaying {
@@ -98,12 +98,16 @@ class CameraViewModel: ObservableObject {
         
         if addDelay {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                self.cameraView.startRecording()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation {
                     self.isRecording = true
                     self.progress = 1
                 }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                self.cameraView.startRecording()
+                
             }
             
         } else {
@@ -125,6 +129,7 @@ class CameraViewModel: ObservableObject {
     }
     
     func handleTap() {
+        
         if ConversationViewModel.shared.showCamera {
             if CameraViewModel.shared.isShowingPhotoCamera {
                 takePhoto()
@@ -132,6 +137,7 @@ class CameraViewModel: ObservableObject {
                 isRecording ? stopRecording() : startRecording()
             }
         } else {
+            cameraView.startRunning()
             cameraView.addAudio()
             startRecording(addDelay: true)
         }

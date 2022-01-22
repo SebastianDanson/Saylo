@@ -213,12 +213,7 @@ class ConversationGridViewModel: ObservableObject {
     func fetchConversation(withId chatId: String) {
         
         self.setConversation(withId: chatId) { data in
-//            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//            var chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
-//            
-//            for i in 0..<chatDic?.count {
-//                if chatDic[""]
-//            }
+            ConversationGridViewModel.shared.sortChats()
         }
     }
     
@@ -278,7 +273,9 @@ class ConversationGridViewModel: ObservableObject {
         self.chats = chats
 //        }
 
-//        defaults?.set([[String:Any]](), forKey: "messages")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            defaults?.set([[String:Any]](), forKey: "messages")
+        }
     }
     
     func setChatCache() {

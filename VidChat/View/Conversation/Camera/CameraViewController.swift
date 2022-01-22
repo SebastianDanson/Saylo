@@ -39,7 +39,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     var previewLayer: AVCaptureVideoPreviewLayer!
     var activeInput: AVCaptureDeviceInput!
-
+    
     
     //    let movieOutput = AVCaptureMovieFileOutput()
     //    let audioOutput = AVCaptureMovieFileOutput()
@@ -70,15 +70,17 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         super.viewWillAppear(animated)
         view.backgroundColor = .black
         
-        if !captureSession.isRunning {
-            captureSession.startRunning()
-        }
+//        if !captureSession.isRunning {
+//            captureSession.startRunning()
+//        }
+        
+        print("APPEARED")
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-            
+        
         captureSession.stopRunning()
         audioCaptureSession.stopRunning()
     }
@@ -123,7 +125,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             self.captureSession.beginConfiguration()
             self.audioCaptureSession.beginConfiguration()
-
+            
             
             guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
                 return
@@ -137,7 +139,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 
                 let videoInput = try AVCaptureDeviceInput(device: camera)
                 let audioInput = try AVCaptureDeviceInput(device: mic)
-
+                
                 if self.captureSession.canAddInput(videoInput) {
                     self.captureSession.addInput(videoInput)
                 }
@@ -200,30 +202,27 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         isFrontFacing.toggle()
         
-        captureSession.beginConfiguration()
-        captureSession.removeInput(activeInput)
-        
-        do {
-            activeInput = try AVCaptureDeviceInput(device: device)
+        DispatchQueue.main.async {
             
-        } catch {
-            print("error: \(error.localizedDescription)")
-            return
+            self.captureSession.beginConfiguration()
+            
+            self.captureSession.removeInput( self.activeInput)
+            
+            do {
+                self.activeInput = try AVCaptureDeviceInput(device: device)
+                
+            } catch {
+                print("error: \(error.localizedDescription)")
+                return
+            }
+            
+            if self.captureSession.canAddInput( self.activeInput) {
+                self.captureSession.addInput( self.activeInput)
+            }
+            
+            self.captureSession.commitConfiguration()
         }
         
-        if captureSession.canAddInput(activeInput) {
-            captureSession.addInput(activeInput)
-        }
-        
-        captureSession.commitConfiguration()
-        
-        
-        //        self.previewLayer.isHidden = true
-        //
-        //
-        //        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-        //            self.previewLayer.isHidden = false
-        //        }
     }
     
     func setupPreview() {
@@ -233,7 +232,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         previewLayer.cornerRadius = 20
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-
+        
         self.view.layer.masksToBounds = true
         self.view.layer.cornerRadius = 20
         view.layer.addSublayer(previewLayer)
@@ -253,14 +252,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.captureSession.stopRunning()
         }
-//        if !captureSession.isRunning {
-//            DispatchQueue.global(qos: .default).async { [weak self] in
-//                print("RUNNING STARTED")
-//                self?.captureSession.startRunning()
-////                self?.captureSession.stopRunning()
-//
-//            }
-//        }
+        //        if !captureSession.isRunning {
+        //            DispatchQueue.global(qos: .default).async { [weak self] in
+        //                print("RUNNING STARTED")
+        //                self?.captureSession.startRunning()
+        ////                self?.captureSession.stopRunning()
+        //
+        //            }
+        //        }
     }
     
     
@@ -295,14 +294,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        guard let connection = movieOutput.connection(with: .video) else { return }
         //        connection.isVideoMirrored = activeInput.device.position == .front
         
-//        audioCaptureSession.beginConfiguration()
-//        audioCaptureSession.inputs.forEach({audioCaptureSession.rem})
-//
+        //        audioCaptureSession.beginConfiguration()
+        //        audioCaptureSession.inputs.forEach({audioCaptureSession.rem})
+        //
         
         DispatchQueue.main.async {
             self.audioCaptureSession.startRunning()
         }
-       
+        
         sessionAtSourceTime = nil
         
         
@@ -320,7 +319,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func setUpWriter() {
-                
+        
         do {
             
             let url = getTempUrl()!
@@ -389,11 +388,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             connection.videoOrientation = .portrait
             
-            
             if connection.isVideoMirroringSupported, isFrontFacing {
-                DispatchQueue.global().async {
-                    connection.isVideoMirrored = self.isFrontFacing
-                }
+                connection.isVideoMirrored = self.isFrontFacing
             }
         }
         
@@ -405,7 +401,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             //
             videoWriterInput.append(sampleBuffer)
             //               print(connection, "VIDEO")
-                        
+            
         } else if writable, output == audioDataOutput,
                   (audioWriterInput.isReadyForMoreMediaData) {
             // write audio buffer
@@ -421,19 +417,19 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func addAudio() {
         
-//        let isFirstLoad = CameraViewModel.shared.isFirstLoad
+        //        let isFirstLoad = CameraViewModel.shared.isFirstLoad
         
-            
-            
-//            if isFirstLoad {
-                
-              
-                
-//            } else {
-//                self.audioCaptureSession.startRunning()
-//            }
         
-//        CameraViewModel.shared.isFirstLoad = false
+        
+        //            if isFirstLoad {
+        
+        
+        
+        //            } else {
+        //                self.audioCaptureSession.startRunning()
+        //            }
+        
+        //        CameraViewModel.shared.isFirstLoad = false
         
     }
     
@@ -458,7 +454,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         videoWriterInput.markAsFinished()
         audioWriterInput.markAsFinished()
         
-
+        
         videoWriter.finishWriting {
             self.sessionAtSourceTime = nil
             DispatchQueue.main.async {
@@ -477,7 +473,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         CameraViewModel.shared.timer?.invalidate()
         audioCaptureSession.stopRunning()
- 
+        
     }
     
     @objc func pinch(_ pinch: UIPinchGestureRecognizer) {
