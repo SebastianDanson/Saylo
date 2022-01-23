@@ -16,7 +16,8 @@ struct SetProfileImageView: View {
     @State var signUpComplete: Bool = false
     @State var showActionSheet: Bool = false
     @State var showCamera: Bool = false
-    
+    @State private var isLoading = false
+
     let cameraView = CameraMainView()
     
     var body: some View {
@@ -80,8 +81,11 @@ struct SetProfileImageView: View {
                 Button {
                     
                     if let profileImage = profileImage {
-                        AuthViewModel.shared.setProfileImage(image: profileImage)
-                        signUpComplete = true
+                        isLoading = true
+                        AuthViewModel.shared.setProfileImage(image: profileImage) {
+                            isLoading = false
+                            signUpComplete = true
+                        }
                     } else {
                         showActionSheet = true
                     }
@@ -95,6 +99,15 @@ struct SetProfileImageView: View {
                         .background(Color.mainBlue)
                         .clipShape(Capsule())
                     
+                }.disabled(isLoading)
+                
+                if isLoading {
+                    
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .frame(width: 50, height: 50)
+                        .padding(.top, -20)
+
                 }
                 
             }.padding(.bottom, BOTTOM_PADDING + 16)

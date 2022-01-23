@@ -140,28 +140,28 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func setPhoneNumber(phoneNumber: String, countryCode: String) {
-        guard let currentUser = currentUser else { return }
-        COLLECTION_USERS.document(currentUser.id).updateData(["phoneNumber":phoneNumber, "countryCode":countryCode])
+    func setPhoneNumber(phoneNumber: String, countryCode: String, completion: @escaping((Error?) -> Void)) {
+
+        guard let id = Auth.auth().currentUser?.uid else { return }
+        
+        COLLECTION_USERS.document(id).updateData(["phoneNumber":phoneNumber, "countryCode":countryCode])
+       
+        sendPhoneVerificationCode(phoneNumber: phoneNumber, countryCode: countryCode) { error in
+            completion(error)
+        }
+    }
+    
+    func sendPhoneVerificationCode(phoneNumber: String, countryCode: String, completion: @escaping((Error?) -> Void)) {
         
         PhoneAuthProvider.provider()
           .verifyPhoneNumber("+" + countryCode + phoneNumber, uiDelegate: nil) { verificationID, error in
-              if let error = error {
-                  print("ERROR Verifying phone number: \(error.localizedDescription)")
-//                self.showMessagePrompt(error.localizedDescription)
-                return
-              }
-              
-              UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
-
-              
-              print(verificationID)
-              // Sign in using the verificationID and the code sent to the user
-              // ...
+           
+            UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
+              completion(error)
           }
     }
     
-    func verifyPhone(verificationCode: String) {
+    func verifyPhone(verificationCode: String, completion: @escaping((Error?) -> Void)) {
         
         guard let verificationID = UserDefaults.standard.string(forKey: "authVerificationID") else { return }
 
@@ -170,13 +170,15 @@ class AuthViewModel: ObservableObject {
           verificationCode: verificationCode
         )
         
-        Auth.auth().signIn(with: credential) { authResult, error in
+        Auth.auth().currentUser?.link(with: credential, completion: { authResult, error in
             print(authResult, "AUTH RESULT", error?.localizedDescription, "ERROR")
-        }
+            completion(error)
+        })
+     
     }
     
     
-    func setProfileImage(image: UIImage) {
+    func setProfileImage(image: UIImage, completion: @escaping(() -> Void)) {
         
         guard let currentUser = currentUser else { return }
         CameraViewModel.shared.photo = nil
@@ -188,7 +190,9 @@ class AuthViewModel: ObservableObject {
             defaults?.set(imageUrl, forKey: "profileImage")
             
             self.profileImage = imageUrl
-            COLLECTION_USERS.document(currentUser.id).updateData(["profileImage":imageUrl, "hasCompletedSignUp":true])
+            COLLECTION_USERS.document(currentUser.id).updateData(["profileImage":imageUrl, "hasCompletedSignUp":true]) { error in
+                completion()
+            }
         }
     }
     
@@ -216,6 +220,8 @@ class AuthViewModel: ObservableObject {
                     self.hasCompletedSignUp = false
                     LandingPageViewModel.shared.setAuthView()
                 }
+                
+                
                 completion()
             } else {
                 try! Auth.auth().signOut()

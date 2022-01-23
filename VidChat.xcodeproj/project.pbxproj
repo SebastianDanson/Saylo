@@ -14,6 +14,7 @@
 		0616EC0927928978006565FE /* AddedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0827928978006565FE /* AddedChatsView.swift */; };
 		0616EC0B2792899C006565FE /* CreateNewGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0A2792899C006565FE /* CreateNewGroupView.swift */; };
 		0616EC0D27928AD9006565FE /* ChatSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */; };
+		062480BD279D075200D82E45 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062480BC279D075200D82E45 /* ContactsView.swift */; };
 		062D28DA277AD21E00B25637 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = 062D28D9277AD21E00B25637 /* CropViewController */; };
 		062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062D28DB277AD4C100B25637 /* ImageCropper.swift */; };
 		062D28DE277ADCD200B25637 /* ContactUsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062D28DD277ADCD200B25637 /* ContactUsView.swift */; };
@@ -187,6 +188,7 @@
 		0616EC0827928978006565FE /* AddedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddedChatsView.swift; sourceTree = "<group>"; };
 		0616EC0A2792899C006565FE /* CreateNewGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGroupView.swift; sourceTree = "<group>"; };
 		0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsViewModel.swift; sourceTree = "<group>"; };
+		062480BC279D075200D82E45 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		062D28DB277AD4C100B25637 /* ImageCropper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCropper.swift; sourceTree = "<group>"; };
 		062D28DD277ADCD200B25637 /* ContactUsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsView.swift; sourceTree = "<group>"; };
 		063A89FE2783CC4E008A8B71 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -378,6 +380,7 @@
 			children = (
 				063CAAB2277B9D0200C84318 /* AddFriendsView.swift */,
 				063CAAB4277B9D0E00C84318 /* AddFriendCell.swift */,
+				062480BC279D075200D82E45 /* ContactsView.swift */,
 				069D11E427986D2F00988829 /* ContactCell.swift */,
 				063CAAB8277BDED900C84318 /* FindFriendsView.swift */,
 			);
@@ -1001,6 +1004,7 @@
 				067FBB5E279BB7B600B2EA04 /* DialCountriesController.swift in Sources */,
 				3F112B852720B34500BA2A73 /* Call.swift in Sources */,
 				3F112BAB2721B04600BA2A73 /* MakeCallView.swift in Sources */,
+				062480BD279D075200D82E45 /* ContactsView.swift in Sources */,
 				3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */,
 				06F1A330277E811800A0F992 /* LandingPageView.swift in Sources */,
 				06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */,
@@ -1089,7 +1093,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.03;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1117,7 +1121,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.03;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1261,7 +1265,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.03;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1288,7 +1292,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.03;
+				MARKETING_VERSION = 1.04;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

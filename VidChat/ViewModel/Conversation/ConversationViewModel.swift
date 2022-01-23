@@ -33,10 +33,10 @@ class ConversationViewModel: ObservableObject {
     @Published var noSavedMessages = false
     @Published var noMessages = false
     @Published var showUnreadMessages = false
-
+    
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
-
+    
     //    @Published var chatId = "Chat"
     
     
@@ -55,7 +55,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showAudio = false
     @Published var isRecordingAudio = false
     @Published var audioProgress = 0.0
-
+    
     //Photos
     @Published var showPhotos = false
     
@@ -68,7 +68,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showCall = false
     
     @Published var isSending = false
-       
+    
     @Published var hasSent = false
     
     @Published var index = 0
@@ -76,7 +76,7 @@ class ConversationViewModel: ObservableObject {
     
     @Published var scrollToBottom = false
     @Published var isPlaying = false
-
+    
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?
@@ -89,8 +89,8 @@ class ConversationViewModel: ObservableObject {
     private init() {
         CacheManager.removeOldFiles()
     }
-            
- 
+    
+    
     func setChat(chat: Chat) {
         self.chat = chat
         self.chatId = chat.id
@@ -119,7 +119,7 @@ class ConversationViewModel: ObservableObject {
         self.chatId = ""
         self.messages = [Message]()
         self.removeListener()
-
+        
         withAnimation {
             self.showKeyboard = false
             self.showPhotos = false
@@ -186,20 +186,20 @@ class ConversationViewModel: ObservableObject {
         }
         
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
-
+        
         if chatId != "" {
             if !self.chatId.isEmpty {
-            let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
-            message.image = image
-            
-            if let lastMessage = messages.last {
-                message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
-                lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
-            }
+                let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
+                message.image = image
+                
+                if let lastMessage = messages.last {
+                    message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
+                    lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
+                }
                 
                 
-            self.messages.append(message)
-            
+                self.messages.append(message)
+                
             }
             
             for i in 0..<ConversationGridViewModel.shared.chats.count {
@@ -215,7 +215,7 @@ class ConversationViewModel: ObservableObject {
             if let url = url {
                 
                 if type == .Video {
-
+                    
                     MediaUploader.shared.uploadVideo(url: url, messageId: id, isFromPhotoLibrary: isFromPhotoLibrary) { newURL in
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                     }
@@ -231,7 +231,7 @@ class ConversationViewModel: ObservableObject {
                     self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                 }
             }
-        } 
+        }
     }
     
     func sendCameraMessage(chatId: String?, chat: Chat?) {
@@ -250,7 +250,7 @@ class ConversationViewModel: ObservableObject {
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
         if index == 0 {
-                uploadMessage(toDocWithId: id)
+            uploadMessage(toDocWithId: id)
             return
         }
         
@@ -300,7 +300,7 @@ class ConversationViewModel: ObservableObject {
             }
         }
     }
-
+    
     func sendMessageNotification(chat: Chat, messageData: [String:Any]) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
@@ -309,7 +309,7 @@ class ConversationViewModel: ObservableObject {
         let message = Message(dictionary: messageData, id: "")
         messageData["timestamp"] = Int(message.timestamp.dateValue().timeIntervalSince1970)
         var data = [String:Any]()
-
+        
         if chat.isDm {
             
             let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id})
@@ -317,7 +317,7 @@ class ConversationViewModel: ObservableObject {
             data["title"] = message.type == .Text ? userFullName : ""
             data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
             data["metaData"] = ["chatId": chat.id, "messageData":messageData]
-
+            
         } else {
             
             data["topic"] = chat.id
@@ -415,7 +415,7 @@ class ConversationViewModel: ObservableObject {
         listener = COLLECTION_CONVERSATIONS.document(chatId)
             .addSnapshotListener { snapshot, _ in
                 if let data = snapshot?.data() {
-
+                    
                     let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
                     
                     self.messages.forEach { message in
@@ -449,7 +449,7 @@ class ConversationViewModel: ObservableObject {
                 addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
                 ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
             }
-
+            
         } else {
             isSending = true
             addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
@@ -463,15 +463,24 @@ class ConversationViewModel: ObservableObject {
         let notificationArray = defaults?.object(forKey: "notifications") as? [String]
         
         if var notificationArray = notificationArray {
+            
             notificationArray.removeAll { notif in
                 notif == chatId
             }
             
+            let chats = ConversationGridViewModel.shared.chats
+            
+            notificationArray.removeAll(where: {$0 == chatId || !chats.contains(where: { chat in
+                chat.id == chatId
+            })})
+            
+            print(notificationArray.count, "COUNT")
             defaults?.set(notificationArray, forKey: "notifications")
-            UIApplication.shared.applicationIconBadgeNumber = notificationArray.count
             
         }
         
+        UIApplication.shared.applicationIconBadgeNumber = notificationArray?.count ?? 0
+
     }
     
     func scrollToBottomOfFeed() {

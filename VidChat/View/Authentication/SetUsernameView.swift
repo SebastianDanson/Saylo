@@ -64,7 +64,8 @@ struct SetUsernameView: View {
                 
                 //Username field
                 
-                CustomTextField(text: $username, placeholder: Text("Username"), imageName: "person", allowSpaces: false, keyBoardType: .default)
+                CustomTextField(text: $username, placeholder: Text("Username"), imageName: "person", allowSpaces: false,
+                                keyBoardType: .default, becomeFirstResponder: true)
                     .foregroundColor(.systemWhite)
                     .padding(.top, 2)
                     .padding(.bottom)
@@ -73,7 +74,7 @@ struct SetUsernameView: View {
             }.padding(.horizontal, 32)
             
             
-            NavigationLink(destination: SetProfileImageView(), isActive: $nameEntered) { EmptyView() }
+            NavigationLink(destination: SetPhoneNumberView(), isActive: $nameEntered) { EmptyView() }
             
             
             Button(action: {

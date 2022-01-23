@@ -24,6 +24,10 @@ struct SetPhoneNumberView: View {
     @State private var showCountryList = false
     @State private var countryInitials = ""
     @State private var showVerifyPhoneNumber = false
+    @State private var isLoading = false
+    @State private var canProceed = false
+
+    @State private var error: Error?
 
     var body: some View {
         
@@ -38,9 +42,20 @@ struct SetPhoneNumberView: View {
             )
         )
         
+        let firebaseAlert = Alert(
+            title: Text("Error"),
+            message: Text(error?.localizedDescription ?? ""),
+            dismissButton: .default(
+                Text("OK"),
+                action: {
+                    
+                }
+            )
+        )
+        
         
         VStack {
-          
+            
             //email field
             
             VStack(spacing: 24) {
@@ -75,10 +90,8 @@ struct SetPhoneNumberView: View {
                             .foregroundColor(.lightGray)
                             .padding(.bottom, 2)
                         
-                        TextField("Phone number", text: $phoneNumber)
-                            .foregroundColor(.systemBlack)
+                        CustomUITextField(text: $phoneNumber, isFirstResponder: true, allowsSpaces: false, keyboardType: .numberPad)
                             .frame(height: 35)
-                            .keyboardType(.numberPad)
                         
                     }
                     .overlay(
@@ -89,9 +102,12 @@ struct SetPhoneNumberView: View {
                     .padding(.bottom)
                     .padding(.horizontal)
                     
+                    NavigationLink(destination: EnableContactsView(), isActive: $canProceed) { EmptyView() }
+
                     
-                    
-                    //            NavigationLink(destination: SetProfileImageView(), isActive: $nameEntered) { EmptyView() }
+                    NavigationLink(destination: VerifyPhoneNumberView(phoneNumber: phoneNumber.trimmingCharacters(in: .decimalDigits.inverted),
+                                                                      dialCode: countryCode),
+                                   isActive: $showVerifyPhoneNumber) { EmptyView() }
                     
                     HStack {
                         Text("We'll send you an SMS verification code.")
@@ -104,13 +120,29 @@ struct SetPhoneNumberView: View {
                 
                 
             }
+            
             Button(action: {
+                
                 
                 //set phone number
                 if (countryCode == "1" && phoneNumber.trimmingCharacters(in: .decimalDigits.inverted).count == 10) || (countryCode != "1" && ("+" + countryCode + phoneNumber).isValidPhoneNumber()) {
-                    viewModel.setPhoneNumber(phoneNumber: phoneNumber.trimmingCharacters(in: .decimalDigits.inverted), countryCode: countryCode)
+                    
+                    isLoading = true
+                    viewModel.setPhoneNumber(phoneNumber: phoneNumber.trimmingCharacters(in: .decimalDigits.inverted), countryCode: countryCode) { error in
+                       
+                        self.isLoading = false
+
+                        if error != nil {
+                            self.showInvalidPhoneNumber = true
+                            self.showError = true
+                        } else {
+                            showVerifyPhoneNumber = true
+                        }
+                        
+                    }
                 } else {
                     showInvalidPhoneNumber = true
+                    showError = true
                 }
                 
             }, label: {
@@ -123,28 +155,43 @@ struct SetPhoneNumberView: View {
                     .clipShape(Capsule())
                     .opacity(phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines).count < 6 ? 0.5 : 1)
             })
-                .disabled(phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines).count < 6)
+                .disabled(phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines).count < 6 || isLoading)
                 .padding(.vertical, 28)
-                .alert(isPresented: $showInvalidPhoneNumber) {
-                    invalidPhoneNumberAlert
+                .alert(isPresented: $showError) {
+                    
+                    if showInvalidPhoneNumber {
+                      return invalidPhoneNumberAlert
+                    } else {
+                       return firebaseAlert
+                    }
                 }
             
             
+            if isLoading {
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .frame(width: 50, height: 50)
+                    .padding(.top, -8)
+
+            }
+            
             Spacer()
+            
             
         }
         .toolbar {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    
+                    canProceed = true
                 } label: {
                     Text("Skip")
                         .foregroundColor(Color(.systemGray3))
                         .fontWeight(.medium)
                 }
             }
-          
+            
         }
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showCountryList, content: {
@@ -174,82 +221,6 @@ struct SetPhoneNumberView: View {
 struct Config {
     init() {}
     static var localIdentifier: Locale!
-}
-
-
-
-struct SectionedTextField: View {
-    @State private var numberOfCells: Int = 8
-    @State private var currentlySelectedCell = 0
-    @State private var text = ""
-    var body: some View {
-        HStack {
-            CustomTextField2(text: $text)
-        }
-    }
-}
-
-
-struct CustomTextField2: UIViewRepresentable {
-
-    class Coordinator: NSObject, UITextFieldDelegate {
-
-        @Binding var text: String
-
-        var didBecomeFirstResponder = false
-
-        init(text: Binding<String>) {
-            _text = text
-        }
-
-        func textFieldDidChangeSelection(_ textField: UITextField) {
-            DispatchQueue.main.async {
-                self.text = textField.text ?? ""
-            }
-        }
-
-//        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//            let currentText = textField.text ?? ""
-//
-//            guard let stringRange = Range(range, in: currentText) else { return false }
-//
-//            let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-//
-//            if updatedText.count <= 1 {
-//                self.currentlySelectedCell += 1
-//            } else if currentText.count == 0 {
-//                self.currentlySelectedCell -= 1
-//            }
-//
-//            return updatedText.count <= 1
-//        }
-        
-      
-    }
-
-    @Binding var text: String
-    var isFirstResponder: Bool = false
-
-    func makeUIView(context: UIViewRepresentableContext<CustomTextField2>) -> UITextField {
-        let textField = UITextField(frame: .zero)
-        textField.delegate = context.coordinator
-        textField.textAlignment = .center
-        textField.keyboardType = .numberPad
-        textField.defaultTextAttributes.updateValue(36.0, forKey: NSAttributedString.Key.kern)
-        return textField
-    }
-
-    func makeCoordinator() -> CustomTextField2.Coordinator {
-        return Coordinator(text: $text)
-    }
-
-    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<CustomTextField2>) {
-        uiView.text = text
-        if isFirstResponder && !context.coordinator.didBecomeFirstResponder  {
-            uiView.becomeFirstResponder()
-            context.coordinator.didBecomeFirstResponder = true
-        }
-    }
 }
 
 

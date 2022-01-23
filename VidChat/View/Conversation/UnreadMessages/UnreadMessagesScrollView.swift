@@ -22,7 +22,9 @@ struct UnreadMessagesScrollView: View {
                         Button {
                             viewModel.index = i
                         } label: {
+                            
                             ZStack {
+                                
                                 if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == message.chatId}) {
                                     
                                     ZStack {

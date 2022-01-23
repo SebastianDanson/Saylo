@@ -222,23 +222,23 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     
-    func updateLastRead() {
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        
-        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
-        
-        notificationArray?.forEach({ chatId in
-            if let index = chats.firstIndex(where: { return $0.id == chatId }) {
-                DispatchQueue.main.async {
-                    withAnimation {
-                        let chat = self.chats.remove(at: index)
-                        chat.hasUnreadMessage = true
-                        self.chats.append(chat)
-                    }
-                }
-            }
-        })
-    }
+//    func updateLastRead() {
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        
+//        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
+//        
+//        notificationArray?.forEach({ chatId in
+//            if let index = chats.firstIndex(where: { return $0.id == chatId }) {
+//                DispatchQueue.main.async {
+//                    withAnimation {
+//                        let chat = self.chats.remove(at: index)
+//                        chat.hasUnreadMessage = true
+//                        self.chats.append(chat)
+//                    }
+//                }
+//            }
+//        })
+//    }
     
     func showCachedChats() {
         
@@ -276,14 +276,24 @@ class ConversationGridViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             defaults?.set([[String:Any]](), forKey: "messages")
         }
+        
     }
     
     func setChatCache() {
         
+        guard let user = AuthViewModel.shared.currentUser else {return}
+
         var chatDictionary = [[String:Any]]()
         
-        self.chats.forEach({chatDictionary.append($0.getDictionary())})
-
+        self.chats.forEach { chat in
+            if user.chats.contains(where: {$0.id == chat.id}) {
+                chatDictionary.append(chat.getDictionary())
+            } else {
+                self.chats.removeAll(where: {$0.id == chat.id})
+                self.allChats = chats
+            }
+        }
+       
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chatDictionary, forKey: "chats")
     }

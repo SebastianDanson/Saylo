@@ -13,11 +13,12 @@ struct VerifyPhoneNumberView: View {
     
     @State private var verificationCode = ""
     @State private var showInvalidCode = false
+    @State private var showNewCodeSent = false
+    @State private var error: Error?
     @State private var showError = false
-    @State private var countryCode = ""
-    @State private var showCountryList = false
-    @State private var countryInitials = ""
-    
+    @State private var isLoading = false
+    @State private var canProceed = false
+
     let phoneNumber: String
     let dialCode: String
     
@@ -34,6 +35,28 @@ struct VerifyPhoneNumberView: View {
             )
         )
         
+        let newCodeSent = Alert(
+            title: Text("New verification code sent"),
+            message: Text("A new code will be sent shortly to \(dialCode) \(phoneNumber)"),
+            dismissButton: .default(
+                Text("OK"),
+                action: {
+                    
+                }
+            )
+        )
+        
+        let firebaseAlert = Alert(
+            title: Text("Invalid Code"),
+            message: Text(error?.localizedDescription ?? ""),
+            dismissButton: .default(
+                Text("OK"),
+                action: {
+                    
+                }
+            )
+        )
+        
         
         VStack {
             
@@ -41,7 +64,7 @@ struct VerifyPhoneNumberView: View {
             
             VStack(spacing: 24) {
                 
-                VStack(alignment: .center, spacing: 4) {
+                VStack(alignment: .center, spacing: 12) {
                     
                     Text("Enter Confirmation Code")
                         .font(.system(size: 24, weight: .medium))
@@ -56,103 +79,205 @@ struct VerifyPhoneNumberView: View {
                     
                     
                     Button {
-                        
+                        self.isLoading = true
+                        viewModel.sendPhoneVerificationCode(phoneNumber: phoneNumber, countryCode: dialCode) { error in
+                            self.isLoading = false
+                            if let error = error {
+                                self.error = error
+                                self.showError = true
+                            } else {
+                                showNewCodeSent = true
+                            }
+                        }
                     } label: {
+                        
                         Text("Resend Code")
                             .foregroundColor(.mainBlue)
-                            .font(.system(size: 11))
+                            .font(.system(size: 13, weight: .medium))
                     }
-
+                    
                 }.padding(.bottom, 16)
                 
                 
-                //Username field
+                NavigationLink(destination: EnableContactsView(), isActive: $canProceed) { EmptyView() }
                 
-                VStack(spacing: -2) {
+                SectionedTextField(text: $verificationCode)
+                
+                Button(action: {
                     
-                    HStack {
-                        
-                        Button {
-                            showCountryList = true
-                        } label: {
-                            Text(countryInitials + " +" + countryCode)
-                                .foregroundColor(.mainBlue)
+                    isLoading = true
+                    viewModel.verifyPhone(verificationCode: verificationCode) { error in
+                        self.isLoading = false
+                        if error != nil {
+                            self.showInvalidCode = true
+                            self.showError = true
+                        } else {
+                            canProceed = true
                         }
-                        
-                        
-                        Rectangle()
-                            .frame(width: 1, height: 22)
-                            .foregroundColor(.lightGray)
-                            .padding(.bottom, 2)
-                        
-                        SectionedTextField()
-//                        TextField("Phone number", text: $phoneNumber)
-//                            .foregroundColor(.systemBlack)
-//                            .frame(height: 35)
-//                            .keyboardType(.numberPad)
-                        
                     }
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1)
-                            .foregroundColor(.lightGray), alignment: .bottom)
-                    .padding(.top, 2)
-                    .padding(.bottom)
-                    .padding(.horizontal)
                     
+                }, label: {
                     
+                    Text("Continue")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: SCREEN_WIDTH - 92, height: 50)
+                        .background(Color.mainBlue)
+                        .clipShape(Capsule())
+                        .opacity(verificationCode.count != 6 ? 0.5 : 1)
                     
-                    //            NavigationLink(destination: SetProfileImageView(), isActive: $nameEntered) { EmptyView() }
-                    
-                    HStack {
-                        Text("We'll send you an SMS verification code.")
-                            .font(.system(size: 12))
-                        Spacer()
+                })
+                    .disabled(verificationCode.count != 6 || isLoading)
+                    .padding(.vertical, 28)
+                    .alert(isPresented: $showError) {
+                        
+                        if showInvalidCode {
+                           return invalidCodeAlert
+                        } else if showNewCodeSent {
+                           return newCodeSent
+                        } else {
+                           return firebaseAlert
+                        }
                     }
-                    .padding(.leading, 14)
-                    
-                }.padding(.horizontal, 32)
                 
+                if isLoading {
+                    
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .frame(width: 50, height: 50)
+                        .padding(.top, -20)
+                    
+                }
+                
+                Spacer()
                 
             }
-            Button(action: {
-                
-              
-            }, label: {
-                
-                Text("Continue")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(width: SCREEN_WIDTH - 92, height: 50)
-                    .background(Color.mainBlue)
-                    .clipShape(Capsule())
-                    .opacity(phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines).count < 6 ? 0.5 : 1)
-            })
-                .disabled(phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines).count < 6)
-                .padding(.vertical, 28)
-                .alert(isPresented: $showInvalidCode) {
-                    invalidCodeAlert
-                }
-            
-            
-            Spacer()
+            .navigationBarBackButtonHidden(false)
             
         }
-        .toolbar {
-            
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    
-                } label: {
-                    Text("Skip")
-                        .foregroundColor(Color(.systemGray3))
-                        .fontWeight(.medium)
-                }
-            }
-            
-        }
-        .navigationBarBackButtonHidden(true)
         
     }
-    
 }
+
+struct SectionedTextField: View {
+   
+    @Binding var text: String
+    
+    let width: CGFloat = 36
+    
+    var body: some View {
+        
+        VStack(spacing: 0) {
+            
+            PinCodeTextField(text: $text)
+                .padding(.leading, 16)
+                .frame(width: 266)
+            
+            HStack {
+                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundColor(.lightGray)
+                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundColor(.lightGray)
+                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundColor(.lightGray)
+                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundColor(.lightGray)
+                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundColor(.lightGray)
+                
+                Rectangle()
+                    .frame(width: width, height: 1)
+                    .foregroundColor(.lightGray)
+                
+            }.frame(width: 246)
+            
+        }.frame(height: 40)
+    }
+}
+
+
+struct PinCodeTextField: UIViewRepresentable {
+    
+    class Coordinator: NSObject, UITextFieldDelegate {
+        
+        @Binding var text: String
+        
+        var didBecomeFirstResponder = false
+        
+        init(text: Binding<String>) {
+            _text = text
+        }
+        
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            DispatchQueue.main.async {
+                self.text = textField.text ?? ""
+            }
+        }
+        
+        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+            
+            let currentText = textField.text ?? ""
+            guard let stringRange = Range(range, in: currentText) else { return false }
+            let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+            
+            let noSpaceText = updatedText.replacingOccurrences(of: " ", with: "")
+            
+            if updatedText.count < self.text.count {
+                self.text.removeLast(min(2, self.text.count))
+                self.text.append(" ")
+                textField.text = text
+            } else if noSpaceText.count <= 6 {
+                
+                self.text = noSpaceText
+                
+                if noSpaceText.count < 6 {
+                    self.text.append(" ")
+                }
+                
+                textField.text = text
+            }
+            
+            
+            return false
+        }
+    }
+    
+    @Binding var text: String
+    var isFirstResponder: Bool = true
+    
+    func makeUIView(context: UIViewRepresentableContext<PinCodeTextField>) -> UITextField {
+        let textField = UITextField(frame: .zero)
+        textField.delegate = context.coordinator
+        textField.textAlignment = .left
+        textField.keyboardType = .numberPad
+        textField.defaultTextAttributes.updateValue(32.0, forKey: NSAttributedString.Key.kern)
+        textField.font = UIFont.systemFont(ofSize: 20)
+        return textField
+    }
+    
+    func makeCoordinator() -> PinCodeTextField.Coordinator {
+        return Coordinator(text: $text)
+    }
+    
+    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<PinCodeTextField>) {
+        uiView.text = text
+        if isFirstResponder && !context.coordinator.didBecomeFirstResponder  {
+            uiView.becomeFirstResponder()
+            context.coordinator.didBecomeFirstResponder = true
+        }
+    }
+}
+
+
+
+

@@ -26,7 +26,7 @@ let HALF_SCREEN_HEIGHT = SCREEN_HEIGHT/2
 let BOTTOM_PADDING = UIApplication.shared.windows[0].safeAreaInsets.bottom
 let TOP_PADDING = UIApplication.shared.windows[0].safeAreaInsets.top
 
-
+let FEEDVIEW_OFFSET: CGFloat = SCREEN_RATIO > 2 ? -28 : -24
 let SCREEN_RATIO = SCREEN_HEIGHT / SCREEN_WIDTH
 
 //Camera

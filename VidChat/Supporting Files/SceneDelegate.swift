@@ -38,7 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         print("sceneDidBecomeActive")
 
-        ConversationGridViewModel.shared.updateLastRead()
+//        ConversationGridViewModel.shared.updateLastRead()
 
         AuthViewModel.shared.fetchUser {
             print("1111")

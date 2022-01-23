@@ -35,7 +35,7 @@ struct ConversationFeedView: View {
                     ForEach(Array(messages.enumerated()), id: \.1.id) { i, element in
                         
                         MessageCell(message: messages[i])
-                            .offset(x: 0, y: -24)
+                            .offset(x: 0, y: FEEDVIEW_OFFSET)
                             .background(
                                 messages[i].type != .Text ? GeometryReader { geo in
                                     Color.systemWhite.preference(
@@ -81,18 +81,22 @@ struct ConversationFeedView: View {
                             
                             let prevMiddleItemNo = middleItemNo
                             middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
+            
                             
                             if middleItemNo >= 0 {
                                 
                                 if prevMiddleItemNo != middleItemNo {
                                     
                                    
-                                    viewModel.updatePlayer(index: middleItemNo)
                                     self.temporarilyDisablePreference()
                                     
+                                    print(messages[middleItemNo].id, "ID")
                                     withAnimation {
                                         reader.scrollTo(messages[middleItemNo].id, anchor: .center)
                                     }
+                                    
+                                    viewModel.updatePlayer(index: middleItemNo)
+
                                 }
                             }
                             else if viewModel.currentPlayer != nil {

@@ -13,6 +13,8 @@ struct EnableContactsView: View {
     
     let viewModel = ContactsViewModel.shared
     
+    @State private var canProceed = false
+    
     var body: some View {
         
         VStack {
@@ -21,8 +23,8 @@ struct EnableContactsView: View {
             
             Text("Find your friends")
                 .font(.system(size: 28, weight: .medium))
-               
-
+            
+            
             Image(systemName: "person.2.circle")
                 .resizable()
                 .scaledToFit()
@@ -30,23 +32,20 @@ struct EnableContactsView: View {
                 .foregroundColor(.mainBlue)
                 .padding(.top, 16)
                 .padding(.bottom, 16)
-          
+            
             Text("See which of your contacts are \non Saylo")
                 .font(.system(size: 20, weight: .medium))
                 .foregroundColor(Color.mainGray)
                 .multilineTextAlignment(.center)
-                .padding(.bottom, 8)
-            
-            Text("Saylo never stores or shares your contacts.\nWe respect your privacy")
-                .font(.system(size: 16, weight: .regular))
-                .foregroundColor(Color(.mainGray))
-                .multilineTextAlignment(.center)
+                .padding(.bottom, 24)
             
             Spacer()
             
+            NavigationLink(destination: SetProfileImageView(), isActive: $canProceed) { EmptyView() }
+            
             Button {
                 viewModel.requestAccessToContacts { access in
-                    
+                    canProceed = true
                 }
             } label: {
                 Text("Continue")
@@ -56,13 +55,18 @@ struct EnableContactsView: View {
                     .background(Color.mainBlue)
                     .clipShape(Capsule())
             }
-
-           
+            
+            
+            Text("Saylo never stores or shares your contacts.")
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(Color.black)
+                .padding(.bottom, BOTTOM_PADDING)
+                .padding(.top, 8)
+            
+            
         }
-        
+
     }
-    
-    
 }
 
 

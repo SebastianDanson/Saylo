@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Firebase
 struct ContentView: View {
     
     @StateObject var viewModel = AuthViewModel.shared
@@ -31,15 +31,19 @@ struct ContentView: View {
 //                } else {
 //                    ConversationGridView()
 ////                        .onAppear(perform: {ConversationGridViewModel.shared.showAddFriends = true})
-//
 //                }
 ////                }
 //            }
             
-            NavigationView {
-                VerifyPhoneNumberView(phoneNumber: "6479695240", dialCode: "1")
-            }
-//            EnableContactsView()
+            ContactsView()
+                .navigationBarHidden(true)
+            
+//            NavigationView {
+//                SetPhoneNumberView()
+//                    .onAppear {
+//                        print(Auth.auth().currentUser?.uid, "UID")
+//                    }
+//            }
 //            ChatSettingsView(showSettings: .constant(true))
             
 //            ChatMembersView(showGroupMemebers: .constant(true))
