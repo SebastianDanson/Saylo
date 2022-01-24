@@ -173,15 +173,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
 
         if let fcmToken = fcmToken {
+            
+            print("SETTINGse")
             let dataDict:[String: String] = ["token": fcmToken ?? ""]
             NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
-            
-            let uid = Auth.auth().currentUser?.uid
-
-            if let uid = uid  {
-                COLLECTION_USERS.document(uid).updateData(["fcmToken" : fcmToken])
-                AuthViewModel.shared.currentUser?.fcmToken = fcmToken
-            }
+            UserDefaults.standard.set(fcmToken, forKey: "fcmToken")
         }
     }
     
@@ -201,7 +197,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
 
         let fromCurrentUser = AuthViewModel.shared.currentUser?.id == userId
         
-        let defaults = UserDefaults.init(suiteName: "group.com.SebastianDanson.CourseLnk")
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         var notificationArray = defaults?.object(forKey: "notifications") as? [String] ?? [String]()
         
         if let chatId = chatId, ConversationViewModel.shared.chatId != chatId && !notificationArray.contains(chatId) && !fromCurrentUser {
@@ -238,6 +234,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        let userInfo = response.notification.request.content.userInfo
+        
+        let data = userInfo["data"] as? [String:Any]
+//        let chatId = data?["chatId"] as? String
+        let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
+        
+//        if let chatid = chatId {
+//
+//            let chats = ConversationGridViewModel.shared.getCachedChats()
+//
+//            if let chat = chats.first(where: { $0.id == chatid }) {
+//                ConversationViewModel.shared.setChat(chat: chat)
+//                ConversationGridViewModel.shared.showConversation = true
+//            }
+//        } else
+        
+        if isFriendRequest {
+            ConversationGridViewModel.shared.showAddFriends = true
+        }
+        
         completionHandler()
     }
 }

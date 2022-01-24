@@ -41,7 +41,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        ConversationGridViewModel.shared.updateLastRead()
 
         AuthViewModel.shared.fetchUser {
-            print("1111")
             ConversationGridViewModel.shared.fetchConversations()
         }
         

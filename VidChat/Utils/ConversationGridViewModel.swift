@@ -18,6 +18,7 @@ class ConversationGridViewModel: ObservableObject {
     @Published var showSearchBar: Bool = false
     @Published var showSettingsView: Bool = false
     @Published var showAddFriends: Bool = false
+    @Published var showFindFriends: Bool = false
     @Published var showNewChat: Bool = false
     @Published var chats = [Chat]()
     @Published var unreadChats = [Chat]()
@@ -241,6 +242,10 @@ class ConversationGridViewModel: ObservableObject {
 //    }
     
     func showCachedChats() {
+        self.chats = getCachedChats()
+    }
+    
+    func getCachedChats() -> [Chat] {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
@@ -270,13 +275,13 @@ class ConversationGridViewModel: ObservableObject {
         }
 
 //        DispatchQueue.main.async {
-        self.chats = chats
+        
+        return chats
 //        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             defaults?.set([[String:Any]](), forKey: "messages")
         }
-        
     }
     
     func setChatCache() {

@@ -8,8 +8,47 @@
 import SwiftUI
 
 struct ContactsView: View {
+    
+    let viewModel = ContactsViewModel.shared
+    
+    @State var canAccessContacts: Bool
+    
+    init() {
+        
+        if viewModel.getPhoneContacts() != nil {
+            self._canAccessContacts = State(initialValue: true)
+        } else {
+            self._canAccessContacts = State(initialValue: false)
+        }
+    }
+    
     var body: some View {
         
+        ZStack {
+            
+            if canAccessContacts {
+                AddFriendsView()
+            } else {
+                AllowContactsView()
+            }
+        }.onAppear {
+            checkContactAccess()
+        }
+    }
+    
+    func checkContactAccess() {
+        if viewModel.getPhoneContacts() != nil {
+            self.canAccessContacts = true
+        } else {
+            self.canAccessContacts = false
+        }
+    }
+}
+
+
+struct AllowContactsView: View {
+    
+    var body: some View {
         
         VStack(alignment: .center, spacing: 24) {
             
@@ -19,6 +58,9 @@ struct ContactsView: View {
                     
                     Button {
                         
+                        withAnimation {
+                            ConversationGridViewModel.shared.showFindFriends = false
+                        }
                         
                     } label: {
                         
@@ -60,7 +102,7 @@ struct ContactsView: View {
                 .scaledToFit()
                 .frame(width: SCREEN_WIDTH - 64)
                 .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
-
+            
             
             
             Spacer()
@@ -76,17 +118,14 @@ struct ContactsView: View {
                     .background(Color.mainBlue)
                     .clipShape(Capsule())
                     .padding(.bottom, BOTTOM_PADDING + 64)
-                    
+                
             }
-
+            
         }
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         .ignoresSafeArea()
         .background(Color.systemWhite)
-        
     }
- 
-    
     
     func openSettings() {
         
@@ -95,4 +134,3 @@ struct ContactsView: View {
         }
     }
 }
-

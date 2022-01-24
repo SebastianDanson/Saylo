@@ -58,25 +58,30 @@ struct ConversationGridView: View {
                     
                     if viewModel.chats.count < 3 && !conversationViewModel.showCamera && !viewModel.isSelectingChats {
                         
-                        PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
-                            
-                            //                            FindFriendsView().tag(0)
-                            
-                            TipView(header: "Press and Hold on a Chat",
-                                    subText: "To start recording a video for that chat",
-                                    imageName: "video.fill").tag(0)
-                            
-                            TipView(header: "Press and Hold on a Message",
-                                    subText: "To save that message",
-                                    imageName: "bookmark.fill").tag(2)
-                            
-                        }
-                        .frame(width: SCREEN_WIDTH - 40, height: 300)
-                        .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
-                        .padding(.top, 20)
-                        .onAppear {
-                            setSelection()
-                        }
+                        FindFriendsView()
+                            .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
+                            .padding(.top, TOP_PADDING + 56)
+                        
+                        
+                        //                            .onAppear {
+                        //                                setSelection()
+                        //                            }
+                        
+                        //                        PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
+                        
+                        //                            FindFriendsView().tag(0)
+                        
+                        
+                        //                            TipView(header: "Press and Hold on a Chat",
+                        //                                    subText: "To start recording a video for that chat",
+                        //                                    imageName: "video.fill").tag(0)
+                        //
+                        //                            TipView(header: "Press and Hold on a Message",
+                        //                                    subText: "To save that message",
+                        //                                    imageName: "bookmark.fill").tag(2)
+                        
+                        //                        }
+                        
                     }
                     
                     
@@ -101,7 +106,7 @@ struct ConversationGridView: View {
                                                         withAnimation(.linear(duration: 0.15)) {
                                                             viewModel.toggleSelectedChat(chat: chat)
                                                         }
-
+                                                        
                                                     } else {
                                                         conversationViewModel.setChat(chat: chat)
                                                         viewModel.showConversation = true
@@ -176,6 +181,12 @@ struct ConversationGridView: View {
                         .transition(.move(edge: .bottom))
                 }
                 
+                if viewModel.showFindFriends {
+                    ContactsView()
+                        .zIndex(3)
+                        .transition(.move(edge: .bottom))
+                }
+                
                 if viewModel.showNewChat {
                     NewConversationView()
                         .zIndex(3)
@@ -192,9 +203,7 @@ struct ConversationGridView: View {
             .onAppear(perform: {
                 
                 if AuthViewModel.shared.isSignedIn {
-                    
-                    AuthViewModel.shared.fetchUser { }
-                    
+                                        
                     DispatchQueue.main.async {
                         viewModel.sortChats()
                     }
@@ -203,14 +212,14 @@ struct ConversationGridView: View {
                     conversationViewModel.showPhotos = false
                     conversationViewModel.showKeyboard = false
                     
-
+                    
                 }
                 
             })
             .navigationBarHidden(true)
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
-       
+            
             
         }
     }
@@ -363,13 +372,17 @@ struct NavView: View {
                             .font(.system(size: 19, weight: .semibold))
                         
                         Spacer()
+                        
                         HStack(alignment: .top, spacing: 10) {
                             
                             Button {
+                                
                                 withAnimation {
                                     viewModel.showAddFriends = true
                                 }
+                                
                                 AuthViewModel.shared.hasUnseenFriendRequest = false
+                                
                             } label: {
                                 ZStack {
                                     
@@ -526,7 +539,7 @@ struct SelectedChatsView: View {
                                     conversationViewModel.showPhotos = false
                                     viewModel.isSelectingChats = false
                                 }
-                              
+                                
                             } label: {
                                 Image(systemName: "chevron.down")
                                     .resizable()

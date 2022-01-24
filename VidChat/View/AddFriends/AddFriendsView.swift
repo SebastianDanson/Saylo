@@ -10,9 +10,7 @@ import SwiftUI
 struct AddFriendsView: View {
     
     @StateObject var viewModel = AddFriendsViewModel.shared
-    
     @State var searchText: String = ""
-    @State var suggestedUsers = [User]()
     
     var body: some View {
         
@@ -26,6 +24,7 @@ struct AddFriendsView: View {
                         
                         withAnimation {
                             ConversationGridViewModel.shared.showAddFriends = false
+                            ConversationGridViewModel.shared.showFindFriends = false
                         }
                         
                         AddFriendsViewModel.shared.reset()
@@ -113,11 +112,11 @@ struct AddFriendsView: View {
                         .padding(.horizontal, 20)
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
                     
-                    if suggestedUsers.count > 0 && viewModel.searchedUsers.count == 0 {
+                    if viewModel.contactsOnSaylo.count > 0 && viewModel.searchedUsers.count == 0 {
                         Text("Quick Add")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
-                            .padding(.top, 28)
+                            .padding(.top, viewModel.friendRequests.count == 0 ? 0 : 28)
                             .padding(.leading, 20)
                     }
                     
@@ -125,9 +124,9 @@ struct AddFriendsView: View {
                         
                         if viewModel.searchedUsers.count == 0 {
                             
-                            ForEach(Array(suggestedUsers.enumerated()), id: \.1.id) { i, user in
+                            ForEach(Array(viewModel.contactsOnSaylo.enumerated()), id: \.1.id) { i, user in
                                 
-                                AddFriendCell(user: user, addedMe: true, users: $suggestedUsers)
+                                AddFriendCell(user: user, addedMe: false, users: $viewModel.contactsOnSaylo)
                                 
                             }
                         }
@@ -138,34 +137,39 @@ struct AddFriendsView: View {
                         .padding(.horizontal, 20)
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
                     
-                    if viewModel.contacts.count > 0 {
+                    if let contacts = viewModel.contacts {
                         Text("Contacts")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
-                            .padding(.top, 28)
+                            .padding(.top, viewModel.friendRequests.count == 0 && viewModel.contactsOnSaylo.count == 0 ? 0 : 28)
                             .padding(.leading, 20)
-                    }
-                    
-                    LazyVStack(spacing: 0) {
                         
+                        
+                        LazyVStack(spacing: 0) {
                             
-                            ForEach(Array(viewModel.contacts.enumerated()), id: \.1.id) { i, contact in
+                            
+                            ForEach(Array(contacts.enumerated()), id: \.1.id) { i, contact in
                                 
                                 ContactCell(contact: contact, index: i)
                                 
                             }
+                            
+                            
+                        }.frame(width: SCREEN_WIDTH - 40)
+                            .background(Color.popUpSystemWhite)
+                            .cornerRadius(12)
+                            .padding(.horizontal, 20)
+                            .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+                    } else  {
+                        HStack {
+                            Spacer()
+                            FindFriendsView()
+                                .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
+                            Spacer()
+                        }
                         
-                        
-                    }.frame(width: SCREEN_WIDTH - 40)
-                        .background(Color.popUpSystemWhite)
-                        .cornerRadius(12)
-                        .padding(.horizontal, 20)
-                        .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+                    }
                 }
-                
-                    FindFriendsView()
-                    .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
-
             }
             
             Spacer()
@@ -177,6 +181,7 @@ struct AddFriendsView: View {
             AddFriendsViewModel.shared.fetchFriendRequests()
             AddFriendsViewModel.shared.setSeenFriendRequests()
             AddFriendsViewModel.shared.setContacts()
+            ContactsViewModel.shared.getContactsWithAccount()
         }
     }
 }

@@ -29,6 +29,10 @@ struct FindFriendsView: View {
             
             Button {
                 
+                withAnimation {
+                    ConversationGridViewModel.shared.showFindFriends = true
+                }
+                
             } label: {
                 
                 Text("Find Friends")

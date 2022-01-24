@@ -141,11 +141,11 @@ class AuthViewModel: ObservableObject {
     }
     
     func setPhoneNumber(phoneNumber: String, countryCode: String, completion: @escaping((Error?) -> Void)) {
-
+        
         guard let id = Auth.auth().currentUser?.uid else { return }
         
         COLLECTION_USERS.document(id).updateData(["phoneNumber":phoneNumber, "countryCode":countryCode])
-       
+        
         sendPhoneVerificationCode(phoneNumber: phoneNumber, countryCode: countryCode) { error in
             completion(error)
         }
@@ -154,27 +154,29 @@ class AuthViewModel: ObservableObject {
     func sendPhoneVerificationCode(phoneNumber: String, countryCode: String, completion: @escaping((Error?) -> Void)) {
         
         PhoneAuthProvider.provider()
-          .verifyPhoneNumber("+" + countryCode + phoneNumber, uiDelegate: nil) { verificationID, error in
-           
-            UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
-              completion(error)
-          }
+            .verifyPhoneNumber("+" + countryCode + phoneNumber, uiDelegate: nil) { verificationID, error in
+                
+                UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
+                completion(error)
+            }
     }
     
     func verifyPhone(verificationCode: String, completion: @escaping((Error?) -> Void)) {
         
         guard let verificationID = UserDefaults.standard.string(forKey: "authVerificationID") else { return }
-
+        
         let credential = PhoneAuthProvider.provider().credential(
-          withVerificationID: verificationID,
-          verificationCode: verificationCode
+            withVerificationID: verificationID,
+            verificationCode: verificationCode
         )
         
         Auth.auth().currentUser?.link(with: credential, completion: { authResult, error in
             print(authResult, "AUTH RESULT", error?.localizedDescription, "ERROR")
             completion(error)
         })
-     
+        
+        
+        
     }
     
     
@@ -221,11 +223,61 @@ class AuthViewModel: ObservableObject {
                     LandingPageViewModel.shared.setAuthView()
                 }
                 
+                let fcmToken = UserDefaults.standard.string(forKey: "fcmToken")
+
+                if let fcmToken = fcmToken, !fcmToken.isEmpty {
+                    
+                    if user.fcmToken != fcmToken {
+                        
+                        let userRef = COLLECTION_USERS.document(uid)
+                        
+                        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                            transaction.updateData(["fcmToken" : fcmToken], forDocument: userRef)
+                            return nil
+                        }) { (_, error) in }
+                        
+                        self.currentUser?.fcmToken = fcmToken
+                        self.updateChatsFcmToken()
+                        
+                    }
+                }
                 
                 completion()
             } else {
                 try! Auth.auth().signOut()
                 completion()
+            }
+        }
+    }
+    
+    func updateChatsFcmToken() {
+        
+        guard let currentUser = currentUser else {
+            return
+        }
+        
+        currentUser.chats.forEach { chat in
+            
+            COLLECTION_CONVERSATIONS.document(chat.id).getDocument { snapshot, _ in
+                
+                if let data = snapshot?.data() {
+                    
+                    var usersDic = data["users"] as? [[String:Any]] ?? [[String:Any]]()
+                    
+                    for i in 0..<usersDic.count {
+                        
+                        if usersDic[i]["userId"] as? String == currentUser.id {
+                            usersDic[i]["fcmToken"] = currentUser.fcmToken
+                        }
+                    }
+                    
+                    let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
+                    
+                    Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                        transaction.updateData(["users" : usersDic], forDocument: chatRef)
+                        return nil
+                    }) { (_, error) in }
+                }
             }
         }
     }

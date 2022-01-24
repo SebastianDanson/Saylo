@@ -16,7 +16,8 @@ class AddFriendsViewModel: ObservableObject {
     @Published var isSearching: Bool = false
     @Published var searchedUsers = [User]()
     @Published var friendRequests = [User]()
-    @Published var contacts = [PhoneContact]()
+    @Published var contacts: [PhoneContact]?
+    @Published var contactsOnSaylo = [User]()
 
     var allContacts = [PhoneContact]()
     var showSearchResults = false
@@ -37,7 +38,7 @@ class AddFriendsViewModel: ObservableObject {
     }
     
     func setContacts() {
-        var contacts =  ContactsViewModel.shared.getPhoneContacts()
+        guard var contacts =  ContactsViewModel.shared.getPhoneContacts() else {return}
         contacts.removeAll(where: {$0.name == nil || $0.name?.replacingOccurrences(of: " ", with: "") == ""})
         self.contacts = contacts
             .sorted(by: { ($0.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "") < ($1.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "")})
