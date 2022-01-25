@@ -93,6 +93,8 @@ struct AddFriendsView: View {
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
                             .padding(.leading, 20)
+                            .padding(.top, viewModel.searchedUsers.count == 0 ? 0 : 28)
+
                     }
                     
                     VStack(spacing: 0) {
@@ -116,7 +118,7 @@ struct AddFriendsView: View {
                         Text("Quick Add")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
-                            .padding(.top, viewModel.friendRequests.count == 0 ? 0 : 28)
+                            .padding(.top, viewModel.friendRequests.count == 0 && viewModel.searchedUsers.count == 0 ? 0 : 28)
                             .padding(.leading, 20)
                     }
                     
@@ -141,7 +143,7 @@ struct AddFriendsView: View {
                         Text("Contacts")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
-                            .padding(.top, viewModel.friendRequests.count == 0 && viewModel.contactsOnSaylo.count == 0 ? 0 : 28)
+                            .padding(.top, viewModel.friendRequests.count == 0 && viewModel.contactsOnSaylo.count == 0 && viewModel.searchedUsers.count == 0 ? 0 : 28)
                             .padding(.leading, 20)
                         
                         

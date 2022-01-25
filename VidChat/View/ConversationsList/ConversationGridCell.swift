@@ -27,16 +27,32 @@ struct ConversationGridCell: View {
                 
                 ZStack {
                     
-//                    if chat.hasUnreadMessage {
-//                        RoundedRectangle(cornerRadius: 20)
-//                            .strokeBorder(Color.mainBlue, style: StrokeStyle(lineWidth: 3))
-//                            .frame(width: width + 11, height: width * ratio  + 11)
-//                    }
-                    
                     ChatImage(chat: chat, width: width)
+                        .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)
                         .overlay(
                             
                             ZStack {
+                                
+                                if chat.chatMembers.count == 1 {
+                                    VStack {
+                                        
+                                        HStack {
+                                            Image(systemName: "hourglass")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 20, height: 20)
+                                                .padding(.leading, 4)
+                                                .padding(.top, 8)
+                                                .foregroundColor(.systemBlack)
+                                            
+                                            Spacer()
+                                            
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    
+                                }
                                 
                                 if chat.hasSent {
                                     
@@ -53,27 +69,23 @@ struct ConversationGridCell: View {
                                             .frame(width: width/3, height: width/3)
                                             .foregroundColor(.systemWhite)
                                     }.transition(.opacity)
-                                                                
+                                    
                                 }
                                 
                                 
                                 
                                 if chat.isSending {
-                                VStack {
-                                    Spacer()
-                                    ActivityIndicatorRectangle(shouldAnimate: $chat.isSending, width: width - 28)
-                                        .padding(.bottom, 10)
-                                        .transition(.opacity)
-                                    
-                                }
-                              
+                                    VStack {
+                                        Spacer()
+                                        ActivityIndicatorRectangle(shouldAnimate: $chat.isSending, width: width - 28)
+                                            .padding(.bottom, 10)
+                                            .transition(.opacity)
+                                        
+                                    }
                                 }
                             }
-                            
                         )
-                    
                 }
-                
                 
                 
                 Text(chat.name)
@@ -161,42 +173,6 @@ struct ConversationStatusView: View {
             .frame(width: 16, height: 16)
             .scaledToFit()
             .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 6, x: 0, y: 4)
-        
-        //            .overlay(
-        //                TimeView(isOpened: isOpened, isSent: isSent)
-        //                , alignment: .center)
-        //            .padding(.leading, -2)
-        //            .padding(.bottom, isOpened ? 4 : 0)
     }
 }
 
-struct TimeView: View {
-    let isOpened: Bool
-    let isSent: Bool
-    
-    var body: some View {
-        VStack {
-            //            if isOpened {
-            //                LinearGradient(gradient: Gradient(colors: [.mainGreen, .mainBlue]),
-            //                               startPoint: .top,
-            //                               endPoint: .bottom)
-            //                    .mask(
-            //                        Text("1d").padding(.trailing, isSent ? 9 : 0)
-            //                            .font(.system(size: 14, weight: .bold))
-            //                    )
-            //
-            //            } else {
-            Text("1d").padding(.trailing, isSent ? 8 : 0)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(isOpened ? .gray : .systemWhite)
-            
-            // }
-        }
-    }
-}
-
-//struct ChatCell_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ChatCell(user: TestUser(image: "https://firebasestorage.googleapis.com/v0/b/Saylo-12c32.appspot.com/o/Screen%20Shot%202021-09-26%20at%203.23.09%20PM.png?alt=media&token=e1ff51b5-3534-439b-9334-d2f5bc1e37c1", firstname: "Sebastian", lastname: "Danson", conversationStatus: .receivedOpened))
-//    }
-//}

@@ -95,10 +95,37 @@ struct ConversationView: View {
                 }
                 
                 if viewModel.showPhotos {
-                    PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
-                        .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
-                        .transition(.move(edge: .bottom))
-                        .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
+                    VStack {
+                        
+                        HStack {
+                            
+                            Button {
+                                
+                                withAnimation {
+                                    viewModel.showPhotos = false
+                                }
+                                
+                            } label: {
+                                
+                                Image(systemName: "chevron.down")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(.systemBlack)
+                                    .padding(.horizontal, 12)
+                                    .padding(.bottom, 2)
+                                    .padding(.top, 8)
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
+                            .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
+                            .transition(.move(edge: .bottom))
+                            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
+                    }
+                    
                 }
                 
                 
@@ -112,6 +139,7 @@ struct ConversationView: View {
                 ZStack {
                     
                     if !viewModel.showSavedPosts {
+                        
                         VStack {
                             
                             if !viewModel.showCamera {
@@ -121,7 +149,6 @@ struct ConversationView: View {
                             Spacer()
                             
                             if !viewModel.showKeyboard {
-                                
                                 OptionsView()
                             }
                         }
@@ -147,6 +174,7 @@ struct ConversationView: View {
                 ConversationFeedView(messages: $viewModel.messages)
                     .background(Color.systemWhite)
                     .overlay(
+                        
                         VStack {
                             
                             Spacer()
@@ -162,6 +190,7 @@ struct ConversationView: View {
                             SavedPostsOptionsView()
                         }
                         , alignment: .center)
+                
                     .transition(.move(edge: .bottom))
                     .zIndex(6)
             }
@@ -309,8 +338,8 @@ struct OptionsView: View {
                                                 Circle()
                                                     .trim(from: 0.0, to: CGFloat(min(viewModel.audioProgress, 1.0)))
                                                     .stroke(Color(.systemRed), style: StrokeStyle(lineWidth: 5,
-                                                                                               lineCap: .round,
-                                                                                               lineJoin: .round))
+                                                                                                  lineCap: .round,
+                                                                                                  lineJoin: .round))
                                                     .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : 20), value: viewModel.audioProgress)
                                                     .frame(width: 48, height: 48)
                                                     .rotationEffect(Angle(degrees: 270))
@@ -468,26 +497,28 @@ struct ChatOptions: View {
                 Spacer()
                 
                 
-                Button {
-                    guard let chat = viewModel.chat else { return }
-                    MakeCallViewModel.shared.createNewOutgoingCall(toChat: chat)
-                } label: {
+                if viewModel.chat?.chatMembers.count ?? 1 > 1 {
+                    Button {
+                        guard let chat = viewModel.chat else { return }
+                        MakeCallViewModel.shared.createNewOutgoingCall(toChat: chat)
+                    } label: {
+                        
+                        ZStack {
+                            Circle()
+                                .frame(width: 35, height: 35)
+                                .foregroundColor(.point3AlphaSystemBlack)
+                            
+                            Image(systemName: "phone.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.title.weight(.ultraLight))
+                                .foregroundColor(.iconSystemWhite)
+                                .frame(width: 18, height: 18)
+                            
+                        }.padding(.trailing, 12)
+                    }
                     
-                    ZStack {
-                        Circle()
-                            .frame(width: 35, height: 35)
-                            .foregroundColor(.point3AlphaSystemBlack)
-                        
-                        Image(systemName: "phone.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.title.weight(.ultraLight))
-                            .foregroundColor(.iconSystemWhite)
-                            .frame(width: 18, height: 18)
-                        
-                    }.padding(.trailing, 12)
                 }
-                
                 
                 if let chat = viewModel.chat {
                     Button {
@@ -534,34 +565,34 @@ struct ChatOptions: View {
             }
             
             
-//            HStack {
-//                Spacer()
-//
-//                VStack(spacing: 12) {
-//
-//
-//                    if viewModel.messages.count > 0 {
-//
-//                        Button {
-//                            withAnimation(.linear(duration: 0.2)) {
-//                                viewModel.showConversationPlayer.toggle()
-//                            }
-//                        } label: {
-//                            ZStack {
-//                                Circle()
-//                                    .frame(width: 36, height: 36)
-//                                    .foregroundColor(.point3AlphaSystemBlack)
-//
-//                                Image(systemName: "film")
-//                                    .resizable()
-//                                    .scaledToFit()
-//                                    .foregroundColor(.iconSystemWhite)
-//                                    .frame(width: 20, height: 20)
-//                            }
-//                        }
-//                    }
-//                }
-//            }.padding(.vertical, -6)
+            //            HStack {
+            //                Spacer()
+            //
+            //                VStack(spacing: 12) {
+            //
+            //
+            //                    if viewModel.messages.count > 0 {
+            //
+            //                        Button {
+            //                            withAnimation(.linear(duration: 0.2)) {
+            //                                viewModel.showConversationPlayer.toggle()
+            //                            }
+            //                        } label: {
+            //                            ZStack {
+            //                                Circle()
+            //                                    .frame(width: 36, height: 36)
+            //                                    .foregroundColor(.point3AlphaSystemBlack)
+            //
+            //                                Image(systemName: "film")
+            //                                    .resizable()
+            //                                    .scaledToFit()
+            //                                    .foregroundColor(.iconSystemWhite)
+            //                                    .frame(width: 20, height: 20)
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }.padding(.vertical, -6)
         }
         .padding(.horizontal, 16)
         .padding(.top, topPadding + 4)

@@ -18,7 +18,7 @@ class AddFriendsViewModel: ObservableObject {
     @Published var friendRequests = [User]()
     @Published var contacts: [PhoneContact]?
     @Published var contactsOnSaylo = [User]()
-
+    
     var allContacts = [PhoneContact]()
     var showSearchResults = false
     
@@ -105,10 +105,10 @@ class AddFriendsViewModel: ObservableObject {
         return users
         
     }
-        
+    
     
     func getUserSearchResults(searchArray: [String], searchText: String, completion: @escaping([User]) -> Void) {
-         
+        
         guard let currentUser = AuthViewModel.shared.currentUser else {return}
         
         var searchResults = [User]()
@@ -124,7 +124,7 @@ class AddFriendsViewModel: ObservableObject {
                     //Don't show current user in search results
                     if currentUser.id != user.id {
                         searchResults.append(user)
-
+                        
                     }
                 })
                 completion(self.sortResults(searchText: searchText, searchResults: searchResults))
@@ -139,8 +139,51 @@ class AddFriendsViewModel: ObservableObject {
     func sendFriendRequest(toUser user: ChatMember) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
-        COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayUnion([currentUser.id]),
-                                                       "hasUnseenFriendRequest":true])
+        
+        
+        let chatId: String!
+        
+        if currentUser.id > user.id {
+            chatId = currentUser.id + user.id
+        } else {
+            chatId = user.id + currentUser.id
+        }
+        
+        let userData = [
+            "userId": user.id,
+            "profileImage": user.profileImage,
+            "fcmToken":user.fcmToken,
+            "pushKitToken":user.pushKitToken,
+            "username":user.username,
+            "firstName":user.firstName,
+            "lastName":user.lastName
+        ]
+        
+        COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData], "isDm":true])
+        COLLECTION_SAVED_POSTS.document(chatId).setData([:])
+        
+        let chatData = ["id":chatId,
+                        "lastVisited": Timestamp(date: Date()),
+                        "notificationsEnabled": true] as [String: Any]
+        
+        ConversationGridViewModel.shared.addConversation(withId: chatId) { }
+        
+        COLLECTION_USERS.document(currentUser.id)
+            .updateData(
+                ["conversations": FieldValue.arrayUnion([chatData])]) { error in
+                    ConversationGridViewModel.shared.fetchConversations()
+                }
+        
+        currentUser.chats.append(UserChat(dictionary: chatData))
+        
+        
+        let userRef = COLLECTION_USERS.document(user.id)
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["friendRequests": FieldValue.arrayUnion([currentUser.id]),
+                                    "hasUnseenFriendRequest":true], forDocument: userRef)
+            return nil
+        }) { (_, error) in }
+        
         
         var data = [String:Any]()
         
@@ -148,9 +191,8 @@ class AddFriendsViewModel: ObservableObject {
         data["title"] = currentUser.firstName + " " + currentUser.lastName
         data["body"] = "Sent you a friend request"
         data["metaData"] = ["isSentFriendRequest":true]
-      
-        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
         
+        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
     func removeFriendRequest(toUser user: ChatMember) {
@@ -198,9 +240,14 @@ class AddFriendsViewModel: ObservableObject {
             "lastName":friend.lastName
         ]
         
-        COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData,friendData], "isDm":true])
-        COLLECTION_SAVED_POSTS.document(chatId).setData([:])
-
+        
+        let chatRef = COLLECTION_CONVERSATIONS.document(chatId)
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["users":[userData,friendData]], forDocument: chatRef)
+            return nil
+        }) { (_, error) in }
+        
+        
         let chatData = ["id":chatId,
                         "lastVisited": Timestamp(date: Date()),
                         "notificationsEnabled": true] as [String: Any]
@@ -221,20 +268,21 @@ class AddFriendsViewModel: ObservableObject {
         
         COLLECTION_USERS.document(friend.id)
             .updateData(
-                ["friends": FieldValue.arrayUnion([user.id]),
-                 "conversations": FieldValue.arrayUnion([chatData])]) { error in
-                     if error == nil {
-                         var data = [String:Any]()
-                         
-                         data["token"] = friend.fcmToken
-                         data["title"] = user.firstName + " " + user.lastName
-                         data["body"] = "Accepted your friend request"
-                         data["metaData"] = ["acceptedFriendRequest":true]
-                       
-                         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
-                     }
-                 }
+                ["friends": FieldValue.arrayUnion([user.id])]) { error in
+                    
+                    if error == nil {
+                        var data = [String:Any]()
+                        
+                        data["token"] = friend.fcmToken
+                        data["title"] = user.firstName + " " + user.lastName
+                        data["body"] = "Accepted your friend request"
+                        data["metaData"] = ["acceptedFriendRequest":true]
+                        
+                        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
+                    }
+                }
     }
+    
     
     func fetchFriendRequests() {
         AuthViewModel.shared.fetchUser {
@@ -270,7 +318,7 @@ class AddFriendsViewModel: ObservableObject {
     
     
     func filterUsers(withText text: String) {
-                
+        
         withAnimation {
             
             self.contacts = self.allContacts.filter({

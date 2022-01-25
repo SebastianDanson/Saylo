@@ -61,27 +61,6 @@ struct ConversationGridView: View {
                         FindFriendsView()
                             .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
                             .padding(.top, TOP_PADDING + 56)
-                        
-                        
-                        //                            .onAppear {
-                        //                                setSelection()
-                        //                            }
-                        
-                        //                        PageView(selection: $selection, indexBackgroundDisplayMode: .always) {
-                        
-                        //                            FindFriendsView().tag(0)
-                        
-                        
-                        //                            TipView(header: "Press and Hold on a Chat",
-                        //                                    subText: "To start recording a video for that chat",
-                        //                                    imageName: "video.fill").tag(0)
-                        //
-                        //                            TipView(header: "Press and Hold on a Message",
-                        //                                    subText: "To save that message",
-                        //                                    imageName: "bookmark.fill").tag(2)
-                        
-                        //                        }
-                        
                     }
                     
                     
@@ -90,7 +69,6 @@ struct ConversationGridView: View {
                         if !viewModel.hideFeed {
                             
                             ScrollView(showsIndicators: false) {
-                                
                                 
                                 VStack {
                                     
