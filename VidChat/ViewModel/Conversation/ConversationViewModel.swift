@@ -77,6 +77,8 @@ class ConversationViewModel: ObservableObject {
     @Published var scrollToBottom = false
     @Published var isPlaying = false
     
+    @Published var hideChat = false
+
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?

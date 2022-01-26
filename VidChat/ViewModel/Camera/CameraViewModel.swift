@@ -130,6 +130,7 @@ class CameraViewModel: ObservableObject {
     
     func handleTap() {
         
+
         if ConversationViewModel.shared.showCamera {
             if CameraViewModel.shared.isShowingPhotoCamera {
                 takePhoto()
@@ -137,10 +138,14 @@ class CameraViewModel: ObservableObject {
                 isRecording ? stopRecording() : startRecording()
             }
         } else {
-            cameraView.startRunning()
             cameraView.addAudio()
+            cameraView.startRunning()
             startRecording(addDelay: true)
         }
+    }
+    
+    func startRunning() {
+        cameraView.startRunning()
     }
     
     func takePhoto() {

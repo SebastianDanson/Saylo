@@ -60,8 +60,10 @@ struct ProfileHeaderView: View {
             
             Text(name)
                 .font(.system(size: 24, weight: .bold))
+                .padding(.bottom, userName.isEmpty ? 20 : 0)
             
             if !userName.isEmpty {
+                
             Text(userName)
                 .font(.system(size: 15, weight: .medium))
                 .foregroundColor(.mainGray)

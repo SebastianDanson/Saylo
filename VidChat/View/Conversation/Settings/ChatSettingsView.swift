@@ -16,20 +16,21 @@ struct ChatSettingsView: View {
     @State var isEditingName = false
     @State var showGroupMembers = false
     @State var showMuteOptions = false
-    
+    @State var showRemoveGroupAlert = false
+
     @Binding var showSettings: Bool
     @State var name: String
     @State var isMuted: Bool
-    
+
     let viewModel = ChatSettingsViewModel.shared
-    //
     let chat: Chat
     let username: String?
+
     
     init(chat: Chat, showSettings: Binding<Bool>) {
         self._showSettings = showSettings
         self.chat = chat
-        self._name = State(initialValue: chat.name)
+        self._name = State(initialValue: chat.fullName)
         self._isMuted = State(initialValue: chat.mutedUsers.contains(AuthViewModel.shared.getUserId()))
         
         
@@ -45,6 +46,31 @@ struct ChatSettingsView: View {
     }
     
     var body: some View {
+        
+        let removeGroupAlert = Alert(
+            title: Text("Are you sure you want to \(chat.isDm ? "remove" : "leave") \(chat.name)?"),
+            message: nil,
+            primaryButton: .default(
+                Text("Cancel"),
+                action: {
+                  
+                }
+            ),
+            secondaryButton: .destructive(
+                Text("Leave"),
+                action: {
+                    
+                    if chat.isDm {
+                        viewModel.removeFriend(inChat: chat)
+                    } else {
+                        viewModel.leaveGroup(chat: chat)
+                    }
+        
+                    showSettings = false
+                    ConversationViewModel.shared.hideChat = true
+                }
+            )
+        )
         
         ZStack {
             
@@ -135,9 +161,21 @@ struct ChatSettingsView: View {
                                 showGroupMembers = true
                             } label: {
                                 SettingsCell(image: Image(systemName: "person.2.fill"), imageColor: .mainBlue, title: "See group Members",
-                                             leadingPadding: 2, imageDimension: 22)
+                                             leadingPadding: 0, imageDimension: 21)
                             }
                             
+                        }
+                        
+                        DividerView()
+                        
+                        Button {
+                            withAnimation {
+                               showRemoveGroupAlert = true
+                            }
+                        } label: {
+                            SettingsCell(image: Image(systemName: chat.isDm ? "person.fill.badge.minus" : "rectangle.portrait.and.arrow.right.fill"), imageColor: Color(.systemRed),
+                                         title: chat.isDm ? "Remove friend" : "Leave group",
+                                         leadingPadding: chat.isDm ? -2 : 3, imageDimension: 19)
                         }
                     }
                     .frame(width: SCREEN_WIDTH - 40)
@@ -145,6 +183,7 @@ struct ChatSettingsView: View {
                     .ignoresSafeArea()
                     .cornerRadius(10)
                     .shadow(color: Color(.init(white: 0, alpha: 0.04)), radius: 16, x: 0, y: 4)
+                
                 }
             }
             .padding(.top)
@@ -165,9 +204,9 @@ struct ChatSettingsView: View {
             }
             
         }
-        //        .actionSheet(isPresented: $showMuteOptions, content: {
-        //            getActionSheet()
-        //        })
+        .alert(isPresented: $showRemoveGroupAlert) {
+            removeGroupAlert
+        }
         .background(Color.backgroundGray)
         .ignoresSafeArea()
         

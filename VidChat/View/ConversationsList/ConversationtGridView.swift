@@ -49,9 +49,10 @@ struct ConversationGridView: View {
                 NavigationLink(destination: MakeCallView()
                                 .navigationBarHidden(true), isActive: $viewModel.isCalling) { EmptyView() }
                 
+                NavigationLink(destination: EmptyView(), label: {})
+
                 if !conversationViewModel.showCamera || viewModel.isSelectingChats {
                     NavView(searchText: $searchText)
-                    
                 }
                 
                 VStack {
@@ -199,7 +200,8 @@ struct ConversationGridView: View {
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
             
             
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
+
     }
     
     func getConversationGridPadding() -> CGFloat {

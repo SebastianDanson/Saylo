@@ -235,4 +235,114 @@ class ChatSettingsViewModel: ObservableObject {
         mutedChats[chat.id] = timeLength
         defaults?.set(mutedChats, forKey: "mutedChats")
     }
+    
+    func removeFriend(inChat chat: Chat) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else {return}
+        guard let friend = chat.chatMembers.first(where: {$0.id != currentUser.id}) else {return}
+
+        AuthViewModel.shared.currentUser?.chats.removeAll(where: {$0.id == chat.id })
+        ConversationGridViewModel.shared.chats.removeAll(where: {$0.id == chat.id})
+        
+        removeUserFromDm(userId: currentUser.id, chat: chat)
+        removeUserFromDm(userId: friend.id, chat: chat)
+        
+        //Delete conversation
+        
+        //***Currently not deleting for security reasons***
+        
+//        COLLECTION_CONVERSATIONS.document(chat.id).delete()
+//        COLLECTION_SAVED_POSTS.document(chat.id).delete()
+    }
+    
+    private func removeUserFromDm(userId: String, chat: Chat) {
+        
+        COLLECTION_USERS.document(userId).getDocument { snapshot, _ in
+            
+            if let data = snapshot?.data() {
+               
+                guard let friend = chat.chatMembers.first(where: {$0.id != userId}) else {return}
+                
+                var conversations = data["conversations"] as? [[String:Any]] ?? [[String:Any]]()
+                conversations.removeAll(where: {$0["id"] as? String == chat.id})
+
+                let userRef = COLLECTION_USERS.document(userId)
+                
+                Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                    transaction.updateData(["conversations": conversations,
+                                            "friends": FieldValue.arrayRemove([friend.id])], forDocument: userRef)
+                    return nil
+                }) { (_, error) in
+                    if let error = error {
+                        print("Error removing user from DM " + error.localizedDescription)
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    func leaveGroup(chat: Chat) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else {return}
+
+        AuthViewModel.shared.currentUser?.chats.removeAll(where: {$0.id == chat.id })
+        ConversationGridViewModel.shared.chats.removeAll(where: {$0.id == chat.id})
+
+
+        COLLECTION_USERS.document(currentUser.id).getDocument { snapshot, _ in
+            
+            if let data = snapshot?.data() {
+                               
+                var conversations = data["conversations"] as? [[String:Any]] ?? [[String:Any]]()
+                conversations.removeAll(where: {$0["id"] as? String == chat.id})
+
+                let userRef = COLLECTION_USERS.document(currentUser.id)
+                
+                
+                Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                    transaction.updateData(["conversations": conversations], forDocument: userRef)
+                    return nil
+                }) { (_, error) in
+                    
+                    if let error = error {
+                        print("Error removing user from chat " + error.localizedDescription)
+                        return
+                    }
+                    
+                    Messaging.messaging().unsubscribe(fromTopic: chat.id)
+                    
+                    COLLECTION_CONVERSATIONS.document(chat.id).getDocument { snapshot, _ in
+                        
+                        if let data = snapshot?.data() {
+                            
+                            var users = data["users"] as? [[String:Any]] ?? [[String:Any]]()
+                            
+                            users.removeAll(where: {$0["userId"] as? String == currentUser.id })
+                            
+                            let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
+
+                            Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                                transaction.updateData(["users": users], forDocument: chatRef)
+                                return nil
+                            }) { (_, error) in
+                                
+                                if let error = error {
+                                    print("Error removing user from a chats users field " + error.localizedDescription)
+                                    return
+                                }
+                                
+                                ConversationViewModel.shared.addMessage(text: "Left the group", type: .Text, chatId: chat.id)
+
+                            }
+                            
+                        }
+                    }
+
+                }
+                
+            }
+        }
+
+    }
 }

@@ -12,8 +12,8 @@ import Kingfisher
 
 struct ConversationView: View {
     
-    @Environment(\.presentationMode) var mode
-    
+    @Environment(\.presentationMode) var mode: Binding<PresentationMode>
+
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     
@@ -197,6 +197,9 @@ struct ConversationView: View {
         }
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
+        .onChange(of: viewModel.hideChat, perform: { newValue in
+                mode.wrappedValue.dismiss()
+        })
         .onDisappear {
             viewModel.players.forEach({$0.player.pause()})
             viewModel.currentPlayer?.pause()
@@ -245,6 +248,7 @@ struct OptionsView: View {
                                     Button(action: {
                                         withAnimation(.linear(duration: 0.15)) {
                                             cameraViewModel.isShowingPhotoCamera = true
+                                            cameraViewModel.startRunning()
                                             viewModel.showCamera = true
                                             viewModel.pauseVideos()
                                         }
@@ -302,7 +306,6 @@ struct OptionsView: View {
                                         
                                         if !viewModel.isRecordingAudio || (viewModel.chatId.isEmpty && viewModel.showAudio && !audioRecorder.recording) {
                                             viewModel.pauseVideos()
-                                            
                                             viewModel.audioProgress = 1.0
                                             viewModel.showAudio = true
                                             audioRecorder.startRecording()
@@ -517,10 +520,10 @@ struct ChatOptions: View {
                             
                         }.padding(.trailing, 12)
                     }
-                    
                 }
                 
                 if let chat = viewModel.chat {
+                    
                     Button {
                         withAnimation(.linear(duration: 0.1)) {
                             showSettings.toggle()
@@ -564,35 +567,6 @@ struct ChatOptions: View {
                 }
             }
             
-            
-            //            HStack {
-            //                Spacer()
-            //
-            //                VStack(spacing: 12) {
-            //
-            //
-            //                    if viewModel.messages.count > 0 {
-            //
-            //                        Button {
-            //                            withAnimation(.linear(duration: 0.2)) {
-            //                                viewModel.showConversationPlayer.toggle()
-            //                            }
-            //                        } label: {
-            //                            ZStack {
-            //                                Circle()
-            //                                    .frame(width: 36, height: 36)
-            //                                    .foregroundColor(.point3AlphaSystemBlack)
-            //
-            //                                Image(systemName: "film")
-            //                                    .resizable()
-            //                                    .scaledToFit()
-            //                                    .foregroundColor(.iconSystemWhite)
-            //                                    .frame(width: 20, height: 20)
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }.padding(.vertical, -6)
         }
         .padding(.horizontal, 16)
         .padding(.top, topPadding + 4)
@@ -642,6 +616,7 @@ struct AudioOptions: View {
             if viewModel.isRecordingAudio {
                 
                 Button {
+                    
                     audioRecorder.stopPlayback()
                     
                     withAnimation {
@@ -654,12 +629,14 @@ struct AudioOptions: View {
                     ConversationGridViewModel.shared.stopSelectingChats()
                     
                 } label: {
+                    
                     Image(systemName: "x.circle.fill")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 44, height: 44)
                         .foregroundColor(Color(.systemGray))
                         .padding(32)
+                    
                 }.transition(.move(edge: .leading))
             }
             
@@ -746,6 +723,7 @@ struct KeyboardView: View {
             
             Button {
                 if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    
                     withAnimation(.linear(duration: 0.15)) {
                         
                         viewModel.sendMessage(text: text, type: .Text)

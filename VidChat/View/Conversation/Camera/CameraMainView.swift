@@ -149,6 +149,9 @@ struct CameraMainView: View {
         .background(Color(white: 0, opacity: 1))
         .navigationBarHidden(true)
         .offset(dragOffset)
+        .onAppear {
+            cameraView.startRunning()
+        }
         
     }
     
