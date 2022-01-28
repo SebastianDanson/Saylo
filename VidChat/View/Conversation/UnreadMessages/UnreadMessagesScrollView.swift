@@ -16,7 +16,9 @@ struct UnreadMessagesScrollView: View {
         ZStack(alignment: .bottom) {
             
             ScrollView(.horizontal, showsIndicators: false) {
+                
                 HStack {
+                    
                     ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
                         
                         Button {
@@ -36,10 +38,13 @@ struct UnreadMessagesScrollView: View {
                                                 .transition(.opacity)
                                             
                                         }
-                                            ChatImageCircle(chat: chat, diameter: 56)
-                                                .environment(\.colorScheme, .dark)
-                                                .padding(.horizontal, 4)
-                                       
+                                        
+                                        ChatImageCircle(chat: chat, diameter: 56)
+                                            .overlay(ReplyView(isForTakingVideo: message.isForTakingVideo))
+                                            .environment(\.colorScheme, .dark)
+                                            .padding(.horizontal, 4)
+                                        
+                                        
                                     }
                                 }
                             }.frame(width: 68, height: 68)
@@ -53,26 +58,33 @@ struct UnreadMessagesScrollView: View {
     }
 }
 
-//struct UnreadMessageView: View {
-//
-//    let chat: Chat
-//
-//    var body: some View {
-//
-//        ZStack(alignment: .topTrailing) {
-//
-//            VStack(alignment: .center, spacing: 4) {
-//
-//                ChatImageCircle(chat: chat, diameter: 60)
-//                    .environment(\.colorScheme, .dark)
-//
-//                Text(chat.name)
-//                    .font(.system(size: 12, weight: .regular))
-//                    .foregroundColor(Color(.systemGray4))
-//                    .frame(maxWidth: 64)
-//            }
-//
-//        }
-//    }
-//}
+struct ReplyView: View {
+    
+    
+    let isForTakingVideo: Bool
+    
+    var body: some View {
+        
+        ZStack {
+            
+            if isForTakingVideo == true {
+                
+                ZStack {
+                    
+                    
+                    Image(systemName: "arrowshape.turn.up.left.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.white)
+                    
+                }
+                .frame(width: 56, height: 56)
+                .background(Color.init(white: 0, opacity: 0.5))
+                .clipShape(Circle())
+            }
+        }
+    }
+}
+
 

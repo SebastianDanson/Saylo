@@ -182,6 +182,13 @@ class ConversationGridViewModel: ObservableObject {
                     }
 
                     self.setChatCache()
+                    
+                    self.chats.forEach { chat in
+                        
+                        if !chat.isDm {
+                            Messaging.messaging().subscribe(toTopic: chat.id)
+                        }
+                    }
                 }
             }
         }
@@ -276,12 +283,13 @@ class ConversationGridViewModel: ObservableObject {
 
 //        DispatchQueue.main.async {
         
-        return chats
 //        }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            defaults?.set([[String:Any]](), forKey: "messages")
-        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            defaults?.set([[String:Any]](), forKey: "messages")
+//        }
+//        
+        return chats
     }
     
     func setChatCache() {

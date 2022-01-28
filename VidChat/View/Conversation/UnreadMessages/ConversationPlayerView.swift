@@ -72,6 +72,8 @@ struct ConversationPlayerView: View {
                                 .cornerRadius(20)
                                 .clipped()
                         }
+                    } else if viewModel.messages[viewModel.index].isForTakingVideo {
+                        CameraViewModel.shared.cameraView
                     }
                     
                 }

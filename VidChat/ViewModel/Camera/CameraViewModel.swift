@@ -175,6 +175,14 @@ class CameraViewModel: ObservableObject {
         
     }
     
+    func getCameraWidth() -> CGFloat {
+        ConversationGridViewModel.shared.hasUnreadMessages ? CAMERA_SMALL_WIDTH : CAMERA_WIDTH
+    }
+    
+    func getCameraHeight() -> CGFloat {
+        ConversationGridViewModel.shared.hasUnreadMessages ? CAMERA_SMALL_HEIGHT : CAMERA_HEIGHT 
+    }
+    
     //    func requestAuthorization(completion: @escaping ()->Void) {
     //            if PHPhotoLibrary.authorizationStatus() == .notDetermined {
     //                PHPhotoLibrary.requestAuthorization { (status) in
@@ -202,4 +210,6 @@ class CameraViewModel: ObservableObject {
             print(saved, "SAVED", error, "ERROR")
         }
     }
+    
+    
 }

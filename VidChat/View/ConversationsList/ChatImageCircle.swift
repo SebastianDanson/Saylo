@@ -30,7 +30,12 @@ struct ChatImage: View {
             chatMembers.removeAll(where: {$0.id == currentUserId})
             
             self.profileImage1 = chatMembers[0].profileImage
-            self.profileImage2 = chatMembers[1].profileImage
+            
+            if chatMembers.count > 1{
+                self.profileImage2 = chatMembers[1].profileImage
+            } else {
+                self.profileImage2 = nil
+            }
         }
         
         self.width = width
@@ -61,7 +66,6 @@ struct ChatImage: View {
                 .padding(.trailing, width/3.2)
                 .zIndex(2)
                       
-                
                 KFImage(URL(string: profileImage2))
                     .resizable()
                     .scaledToFill()
@@ -115,7 +119,12 @@ struct ChatImageCircle: View {
             chatMembers.removeAll(where: {$0.id == currentUserId})
             
             self.profileImage1 = chatMembers[0].profileImage
-            self.profileImage2 = chatMembers[1].profileImage
+            
+            if chatMembers.count > 1 {
+                self.profileImage2 = chatMembers[1].profileImage
+            } else {
+                self.profileImage2 = nil
+            }
         }
         
         self.diameter = diameter

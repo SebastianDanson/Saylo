@@ -11,6 +11,7 @@ import UIKit
 import AVFoundation
 
 enum MessageType {
+    
     case Video, Audio, Text, Photo
     
     static func getType(forString type: String) -> MessageType {
@@ -71,11 +72,14 @@ class Message: ObservableObject {
     var isFromCurrentUser: Bool
     var savedByCurrentUser: Bool
     
+    //Bool for conversation player view that indicates to show the cameraview instead of a message
+    var isForTakingVideo: Bool
+    
     
     //date
     let timestamp: Timestamp
     
-    init(dictionary: [String:Any], id: String, exportVideo: Bool = true, isSaved: Bool = false, savedByUid: String = "") {
+    init(dictionary: [String:Any], id: String, exportVideo: Bool = true, isSaved: Bool = false, savedByUid: String = "", isForTakingVideo: Bool = false) {
         
         //ids
         self.id = id
@@ -107,6 +111,7 @@ class Message: ObservableObject {
         self.isSaved = isSaved
         self.savedByCurrentUser = savedByUid == Auth.auth().currentUser?.uid
         
+        self.isForTakingVideo = isForTakingVideo
         
         //checkCache
         if type == .Video || type == .Audio, exportVideo, let urlString = url, let url = URL(string: urlString) {

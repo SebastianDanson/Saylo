@@ -173,7 +173,8 @@ struct ChatSettingsView: View {
                                showRemoveGroupAlert = true
                             }
                         } label: {
-                            SettingsCell(image: Image(systemName: chat.isDm ? "person.fill.badge.minus" : "rectangle.portrait.and.arrow.right.fill"), imageColor: Color(.systemRed),
+                            SettingsCell(image: chat.isDm ?  Image(systemName: "person.fill.badge.minus") : Image("leave"),
+                                         imageColor: Color(.systemRed),
                                          title: chat.isDm ? "Remove friend" : "Leave group",
                                          leadingPadding: chat.isDm ? -2 : 3, imageDimension: 19)
                         }

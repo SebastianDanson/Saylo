@@ -28,7 +28,7 @@ struct AddUserToGroupView: View {
                         
                         Button {
                             
-                            
+                            mode.wrappedValue.dismiss()
                             
                         } label: {
                             

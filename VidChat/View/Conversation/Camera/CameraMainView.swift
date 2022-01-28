@@ -38,7 +38,8 @@ struct CameraMainView: View {
             
             if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
                 
-                VStack{
+                VStack {
+                    
                     Image(uiImage: photo)
                         .resizable()
                         .scaledToFill()
@@ -46,6 +47,7 @@ struct CameraMainView: View {
                         .cornerRadius(20)
                         .padding(.top, TOP_PADDING)
                     Spacer()
+                    
                 }.zIndex(3)
             }
             
@@ -78,6 +80,7 @@ struct CameraMainView: View {
                     withAnimation(.linear(duration: 0.2)) {
                         
                         if dragOffset.height > SCREEN_HEIGHT / 4 {
+                            
                             ConversationViewModel.shared.showCamera = false
                             viewModel.isShowingPhotoCamera = false
                             viewModel.isRecording = false
@@ -127,16 +130,7 @@ struct CameraMainView: View {
                             MediaOptions()
                                 .padding(.top, TOP_PADDING)
                             
-                            //                            VStack {
-                            //
-                            //                                Spacer()
-                            //
-                            //                                if conversationViewModel.chat == nil {
-                            //                                    SuggestedChatsView(chats: ConversationGridViewModel.shared.chats)
-                            //                                        .padding(.bottom, BOTTOM_PADDING + 60)
-                            //                                }
-                            //
-                            //                            }
+                            
                         }
                         
                     }
@@ -220,6 +214,7 @@ struct MediaOptions: View {
     var body: some View {
         
         VStack {
+            
             if viewModel.videoUrl != nil || viewModel.photo != nil {
                 
                 HStack {
@@ -471,14 +466,16 @@ struct CameraOptions: View {
                     
                     Spacer()
                     
-                    //Switch camera button
-                    Button(action: {
-                        cameraView.switchCamera()
-                        isFrontFacing.toggle()
-                    }, label: {
-                        CameraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
-                    })
-                }
+                        
+                        //Switch camera button
+                        Button(action: {
+                            cameraView.switchCamera()
+                            isFrontFacing.toggle()
+                        }, label: {
+                            CameraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
+                        })
+                        .padding(.bottom, ConversationGridViewModel.shared.hasUnreadMessages ? 60 : 0)
+                    }
             }
         }
         .padding(.top, TOP_PADDING)

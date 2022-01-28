@@ -227,8 +227,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupPreview() {
         
+        let width = CameraViewModel.shared.getCameraWidth()
+        
+        print(width, "WIDTH")
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: (SCREEN_WIDTH - CAMERA_WIDTH)/2, y: TOP_PADDING, width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
+        previewLayer.frame = CGRect(x: (SCREEN_WIDTH - width)/2, y: TOP_PADDING, width: width, height: width * 16/9)
         
         previewLayer.cornerRadius = 20
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
