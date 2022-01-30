@@ -45,6 +45,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         CameraViewModel.shared.cameraView.setupSession()
+        
+        if ConversationPlayerViewModel.shared.messages.isEmpty {
+            ConversationPlayerViewModel.shared.setMessages()
+        }
+        
         ConversationGridViewModel.shared.showCachedChats()
         
         
@@ -66,8 +71,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ConversationViewModel.shared.removeChat()
         ConversationGridViewModel.shared.showConversation = false
         
-        //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//        defaults?.set([[String:Any]](), forKey: "messages")
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        defaults?.set([[String:Any]](), forKey: "messages")
         
     }
     

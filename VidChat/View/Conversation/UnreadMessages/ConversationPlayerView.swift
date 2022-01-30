@@ -38,6 +38,7 @@ struct ConversationPlayerView: View {
         
         ZStack(alignment: .bottom) {
             
+            
             VStack {
                 
                 Spacer()
@@ -248,6 +249,9 @@ struct ConversationPlayerView: View {
             if !hasSeenPlayerViewTutorial {
                 self.stopShowingTutorialView()
             }
+        }
+        .onDisappear {
+            viewModel.messages.removeAll()
         }
         
     }

@@ -101,6 +101,22 @@ class Chat: ObservableObject {
         
         self.hasUnreadMessage = getHasUnreadMessage()
         self.lastReadMessageIndex = getLastReadMessageIndex()
+        
+        //Add unread messages to player view
+        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id {
+            
+            for i in self.lastReadMessageIndex..<self.messages.count {
+                
+                let messages = ConversationPlayerViewModel.shared.messages
+                
+                if !messages.contains(where: {$0.id == self.messages[i].id}) {
+                    ConversationPlayerViewModel.shared.addMessage(self.messages[i])
+                }
+            }
+            
+            ConversationPlayerViewModel.shared.addReplyMessages()
+            
+        }
     }
     
     func getDictionary() -> [String:Any] {
@@ -142,14 +158,11 @@ class Chat: ObservableObject {
         guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}) else {return messages.count - 1}
 
         let lastVisited = chat.lastVisited
-        
-        print("SURE")
-        
+                
         if messages.count > 1 {
             for i in 0..<messages.count - 1 {
                 print(messages[i].timestamp.dateValue(), lastVisited.dateValue())
                 if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
-                    print(i, "IIII")
                     return i + 1
                 }
             }

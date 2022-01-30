@@ -275,20 +275,19 @@ class ConversationGridViewModel: ObservableObject {
                 chats[i].messages.append(message)
                 chats[i].hasUnreadMessage = true
             }
+            
+//            ConversationPlayerViewModel.shared.addMessage(message)
         }
                 
         if newMessagesArray.count > 0 {
             self.hasUnreadMessages = true
         }
 
-//        DispatchQueue.main.async {
-        
-//        }
 
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//            defaults?.set([[String:Any]](), forKey: "messages")
-//        }
-//        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            defaults?.set([[String:Any]](), forKey: "messages")
+        }
+       
         return chats
     }
     

@@ -23,6 +23,10 @@ class ConversationPlayerViewModel: ObservableObject {
     static let shared = ConversationPlayerViewModel()
     
     private init() {
+       setMessages()
+    }
+    
+    func setMessages() {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         
@@ -32,12 +36,25 @@ class ConversationPlayerViewModel: ObservableObject {
             let id = messageData["id"] as? String ?? ""
             let message = Message(dictionary: messageData, id: id)
             
-            if let index = self.messages.lastIndex(where: {$0.chatId == message.chatId }), index < self.messages.count - 1 {
-                self.messages.insert(message, at: index + 1)
-            } else {
-                self.messages.append(message)
-            }
+           addMessage(message)
         }
+        
+        addReplyMessages()
+    }
+   
+    func addMessage(_ message: Message) {
+        if let index = self.messages.lastIndex(where: {$0.chatId == message.chatId }), index < self.messages.count - 1 {
+            self.messages.insert(message, at: index + 1)
+        } else {
+            self.messages.append(message)
+        }
+    }
+    
+    func addReplyMessages() {
+        
+        self.messages.removeAll(where: { $0.isForTakingVideo })
+        
+        guard self.messages.count > 0 else {return}
         
         if messages.count > 1 {
             
@@ -56,8 +73,11 @@ class ConversationPlayerViewModel: ObservableObject {
             let endVideoMessage = Message(dictionary: ["chatId":last.chatId], id: UUID().uuidString, isForTakingVideo: true)
             self.messages.append(endVideoMessage)
         }
+        
+        if !ConversationGridViewModel.shared.hasUnreadMessages && !ConversationViewModel.shared.showCamera {
+            ConversationGridViewModel.shared.hasUnreadMessages = true
+        }
     }
-    
     
     func showNextMessage() {
         
@@ -69,14 +89,8 @@ class ConversationPlayerViewModel: ObservableObject {
             if messages[index].isForTakingVideo {
                 
                 let lastSeenChatId = messages[index - 1].chatId
+                updateLastVisitedForChat(withId: lastSeenChatId)
                 
-                let viewModel = ConversationGridViewModel.shared
-                
-                if let index = viewModel.chats.firstIndex(where: {$0.id == lastSeenChatId}) {
-                    viewModel.chats[index].hasUnreadMessage = false
-                    viewModel.chats[index].lastReadMessageIndex = viewModel.chats[index].messages.count - 1
-                    ConversationService.updateLastVisited(forChat: viewModel.chats[index])
-                }
             }
         }
     }
@@ -86,18 +100,33 @@ class ConversationPlayerViewModel: ObservableObject {
         index = max(0, index - 1)
     }
     
+    func updateLastVisitedForChat(withId id: String) {
+        let viewModel = ConversationGridViewModel.shared
+        
+        if let index = viewModel.chats.firstIndex(where: {$0.id == id}) {
+            viewModel.chats[index].hasUnreadMessage = false
+            viewModel.chats[index].lastReadMessageIndex = viewModel.chats[index].messages.count - 1
+            ConversationService.updateLastVisited(forChat: viewModel.chats[index])
+        }
+    }
     
     func removePlayerView() {
-        index = 0
         
+        updateLastVisitedForChat(withId: messages[index].chatId)
+        index = 0
+  
         withAnimation {
             ConversationGridViewModel.shared.hasUnreadMessages = false
             CameraViewModel.shared.cameraView.setPreviewLayerFullFrame()
         }
+        
     }
     
     func isPlayable() -> Bool {
         return messages[index].type == .Video || messages[index].type == .Audio
     }
+    
+    
+    
 }
 

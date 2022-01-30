@@ -175,6 +175,7 @@ struct ConversationGridView: View {
                 if viewModel.hasUnreadMessages {
                     ConversationPlayerView()
                         .zIndex(3)
+                        
                 }
                 
                 

@@ -63,7 +63,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     var audioSessionAtSourceTime: CMTime!
     
     var isFrontFacing = true
-    
+    var canRun = true
     var outputURL: URL!
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,6 +76,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             setPreviewLayerFullFrame()
             view.backgroundColor = .black
         }
+            
+        if !canRun {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if !self.captureSession.isRunning {
+                    self.captureSession.startRunning()
+                }
+            }
+        }
+     
     }
     
     
@@ -86,6 +95,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         audioCaptureSession.stopRunning()
     }
     
+    
     func getTempUrl() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
         if directory != "" {
@@ -94,6 +104,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         return nil
     }
+    
     
     func stopSession() {
         
@@ -108,6 +119,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func startRunning() {
+        
         if !captureSession.isRunning {
             captureSession.startRunning()
         }
@@ -265,10 +277,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func startSession() {
         
         self.captureSession.startRunning()
+        self.canRun = false
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.captureSession.stopRunning()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.canRun = true
+            }
         }
+        
         //        if !captureSession.isRunning {
         //            DispatchQueue.global(qos: .default).async { [weak self] in
         //                print("RUNNING STARTED")
@@ -281,7 +299,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     
     public func captureMovie(withFlash hasFlash: Bool) {
-        
         
         self.hasFlash = hasFlash
         
@@ -319,6 +336,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.audioCaptureSession.startRunning()
         }
         
+        print(captureSession.isRunning, "ISRUNNING")
+        
         sessionAtSourceTime = nil
         
         
@@ -329,7 +348,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         // Dispatch.main.async {
         
         //  }
-        
         
         // audioRecorder.startRecording()
         //        movieOutput.startRecording(to: outUrl, recordingDelegate: self)
