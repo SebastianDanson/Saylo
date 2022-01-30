@@ -38,7 +38,7 @@ struct VideoPlayerView: View {
         ZStack {
             
             PlayerView(player: $player, shouldLoop: true)
-                .frame(width: CAMERA_WIDTH, height: ConversationViewModel.shared.showCamera ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT)
+                .frame(width: CAMERA_WIDTH, height: ConversationViewModel.shared.showCamera || CameraViewModel.shared.showFullCameraView ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT)
                 .overlay(
                     HStack {
                         if showName {

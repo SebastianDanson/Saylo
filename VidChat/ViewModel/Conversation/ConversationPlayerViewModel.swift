@@ -19,7 +19,7 @@ class ConversationPlayerViewModel: ObservableObject {
     }
     @Published var messages = [Message]()
     @Published var hasChanged = false
-    
+
     static let shared = ConversationPlayerViewModel()
     
     private init() {
@@ -43,7 +43,7 @@ class ConversationPlayerViewModel: ObservableObject {
             
             for i in 1..<messages.count {
                 
-                if messages[i - 1].chatId != messages[i].chatId {
+                if messages[i - 1].chatId != messages[i].chatId && messages[i-1].isForTakingVideo == false {
                     
                     let videoMessage = Message(dictionary: ["chatId":messages[i-1].chatId], id: UUID().uuidString, isForTakingVideo: true)
                     self.messages.insert(videoMessage, at: i)
@@ -60,10 +60,24 @@ class ConversationPlayerViewModel: ObservableObject {
     
     
     func showNextMessage() {
+        
         if index == messages.count - 1 {
             self.removePlayerView()
         } else {
             index += 1
+            
+            if messages[index].isForTakingVideo {
+                
+                let lastSeenChatId = messages[index - 1].chatId
+                
+                let viewModel = ConversationGridViewModel.shared
+                
+                if let index = viewModel.chats.firstIndex(where: {$0.id == lastSeenChatId}) {
+                    viewModel.chats[index].hasUnreadMessage = false
+                    viewModel.chats[index].lastReadMessageIndex = viewModel.chats[index].messages.count - 1
+                    ConversationService.updateLastVisited(forChat: viewModel.chats[index])
+                }
+            }
         }
     }
     
@@ -73,11 +87,12 @@ class ConversationPlayerViewModel: ObservableObject {
     }
     
     
-    
     func removePlayerView() {
         index = 0
+        
         withAnimation {
             ConversationGridViewModel.shared.hasUnreadMessages = false
+            CameraViewModel.shared.cameraView.setPreviewLayerFullFrame()
         }
     }
     

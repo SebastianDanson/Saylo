@@ -46,9 +46,7 @@ struct ConversationFeedView: View {
                                 if let chat = viewModel.chat {
                                     
                                     if isFirstLoad, i == chat.lastReadMessageIndex {
-                                        
                                         reader.scrollTo(messages[i].id, anchor: .center)
-                                        
                                     }
                                     
                                     if i == messages.count - 1 {
@@ -65,7 +63,10 @@ struct ConversationFeedView: View {
                                                 }
                                             }
                                         }
-                                        isFirstLoad = false
+                                        
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            isFirstLoad = false
+                                        }
                                     }
                                 }
                                 
@@ -81,13 +82,13 @@ struct ConversationFeedView: View {
                             
                             let prevMiddleItemNo = middleItemNo
                             middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
-            
+                            
                             
                             if middleItemNo >= 0 {
                                 
                                 if prevMiddleItemNo != middleItemNo {
                                     
-                                   
+                                    
                                     self.temporarilyDisablePreference()
                                     
                                     print(messages[middleItemNo].id, "ID")
@@ -96,7 +97,7 @@ struct ConversationFeedView: View {
                                     }
                                     
                                     viewModel.updatePlayer(index: middleItemNo)
-
+                                    
                                 }
                             }
                             else if viewModel.currentPlayer != nil {

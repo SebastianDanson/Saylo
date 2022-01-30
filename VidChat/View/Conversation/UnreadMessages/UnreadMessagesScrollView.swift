@@ -47,6 +47,7 @@ struct UnreadMessagesScrollView: View {
                                         
                                     }
                                 }
+                                
                             }.frame(width: 68, height: 68)
                         }
                     }
@@ -75,12 +76,12 @@ struct ReplyView: View {
                     Image(systemName: "arrowshape.turn.up.left.fill")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 30, height: 30)
+                        .frame(width: 28, height: 28)
                         .foregroundColor(.white)
                     
                 }
                 .frame(width: 56, height: 56)
-                .background(Color.init(white: 0, opacity: 0.5))
+                .background(Color.init(white: 0, opacity: 0.4))
                 .clipShape(Circle())
             }
         }

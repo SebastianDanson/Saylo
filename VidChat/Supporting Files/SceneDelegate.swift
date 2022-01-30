@@ -63,8 +63,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         ConversationGridViewModel.shared.setChatCache()
+        ConversationViewModel.shared.removeChat()
+        ConversationGridViewModel.shared.showConversation = false
         
-//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
 //        defaults?.set([[String:Any]](), forKey: "messages")
         
     }

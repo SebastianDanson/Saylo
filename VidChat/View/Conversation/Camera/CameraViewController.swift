@@ -68,13 +68,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        view.backgroundColor = .black
-        
-//        if !captureSession.isRunning {
-//            captureSession.startRunning()
-//        }
-        
-        print("APPEARED")
+       
+        if ConversationGridViewModel.shared.hasUnreadMessages {
+            setPreviewLayerSmallFrame()
+            view.backgroundColor = .clear
+        } else {
+            setPreviewLayerFullFrame()
+            view.backgroundColor = .black
+        }
     }
     
     
@@ -110,6 +111,18 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         if !captureSession.isRunning {
             captureSession.startRunning()
         }
+    }
+    
+    func setPreviewLayerFullFrame() {
+        let width = CAMERA_WIDTH
+        previewLayer.frame = CGRect(x: (SCREEN_WIDTH - width)/2, y: TOP_PADDING, width: width, height: width * 16/9)
+        view.layoutIfNeeded()
+    }
+    
+    func setPreviewLayerSmallFrame() {
+        let width = CAMERA_SMALL_WIDTH
+        previewLayer.frame = CGRect(x: 0, y: 0, width: width, height: width * 16/9)
+        view.layoutIfNeeded()
     }
     
     func stopRunning() {
@@ -228,10 +241,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func setupPreview() {
         
         let width = CameraViewModel.shared.getCameraWidth()
-        
-        print(width, "WIDTH")
+        let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
+        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING
+
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: (SCREEN_WIDTH - width)/2, y: TOP_PADDING, width: width, height: width * 16/9)
+        previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 16/9)
         
         previewLayer.cornerRadius = 20
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill

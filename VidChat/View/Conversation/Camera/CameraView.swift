@@ -57,6 +57,14 @@ struct CameraView: UIViewControllerRepresentable {
 //        cameraViewController.setupAudio()
     }
     
+    public func setPreviewlayerFullFrame() {
+        cameraViewController.setPreviewLayerFullFrame()
+    }
+    
+    public func setPreviewlayerSmallFrame() {
+        cameraViewController.setPreviewLayerSmallFrame()
+    }
+    
     public func startRunning() {
         cameraViewController.startRunning()
     }

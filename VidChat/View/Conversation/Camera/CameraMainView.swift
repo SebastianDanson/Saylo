@@ -31,6 +31,7 @@ struct CameraMainView: View {
                     viewModel.videoPlayerView
                         .padding(.top, TOP_PADDING)
                     
+                    
                     Spacer()
                     
                 }.zIndex(3)
@@ -69,7 +70,7 @@ struct CameraMainView: View {
             
             //            }
         }
-        .gesture(
+        .gesture(ConversationGridViewModel.shared.hasUnreadMessages ? nil :
             
             DragGesture(minimumDistance: 0, coordinateSpace: .global)
                 .onChanged { gesture in
@@ -116,7 +117,9 @@ struct CameraMainView: View {
                     FlashView().zIndex(4)
                 }
                 
-                if AuthViewModel.shared.hasCompletedSignUp {
+                if AuthViewModel.shared.hasCompletedSignUp &&
+                    ((ConversationGridViewModel.shared.hasUnreadMessages && viewModel.showFullCameraView)
+                     || !ConversationGridViewModel.shared.hasUnreadMessages) {
                     CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 0).zIndex(6)
                 }
                 
@@ -140,13 +143,21 @@ struct CameraMainView: View {
         )
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         //        .ignoresSafeArea()
-        .background(Color(white: 0, opacity: 1))
+        .background(Color(white: 0, opacity: ConversationGridViewModel.shared.hasUnreadMessages && !viewModel.showFullCameraView ? 0 : 1))
         .navigationBarHidden(true)
         .offset(dragOffset)
         .onAppear {
             cameraView.startRunning()
         }
         
+    }
+    
+    func setPreviewLayerFullFrame() {
+        cameraView.setPreviewlayerFullFrame()
+    }
+    
+    func setPreviewLayerSmallFrame() {
+        cameraView.setPreviewlayerSmallFrame()
     }
     
     func switchCamera() {
@@ -263,7 +274,7 @@ struct MediaOptions: View {
                                     .font(Font.title.weight(.semibold))
                                     .scaledToFit()
                                     .foregroundColor(.white)
-                                    .frame(width: hasSaved ? 26 : 30, height: hasSaved ? 26 : 30)
+                                    .frame(width: hasSaved ? 28 : 32, height: hasSaved ? 28 : 32)
                             }
                             .frame(width: 48, height: 48)
                             .padding(.trailing, 2)
@@ -293,7 +304,8 @@ struct MediaOptions: View {
                                         .resizable()
                                         .scaledToFit()
                                         .foregroundColor(.white)
-                                        .frame(width: 32, height: 32)
+                                        .frame(width: 34, height: 34)
+                                    
                                     
                                 }
                                 .frame(width: 48, height: 48)
@@ -309,7 +321,7 @@ struct MediaOptions: View {
                 
                 HStack(alignment: .bottom, spacing: 3) {
                     
-                    if ConversationViewModel.shared.chat == nil {
+                    if ConversationViewModel.shared.chat == nil && ConversationViewModel.shared.selectedChat == nil {
                         SuggestedChatsView(chats: ConversationGridViewModel.shared.chats)
                     }
                     
@@ -324,7 +336,7 @@ struct MediaOptions: View {
     }
     
     func getBottomPadding() -> CGFloat {
-        if ConversationViewModel.shared.chat == nil {
+        if ConversationViewModel.shared.chat == nil && ConversationViewModel.shared.selectedChat == nil {
             return  SCREEN_RATIO > 2 ? BOTTOM_PADDING + 5 : BOTTOM_PADDING + 20
         } else {
             return  SCREEN_RATIO > 2 ? BOTTOM_PADDING + 28 : BOTTOM_PADDING + 20
@@ -345,30 +357,27 @@ struct SendButton: View {
                 let conversationVM = ConversationViewModel.shared
                 viewModel.videoPlayerView?.player.pause()
                 
-                if conversationVM.chatId.isEmpty {
+                if let chat = conversationVM.selectedChat {
+                    conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
+                    viewModel.reset(hideCamera: true)
+                    ConversationPlayerViewModel.shared.showNextMessage()
+                } else if conversationVM.chatId.isEmpty {
                     withAnimation {
                         ConversationGridViewModel.shared.isSelectingChats = true
                         ConversationGridViewModel.shared.cameraViewZIndex = 1
                     }
-                } else if let chat = conversationVM.selectedChat {
-                    
-                    conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
-                    viewModel.reset(hideCamera: true)
-                } else if let chat = conversationVM.chat {
+                }  else if let chat = conversationVM.chat {
                     conversationVM.isSending = true
                     conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
                     viewModel.reset(hideCamera: true)
                 }
                 
-                //                if let chat = conversationVM.selectedChat {
-                //                    ConversationService.updateLastVisited(forChat: chat)
-                //                }
             }
             
         }, label: {
             
             
-            if ConversationViewModel.shared.chat == nil {
+            if ConversationViewModel.shared.chat == nil && ConversationViewModel.shared.selectedChat == nil {
                 
                 VStack(spacing: 2) {
                     
@@ -474,7 +483,6 @@ struct CameraOptions: View {
                         }, label: {
                             CameraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
                         })
-                        .padding(.bottom, ConversationGridViewModel.shared.hasUnreadMessages ? 60 : 0)
                     }
             }
         }

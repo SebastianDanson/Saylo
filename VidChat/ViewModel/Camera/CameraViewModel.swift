@@ -24,7 +24,8 @@ class CameraViewModel: ObservableObject {
     @Published var isFirstLoad = true
     @Published var isFrontFacing = true
     @Published var isRotating = false
-    
+    @Published var showFullCameraView = false
+
     var timer: Timer?
     
     var cameraView = CameraMainView()
@@ -90,7 +91,13 @@ class CameraViewModel: ObservableObject {
     
     func closeCamera() {
         withAnimation(.linear(duration: 0.15)) {
+            
             ConversationViewModel.shared.showCamera = false
+            
+            if showFullCameraView {
+                cameraView.setPreviewLayerSmallFrame()
+                showFullCameraView = false
+            }
         }
     }
     
@@ -131,7 +138,7 @@ class CameraViewModel: ObservableObject {
     func handleTap() {
         
 
-        if ConversationViewModel.shared.showCamera {
+        if ConversationViewModel.shared.showCamera || showFullCameraView {
             if CameraViewModel.shared.isShowingPhotoCamera {
                 takePhoto()
             } else {

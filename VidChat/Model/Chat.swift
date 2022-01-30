@@ -143,9 +143,13 @@ class Chat: ObservableObject {
 
         let lastVisited = chat.lastVisited
         
+        print("SURE")
+        
         if messages.count > 1 {
             for i in 0..<messages.count - 1 {
+                print(messages[i].timestamp.dateValue(), lastVisited.dateValue())
                 if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
+                    print(i, "IIII")
                     return i + 1
                 }
             }

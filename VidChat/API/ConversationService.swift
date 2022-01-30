@@ -44,7 +44,7 @@ struct ConversationService {
         let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
         let reactionsDic = data["reactions"] as? [[String:Any]] ?? [[String:Any]]()
 
-        var shouldRemoveMessages = false
+        var removeMessages = false
         
         messagesDic.forEach { message in
             let id = message["id"] as? String ?? ""
@@ -58,7 +58,7 @@ struct ConversationService {
             if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 {
                 messages.append(message)
             } else if shouldRemoveMessages {
-                shouldRemoveMessages = true
+                removeMessages = true
             }
         }
         
@@ -74,7 +74,7 @@ struct ConversationService {
             messages.first(where: {$0.id == messageId})?.reactions.append(reaction)
         })
         
-        if shouldRemoveMessages {
+        if removeMessages {
             removeOldMessages(chatData: data, chatId: chatId)
         }
         
@@ -178,7 +178,7 @@ struct ConversationService {
         let chatRef = COLLECTION_CONVERSATIONS.document(chatId)
         
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
-            transaction.updateData(["messages" : updatedMessageDic, "reactions":reactionsDic, "savedMessaged":savedMessagesDic], forDocument: chatRef)
+            transaction.updateData(["messages" : updatedMessageDic, "reactions":reactionsDic, "savedMessages":savedMessagesDic], forDocument: chatRef)
             return nil
         }) { (_, error) in }
         

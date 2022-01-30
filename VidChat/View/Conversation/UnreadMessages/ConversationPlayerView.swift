@@ -12,9 +12,22 @@ import Kingfisher
 struct ConversationPlayerView: View {
     
     @ObservedObject var viewModel = ConversationPlayerViewModel.shared
+    @ObservedObject var cameraViewModel = CameraViewModel.shared
+    
+    @State var isFirstReplyOption = true
+    @State var showPlayerViewTutorial: Bool
+    
+    private var hasSeenPlayerViewTutorial: Bool
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
+    init() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        hasSeenPlayerViewTutorial = defaults?.bool(forKey: "hasSeenPlayerViewTutorial") ?? false
+        self._showPlayerViewTutorial = State(initialValue: !hasSeenPlayerViewTutorial)
+        defaults?.set(true, forKey: "hasSeenPlayerViewTutorial")
+    }
     
     var body: some View {
         
@@ -39,7 +52,7 @@ struct ConversationPlayerView: View {
                         } else {
                             UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
                         }
-                       
+                        
                         
                     } else if viewModel.messages[viewModel.index].type == .Text, let text = viewModel.messages[viewModel.index].text {
                         
@@ -73,64 +86,123 @@ struct ConversationPlayerView: View {
                                 .clipped()
                         }
                     } else if viewModel.messages[viewModel.index].isForTakingVideo {
+                        
                         CameraViewModel.shared.cameraView
+                            .frame(width: cameraViewModel.showFullCameraView ? SCREEN_WIDTH : CAMERA_SMALL_WIDTH,
+                                   height: cameraViewModel.showFullCameraView ? SCREEN_HEIGHT : CAMERA_SMALL_HEIGHT)
+                            .overlay(
+                                
+                                
+                                VStack(spacing: 16) {
+                                    
+                                    Spacer()
+                                    
+                                    if cameraViewModel.videoUrl == nil && cameraViewModel.photo == nil {
+                                        
+                                        if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == viewModel.messages[viewModel.index].chatId}) {
+                                            
+                                            if !cameraViewModel.showFullCameraView {
+                                            
+                                            Text("Reply to \(chat.name)?")
+                                                .font(.system(size: 24, weight: .semibold))
+                                                .foregroundColor(.white)
+                                            }
+                                            
+                                            
+                                            Button {
+                                                withAnimation(.linear(duration: 0.2)) {
+                                                    CameraViewModel.shared.cameraView.setPreviewLayerFullFrame()
+                                                    cameraViewModel.showFullCameraView = true
+                                                    cameraViewModel.handleTap()
+                                                    
+                                                    ConversationViewModel.shared.selectedChat = chat
+                                                }
+                                            } label: {
+                                                CameraCircle()
+                                                    .padding(.bottom, cameraViewModel.showFullCameraView ?
+                                                             (SCREEN_RATIO > 2 ? 120 : 32) : 0)
+                                            }
+                                        }
+                                    }
+                                    
+                                }.padding(.bottom, 20)
+                            )
                     }
                     
                 }
                 .zIndex(3)
                 .overlay(
-                    VStack {
-                
-                        Spacer()
+                    
+                    ZStack {
                         
-                        HStack {
-                            
-                            messageInfoView
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, viewModel.isPlayable() ? 36 : 20)
+                        VStack {
                             
                             Spacer()
                             
+                            HStack {
+                                
+                                if !viewModel.messages[viewModel.index].isForTakingVideo {
+                                    messageInfoView
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, viewModel.isPlayable() ? 36 : 20)
+                                }
+                                
+                                Spacer()
+                                
+                            }
                         }
+                        
+                        if showPlayerViewTutorial {
+                            MessageNavigationInstructionsView()
+                        }
+                        
                     }
-                        .frame(width: CAMERA_SMALL_WIDTH, height: CAMERA_SMALL_HEIGHT)
+                        .frame(width: cameraViewModel.showFullCameraView ? SCREEN_WIDTH : CAMERA_SMALL_WIDTH,
+                               height: cameraViewModel.showFullCameraView ? SCREEN_HEIGHT : CAMERA_SMALL_HEIGHT)
                         .cornerRadius(24)
                     
                 )
-            
-//                HStack(alignment: .center) {
-                    
-                ZStack {
-                    
-                    UnreadMessagesScrollView()
-                        .padding(.top, 4)
-                                        
-                    HStack {
-                        Spacer()
+                
+                //                HStack(alignment: .center) {
+                
+                if !cameraViewModel.showFullCameraView {
+                    ZStack {
                         
-                        Button(action: {
-                            withAnimation(.linear(duration: 0.2)) {
-                                viewModel.removePlayerView()
-                            }
-                        }, label: {
+                        UnreadMessagesScrollView()
+                            .padding(.top, 4)
+                        
+                        HStack {
                             
-                            ZStack {
-                                
-                                Circle()
-                                    .frame(width: 48, height: 48)
-                                    .foregroundColor(.lightGray)
-                                
-                                Image("x")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                
-                            }.padding(.trailing, 20)
+                            Spacer()
                             
-                        })
-                    }
-                }.padding(.bottom, BOTTOM_PADDING + 16)
-
+                            Button(action: {
+//                                withAnimation(.linear(duration: 0.1)) {
+                                    viewModel.removePlayerView()
+                                    cameraViewModel.showFullCameraView = false
+//                                }
+                            }, label: {
+                                
+                                ZStack {
+                                    
+                                    Circle()
+                                        .frame(width: 48, height: 48)
+                                        .foregroundColor(.lightGray)
+                                    
+                                    Image("x")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                    
+                                }.padding(.trailing, 20)
+                                
+                            })
+                        }
+                    }.padding(.bottom, BOTTOM_PADDING + 16)
+                }
+                
+                if cameraViewModel.showFullCameraView {
+                    Spacer()
+                }
             }
         }
         .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
@@ -147,7 +219,16 @@ struct ConversationPlayerView: View {
                 let xLoc = value.location.x
                 
                 if xLoc > SCREEN_WIDTH/2 {
+                    
                     viewModel.showNextMessage()
+                    
+                    if viewModel.messages[viewModel.index].isForTakingVideo && isFirstReplyOption && !hasSeenPlayerViewTutorial {
+                        self.showPlayerViewTutorial = true
+                        self.isFirstReplyOption = false
+                        self.stopShowingTutorialView()
+                    }
+                    
+                    
                 } else  {
                     viewModel.showPreviousMessage()
                 }
@@ -163,7 +244,79 @@ struct ConversationPlayerView: View {
             }
             
         }))
+        .onAppear {
+            if !hasSeenPlayerViewTutorial {
+                self.stopShowingTutorialView()
+            }
+        }
+        
+    }
+    
+    func stopShowingTutorialView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.showPlayerViewTutorial = false
+        }
+    }
+}
+
+
+struct MessageNavigationInstructionsView: View {
+    
+    var body: some View {
+        
+        HStack {
+            
+            Spacer()
+        
+            VStack {
+                
+                Image(systemName: "hand.tap.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(width: 48, height: 48)
+                    .scaleEffect(x: -1, y: 1, anchor: .center)
+                
+                Text("Previous")
+                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+            }.frame(width: 120)
+            
+            Spacer()
+            
+            Line()
+                .stroke(style: StrokeStyle(lineWidth: 2, dash: [5]))
+                .frame(width: 1)
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            VStack {
+                
+                Image(systemName: "hand.tap.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(width: 48, height: 48)
+                
+                Text("Next")
+                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+            }.frame(width: 120)
+            
+            Spacer()
+
+        }.background(Color(white: 0, opacity: 0.3))
+      
         
     }
 }
 
+struct Line: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: 0, y: rect.height))
+        return path
+    }
+}
