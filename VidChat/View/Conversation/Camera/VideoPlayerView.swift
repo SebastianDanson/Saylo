@@ -193,6 +193,7 @@ class PlayerUIView: UIView {
                                                object: nil)
         
         self.shouldLoop = shouldLoop
+        
         if !shouldLoop, let player = player as? AVQueuePlayer {
             items = player.items()
         }

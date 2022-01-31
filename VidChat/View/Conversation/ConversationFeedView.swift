@@ -43,9 +43,12 @@ struct ConversationFeedView: View {
                                         value: [i: geo.frame(in: .named("scrollView")).midY]) } : nil)
                             .onAppear {
                                 
+
                                 if let chat = viewModel.chat {
                                     
                                     if isFirstLoad, i == chat.lastReadMessageIndex {
+                                        reader.scrollTo(messages[i].id, anchor: .center)
+                                    } else if isFirstLoad, chat.lastReadMessageIndex == -1, i == messages.count - 1 {
                                         reader.scrollTo(messages[i].id, anchor: .center)
                                     }
                                     
@@ -75,9 +78,9 @@ struct ConversationFeedView: View {
                 }.flippedUpsideDown()
                 
                     .onPreferenceChange(ViewOffsetsKey.self, perform: { prefs in
-                        
+                       
                         guard updatePreference else { return }
-                        
+
                         DispatchQueue.main.async {
                             
                             let prevMiddleItemNo = middleItemNo
@@ -91,7 +94,6 @@ struct ConversationFeedView: View {
                                     
                                     self.temporarilyDisablePreference()
                                     
-                                    print(messages[middleItemNo].id, "ID")
                                     withAnimation {
                                         reader.scrollTo(messages[middleItemNo].id, anchor: .center)
                                     }
@@ -145,6 +147,7 @@ struct ConversationFeedView: View {
         .flippedUpsideDown()
         .coordinateSpace(name: "scrollView")
         .onAppear {
+            
             self.middleItemNo = viewModel.chat?.lastReadMessageIndex ?? 0
             
             let messages = messages
@@ -153,10 +156,10 @@ struct ConversationFeedView: View {
                 if messages[middleItemNo].type == .Video || messages[middleItemNo].type == .Audio {
                     viewModel.isPlaying = true
                 }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.updatePreference = true
-                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.updatePreference = true
             }
         }
     }

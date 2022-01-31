@@ -12,20 +12,21 @@ import Kingfisher
 
 struct VideoCell: View {
     
+    @StateObject var viewModel = ConversationViewModel.shared
+    
     let message: Message
     @State var showReactions = false
     @State var isSaved: Bool
     @State var showAlert = false
     @State var reactions: [Reaction]
-    
-//    let videoPlayerView: VideoPlayerView
+    //    let videoPlayerView: VideoPlayerView
     
     init(message: Message) {
         self.message = message
         self.reactions = message.reactions
         self._isSaved = State(initialValue: message.isSaved)
-//        self.videoPlayerView =
-//        self.videoPlayerView.player.pause()
+        //        self.videoPlayerView =
+        //        self.videoPlayerView.player.pause()
     }
     
     var body: some View {
@@ -74,6 +75,7 @@ struct VideoCell: View {
                     
                     VStack(spacing: 12) {
                         
+                        
                         if showReactions {
                             ReactionView(messageId: message.id, reactions: $reactions, showReactions: $showReactions)
                                 .transition(.scale)
@@ -94,11 +96,14 @@ struct VideoCell: View {
                                         .foregroundColor(.point3AlphaSystemBlack)
                                 }
                                 
-                                Image(systemName: "face.smiling")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 32, height: 32)
-                                    .foregroundColor(.white)
+                                if viewModel.sendingMessageId != message.id {
+                                    
+                                    Image(systemName: "face.smiling")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 32, height: 32)
+                                        .foregroundColor(.white)
+                                }
                             }
                         }
                         
@@ -131,7 +136,39 @@ struct VideoCell: View {
                         .padding(.bottom, 36)
                 }
             }
-        }.padding(.vertical, 12)
+        }
+        .overlay(
+            
+            ZStack {
+                if viewModel.sendingMessageId == message.id {
+                    
+                    if viewModel.isSending {
+                        ActivityIndicator(shouldAnimate: .constant(true), diameter: 25)
+                        
+                    } else if viewModel.hasSent {
+                        
+                        ZStack {
+                            
+                            Circle()
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(.mainBlue)
+                                .opacity(0.9)
+                            
+                            Image(systemName: "checkmark")
+                                .resizable()
+                                .font(Font.title.weight(.semibold))
+                                .scaledToFit()
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(.white)
+                            
+                        }.transition(.opacity)
+                        
+                    }
+                }
+            } .padding(.trailing, 10)
+                .padding(.bottom, 10),
+            alignment: .bottomTrailing)
+        .padding(.vertical, 12)
     }
 }
 
@@ -353,6 +390,6 @@ struct MessageInfoView: View {
                 .font(.system(size: 12, weight: .regular))
                 .foregroundColor(.white)
         }
-  
+        
     }
 }

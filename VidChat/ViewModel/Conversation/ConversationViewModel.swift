@@ -67,9 +67,10 @@ class ConversationViewModel: ObservableObject {
     //Calling
     @Published var showCall = false
     
+    //Indicate a message is being sent
     @Published var isSending = false
-    
     @Published var hasSent = false
+    @Published var sendingMessageId = ""
     
     @Published var index = 0
     @Published var currentPlayer: AVPlayer?
@@ -147,6 +148,10 @@ class ConversationViewModel: ObservableObject {
         //       guard let user = AuthViewModel.shared.currentUser else {return}
         
         let id = NSUUID().uuidString
+        
+        if !self.chatId.isEmpty {
+            sendingMessageId = id
+        }
         
         let chatId = chatId ?? self.chatId
         
@@ -284,9 +289,9 @@ class ConversationViewModel: ObservableObject {
                         } else {
                             self.isSending = false
                             self.hasSent = true
-                            
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 self.hasSent = false
+                                self.sendingMessageId = ""
                             }
                         }
                         self.sendMessageNotification(chat: chat, messageData: data)
@@ -476,7 +481,6 @@ class ConversationViewModel: ObservableObject {
                 chat.id == chatId
             })})
             
-            print(notificationArray.count, "COUNT")
             defaults?.set(notificationArray, forKey: "notifications")
             
         }

@@ -532,37 +532,6 @@ struct ChatOptions: View {
                         
                         ChatImageCircle(chat: chat, diameter: width)
                             .padding(.vertical, 10)
-                            .overlay(
-                                
-                                ZStack {
-                                    
-                                    if viewModel.hasSent {
-                                        
-                                        ZStack {
-                                            Circle()
-                                                .frame(width: width, height: width)
-                                                .foregroundColor(.mainBlue)
-                                                .opacity(0.9)
-                                            
-                                            Image(systemName: "checkmark")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: width/3, height: width/3)
-                                                .foregroundColor(.systemWhite)
-                                        }.transition(.opacity)
-                                        
-                                    }
-                                    
-                                    
-                                    
-                                    if viewModel.isSending {
-                                        
-                                        ActivityIndicator(shouldAnimate: $viewModel.isSending, diameter: width + 3)
-                                            .transition(.opacity)
-                                    }
-                                }
-                                
-                            )
                     }
                 }
             }
