@@ -16,10 +16,11 @@ struct ActivityIndicator: View {
     @Binding var shouldAnimate: Bool
     
     let diameter: CGFloat
-    
+
     var body: some View {
         
         ZStack {
+            
             Circle()
                 .stroke(lineWidth: max(diameter/20, 4))
                 .fill(Color.init(red: 0.96, green: 0.96, blue: 0.96))

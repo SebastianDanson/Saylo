@@ -560,7 +560,7 @@ struct ActionView: View {
     }
     
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: [isAudio && ConversationViewModel.shared.showAudio ? .mainBlue : .bottomGray, isAudio && ConversationViewModel.shared.showAudio ? .mainBlue : .topGray]), startPoint: .bottom, endPoint: .top)
+        LinearGradient(gradient: Gradient(colors: [isAudio && ConversationViewModel.shared.showAudio ? Color(.systemRed) : .bottomGray, isAudio && ConversationViewModel.shared.showAudio ? Color(.systemRed) : .topGray]), startPoint: .bottom, endPoint: .top)
             .mask(image
                     .resizable()
                     .scaledToFit()

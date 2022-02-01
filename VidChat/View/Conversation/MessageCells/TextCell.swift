@@ -15,6 +15,7 @@ struct TextCell: View {
     
     @State var showAlert = false
     @State var isSaved: Bool
+    @StateObject var viewModel = ConversationViewModel.shared
     
     init(message: Message) {
         self.message = message
@@ -58,6 +59,7 @@ struct TextCell: View {
                     HStack {
                         
                         VStack(alignment: .leading, spacing: 8) {
+                            
                             if !message.isSameIdAsPrevMessage {
                                 
                                 Text(message.username)
@@ -67,13 +69,10 @@ struct TextCell: View {
                                 + Text(" • \(message.timestamp.dateValue().getFormattedDate())")
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
-                                    
+                                
                             }
                             
-//                            TextView(text: message.text ?? "", isFromCurrentUser: message.isFromCurrentUser)
-////                                .frame(maxWidth: SCREEN_WIDTH - 100)
-//                                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-
+                            
                             Text(message.text ?? "")
                                 .font(.system(size: 16))
                                 .foregroundColor(message.isFromCurrentUser ? .white : .systemBlack)
@@ -84,7 +83,6 @@ struct TextCell: View {
                         
                         Spacer()
                     }
-                    //                .frame(width: message.isSaved ? SCREEN_WIDTH - 90 : SCREEN_WIDTH - 60)
                     .background(message.isFromCurrentUser ? .mainBlue : Color.textBackground)
                     .cornerRadius(16)
                     
@@ -122,10 +120,42 @@ struct TextCell: View {
                 Spacer()
                 
             }
-//            .padding(.leading)
+            //            .padding(.leading)
             
             
         }
+        .overlay(
+            
+            ZStack {
+                
+                if viewModel.sendingMessageId == message.id {
+                    
+                    if viewModel.isSending {
+                        ActivityIndicator(shouldAnimate: .constant(true), diameter: 20)
+                    } else if viewModel.hasSent {
+                        ZStack {
+
+                            Circle()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(.white)
+                                .opacity(0.9)
+
+                            Image(systemName: "checkmark")
+                                .resizable()
+                                .font(Font.title.weight(.semibold))
+                                .scaledToFit()
+                                .frame(width: 14, height: 14)
+                                .foregroundColor(.mainBlue)
+
+                        }.transition(.opacity)
+
+                    }
+                }
+            }
+                .padding(.trailing, 24)
+                .padding(.bottom, 6)
+            
+            ,alignment: .bottomTrailing)
         .padding(.leading, 12)
         .padding(.top, message.isSameIdAsPrevMessage ? 2 : 6)
         .padding(.bottom, message.isSameIdAsNextMessage ? 2 : 6)

@@ -132,8 +132,9 @@ struct VideoCell: View {
                                 })
                             }
                         }
-                    }.padding(.trailing, 18)
-                        .padding(.bottom, 36)
+                    }
+                    .padding(.trailing, 18)
+                    .padding(.bottom, 36)
                 }
             }
         }
@@ -151,7 +152,7 @@ struct VideoCell: View {
                             
                             Circle()
                                 .frame(width: 30, height: 30)
-                                .foregroundColor(.mainBlue)
+                                .foregroundColor(message.type == .Audio ? .white : .mainBlue)
                                 .opacity(0.9)
                             
                             Image(systemName: "checkmark")
@@ -159,14 +160,14 @@ struct VideoCell: View {
                                 .font(Font.title.weight(.semibold))
                                 .scaledToFit()
                                 .frame(width: 16, height: 16)
-                                .foregroundColor(.white)
-                            
+                                .foregroundColor(message.type == .Audio ? .mainBlue : .white)
+
                         }.transition(.opacity)
                         
                     }
                 }
             } .padding(.trailing, 10)
-                .padding(.bottom, 10),
+            .padding(.bottom, 10),
             alignment: .bottomTrailing)
         .padding(.vertical, 12)
     }
@@ -340,13 +341,15 @@ struct ReactionView: View {
     }
     
     func handleReactionPressed(reactionType: ReactionType) {
-        if let index = reactions.firstIndex(where: { $0.userId == "dsfs" && $0.reactionType == reactionType}) {
+        guard let user = AuthViewModel.shared.currentUser else {return}
+        
+        if let index = reactions.firstIndex(where: { $0.userId == user.id && $0.reactionType == reactionType}) {
             let reaction = reactions[index]
             withAnimation {
                 reactions.remove(at: index)
             }
             viewModel.removeReactionFromMessage(withId: messageId, reaction: reaction) {}
-        } else if let index = reactions.firstIndex(where: {$0.userId == "dsfs"}) {
+        } else if let index = reactions.firstIndex(where: {$0.userId == user.id}) {
             let reaction = reactions[index]
             withAnimation {
                 reactions[index].reactionType = reactionType
@@ -355,7 +358,7 @@ struct ReactionView: View {
                 viewModel.addReactionToMessage(withId: messageId, reaction: reactions[index])
             }
         } else {
-            let reaction = Reaction(messageId: messageId, username: "Seb", userId: "dsfs", reactionType: reactionType)
+            let reaction = Reaction(messageId: messageId, name: user.firstName, userId: user.id, reactionType: reactionType)
             withAnimation {
                 reactions.append(reaction)
             }

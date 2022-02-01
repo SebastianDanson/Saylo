@@ -19,7 +19,8 @@ struct ImageCell: View {
     @State var isSaved: Bool
     @State var backGroundColor = Color.systemWhite
     @State var showAlert = false
-    
+    @StateObject var viewModel = ConversationViewModel.shared
+
     init(message: Message, url: String?, image: UIImage?, showName: Bool) {
         self.showName = showName
         self.message = message
@@ -58,6 +59,38 @@ struct ImageCell: View {
             
             
         }
+        .overlay(
+            
+            ZStack {
+                
+                if viewModel.sendingMessageId == message.id {
+                    
+                    if viewModel.isSending {
+                        ActivityIndicator(shouldAnimate: .constant(true), diameter: 25)
+                        
+                    } else if viewModel.hasSent {
+                        
+                        ZStack {
+                            
+                            Circle()
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(message.type == .Audio ? .white : .mainBlue)
+                                .opacity(0.9)
+                            
+                            Image(systemName: "checkmark")
+                                .resizable()
+                                .font(Font.title.weight(.semibold))
+                                .scaledToFit()
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(message.type == .Audio ? .mainBlue : .white)
+
+                        }.transition(.opacity)
+                        
+                    }
+                }
+            }.padding(.trailing, 10)
+            .padding(.bottom, 10),
+            alignment: .bottomTrailing)
 //        .onAppear(perform: {
 //            setAverageColor()
 //        })

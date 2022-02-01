@@ -70,12 +70,12 @@ enum ReactionType {
 struct Reaction {
     
     var messageId: String
-    let username: String
+    let name: String
     let userId: String
     var reactionType: ReactionType
     
     func getDictionary() -> [String:Any] {
-        ["messageId":messageId, "username":username, "userId":userId, "reactionType":reactionType.getString()]
+        ["messageId":messageId, "name":name, "userId":userId, "reactionType":reactionType.getString()]
     }
 }
 

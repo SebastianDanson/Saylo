@@ -375,7 +375,15 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func updateLastSeenPost() {
+        
+        guard let chat = chat else {return}
+        
+        ConversationService.updateSeenLastPost(forChat: chat)
+    }
+    
     func addReactionToMessage(withId id: String, reaction: Reaction) {
+    
         guard let message = self.messages.first(where: {$0.id == id}),
               let user = AuthViewModel.shared.currentUser,
               let chat = ConversationViewModel.shared.chat else {return}

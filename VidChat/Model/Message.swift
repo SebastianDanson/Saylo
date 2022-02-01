@@ -87,8 +87,8 @@ class Message: ObservableObject {
         
         //userInfo
         self.userId = dictionary["userId"] as? String ?? ""
-                
-        if userId == AuthViewModel.shared.currentUser?.id ?? "" {
+                        
+        if userId == AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") {
             self.username = "Me"
             self.isFromCurrentUser = true
         } else {

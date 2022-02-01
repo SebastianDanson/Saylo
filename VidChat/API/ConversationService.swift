@@ -67,7 +67,7 @@ struct ConversationService {
             let reactionType = ReactionType.getReactionType(fromString: $0["reactionType"] as? String ?? "")
             let messageId = $0["messageId"] as? String ?? ""
             let reaction = Reaction(messageId: messageId,
-                                    username: $0["username"] as? String ?? "",
+                                    name: $0["name"] as? String ?? "",
                                     userId: $0["userId"] as? String ?? "",
                                     reactionType: reactionType)
             
@@ -108,6 +108,23 @@ struct ConversationService {
         }
     }
     
+    static func updateSeenLastPost(forChat chat: Chat) {
+        
+        //get user id
+        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
+            return
+        }
+        
+        //ensure the user hasn't already viewed the last post
+        guard !chat.seenLastPost.contains(uid) else {
+            return
+        }
+        
+        chat.seenLastPost.append(uid)
+        
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["seenLastPost":FieldValue.arrayUnion([uid])])
+    }
+    
     static func updateLastVisited(forChat chat: Chat) {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
@@ -123,6 +140,8 @@ struct ConversationService {
             transaction.updateData(["conversations" : user.conversationsDic], forDocument: userRef)
             return nil
         }) { (_, error) in }
+        
+        updateSeenLastPost(forChat: chat)
         
     }
     

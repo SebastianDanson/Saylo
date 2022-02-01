@@ -33,7 +33,7 @@ struct ConversationFeedView: View {
                 VStack(spacing: 0) {
                     
                     ForEach(Array(messages.enumerated()), id: \.1.id) { i, element in
-                        
+                                                
                         MessageCell(message: messages[i])
                             .offset(x: 0, y: FEEDVIEW_OFFSET)
                             .background(
@@ -75,6 +75,20 @@ struct ConversationFeedView: View {
                                 
                             }
                     }
+                
+                    if let seenByText = getSeenByText()  {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                
+                                Text(seenByText)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .padding(.leading, 16)
+                                Spacer()
+                            }
+                        }
+                    }
+
                 }.flippedUpsideDown()
                 
                     .onPreferenceChange(ViewOffsetsKey.self, perform: { prefs in
@@ -170,5 +184,28 @@ struct ConversationFeedView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.updatePreference = true
         }
+    }
+    
+    func getSeenByText() -> String? {
+        
+        guard let chat = viewModel.chat else {
+            return nil
+        }
+        
+        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
+            return nil
+        }
+        
+        
+        var seenText = "Seen by"
+        
+        chat.seenLastPost.forEach { userId in
+            
+            if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
+                seenText += " \(chatMember.firstName)"
+            }
+        }
+        
+        return seenText == "Seen by" ? nil : seenText
     }
 }

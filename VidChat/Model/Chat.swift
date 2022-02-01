@@ -8,6 +8,7 @@
 import Foundation
 import Firebase
 
+
 class Chat: ObservableObject {
     
     //Doc info
@@ -21,7 +22,8 @@ class Chat: ObservableObject {
     var mutedUsers: [String]
   
     var messages = [Message]()
-    
+    var seenLastPost: [String]
+
     //user info
     let userIds: [String]
     var chatMembers = [ChatMember]()
@@ -87,7 +89,10 @@ class Chat: ObservableObject {
         //users
         self.userIds = dictionary["userIds"] as? [String] ?? [String]()
         
-
+        
+        //Seen last post
+        self.seenLastPost = dictionary["seenLastPost"] as? [String] ?? [String]()
+        
         //messages
         self.messages = ConversationService.getMessagesFromData(data: dictionary, shouldRemoveMessages: shouldRemoveOldMessages, chatId: id)
 
