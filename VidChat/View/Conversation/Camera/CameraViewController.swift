@@ -69,12 +69,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if ConversationGridViewModel.shared.hasUnreadMessages {
-            setPreviewLayerSmallFrame()
-            view.backgroundColor = .clear
-        } else {
-            setPreviewLayerFullFrame()
-            view.backgroundColor = .black
+        if AuthViewModel.shared.isSignedIn {
+            print("YUPPER")
+            if ConversationGridViewModel.shared.hasUnreadMessages {
+                setPreviewLayerSmallFrame()
+                view.backgroundColor = .clear
+            } else {
+                setPreviewLayerFullFrame()
+                view.backgroundColor = .black
+            }
         }
         
         if !canRun {
@@ -141,37 +144,66 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         captureSession.stopRunning()
     }
     
-    func setupSession() {
+    func setupAudio() {
         
         DispatchQueue.main.async {
             
+            guard let mic = AVCaptureDevice.default(for: .audio) else {
+                return
+            }
+            
+            self.audioCaptureSession.beginConfiguration()
+            
+            do {
+                
+                let audioInput = try AVCaptureDeviceInput(device: mic)
+                
+                if self.audioCaptureSession.canAddInput(audioInput) {
+                    self.audioCaptureSession.addInput(audioInput)
+                }
+                
+            } catch {
+                
+            }
+            
+            let queue1 = DispatchQueue(label: "temp1")
+            self.audioDataOutput.setSampleBufferDelegate(self, queue: queue1)
+            
+            if self.audioCaptureSession.canAddOutput(self.audioDataOutput) {
+                self.audioCaptureSession.addOutput(self.audioDataOutput)
+            }
+            
+            self.audioCaptureSession.commitConfiguration()
+            
+        }
+    }
+    
+    func setupSession(addAudio: Bool = true) {
+        
+        print("YUP 3")
+        
+        DispatchQueue.main.async {
             
             self.setUpWriter()
             
             self.captureSession.beginConfiguration()
-            self.audioCaptureSession.beginConfiguration()
             
             
             guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
                 return
             }
             
-            guard let mic = AVCaptureDevice.default(for: .audio) else {
-                return
-            }
             
             do {
                 
                 let videoInput = try AVCaptureDeviceInput(device: camera)
-                let audioInput = try AVCaptureDeviceInput(device: mic)
                 
                 if self.captureSession.canAddInput(videoInput) {
                     self.captureSession.addInput(videoInput)
                 }
                 
-                
-                if self.audioCaptureSession.canAddInput(audioInput) {
-                    self.audioCaptureSession.addInput(audioInput)
+                if ConversationViewModel.shared.showCamera {
+                    
                 }
                 
                 self.activeInput = videoInput
@@ -183,10 +215,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             
             let queue = DispatchQueue(label: "temp")
-            let queue1 = DispatchQueue(label: "temp1")
             
             self.videoDataOutput.setSampleBufferDelegate(self, queue: queue)
-            self.audioDataOutput.setSampleBufferDelegate(self, queue: queue1)
             
             if self.captureSession.canAddOutput(self.videoDataOutput) {
                 self.captureSession.addOutput(self.videoDataOutput)
@@ -196,12 +226,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 self.captureSession.addOutput(self.photoOutput)
             }
             
-            if self.audioCaptureSession.canAddOutput(self.audioDataOutput) {
-                self.audioCaptureSession.addOutput(self.audioDataOutput)
-            }
-            
             self.captureSession.commitConfiguration()
-            self.audioCaptureSession.commitConfiguration()
+            
+            
+            //Only add audio if they're not taking profile picture
+            
+            if addAudio {
+                self.setupAudio()
+            }
+//            }
         }
     }
     
@@ -239,7 +272,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     self.captureSession.removeInput(input)
                 }
             }
-
+            
             
             do {
                 

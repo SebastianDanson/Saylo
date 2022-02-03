@@ -44,6 +44,7 @@ class AuthViewModel: ObservableObject {
             self.isSignedIn = true
             self.fetchUser {
                 ConversationGridViewModel.shared.fetchConversations()
+                AppDelegate.shared.askToSendNotifications()
             }
             
             completion(error)
@@ -59,6 +60,8 @@ class AuthViewModel: ObservableObject {
                 completion(error)
                 return
             }
+            
+            
 
             let chatRef = COLLECTION_CONVERSATIONS.document()
             let chatId = chatRef.documentID
@@ -75,8 +78,9 @@ class AuthViewModel: ObservableObject {
             let messageData = ["chatId":chatId,
                                "id":UUID().uuidString,
                                "type":"video",
+                               "timestamp":Timestamp(date: Date()),
                                "isTeamSayloMessage": true,
-                               "url":"https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/App%20Preview%20Final.mov?alt=media&token=cb0fc5c9-a2a6-4c52-adbc-ff41fa52fb7a"] as [String : Any]
+                               "url":"https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/App%20Preview%20High%20Res.mp4?alt=media&token=07a0220e-86fa-4693-897b-b19ca714e978"] as [String : Any]
             
             COLLECTION_CONVERSATIONS.document(chatId).setData([
                 "isTeamSaylo":true,
@@ -181,7 +185,7 @@ class AuthViewModel: ObservableObject {
         
         PhoneAuthProvider.provider()
             .verifyPhoneNumber("+" + countryCode + phoneNumber, uiDelegate: nil) { verificationID, error in
-                
+                print(error, "ERROR")
                 UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
                 completion(error)
             }
@@ -197,6 +201,7 @@ class AuthViewModel: ObservableObject {
         )
         
         Auth.auth().currentUser?.link(with: credential, completion: { authResult, error in
+            print(error, "ERROR")
             completion(error)
         })
 
@@ -207,15 +212,31 @@ class AuthViewModel: ObservableObject {
         
         guard let currentUser = currentUser else { return }
         CameraViewModel.shared.photo = nil
+        
         MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
             
             AuthViewModel.shared.currentUser?.profileImage = imageUrl
             
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
             defaults?.set(imageUrl, forKey: "profileImage")
+            defaults?.set(true, forKey: "hasCompletedSignUp")
+            
             
             self.profileImage = imageUrl
+            
             COLLECTION_USERS.document(currentUser.id).updateData(["profileImage":imageUrl, "hasCompletedSignUp":true]) { error in
+                
+                self.fetchUser {
+                    ConversationGridViewModel.shared.fetchConversations()
+                    AppDelegate.shared.askToSendNotifications()
+                }
+                
+                ConversationGridViewModel.shared.setChatCache()
+
+                self.isSignedIn = true
+                self.hasCompletedSignUp = true
+                CameraViewModel.shared.cameraView.setupSession()
+                
                 completion()
             }
         }
@@ -353,15 +374,18 @@ class AuthViewModel: ObservableObject {
     
     func updateTeamSayloChat(fcmToken: String) {
         
-        let defaults = UserDefaults.standard
-        
+        print("UPDATE 1")
+        guard let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME) else { return }
         guard let teamSayloId = defaults.string(forKey: "teamSayloId") else { return }
         guard let userId = defaults.string(forKey: "userId") else { return }
         
+        print("UPDATE 2")
+
         COLLECTION_USERS.document(userId).getDocument { snapshot, _ in
             
             if let data = snapshot?.data() {
-            
+                print("UPDATE 3")
+
                 let user = User(dictionary: data, id: userId)
                 
                 let userData = [
@@ -379,5 +403,7 @@ class AuthViewModel: ObservableObject {
         }
       
     }
+    
+    
 }
 

@@ -50,11 +50,19 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func setupSession() {
+        print("YUP !")
         cameraViewController.setupSession()
         cameraViewController.setupPreview()
         cameraViewController.startSession()
         
 //        cameraViewController.setupAudio()
+    }
+    
+    public func setupProfileImageCamera() {
+        print("YUP @")
+        cameraViewController.setupSession(addAudio: false)
+        cameraViewController.setupPreview()
+        cameraViewController.startRunning()
     }
     
     public func setPreviewlayerFullFrame() {

@@ -433,6 +433,8 @@ class ConversationViewModel: ObservableObject {
     
     func addListener() {
         
+        guard !chatId.isEmpty else {return}
+        
         listener = COLLECTION_CONVERSATIONS.document(chatId)
             .addSnapshotListener { snapshot, _ in
                 

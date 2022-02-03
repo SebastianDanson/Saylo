@@ -50,20 +50,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func sceneDidBecomeActive(_ scene: UIScene) {
         
-        
-        if ConversationPlayerViewModel.shared.messages.isEmpty {
-            ConversationPlayerViewModel.shared.setMessages()
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
+       
+            
+            if ConversationPlayerViewModel.shared.messages.isEmpty {
+                ConversationPlayerViewModel.shared.setMessages()
+            }
+            
+            AuthViewModel.shared.fetchUser {
+                ConversationGridViewModel.shared.fetchConversations()
+            }
+            
+        if !AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
+            CameraViewModel.shared.cameraView.setupSession()
         }
+            
         
-        AuthViewModel.shared.fetchUser {
-            ConversationGridViewModel.shared.fetchConversations()
-        }
+            ConversationGridViewModel.shared.showCachedChats()
         
-        CameraViewModel.shared.cameraView.setupSession()
-
-
-        ConversationGridViewModel.shared.showCachedChats()
-
     }
     
     func sceneWillResignActive(_ scene: UIScene) {

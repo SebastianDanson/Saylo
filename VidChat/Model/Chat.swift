@@ -115,7 +115,7 @@ class Chat: ObservableObject {
         self.lastReadMessageIndex = getLastReadMessageIndex()
         
         //Add unread messages to player view
-        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id {
+        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {
             
             for i in self.lastReadMessageIndex..<self.messages.count {
                 
@@ -138,14 +138,19 @@ class Chat: ObservableObject {
         var messages = [[String:Any]]()
         self.messages.forEach({messages.append($0.getDictionary())})
 
+        print(messages.count, lastReadMessageIndex, "INFO")
+        
         var dictionary = [
             "id":id,
             "profileImage":profileImage,
+            "isTeamSaylo":isTeamSaylo,
             "isDm":isDm,
             "name":name,
             "users":users,
             "mutedUsers":mutedUsers,
             "userIds":userIds,
+            "messages":messages,
+            "lastReadMessageIndex":lastReadMessageIndex
         ] as [String: Any]
         
         if let nameDictionary = nameDictionary {

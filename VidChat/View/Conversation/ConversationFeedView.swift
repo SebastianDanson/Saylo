@@ -127,6 +127,7 @@ struct ConversationFeedView: View {
                         guard !viewModel.isShowingReactions else {return}
                         
                         middleItemNo += 1
+                        
                         if middleItemNo < 1 || middleItemNo >= messages.count {return}
                         
                         self.temporarilyDisablePreference()
@@ -143,7 +144,6 @@ struct ConversationFeedView: View {
                         
                         
                         viewModel.currentPlayer?.pause()
-                        
                         viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
                         viewModel.currentPlayer?.play()
                         

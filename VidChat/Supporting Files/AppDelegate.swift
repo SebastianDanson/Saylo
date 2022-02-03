@@ -43,7 +43,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //                print("Failed to set audio session category.")
 //            }
         
-        askToSendNotifications()
+        if Auth.auth().currentUser != nil {
+            askToSendNotifications()
+        }
         
 //        try! Auth.auth().signOut()
         

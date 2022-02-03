@@ -60,7 +60,7 @@ struct ImageCropper: UIViewControllerRepresentable {
             }
             
             self.parent.image = nil
-            
+            CameraViewModel.shared.photo = nil
             self.parent.showImagePicker = true
         }
     }

@@ -61,6 +61,8 @@ struct SetProfileImageView: View {
                                         showImagePicker = true
                                     },
                                     .default(Text("Take a photo")) {
+                                        CameraViewModel.shared.isTakingPhoto = true
+                                        CameraViewModel.shared.cameraView.setupProfileImageCamera()
                                         showCamera = true
                                     },
                                     .cancel()
@@ -77,7 +79,6 @@ struct SetProfileImageView: View {
                 
                 Spacer()
                 
-                
                 Button {
                     
                     if let profileImage = profileImage {
@@ -87,7 +88,10 @@ struct SetProfileImageView: View {
                             signUpComplete = true
                         }
                     } else {
-                        showActionSheet = true
+                        
+                        DispatchQueue.main.async {
+                            self.showActionSheet = true
+                        }
                     }
                     
                 } label: {
@@ -139,15 +143,16 @@ struct SetProfileImageView: View {
                                 Spacer()
                                 
                                 Button {
+                                    
                                     withAnimation {
                                         showCamera = false
                                     }
+                                    
                                 } label: {
                                     CameraOptionView(image: Image("x"), imageDimension: 14).padding()
                                 }
 
                             }
-                            
                             
                             Spacer()
                             
@@ -165,7 +170,7 @@ struct SetProfileImageView: View {
                 
             }
             
-            NavigationLink(destination: ConversationGridView().navigationBarHidden(true), isActive: $signUpComplete) { EmptyView() }
+//            NavigationLink(destination: ConversationGridView().navigationBarHidden(true), isActive: $signUpComplete) { EmptyView() }
             
         }
         

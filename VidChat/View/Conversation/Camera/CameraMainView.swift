@@ -31,7 +31,6 @@ struct CameraMainView: View {
                     viewModel.videoPlayerView
                         .padding(.top, TOP_PADDING)
                     
-                    
                     Spacer()
                     
                 }.zIndex(3)
@@ -120,7 +119,11 @@ struct CameraMainView: View {
                 if AuthViewModel.shared.hasCompletedSignUp &&
                     ((ConversationGridViewModel.shared.hasUnreadMessages && viewModel.showFullCameraView)
                      || !ConversationGridViewModel.shared.hasUnreadMessages) {
+                    
+                    //Will show these options unless taking profile picture
+                    if conversationViewModel.showCamera {
                     CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 0).zIndex(6)
+                    }
                 }
                 
                 if viewModel.photo != nil || viewModel.videoUrl != nil {
@@ -188,6 +191,10 @@ struct CameraMainView: View {
     
     func setupSession() {
         cameraView.setupSession()
+    }
+    
+    func setupProfileImageCamera() {
+        cameraView.setupProfileImageCamera()
     }
     
     func stopSession() {

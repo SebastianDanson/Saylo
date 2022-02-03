@@ -213,10 +213,14 @@ struct ConversationView: View {
         .onDisappear {
             viewModel.players.forEach({$0.player.pause()})
             viewModel.currentPlayer?.pause()
-            
+
             if !showSettings {
                 viewModel.removeChat()
             }
+            
+            //Ensure that this is true once they have signed up
+            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+            defaults?.set(true, forKey: "hasCompletedSignUp")
         }
     }
 }
@@ -532,7 +536,7 @@ struct ChatOptions: View {
                     }
                 }
                 
-                if let chat = viewModel.chat {
+                if let chat = viewModel.chat, !chat.isTeamSaylo {
                     
                     Button {
                         withAnimation(.linear(duration: 0.1)) {

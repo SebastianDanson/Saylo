@@ -41,7 +41,7 @@ struct VideoPlayerView: View {
                 .frame(width: CAMERA_WIDTH, height: ConversationViewModel.shared.showCamera || CameraViewModel.shared.showFullCameraView ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT)
                 .overlay(
                     HStack {
-                        if showName {
+                        if showName && !(message?.isTeamSayloMessage ?? false) {
                             MessageInfoView(date: message?.timestamp.dateValue() ?? Date(),
                                             profileImage: message?.userProfileImage ?? "",
                                             name: message?.username ?? "")
@@ -60,11 +60,17 @@ struct VideoPlayerView: View {
                             
                              ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
                             
+                            print("1")
+                            
+                            print(ConversationViewModel.shared.chat, ConversationViewModel.shared.chat?.messages.count, ConversationViewModel.shared.chat?.lastReadMessageIndex, "OKOK")
+                            
                             if let chat = ConversationViewModel.shared.chat,
                                 chat.messages.count > chat.lastReadMessageIndex,
                                 chat.lastReadMessageIndex > -1,
                                 chat.messages[chat.lastReadMessageIndex].id == id {
                                 
+                                print("2")
+
                                 ConversationViewModel.shared.currentPlayer = self.player
                                 ConversationViewModel.shared.currentPlayer?.play()
                             }
@@ -78,7 +84,6 @@ struct VideoPlayerView: View {
     
     func togglePlay() {
       
-        
         if player.isPlaying {
             player.pause()
         } else {
