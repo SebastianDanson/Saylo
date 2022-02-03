@@ -81,6 +81,7 @@ struct AddFriendCell: View {
                     Button {
                         self.users.removeAll(where: {$0.id == user.id})
                         viewModel.rejectFriendRequest(fromUser: user)
+                        
                     } label: {
                         RemoveButton()
                     }

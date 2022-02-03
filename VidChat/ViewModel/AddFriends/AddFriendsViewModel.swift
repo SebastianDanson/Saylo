@@ -81,7 +81,6 @@ class AddFriendsViewModel: ObservableObject {
             //            let relevancyNum = Double(relevancy)/Double(dif)
             //            self.searchResults[option].setRelevancy(relevancy: relevancyNum)
             
-            print(relevancy, searchResults[i].username, searchResults[i].firstName, searchResults[i].lastName, "RELEVANCY")
             
             if relevancy > 0 {
                 sortedSearch.append(UserSearch(user: searchResults[i], relevancy: relevancy))
@@ -152,15 +151,19 @@ class AddFriendsViewModel: ObservableObject {
         let userData = [
             "userId": user.id,
             "profileImage": user.profileImage,
-            "fcmToken":user.fcmToken,
             "pushKitToken":user.pushKitToken,
             "username":user.username,
             "firstName":user.firstName,
             "lastName":user.lastName
         ]
         
-        COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData], "isDm":true])
-        COLLECTION_SAVED_POSTS.document(chatId).setData([:])
+        COLLECTION_CONVERSATIONS.document(chatId).setData(["users":[userData], "messages" : [], "isDm":true])
+        
+        COLLECTION_SAVED_POSTS.document(chatId).getDocument { snapshot, _ in
+            if let snapshot = snapshot, !snapshot.exists {
+                COLLECTION_SAVED_POSTS.document(chatId).setData(["messages":[]])
+            }
+        }
         
         let chatData = ["id":chatId,
                         "lastVisited": Timestamp(date: Date()),
@@ -175,7 +178,8 @@ class AddFriendsViewModel: ObservableObject {
                 }
         
         currentUser.chats.append(UserChat(dictionary: chatData))
-        
+        currentUser.conversationsDic.append(chatData)
+
         
         let userRef = COLLECTION_USERS.document(user.id)
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
@@ -199,6 +203,7 @@ class AddFriendsViewModel: ObservableObject {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
         COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayRemove([currentUser.id])])
+        
     }
     
     func rejectFriendRequest(fromUser user: ChatMember) {
@@ -242,10 +247,12 @@ class AddFriendsViewModel: ObservableObject {
         
         
         let chatRef = COLLECTION_CONVERSATIONS.document(chatId)
+        let messageData = ["type":"newChat", "timestamp": Timestamp(date: Date())] as [String : Any]
+        
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
-            transaction.updateData(["users":[userData,friendData]], forDocument: chatRef)
+            transaction.updateData(["users":[userData,friendData], "messages": FieldValue.arrayUnion([messageData])], forDocument: chatRef)
             return nil
-        }) { (_, error) in }
+        }) { (_, error) in  }
         
         
         let chatData = ["id":chatId,
@@ -264,6 +271,7 @@ class AddFriendsViewModel: ObservableObject {
         
         user.friends.append(friend.id)
         user.chats.append(UserChat(dictionary: chatData))
+        user.conversationsDic.append(chatData)
         user.friendRequests.removeAll(where: {$0 == friend.id})
         
         COLLECTION_USERS.document(friend.id)

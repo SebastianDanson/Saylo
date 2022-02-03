@@ -68,7 +68,7 @@ final class ProviderDelegate: NSObject {
                 call.handle = handle
                 self.pendingCall = call
             }
-            print("INCOMING CALL", error?.localizedDescription, "ERROR")
+
             completion?(error)
         }
     }

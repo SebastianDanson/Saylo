@@ -109,7 +109,6 @@ final class CallManager: NSObject, ObservableObject {
             //            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
             //            let uuid = UUID(uuidString: uuidString)
             
-            print(pushKitToken, "toPK")
             
             let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "token": pushKitToken] as [String : Any]
             
@@ -252,7 +251,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didVideoEnabled enabled: Bool, byUid uid: UInt) {
-        print(uid, enabled, "VIDEO")
+
     }
     
     
@@ -260,7 +259,6 @@ extension CallManager: AgoraRtcEngineDelegate {
         if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
 
             getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
-                print(sid, uid, "JOINING")
                 self?.inCall = true
                 self?.callID = uid
                 self?.channelName = currentCall.uuid.uuidString

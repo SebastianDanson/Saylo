@@ -20,6 +20,7 @@ class ChatSettingsViewModel: ObservableObject {
     private init() {}
     
     func addUsersToChat() {
+       
         guard let chat = ConversationViewModel.shared.chat else { return }
         guard let user = AuthViewModel.shared.currentUser else {return}
         
@@ -47,6 +48,7 @@ class ChatSettingsViewModel: ObservableObject {
         ConversationViewModel.shared.chat?.chatMembers.append(contentsOf: chatMembers)
        
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["users":FieldValue.arrayUnion(userInfo)])
+        
         //create dictionary to send to DB
     
         var fcmTokens = [String]()
@@ -94,6 +96,7 @@ class ChatSettingsViewModel: ObservableObject {
     
     
     func updateChatName(name: String) {
+        
         guard let chat = ConversationViewModel.shared.chat else { return }
         
         let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
@@ -247,6 +250,9 @@ class ChatSettingsViewModel: ObservableObject {
         removeUserFromDm(userId: currentUser.id, chat: chat)
         removeUserFromDm(userId: friend.id, chat: chat)
         
+        
+        COLLECTION_USERS.document(friend.id).updateData(["friendRequests": FieldValue.arrayRemove([currentUser.id])])
+
         //Delete conversation
         
         //***Currently not deleting for security reasons***

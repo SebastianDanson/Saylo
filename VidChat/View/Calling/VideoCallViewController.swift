@@ -80,14 +80,12 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     func playRingTone() {
         let path = Bundle.main.path(forResource: "ringtone.wav", ofType:nil)!
         let url = URL(fileURLWithPath: path)
-        print(url,"URL")
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.numberOfLoops = 2
             player?.play()
         } catch {
             print("COULD NOT PLAY")
-            // couldn't load file :(
         }
     }
     
@@ -177,7 +175,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
             
             callManger.getAgoraEngine().setupRemoteVideo(videoCanvas)
             
-            print("Creating remote view of uid: \(remoteID)")
         }
         
         if callManger.remoteUserIDs.count > 2 {

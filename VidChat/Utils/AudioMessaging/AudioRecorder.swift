@@ -88,7 +88,6 @@ class AudioRecorder: NSObject,ObservableObject {
             audioPlayer.startPlayback(audio: audioUrl)
         }
         
-        print("STOPPING RECORDING")
     }
     
     func sendRecording() {

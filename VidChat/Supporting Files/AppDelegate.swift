@@ -173,11 +173,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
 
         if let fcmToken = fcmToken {
-            
-            print("SETTINGse")
             let dataDict:[String: String] = ["token": fcmToken ?? ""]
             NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
-            UserDefaults.standard.set(fcmToken, forKey: "fcmToken")
+            
+            let defaults = UserDefaults.standard
+            let token = defaults.string(forKey: "fcmToken")
+            defaults.set(fcmToken, forKey: "fcmToken")
+            
+            if token == nil {
+                AuthViewModel.shared.updateTeamSayloChat(fcmToken: fcmToken)
+            }
+
         }
     }
     

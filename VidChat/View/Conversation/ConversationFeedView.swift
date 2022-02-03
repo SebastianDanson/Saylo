@@ -43,7 +43,6 @@ struct ConversationFeedView: View {
                                         value: [i: geo.frame(in: .named("scrollView")).midY]) } : nil)
                             .onAppear {
                                 
-
                                 if let chat = viewModel.chat {
                                     
                                     if isFirstLoad, i == chat.lastReadMessageIndex {
@@ -72,18 +71,20 @@ struct ConversationFeedView: View {
                                         }
                                     }
                                 }
-                                
                             }
                     }
                 
-                    if let seenByText = getSeenByText()  {
+                    if let seenByText = getSeenByText(), !viewModel.showSavedPosts  {
+                        
                         ScrollView(.horizontal, showsIndicators: false) {
+                            
                             HStack {
                                 
                                 Text(seenByText)
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.white)
                                     .padding(.leading, 16)
+                                
                                 Spacer()
                             }
                         }
@@ -96,27 +97,27 @@ struct ConversationFeedView: View {
                         guard updatePreference else { return }
 
                         DispatchQueue.main.async {
-                            
+
                             let prevMiddleItemNo = middleItemNo
                             middleItemNo = prefs.first(where: { abs(HALF_SCREEN_HEIGHT - $1 ) < 15 })?.key ?? -1
-                            
-                            
+
+
                             if middleItemNo >= 0 {
-                                
+
                                 if prevMiddleItemNo != middleItemNo {
-                                    
-                                    
+
+
                                     self.temporarilyDisablePreference()
-                                    
+
                                     withAnimation {
                                         reader.scrollTo(messages[middleItemNo].id, anchor: .center)
                                     }
-                                    
+
                                     viewModel.updatePlayer(index: middleItemNo)
-                                    
+
                                 }
                             }
-                            else if viewModel.currentPlayer != nil {
+                            else {
                                 viewModel.removeCurrentPlayer()
                             }
                         }
@@ -150,7 +151,11 @@ struct ConversationFeedView: View {
                     })
                     .onChange(of: viewModel.scrollToBottom) { newValue in
                         if let last = messages.last {
-                            reader.scrollTo(last.id, anchor: .bottom)
+                            if viewModel.showKeyboard {
+                                reader.scrollTo(last.id, anchor: .bottom)
+                            } else {
+                                reader.scrollTo(last.id, anchor: .center)
+                            }
                         }
                     }
             }
@@ -199,7 +204,7 @@ struct ConversationFeedView: View {
         
         var seenText = "Seen by"
         
-        chat.seenLastPost.forEach { userId in
+        viewModel.seenLastPost.forEach { userId in
             
             if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
                 seenText += " \(chatMember.firstName)"

@@ -51,26 +51,52 @@ class AuthViewModel: ObservableObject {
     }
     
     func register(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
+        
+       
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             
             guard let user = result?.user else {
                 completion(error)
                 return
             }
+
+            let chatRef = COLLECTION_CONVERSATIONS.document()
+            let chatId = chatRef.documentID
+            
+            let date = Date(timeIntervalSince1970: Date().timeIntervalSince1970 - 100)
+            
+            
+            //Add Team Saylo chat
+            
+            let chatData = ["id": chatId,
+                            "lastVisited": Timestamp(date: date),
+                            "notificationsEnabled": true] as [String: Any]
+            
+            let messageData = ["chatId":chatId,
+                               "id":UUID().uuidString,
+                               "type":"video",
+                               "isTeamSayloMessage": true,
+                               "url":"https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/App%20Preview%20Final.mov?alt=media&token=cb0fc5c9-a2a6-4c52-adbc-ff41fa52fb7a"] as [String : Any]
+            
+            COLLECTION_CONVERSATIONS.document(chatId).setData([
+                "isTeamSaylo":true,
+                "messages" : [messageData],
+                "name":"Saylo",
+                "profileImage": "https://firebasestorage.googleapis.com/v0/b/vidchat-12c32.appspot.com/o/SayloChatProfileImage.png?alt=media&token=7f950121-b7e6-444d-9025-2e4501958735"])
+            
             
             let data = ["email":email,
                         "createdAt":Timestamp(date: Date()),
-                        "uid": user.uid] as [String : Any]
+                        "uid": user.uid,
+                        "conversations":[chatData]] as [String : Any]
             
             self.currentUser = User(dictionary: data, id: user.uid)
             
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
             defaults?.set(user.uid, forKey: "userId")
-            
-            COLLECTION_USERS.document(user.uid).setData(data) { _ in
-                //self.userSession = user
-                //                self.fetchUser { }
-            }
+            defaults?.set(chatId, forKey: "teamSayloId")
+
+            COLLECTION_USERS.document(user.uid).setData(data) { _ in }
             
             completion(error)
         }
@@ -171,12 +197,9 @@ class AuthViewModel: ObservableObject {
         )
         
         Auth.auth().currentUser?.link(with: credential, completion: { authResult, error in
-            print(authResult, "AUTH RESULT", error?.localizedDescription, "ERROR")
             completion(error)
         })
-        
-        
-        
+
     }
     
     
@@ -325,6 +348,36 @@ class AuthViewModel: ObservableObject {
         }
         
         return result
+    }
+    
+    
+    func updateTeamSayloChat(fcmToken: String) {
+        
+        let defaults = UserDefaults.standard
+        
+        guard let teamSayloId = defaults.string(forKey: "teamSayloId") else { return }
+        guard let userId = defaults.string(forKey: "userId") else { return }
+        
+        COLLECTION_USERS.document(userId).getDocument { snapshot, _ in
+            
+            if let data = snapshot?.data() {
+            
+                let user = User(dictionary: data, id: userId)
+                
+                let userData = [
+                    "userId": userId,
+                    "profileImage": user.profileImage,
+                    "fcmToken":fcmToken,
+                    "pushKitToken":user.pushKitToken,
+                    "username":user.username,
+                    "firstName":user.firstName,
+                    "lastName":user.lastName
+                ]
+                
+                COLLECTION_CONVERSATIONS.document(teamSayloId).updateData(["users":FieldValue.arrayUnion([userData])])
+            }
+        }
+      
     }
 }
 

@@ -36,7 +36,6 @@ struct CountryCodeViewController: UIViewControllerRepresentable {
                 self.parent.dialCode = dialCode
                 self.parent.countryInitials = country.code
             }
-            print("Selected \(country.name), \(country.code) \(country.flag)")
         }
         
         

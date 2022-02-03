@@ -128,7 +128,9 @@ struct AddFriendsView: View {
                             
                             ForEach(Array(viewModel.contactsOnSaylo.enumerated()), id: \.1.id) { i, user in
                                 
-                                AddFriendCell(user: user, addedMe: false, users: $viewModel.contactsOnSaylo)
+                                AddFriendCell(user: user,
+                                              addedMe: AuthViewModel.shared.currentUser?.friendRequests.contains(user.id) ?? false,
+                                              users: $viewModel.contactsOnSaylo)
                                 
                             }
                         }

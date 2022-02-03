@@ -12,7 +12,7 @@ import AVFoundation
 
 enum MessageType {
     
-    case Video, Audio, Text, Photo
+    case Video, Audio, Text, Photo, NewChat
     
     static func getType(forString type: String) -> MessageType {
         switch type {
@@ -24,6 +24,8 @@ enum MessageType {
             return .Text
         case "photo":
             return .Photo
+        case "newChat":
+            return .NewChat
         default:
             print("DEBUG: ERROR Can't identify message type")
             return .Video
@@ -40,6 +42,8 @@ enum MessageType {
             return "audio"
         case .Video:
             return "video"
+        case .NewChat:
+            return "newChat"
         }
     }
 }
@@ -63,6 +67,7 @@ class Message: ObservableObject {
     var image: UIImage?
     var isFromPhotoLibrary: Bool
     var reactions = [Reaction]()
+    var isTeamSayloMessage: Bool
 
     //data
     @Published var isSaved: Bool
@@ -87,7 +92,8 @@ class Message: ObservableObject {
         
         //userInfo
         self.userId = dictionary["userId"] as? String ?? ""
-                        
+                      
+        
         if userId == AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") {
             self.username = "Me"
             self.isFromCurrentUser = true
@@ -105,6 +111,7 @@ class Message: ObservableObject {
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date(timeIntervalSince1970: TimeInterval(dictionary["timestamp"] as? Int ?? 0)))
         self.text = dictionary["text"] as? String
         
+        self.isTeamSayloMessage = dictionary["isTeamSayloMessage"] as? Bool ?? false
 
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true
         
@@ -124,8 +131,8 @@ class Message: ObservableObject {
                 
         var dictionary = [
             "id":id,
-            "userProfileImage":"",
-            "username": "Seb",
+            "userProfileImage":userProfileImage,
+            "username": username,
             "timestamp": Int(timestamp.dateValue().timeIntervalSince1970)
         ] as [String: Any]
         

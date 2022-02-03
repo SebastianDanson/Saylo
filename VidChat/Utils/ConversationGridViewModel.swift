@@ -29,8 +29,7 @@ class ConversationGridViewModel: ObservableObject {
     @Published var hasUnreadMessages = false
 
     var allChats = [Chat]()
-    
-    
+        
     static let shared = ConversationGridViewModel()
     
     private init() {
@@ -45,6 +44,7 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func removeSelectedChat(withId id: String) {
+        
         if let index = selectedChats.firstIndex(where: {$0.id == id}) {
             withAnimation {
                 selectedChats[index].isSelected = !selectedChats[index].isSelected
@@ -64,7 +64,9 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func isSendingChat(chat: Chat, isSending: Bool) {
+        
         chat.isSending = isSending
+        
         if let index = sendingChats.firstIndex(where: {$0.id == chat.id}) {
             sendingChats.remove(at: index)
         } else {
@@ -75,9 +77,9 @@ class ConversationGridViewModel: ObservableObject {
     func hasSentChat(chat: Chat, hasSent: Bool) {
         
         withAnimation {
+            
             chat.hasSent = hasSent
             chat.isSending = false
-            
             
             if let index = sendingChats.firstIndex(where: {$0.id == chat.id}) {
                 sendingChats.remove(at: index)
@@ -87,8 +89,10 @@ class ConversationGridViewModel: ObservableObject {
             
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.hasSentChat(chat: chat, hasSent: false)
+        if hasSent {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.hasSentChat(chat: chat, hasSent: false)
+            }
         }
     }
     

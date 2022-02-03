@@ -39,7 +39,6 @@ class MediaUploader {
     
     func checkFileSize(sizeUrl: URL, message:String){
         let data = NSData(contentsOf: sizeUrl)!
-        print(message, (Double(data.length) / 1048576.0), " mb")
     }
     
     static func uploadImage(image: UIImage, type: UploadType, messageId: String, completion: @escaping(String) -> Void) {

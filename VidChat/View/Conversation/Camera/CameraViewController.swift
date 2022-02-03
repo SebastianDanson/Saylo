@@ -68,7 +68,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       
+        
         if ConversationGridViewModel.shared.hasUnreadMessages {
             setPreviewLayerSmallFrame()
             view.backgroundColor = .clear
@@ -76,7 +76,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             setPreviewLayerFullFrame()
             view.backgroundColor = .black
         }
-            
+        
         if !canRun {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 if !self.captureSession.isRunning {
@@ -84,7 +84,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
             }
         }
-     
+        
     }
     
     
@@ -217,23 +217,32 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     public func switchCamera() {
         
-        let position: AVCaptureDevice.Position = (activeInput.device.position == .back) ? .front : .back
-        
-        guard let device = camera(for: position) else {
-            return
-        }
-        
-        //        captureSession.stopRunning()
-        
-        isFrontFacing.toggle()
-        
         DispatchQueue.main.async {
+            
+            let position: AVCaptureDevice.Position = (self.activeInput.device.position == .back) ? .front : .back
+            
+            print("SWITCH", position == .front, position == .back)
+            guard let device = self.camera(for: position) else {
+                return
+            }
+            
+            print("SWITCH CAMERA")
+            
+            self.isFrontFacing.toggle()
             
             self.captureSession.beginConfiguration()
             
-            self.captureSession.removeInput( self.activeInput)
+            self.captureSession.removeInput(self.activeInput)
+            
+            self.captureSession.inputs.forEach { input in
+                if let input = input as? AVCaptureDeviceInput {
+                    self.captureSession.removeInput(input)
+                }
+            }
+
             
             do {
+                
                 self.activeInput = try AVCaptureDeviceInput(device: device)
                 
             } catch {
@@ -241,8 +250,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 return
             }
             
-            if self.captureSession.canAddInput( self.activeInput) {
-                self.captureSession.addInput( self.activeInput)
+            if self.captureSession.canAddInput(self.activeInput) {
+                self.captureSession.addInput(self.activeInput)
+            } else {
+                print("COULD NOT ADD INPUT")
             }
             
             self.captureSession.commitConfiguration()
@@ -255,7 +266,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let width = CameraViewModel.shared.getCameraWidth()
         let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
         let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING
-
+        
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 16/9)
         
@@ -276,25 +287,20 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func startSession() {
         
-        self.captureSession.startRunning()
-        self.canRun = false
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.captureSession.stopRunning()
+        DispatchQueue.main.async {
+            self.captureSession.startRunning()
+            self.canRun = false
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.canRun = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.captureSession.stopRunning()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.canRun = true
+                }
             }
         }
         
-        //        if !captureSession.isRunning {
-        //            DispatchQueue.global(qos: .default).async { [weak self] in
-        //                print("RUNNING STARTED")
-        //                self?.captureSession.startRunning()
-        ////                self?.captureSession.stopRunning()
-        //
-        //            }
-        //        }
     }
     
     
@@ -336,7 +342,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.audioCaptureSession.startRunning()
         }
         
-        print(captureSession.isRunning, "ISRUNNING")
         
         sessionAtSourceTime = nil
         
@@ -410,9 +415,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         let writable = canWrite()
         
-        //           guard writable else {return}
         
-        //        print(output, videoDataOutput, audioDataOutput)
         if writable, sessionAtSourceTime == nil {
             // start writing
             sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
@@ -428,22 +431,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
         }
         
-        //        print(videoDataOutput, output)
         
         if writable, output == videoDataOutput,
            (videoWriterInput.isReadyForMoreMediaData) {
-            // write video buffer
-            //
             videoWriterInput.append(sampleBuffer)
-            //               print(connection, "VIDEO")
-            
         } else if writable, output == audioDataOutput,
                   (audioWriterInput.isReadyForMoreMediaData) {
-            // write audio buffer
-            //               print(connection, "AUDIO")
-            
             audioWriterInput.append(sampleBuffer)
-            
         }
         
         

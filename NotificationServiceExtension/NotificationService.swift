@@ -25,12 +25,18 @@ class NotificationService: UNNotificationServiceExtension {
         
         if let messageData = data?["messageData"] as? [String:Any] {
             
-            if let urlString = messageData["url"] as? String, let url = URL(string: urlString), let messageId = messageData["id"] as? String {
-                downloadUrl(url, isVideo: messageData["type"] as? String == "video", fileName: messageId)
-            }
+            let messageUid = data?["userId"] as? String
+            let uid = defaults?.string(forKey: "userId")
             
-            newMessagesArray.append(messageData)
-            defaults?.set(newMessagesArray, forKey: "messages")
+            if uid != messageUid {
+                
+                if let urlString = messageData["url"] as? String, let url = URL(string: urlString), let messageId = messageData["id"] as? String {
+                    downloadUrl(url, isVideo: messageData["type"] as? String == "video", fileName: messageId)
+                }
+                
+                newMessagesArray.append(messageData)
+                defaults?.set(newMessagesArray, forKey: "messages")
+            }
         }
         
         

@@ -54,18 +54,23 @@ struct VideoPlayerView: View {
                     togglePlay()
                 }
                 .onAppear {
-                    if let id = message?.id {
-                        ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
-                        
-                        if let chat = ConversationViewModel.shared.chat,
-                            chat.messages.count > chat.lastReadMessageIndex,
-                            chat.lastReadMessageIndex > -1,
-                            chat.messages[chat.lastReadMessageIndex].id == id {
+                    
+                    DispatchQueue.main.async {
+                        if let id = message?.id {
                             
-                            ConversationViewModel.shared.currentPlayer = self.player
-                            ConversationViewModel.shared.currentPlayer?.play()
+                             ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
+                            
+                            if let chat = ConversationViewModel.shared.chat,
+                                chat.messages.count > chat.lastReadMessageIndex,
+                                chat.lastReadMessageIndex > -1,
+                                chat.messages[chat.lastReadMessageIndex].id == id {
+                                
+                                ConversationViewModel.shared.currentPlayer = self.player
+                                ConversationViewModel.shared.currentPlayer?.play()
+                            }
                         }
                     }
+                 
                 }
         }
      

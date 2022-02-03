@@ -88,6 +88,7 @@ class AgoraRtm: NSObject {
 }
 
 extension AgoraRtmKit {
+    
     func login(account: String, token: String?, success: Completion = nil, fail: ErrorCompletion = nil) {
         print("rtm login account: \(account)")
         

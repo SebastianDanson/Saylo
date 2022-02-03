@@ -59,7 +59,8 @@ struct ConversationView: View {
                         ConversationFeedView(messages: $viewModel.messages)
                             .overlay(
                                 VStack {
-                                    if viewModel.messages.count == 0, let chat = viewModel.chat {
+                                    if viewModel.messages.count == 0 || (viewModel.messages.count == 1 && viewModel.messages[0].type == .NewChat),
+                                        let chat = viewModel.chat {
                                         
                                         Spacer()
                                         
@@ -78,6 +79,15 @@ struct ConversationView: View {
                     if viewModel.showCamera {
                         CameraViewModel.shared.cameraView
                             .ignoresSafeArea()
+                            .onDisappear {
+                                if viewModel.isSending {
+                                    
+                                    DispatchQueue.main.async {
+                                        viewModel.currentPlayer?.pause()
+                                        viewModel.scrollToBottomOfFeed()
+                                    }
+                                }
+                            }
                         //                            .transition(.move(edge: .bottom))
                     }
                     
@@ -171,8 +181,8 @@ struct ConversationView: View {
             
             if viewModel.showSavedPosts {
                 
-                ConversationFeedView(messages: $viewModel.messages)
-                    .background(Color.systemWhite)
+                ConversationFeedView(messages: $viewModel.savedMessages)
+                    .background(Color.black)
                     .overlay(
                         
                         VStack {

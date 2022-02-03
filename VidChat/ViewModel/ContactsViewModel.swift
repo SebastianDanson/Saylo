@@ -52,7 +52,6 @@ struct ContactsViewModel {
     
     func requestAccessToContacts(completion: @escaping((Bool) -> Void)) {
         CNContactStore().requestAccess(for: .contacts) { (access, error) in
-          print("Access: \(access)")
             completion(access)
         }
     }
@@ -98,7 +97,9 @@ struct ContactsViewModel {
                 snapshot?.documents.forEach({ snapshot in
                     let user = User(dictionary: snapshot.data(), id: snapshot.documentID)
                     
-                    if !AddFriendsViewModel.shared.contactsOnSaylo.contains(where: {$0.id == user.id}) && user.id != currentUser?.id{
+                    if !AddFriendsViewModel.shared.contactsOnSaylo.contains(where: {$0.id == user.id}) && user.id != currentUser?.id,
+                       !(currentUser?.friendRequests.contains(user.id) ?? false),
+                       !(currentUser?.friends.contains(user.id) ?? false) {
                         AddFriendsViewModel.shared.contactsOnSaylo.append(user)
                     }
                 })

@@ -154,7 +154,6 @@ class NewConversationViewModel: ObservableObject {
     
     func hasTheSameChatMembers(members1: [ChatMember], members2: [ChatMember]) -> Bool {
         
-        print(members1.count, members2.count)
         if members1.count != members2.count {
             return false
         }

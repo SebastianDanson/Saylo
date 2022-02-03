@@ -28,35 +28,45 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     ////
-    //    func sceneWillEnterForeground(_ scene: UIScene) {
-    //        print("sceneWillEnterForeground")
-    //
-    //
-    //
-    //    }
+        func sceneWillEnterForeground(_ scene: UIScene) {
+    
+            DispatchQueue.main.async {
+                
+                if ConversationPlayerViewModel.shared.messages.isEmpty {
+                    ConversationPlayerViewModel.shared.setMessages()
+                }
+                
+                let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+                let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+
+                        
+                if newMessagesArray.count > 0 {
+                    ConversationGridViewModel.shared.hasUnreadMessages = true
+                }
+            }
+           
+    
+        }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        print("sceneDidBecomeActive")
         
-        //        ConversationGridViewModel.shared.updateLastRead()
+        
+        if ConversationPlayerViewModel.shared.messages.isEmpty {
+            ConversationPlayerViewModel.shared.setMessages()
+        }
         
         AuthViewModel.shared.fetchUser {
             ConversationGridViewModel.shared.fetchConversations()
         }
         
         CameraViewModel.shared.cameraView.setupSession()
-        
-        if ConversationPlayerViewModel.shared.messages.isEmpty {
-            ConversationPlayerViewModel.shared.setMessages()
-        }
-        
+
+
         ConversationGridViewModel.shared.showCachedChats()
-        
-        
+
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
-        print("sceneWillResignActive")
         
         if let chat = ConversationViewModel.shared.chat {
             ConversationService.updateLastVisited(forChat: chat)
@@ -72,7 +82,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set([[String:Any]](), forKey: "messages")
-        
+                
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {

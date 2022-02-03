@@ -13,7 +13,11 @@ struct ConversationService {
     
     static func uploadMessage(toDocWithId docId: String, data: [String:Any], completion: @escaping((Error?) -> Void)) {
     
-        COLLECTION_CONVERSATIONS.document(docId).updateData(["messages": FieldValue.arrayUnion([data])]) { error in
+        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
+            return
+        }
+
+        COLLECTION_CONVERSATIONS.document(docId).updateData(["messages": FieldValue.arrayUnion([data]), "seenLastPost": [uid]]) { error in
             completion(error)
         }
     }
@@ -22,6 +26,7 @@ struct ConversationService {
     static func fetchSavedMessages(forDocWithId docId: String, completion: @escaping(([Message]) -> Void)) {
         var messages = [Message]()
         COLLECTION_SAVED_POSTS.document(docId).getDocument { snapshot, _ in
+            
             if let data = snapshot?.data() {
                 let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
                 
@@ -55,7 +60,7 @@ struct ConversationService {
             
             let message = Message(dictionary: message, id: id, isSaved: isSaved, savedByUid: savedByUid)
             
-            if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 {
+            if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 || message.isTeamSayloMessage {
                 messages.append(message)
             } else if shouldRemoveMessages {
                 removeMessages = true
@@ -78,6 +83,9 @@ struct ConversationService {
             removeOldMessages(chatData: data, chatId: chatId)
         }
         
+        if messages.count > 1 {
+            messages.removeAll(where: {$0.type == .NewChat })
+        }
                 
         return messages
     }
@@ -142,7 +150,8 @@ struct ConversationService {
         }) { (_, error) in }
         
         updateSeenLastPost(forChat: chat)
-        
+        ConversationViewModel.shared.updateNoticationsArray(chatId: chat.id)
+
     }
     
    static func removeOldMessages(chatData data: [String:Any], chatId: String) {
@@ -152,16 +161,17 @@ struct ConversationService {
         var savedMessagesDic = data["savedMessages"] as? [[String:Any]] ?? [[String:Any]]()
 
         var updatedMessageDic = [[String:Any]]()
-
+       
         for messageDic in messagesDic {
+            
+            let id = messageDic["id"] as? String ?? ""
+            let message = Message(dictionary: messageDic, id: id)
+
             if let timeStamp = messageDic["timestamp"] as? Timestamp {
-                if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 {
-                    
+                if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 || message.isTeamSayloMessage {
                     updatedMessageDic.append(messageDic)
                 } else {
                     
-                    let id = messageDic["id"] as? String ?? ""
-                    let message = Message(dictionary: messageDic, id: id)
                     reactionsDic.removeAll(where: {$0["messageId"] as? String == id})
                     savedMessagesDic.removeAll(where: {$0["messageId"] as? String == id})
                     
@@ -191,6 +201,8 @@ struct ConversationService {
                         }
                     }
                 }
+            } else if message.isTeamSayloMessage {
+                updatedMessageDic.append(messageDic)
             }
         }
         

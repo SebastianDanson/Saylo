@@ -33,7 +33,8 @@ class ConversationViewModel: ObservableObject {
     @Published var noSavedMessages = false
     @Published var noMessages = false
     @Published var showUnreadMessages = false
-    
+    @Published var seenLastPost = [String]()
+
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     
@@ -73,10 +74,10 @@ class ConversationViewModel: ObservableObject {
     @Published var sendingMessageId = ""
     
     @Published var index = 0
-    @Published var currentPlayer: AVPlayer?
+    var currentPlayer: AVPlayer?
     
     @Published var scrollToBottom = false
-    @Published var isPlaying = false
+    @Published var isPlaying = true
     
     @Published var hideChat = false
 
@@ -99,8 +100,8 @@ class ConversationViewModel: ObservableObject {
         self.chatId = chat.id
         self.setIsSameId(messages: chat.messages)
         self.messages = chat.messages
+        self.seenLastPost = chat.seenLastPost
         self.addListener()
-        self.updateNoticationsArray()
         self.chat?.hasUnreadMessage = false
         self.noMessages = false
         ConversationService.updateLastVisited(forChat: chat)
@@ -143,7 +144,7 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil) {
+    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
         
         //       guard let user = AuthViewModel.shared.currentUser else {return}
         
@@ -159,9 +160,9 @@ class ConversationViewModel: ObservableObject {
             "id":id,
             "chatId": chatId,
             "userProfileImage":AuthViewModel.shared.currentUser?.profileImage ?? "",
-            "username": AuthViewModel.shared.currentUser?.firstName ?? "",
+            "username": isAcceptingFrienRequest ? "" : AuthViewModel.shared.currentUser?.firstName ?? "",
             "timestamp": Timestamp(date: Date()),
-            "userId": AuthViewModel.shared.currentUser?.id
+            "userId": isAcceptingFrienRequest ? "" : AuthViewModel.shared.currentUser?.id
         ] as [String: Any]
         
         if let url = url {
@@ -232,7 +233,7 @@ class ConversationViewModel: ObservableObject {
                     }
                 }
             } else if text != nil {
-                self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id)
+                self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id, hasNotification: hasNotification)
             } else if let image = image {
                 MediaUploader.uploadImage(image: image, type: .photo, messageId: id) { newURL in
                     self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
@@ -254,25 +255,25 @@ class ConversationViewModel: ObservableObject {
     }
     
     
-    func atomicallyUploadMessage(toDocWithId id: String, messageId: String) {
+    func atomicallyUploadMessage(toDocWithId id: String, messageId: String, hasNotification: Bool) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
         if index == 0 {
-            uploadMessage(toDocWithId: id)
+            uploadMessage(toDocWithId: id, hasNotification: hasNotification)
             return
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.atomicallyUploadMessage(toDocWithId: id, messageId: messageId)
+            self.atomicallyUploadMessage(toDocWithId: id, messageId: messageId, hasNotification: hasNotification)
         }
     }
     
     func mediaFinishedUploading(chatId: String, messageId: String, newUrl: String) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
         self.uploadQueue[index!]["url"] = newUrl
-        self.atomicallyUploadMessage(toDocWithId: chatId, messageId: messageId)
+        self.atomicallyUploadMessage(toDocWithId: chatId, messageId: messageId, hasNotification: true)
     }
     
-    func uploadMessage(toDocWithId docId: String) {
+    func uploadMessage(toDocWithId docId: String, hasNotification: Bool) {
         if !isUploadingMessage {
             self.isUploadingMessage = true
             let data = uploadQueue[0]
@@ -294,7 +295,11 @@ class ConversationViewModel: ObservableObject {
                                 self.sendingMessageId = ""
                             }
                         }
-                        self.sendMessageNotification(chat: chat, messageData: data)
+                        
+                        if hasNotification {
+                            self.sendMessageNotification(chat: chat, messageData: data)
+                        }
+                        
                     }
                 }
                 
@@ -302,7 +307,7 @@ class ConversationViewModel: ObservableObject {
                 self.uploadQueue.remove(at: 0)
                 
                 if self.uploadQueue.count > 0, let chatId = self.uploadQueue.first?["chatId"] as? String {
-                    self.uploadMessage(toDocWithId: chatId)
+                    self.uploadMessage(toDocWithId: chatId, hasNotification: hasNotification)
                 }
             }
         }
@@ -311,6 +316,7 @@ class ConversationViewModel: ObservableObject {
     func sendMessageNotification(chat: Chat, messageData: [String:Any]) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        
         var messageData = messageData
         let userFullName = currentUser.firstName + " " + currentUser.lastName
         let message = Message(dictionary: messageData, id: "")
@@ -429,6 +435,7 @@ class ConversationViewModel: ObservableObject {
         
         listener = COLLECTION_CONVERSATIONS.document(chatId)
             .addSnapshotListener { snapshot, _ in
+                
                 if let data = snapshot?.data() {
                     
                     let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
@@ -443,9 +450,10 @@ class ConversationViewModel: ObservableObject {
                     ConversationViewModel.shared.setIsSameId(messages: self.messages)
                     
                     self.noMessages = messages.count == 0
+                    
+                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                 }
             }
-        
     }
     
     func removeListener() {
@@ -471,7 +479,7 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func updateNoticationsArray() {
+    func updateNoticationsArray(chatId: String) {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         
@@ -479,14 +487,10 @@ class ConversationViewModel: ObservableObject {
         
         if var notificationArray = notificationArray {
             
-            notificationArray.removeAll { notif in
-                notif == chatId
-            }
-            
             let chats = ConversationGridViewModel.shared.chats
             
             notificationArray.removeAll(where: {$0 == chatId || !chats.contains(where: { chat in
-                chat.id == chatId
+                chat.id == chatId && chat.hasUnreadMessage
             })})
             
             defaults?.set(notificationArray, forKey: "notifications")
@@ -502,15 +506,38 @@ class ConversationViewModel: ObservableObject {
     }
     
     func updatePlayer(index: Int) {
-        isPlaying = true
-        currentPlayer?.pause()
-        currentPlayer = players.first(where: {$0.messageId == messages[index].id})?.player
-        currentPlayer?.play()
+            
+        
+//        DispatchQueue.main.async {
+//            self.isPlaying = true
+//        }
+        
+            self.currentPlayer?.pause()
+            self.currentPlayer = self.players.first(where: {$0.messageId == self.messages[index].id})?.player
+            self.currentPlayer?.play()
+//        }
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//            if self.playerIndex == index {
+          
+//            }
+//        }
+       
     }
     
     func removeCurrentPlayer() {
-        isPlaying = false
-        currentPlayer?.pause()
-        currentPlayer = nil
+//        DispatchQueue.main.async {
+//            self.isPlaying = false
+        if currentPlayer != nil {
+            self.currentPlayer?.pause()
+            self.currentPlayer = nil
+            
+//            DispatchQueue.main.async {
+//                self.isPlaying = false
+//            }
+        }
+        
+        
+//        }
     }
 }

@@ -20,7 +20,8 @@ class Chat: ObservableObject {
     var profileImage: String
     var isDm: Bool
     var mutedUsers: [String]
-  
+    var isTeamSaylo: Bool
+    
     var messages = [Message]()
     var seenLastPost: [String]
 
@@ -31,7 +32,11 @@ class Chat: ObservableObject {
     var nameDictionary: [String:Any]?
     
     @Published var isSelected = false
-    @Published var isSending = false
+    @Published var isSending = false {
+        didSet {
+            print("")
+        }
+    }
     @Published var hasSent = false
     @Published var hasUnreadMessage = false
 
@@ -54,6 +59,8 @@ class Chat: ObservableObject {
         })
         
         self.chatMembers = chatMembers
+        
+        self.isTeamSaylo = dictionary["isTeamSaylo"] as? Bool ?? false
         
         //name
    
@@ -95,7 +102,7 @@ class Chat: ObservableObject {
         
         //messages
         self.messages = ConversationService.getMessagesFromData(data: dictionary, shouldRemoveMessages: shouldRemoveOldMessages, chatId: id)
-
+        
         if self.name.isEmpty {
             self.name = getDefaultChatName()
             
@@ -114,7 +121,7 @@ class Chat: ObservableObject {
                 
                 let messages = ConversationPlayerViewModel.shared.messages
                 
-                if !messages.contains(where: {$0.id == self.messages[i].id}) {
+                if !messages.contains(where: {$0.id == self.messages[i].id}), self.messages[i].type != .NewChat {
                     ConversationPlayerViewModel.shared.addMessage(self.messages[i])
                 }
             }
@@ -139,7 +146,6 @@ class Chat: ObservableObject {
             "users":users,
             "mutedUsers":mutedUsers,
             "userIds":userIds,
-            "username": "Seb",
         ] as [String: Any]
         
         if let nameDictionary = nameDictionary {
@@ -166,7 +172,6 @@ class Chat: ObservableObject {
                 
         if messages.count > 1 {
             for i in 0..<messages.count - 1 {
-                print(messages[i].timestamp.dateValue(), lastVisited.dateValue())
                 if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
                     return i + 1
                 }

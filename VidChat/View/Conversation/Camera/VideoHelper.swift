@@ -60,7 +60,6 @@ enum VideoHelper {
     let assetInfo = orientationFromTransform(transform)
 
     var scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.width
-      print(assetInfo.isPortrait, "ISPORTRAIT")
     if assetInfo.isPortrait {
       scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.height
       let scaleFactor = CGAffineTransform(
@@ -70,7 +69,6 @@ enum VideoHelper {
         assetTrack.preferredTransform.concatenating(scaleFactor),
         at: .zero)
     } else {
-        print(scaleToFitRatio, "RATIO")
       let scaleFactor = CGAffineTransform(
         scaleX: scaleToFitRatio,
         y: scaleToFitRatio)
