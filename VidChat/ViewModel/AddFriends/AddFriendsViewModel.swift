@@ -72,17 +72,18 @@ class AddFriendsViewModel: ObservableObject {
         
         for i in 0..<searchResults.count {
             
-            var relevancy = commonChars(s1: searchResults[i].username, s2: searchText)
+            var relevancy = commonChars(s1: searchResults[i].username, s2: searchText) * 2
             relevancy += commonChars(s1: searchResults[i].firstName, s2: searchText)
             relevancy += commonChars(s1: searchResults[i].lastName, s2: searchText)
             
-            //            let dif = abs(self.searchResults[i].getSeachResult().count-searchText.count)
+            let searchResultCount = (searchResults[i].username.count + searchResults[i].firstName.count + searchResults[i].lastName.count)/2
             
-            //            let relevancyNum = Double(relevancy)/Double(dif)
-            //            self.searchResults[option].setRelevancy(relevancy: relevancyNum)
+            let dif = abs(searchResultCount-searchText.count)
+            let relevancyNum = Double(relevancy)/Double(dif)
             
+            print(relevancy, dif ,relevancyNum, "NUMMMS")
             
-            if relevancy > 0 {
+            if relevancyNum > 2.5 {
                 sortedSearch.append(UserSearch(user: searchResults[i], relevancy: relevancy))
             }
         }
@@ -126,6 +127,7 @@ class AddFriendsViewModel: ObservableObject {
                         
                     }
                 })
+                
                 completion(self.sortResults(searchText: searchText, searchResults: searchResults))
             }
     }

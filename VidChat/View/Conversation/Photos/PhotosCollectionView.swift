@@ -104,7 +104,12 @@ class PhotosCollectionView: UIView {
         
         resetCache()
         updateSelectedItems()
-        fetchCollections()
+        
+        if PhotosViewModel.shared.getHasAccessToPhotos() {
+            fetchCollections()
+        } else {
+            requestAccess()
+        }
         
         addSubview(sendButton)
         sendButton.anchor(bottom: bottomAnchor, right: rightAnchor, paddingBottom: 12, paddingRight: 12)
@@ -161,6 +166,7 @@ class PhotosCollectionView: UIView {
                     
                 }
             } else {
+                
                 imageManager.requestAVAsset(forVideo: asset, options: nil) { asset, mix, _  in
                     guard let asset = asset as? AVURLAsset else { return }
                     withAnimation(.easeInOut(duration: 0.2)) {
@@ -205,26 +211,31 @@ class PhotosCollectionView: UIView {
     
     func requestAccess() {
         PHPhotoLibrary.requestAuthorization { (status) in
-            DispatchQueue.main.async {
-                switch status {
-                case .authorized:
-                    self.fetchCollections()
-                default:
-                    print("NO ACCESS")
-              
-                }
+            switch status {
+            case .authorized:
+                self.fetchCollections()
+            default:
+                print("NO ACCESS")
+                
             }
         }
     }
     
+    
     func fetchCollections() {
+        
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         
         let fetchedAssets = PHAsset.fetchAssets(with: options)
         assetsFetchResults = fetchedAssets
-        collectionView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
+    
+
 }
 
 // MARK: - UICollectionViewDelegate

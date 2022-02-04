@@ -99,6 +99,7 @@ struct SearchTextField: UIViewRepresentable {
             isEditing = false
             text = ""
             ConversationGridViewModel.shared.showAllChats()
+            NewConversationViewModel.shared.showAllChats()
             UIApplication.shared.endEditing()
             
             return true
@@ -107,6 +108,7 @@ struct SearchTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             
             if showSearchReturnKey {
+                
                 NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(reload), object: lastPerformArgument)
                 lastPerformArgument = text as NSString
 
@@ -136,12 +138,17 @@ struct SearchTextField: UIViewRepresentable {
                                                                with: string)
                     self.text = updatedText
                     
-                    ChatSettingsViewModel.shared.filterUsers(withText: updatedText)
-                    ConversationGridViewModel.shared.filterUsers(withText: updatedText)
+                    if ConversationGridViewModel.shared.showNewChat {
+                        NewConversationViewModel.shared.filterUsers(withText: updatedText)
+                    } else {
+                        ChatSettingsViewModel.shared.filterUsers(withText: updatedText)
+                        ConversationGridViewModel.shared.filterUsers(withText: updatedText)
+                    }
 
                 } else {
                     ConversationGridViewModel.shared.showAllChats()
                     ChatSettingsViewModel.shared.showAllChats()
+                    NewConversationViewModel.shared.showAllChats()
                 }
          
             }
@@ -156,6 +163,8 @@ struct SearchTextField: UIViewRepresentable {
             if showSearchReturnKey {
                 AddFriendsViewModel.shared.searchedUsers.removeAll()
             }
+            
+            NewConversationViewModel.shared.showAllChats()
         }
         
         @objc func reload() {

@@ -42,7 +42,12 @@ struct ProfileView: View {
             .padding(.top)
             
             if showImageCropper {
-                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
+                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker, onDone: {
+                    
+                    if let profileImage = profileImage {
+                        AuthViewModel.shared.updateProfileImage(image: profileImage)
+                    }
+                })
                     .ignoresSafeArea()
                     .zIndex(5)
                     .transition(.move(edge: .bottom))

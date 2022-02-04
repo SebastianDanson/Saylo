@@ -1,5 +1,5 @@
 //
-//  SavedPostAlert.swift
+//  Alerts.swift
 //  Saylo
 //
 //  Created by Sebastian Danson on 2021-12-22.
@@ -48,3 +48,28 @@ func videoTooLongAlert() -> Alert {
        )
    )
 }
+
+
+func allowPhotosAlert() -> Alert {
+    
+    return Alert(
+        title: Text("Enable Photo Access"),
+        message: Text("You must enable photo access to send photos"),
+        primaryButton: .default(
+            Text("Cancel"),
+            action: {
+                withAnimation {
+                    ConversationViewModel.shared.showPhotos = false
+                }
+            }
+        ),
+        
+        secondaryButton: .default(
+            Text("Enable"),
+            action: {
+                PhotosViewModel.shared.openSettings()
+            }
+        )
+    )
+}
+

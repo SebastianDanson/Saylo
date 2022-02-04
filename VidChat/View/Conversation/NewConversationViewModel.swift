@@ -15,10 +15,22 @@ class NewConversationViewModel: ObservableObject {
     @Published var isSearching: Bool = true
     @Published var isTypingName: Bool = false
     @Published var addedChats = [Chat]()
-
+    @Published var chats = [Chat]()
+    
+    var allChats = [Chat]()
+    
     static let shared = NewConversationViewModel()
     
     private init() {}
+    
+    
+    func setChats() {
+        var chats = ConversationGridViewModel.shared.chats
+        chats.removeAll(where: {$0.isTeamSaylo})
+        
+        self.chats = chats
+        self.allChats = chats
+    }
     
     func handleChatSelected(chat: Chat) {
         
@@ -39,7 +51,7 @@ class NewConversationViewModel: ObservableObject {
     func removeDuplicateChatMembers(chatMembers: [ChatMember]) -> [ChatMember] {
         
         var chatMemberSet = [ChatMember]()
-                
+        
         chatMembers.forEach { member in
             if !chatMemberSet.contains(where: { $0.id == member.id }) {
                 chatMemberSet.append(member)
@@ -51,12 +63,12 @@ class NewConversationViewModel: ObservableObject {
     
     func createChat(name: String) {
         
-
+        
         guard let user = AuthViewModel.shared.currentUser else {return}
         
         
         var ref: DocumentReference? = nil
-      
+        
         
         var chatMembers = [ChatMember]()
         addedChats.forEach({chatMembers.append(contentsOf: $0.chatMembers)})
@@ -64,7 +76,7 @@ class NewConversationViewModel: ObservableObject {
         chatMembers = removeDuplicateChatMembers(chatMembers: chatMembers)
         
         
-
+        
         
         var userInfo = [[String:Any]]()
         
@@ -80,8 +92,8 @@ class NewConversationViewModel: ObservableObject {
             
             userInfo.append(info)
         }
-       
-                
+        
+        
         //create dictionary to send to DB
         let data = [
             "admin": [user.id],
@@ -106,7 +118,7 @@ class NewConversationViewModel: ObservableObject {
             ConversationGridViewModel.shared.allChats.append(chat)
             ConversationGridViewModel.shared.chats.append(chat)
             ConversationGridViewModel.shared.showConversation = true
-
+            
             COLLECTION_SAVED_POSTS.document(id).setData([:])
             
             let groupData = ["lastVisited": Timestamp(date: Date()),
@@ -114,7 +126,7 @@ class NewConversationViewModel: ObservableObject {
                              "id":id] as [String: Any]
             
             Messaging.messaging().subscribe(toTopic: id)
-
+            
             var fcmTokens = [String]()
             chatMembers.forEach({fcmTokens.append($0.fcmToken)})
             
@@ -123,7 +135,7 @@ class NewConversationViewModel: ObservableObject {
             
             //Update Current User doc with new group
             COLLECTION_USERS.document(user.id).updateData(["conversations": FieldValue.arrayUnion([groupData])])
-
+            
             //Update other users docs
             chatMembers.forEach { chatMember in
                 COLLECTION_USERS.document(chatMember.id).updateData(["conversations": FieldValue.arrayUnion([groupData])])
@@ -132,7 +144,7 @@ class NewConversationViewModel: ObservableObject {
     }
     
     func getSelectedChat() -> Chat? {
-                
+        
         let allChats = ConversationGridViewModel.shared.allChats
         
         var chatMembers = [ChatMember]()
@@ -141,7 +153,7 @@ class NewConversationViewModel: ObservableObject {
         
         chatMembers = removeDuplicateChatMembers(chatMembers: chatMembers)
         chatMembers = sortedChatMembers(chatMembers)
-                
+        
         for chat in allChats {
             
             if hasTheSameChatMembers(members1: chatMembers, members2: sortedChatMembers(chat.chatMembers)) {
@@ -157,20 +169,50 @@ class NewConversationViewModel: ObservableObject {
         if members1.count != members2.count {
             return false
         }
-                
+        
         
         for i in 0..<members1.count {
-                        
+            
             if members1[i].id != members2[i].id {
                 return false
             }
             
         }
-            
-         return true
+        
+        return true
     }
     
     func sortedChatMembers(_ members: [ChatMember]) -> [ChatMember] {
         return members.sorted(by: {$0.id < $1.id})
+    }
+    
+    
+    func filterUsers(withText text: String) {
+        
+        withAnimation {
+            
+            if text.count == 0 {
+                self.showAllChats()
+            } else {
+                
+                self.chats = self.allChats.filter({
+                    
+                    let wordArray = $0.name.components(separatedBy: [" "])
+                    var contains = false
+                    
+                    wordArray.forEach({
+                        if $0.starts(with: text) {
+                            contains = true
+                        }
+                    })
+                    
+                    return contains
+                })
+            }
+        }
+    }
+    
+    func showAllChats() {
+        self.chats = self.allChats
     }
 }

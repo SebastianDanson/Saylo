@@ -45,7 +45,10 @@ class User: ChatMember, ObservableObject {
         
         //chat
         conversationsDic.forEach({self.chats.append(UserChat(dictionary: $0))})
-        AuthViewModel.shared.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
+        
+        if !AuthViewModel.shared.hasUnseenFriendRequest {
+            AuthViewModel.shared.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
+        }
     }
 }
 

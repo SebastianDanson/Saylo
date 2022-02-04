@@ -360,11 +360,17 @@ class ConversationViewModel: ObservableObject {
     }
     
     func isSameIdAsPrevMessage(prevMessage: Message, currentMessage: Message) -> Bool {
-        return prevMessage.type == .Text && currentMessage.type == .Text && prevMessage.userId == currentMessage.userId
+        return prevMessage.type == .Text && currentMessage.type == .Text && prevMessage.userId == currentMessage.userId && isWithin30min(message1: prevMessage,
+                                                                                                                                         message2: currentMessage)
     }
     
     func isSameIdAsNextMessage(currentMessage: Message, nextMessage: Message) -> Bool {
-        return currentMessage.type == .Text && nextMessage.type == .Text && currentMessage.userId == nextMessage.userId
+        return currentMessage.type == .Text && nextMessage.type == .Text && currentMessage.userId == nextMessage.userId && isWithin30min(message1: currentMessage,
+                                                                                                                                         message2: nextMessage)
+    }
+    
+    func isWithin30min(message1: Message, message2: Message) -> Bool {
+        abs(message1.timestamp.dateValue().timeIntervalSince1970 - message2.timestamp.dateValue().timeIntervalSince1970) < 1800
     }
     
     func updateIsSaved(atIndex i: Int) {
@@ -414,7 +420,7 @@ class ConversationViewModel: ObservableObject {
                 data["topic"] = message.chatId
                 data["title"] = ""
                 data["body"] = user.firstName + " \"\(reaction.reactionType.getPastTenseString())\" \(message.username)'s \(messageType)"
-                data["metaData"] = ["reactionUserId":message.userId]
+                data["metaData"] = ["userId":user.id]
             }
             
             
@@ -503,6 +509,31 @@ class ConversationViewModel: ObservableObject {
 
     }
     
+    func cleanNotificationsArray() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        
+        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
+        
+        if let notificationArray = notificationArray {
+            
+            let chats = ConversationGridViewModel.shared.chats
+            
+            var newNotificationArray = [String]()
+            
+            notificationArray.forEach { chatId in
+                if let chat = chats.first(where: { $0.id == chatId }), chat.hasUnreadMessage {
+                    newNotificationArray.append(chatId)
+                }
+            }
+            
+            defaults?.set(newNotificationArray, forKey: "notifications")
+            
+            UIApplication.shared.applicationIconBadgeNumber = newNotificationArray.count 
+        }
+        
+    }
+    
     func scrollToBottomOfFeed() {
         scrollToBottom.toggle()
     }
@@ -537,9 +568,11 @@ class ConversationViewModel: ObservableObject {
 //            DispatchQueue.main.async {
 //                self.isPlaying = false
 //            }
+            
         }
         
         
 //        }
+    
     }
 }

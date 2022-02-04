@@ -201,15 +201,15 @@ struct ConversationFeedView: View {
             return nil
         }
         
-        
         var seenText = "Seen by"
         
         viewModel.seenLastPost.forEach { userId in
             
             if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
-                seenText += " \(chatMember.firstName)"
+                seenText += ", \(chatMember.firstName)"
             }
         }
+        
         
         return seenText == "Seen by" ? nil : seenText
     }

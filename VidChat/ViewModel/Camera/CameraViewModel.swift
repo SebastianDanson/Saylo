@@ -25,7 +25,14 @@ class CameraViewModel: ObservableObject {
     @Published var isFrontFacing = true
     @Published var isRotating = false
     @Published var showFullCameraView = false
+    @Published var showAlert = false {
+        didSet {
+            print(showAlert, "SHOWALERT")
+        }
+    }
 
+    var isCameraAlert = false
+    
     var timer: Timer?
     
     var cameraView = CameraMainView()
@@ -219,4 +226,11 @@ class CameraViewModel: ObservableObject {
     }
     
     
+    func getHasCameraAccess() -> Bool {
+        return AVCaptureDevice.authorizationStatus(for: .video) != .denied
+    }
+    
+    func getHasMicAccess() -> Bool {
+        return AVCaptureDevice.authorizationStatus(for: .audio) != .denied
+    }
 }

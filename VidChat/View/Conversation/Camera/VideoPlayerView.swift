@@ -59,18 +59,12 @@ struct VideoPlayerView: View {
                         if let id = message?.id {
                             
                              ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
-                            
-                            print("1")
-                            
-                            print(ConversationViewModel.shared.chat, ConversationViewModel.shared.chat?.messages.count, ConversationViewModel.shared.chat?.lastReadMessageIndex, "OKOK")
-                            
+                                                                                    
                             if let chat = ConversationViewModel.shared.chat,
                                 chat.messages.count > chat.lastReadMessageIndex,
                                 chat.lastReadMessageIndex > -1,
                                 chat.messages[chat.lastReadMessageIndex].id == id {
                                 
-                                print("2")
-
                                 ConversationViewModel.shared.currentPlayer = self.player
                                 ConversationViewModel.shared.currentPlayer?.play()
                             }

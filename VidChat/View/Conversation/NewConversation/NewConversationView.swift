@@ -17,13 +17,6 @@ struct NewConversationView: View {
     @State var searchText: String = ""
     @State var chatName: String = ""
     @State private var keyboardHeight: CGFloat = 0
-    @State var chats: [Chat]
-    
-    init() {
-        var chats = ConversationGridViewModel.shared.chats
-        chats.removeAll(where: {$0.isTeamSaylo})
-        self._chats = State(initialValue: chats)
-    }
 
     var body: some View {
         
@@ -111,7 +104,7 @@ struct NewConversationView: View {
                         
                         VStack(spacing: 0) {
                             
-                            ForEach(chats, id: \.id) { chat in
+                            ForEach(viewModel.chats, id: \.id) { chat in
                                 
                                 NewConversationCell(chat: chat)
                                 
@@ -170,6 +163,9 @@ struct NewConversationView: View {
                 .padding(.bottom, viewModel.isTypingName || viewModel.isSearching ? keyboardHeight + 20 : BOTTOM_PADDING + 16)
             }
         }.onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
+        .onAppear {
+            NewConversationViewModel.shared.setChats()
+        }
     }
     
     func isButtonEnabled() -> Bool {

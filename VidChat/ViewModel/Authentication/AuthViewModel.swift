@@ -229,6 +229,7 @@ class AuthViewModel: ObservableObject {
                 self.fetchUser {
                     ConversationGridViewModel.shared.fetchConversations()
                     AppDelegate.shared.askToSendNotifications()
+                    self.hasUnseenFriendRequest = true
                 }
                 
                 ConversationGridViewModel.shared.setChatCache()
@@ -242,6 +243,31 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    func updateProfileImage(image: UIImage) {
+        
+        guard let currentUser = currentUser else { return }
+                
+        MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
+            
+            AuthViewModel.shared.currentUser?.profileImage = imageUrl
+            
+            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+            defaults?.set(imageUrl, forKey: "profileImage")
+            
+            
+            self.profileImage = imageUrl
+            
+            let userRef = COLLECTION_USERS.document(currentUser.id)
+            
+            Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                transaction.updateData(["profileImage" : imageUrl], forDocument: userRef)
+                return nil
+            }) { (_, error) in }
+            
+            self.currentUser?.profileImage = imageUrl
+     
+        }
+    }
     
     func fetchUser(completion: @escaping(() -> Void)) {
         
@@ -328,6 +354,13 @@ class AuthViewModel: ObservableObject {
     
     func logout() {
         
+        ConversationGridViewModel.shared.chats.forEach { chat in
+            
+            if !chat.isDm {
+                Messaging.messaging().unsubscribe(fromTopic: chat.id)
+            }
+        }
+        
         do {
             try Auth.auth().signOut()
             currentUser = nil
@@ -374,17 +407,14 @@ class AuthViewModel: ObservableObject {
     
     func updateTeamSayloChat(fcmToken: String) {
         
-        print("UPDATE 1")
         guard let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME) else { return }
         guard let teamSayloId = defaults.string(forKey: "teamSayloId") else { return }
         guard let userId = defaults.string(forKey: "userId") else { return }
         
-        print("UPDATE 2")
 
         COLLECTION_USERS.document(userId).getDocument { snapshot, _ in
             
             if let data = snapshot?.data() {
-                print("UPDATE 3")
 
                 let user = User(dictionary: data, id: userId)
                 
@@ -401,9 +431,6 @@ class AuthViewModel: ObservableObject {
                 COLLECTION_CONVERSATIONS.document(teamSayloId).updateData(["users":FieldValue.arrayUnion([userData])])
             }
         }
-      
     }
-    
-    
 }
 

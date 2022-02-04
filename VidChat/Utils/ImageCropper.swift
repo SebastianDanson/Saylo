@@ -17,6 +17,7 @@ struct ImageCropper: UIViewControllerRepresentable {
     var onDone: (() -> Void)?
 
     func makeUIViewController(context: Context) -> some UIViewController {
+        
         let picker = CropViewController(croppingStyle: .default, image: image ?? UIImage())
         picker.aspectRatioLockEnabled = true
         picker.customAspectRatio = CGSize(width: 1,height: 1)
@@ -41,6 +42,7 @@ struct ImageCropper: UIViewControllerRepresentable {
         }
         
         func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+            
             self.parent.image = image
             
             if let onDone = self.parent.onDone {

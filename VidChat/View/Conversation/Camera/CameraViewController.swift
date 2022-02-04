@@ -69,14 +69,23 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        if !CameraViewModel.shared.getHasCameraAccess() {
+            showAlert(isCameraAlert: true)
+        }
+        
         if AuthViewModel.shared.isSignedIn {
-            print("YUPPER")
+
             if ConversationGridViewModel.shared.hasUnreadMessages {
                 setPreviewLayerSmallFrame()
                 view.backgroundColor = .clear
             } else {
                 setPreviewLayerFullFrame()
                 view.backgroundColor = .black
+            }
+            
+            
+            if !CameraViewModel.shared.getHasMicAccess() {
+                showAlert(isCameraAlert: false)
             }
         }
         
@@ -87,6 +96,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
             }
         }
+        
         
     }
     
@@ -146,6 +156,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupAudio() {
         
+        guard CameraViewModel.shared.getHasMicAccess() else { return }
+        
         DispatchQueue.main.async {
             
             guard let mic = AVCaptureDevice.default(for: .audio) else {
@@ -180,8 +192,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupSession(addAudio: Bool = true) {
         
-        print("YUP 3")
-        
+        guard CameraViewModel.shared.getHasCameraAccess() else { return }
+
         DispatchQueue.main.async {
             
             self.setUpWriter()
@@ -254,13 +266,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             let position: AVCaptureDevice.Position = (self.activeInput.device.position == .back) ? .front : .back
             
-            print("SWITCH", position == .front, position == .back)
             guard let device = self.camera(for: position) else {
                 return
             }
-            
-            print("SWITCH CAMERA")
-            
+                        
             self.isFrontFacing.toggle()
             
             self.captureSession.beginConfiguration()
@@ -339,6 +348,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     public func captureMovie(withFlash hasFlash: Bool) {
         
+        guard CameraViewModel.shared.getHasCameraAccess() && CameraViewModel.shared.getHasMicAccess() else {return}
+
         self.hasFlash = hasFlash
         
         let device = activeInput.device
@@ -511,7 +522,30 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
+    func showAlert(isCameraAlert: Bool) {
+        
+        let title = "Enable \(isCameraAlert ? "Camera" : "Microphone") Access"
+        let messsage = "You must enable \(isCameraAlert ? "camera" : "microphone") access to send Saylo's"
+
+        let alert = UIAlertController(title: title, message: messsage, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
+            withAnimation {
+                CameraViewModel.shared.reset(hideCamera: true)
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Enable", style: .default, handler: { _ in
+            PhotosViewModel.shared.openSettings()
+        }))
+        
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     public func stopRecording(showVideo: Bool = true) {
+        
+        guard CameraViewModel.shared.getHasCameraAccess() && CameraViewModel.shared.getHasMicAccess() else {return}
         
         videoWriterInput.markAsFinished()
         audioWriterInput.markAsFinished()

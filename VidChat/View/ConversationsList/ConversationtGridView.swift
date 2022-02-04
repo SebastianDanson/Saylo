@@ -23,7 +23,8 @@ struct ConversationGridView: View {
     //  @ObservedObject var viewModel: PostGridViewModel
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var viewModel = ConversationGridViewModel.shared
-    
+    @StateObject private var photosViewModel = PhotosViewModel.shared
+
     @State var contentOffset: CGFloat = 0
     @State var initialOffset: CGFloat = 0
     @State var showPhotoPickerAlert = false
@@ -34,7 +35,6 @@ struct ConversationGridView: View {
                                           height: $conversationViewModel.photoBaseHeight,
                                           showVideoLengthAlert: $showPhotoPickerAlert)
             .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
-        
         
         
         NavigationView {
@@ -196,6 +196,9 @@ struct ConversationGridView: View {
                 }
                 
             })
+            .alert(isPresented: $photosViewModel.showNoAccessToPhotosAlert) {
+                allowPhotosAlert()
+            }
             .navigationBarHidden(true)
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)

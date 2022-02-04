@@ -52,22 +52,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
-       
-            
-            if ConversationPlayerViewModel.shared.messages.isEmpty {
-                ConversationPlayerViewModel.shared.setMessages()
-            }
-            
-            AuthViewModel.shared.fetchUser {
-                ConversationGridViewModel.shared.fetchConversations()
-            }
-            
-        if !AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
+        
+        
+        if ConversationPlayerViewModel.shared.messages.isEmpty {
+            ConversationPlayerViewModel.shared.setMessages()
+        }
+        
+        AuthViewModel.shared.fetchUser {
+            ConversationGridViewModel.shared.fetchConversations()
+        }
+        
+        if AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
             CameraViewModel.shared.cameraView.setupSession()
         }
             
-        
-            ConversationGridViewModel.shared.showCachedChats()
+        ConversationGridViewModel.shared.showCachedChats()
         
     }
     
@@ -84,10 +83,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         ConversationGridViewModel.shared.setChatCache()
     
+        ConversationViewModel.shared.cleanNotificationsArray()
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set([[String:Any]](), forKey: "messages")
-                
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {

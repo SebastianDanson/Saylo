@@ -46,6 +46,7 @@ struct CameraMainView: View {
                         .frame(width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
                         .cornerRadius(20)
                         .padding(.top, TOP_PADDING)
+                    
                     Spacer()
                     
                 }.zIndex(3)
@@ -57,17 +58,6 @@ struct CameraMainView: View {
                     switchCamera()
                 })
             
-            
-            
-            
-            
-            //flash view if there's front facing flash
-            
-            
-            //            ZStack(alignment: .top) {
-            
-            
-            //            }
         }
         .gesture(ConversationGridViewModel.shared.hasUnreadMessages ? nil :
             
@@ -263,13 +253,20 @@ struct MediaOptions: View {
                         Button {
                             
                             if !hasSaved {
-                                if let url = viewModel.videoUrl {
-                                    viewModel.saveToPhotos(url: url)
-                                    withAnimation { hasSaved = true }
-                                } else if let photo = viewModel.photo {
-                                    viewModel.saveToPhotos(photo: photo)
-                                    withAnimation { hasSaved = true }
+                                
+                                if PhotosViewModel.shared.getHasAccessToPhotos() {
+                                    if let url = viewModel.videoUrl {
+                                        viewModel.saveToPhotos(url: url)
+                                        withAnimation { hasSaved = true }
+                                    } else if let photo = viewModel.photo {
+                                        viewModel.saveToPhotos(photo: photo)
+                                        withAnimation { hasSaved = true }
+                                    }
+                               
+                                } else {
+                                    PhotosViewModel.shared.showNoAccessToPhotosAlert = true
                                 }
+                                
                             }
                             
                         } label: {

@@ -138,7 +138,6 @@ class Chat: ObservableObject {
         var messages = [[String:Any]]()
         self.messages.forEach({messages.append($0.getDictionary())})
 
-        print(messages.count, lastReadMessageIndex, "INFO")
         
         var dictionary = [
             "id":id,

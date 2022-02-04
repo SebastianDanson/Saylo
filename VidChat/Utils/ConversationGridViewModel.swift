@@ -268,7 +268,6 @@ class ConversationGridViewModel: ObservableObject {
             if let id = $0["id"] as? String {
                 let chat = Chat(dictionary: $0, id: id, shouldRemoveOldMessages: false)
                 
-                print(chat.messages.count, "COUNT")
                 chats.append(chat)
             }
         })
@@ -300,12 +299,10 @@ class ConversationGridViewModel: ObservableObject {
     
     func setChatCache() {
         
-        print("YESSIR")
         guard let user = AuthViewModel.shared.currentUser else {return}
 
         var chatDictionary = [[String:Any]]()
         
-        print(self.chats.count, "OKOK")
         self.chats.forEach { chat in
             if user.chats.contains(where: {$0.id == chat.id}) {
                 chatDictionary.append(chat.getDictionary())

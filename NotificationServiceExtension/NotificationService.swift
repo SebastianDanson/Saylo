@@ -40,7 +40,6 @@ class NotificationService: UNNotificationServiceExtension {
         }
         
         
-        
         if let bestAttemptContent = bestAttemptContent, let id = data?["chatId"] as? String, id != "" {
             
             if !notificationArray.contains(id) {

@@ -78,6 +78,8 @@ struct ContactsViewModel {
         guard let contacts = getPhoneContacts() else { return }
         
         let currentUser = AuthViewModel.shared.currentUser
+         
+         let uid = currentUser?.id ?? AuthViewModel.shared.getUserId()
         
          for i in 0..<Int(ceil(Double(contacts.count)/10)) {
             
@@ -97,7 +99,7 @@ struct ContactsViewModel {
                 snapshot?.documents.forEach({ snapshot in
                     let user = User(dictionary: snapshot.data(), id: snapshot.documentID)
                     
-                    if !AddFriendsViewModel.shared.contactsOnSaylo.contains(where: {$0.id == user.id}) && user.id != currentUser?.id,
+                    if !AddFriendsViewModel.shared.contactsOnSaylo.contains(where: {$0.id == user.id}) && user.id != uid,
                        !(currentUser?.friendRequests.contains(user.id) ?? false),
                        !(currentUser?.friends.contains(user.id) ?? false) {
                         AddFriendsViewModel.shared.contactsOnSaylo.append(user)

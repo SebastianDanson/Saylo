@@ -16,7 +16,8 @@ struct ConversationView: View {
 
     @StateObject var cameraViewModel = CameraViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
-    
+    @StateObject private var photosViewModel = PhotosViewModel.shared
+
     @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
     @State private var text = ""
@@ -210,6 +211,9 @@ struct ConversationView: View {
         .onChange(of: viewModel.hideChat, perform: { newValue in
                 mode.wrappedValue.dismiss()
         })
+        .alert(isPresented: $photosViewModel.showNoAccessToPhotosAlert) {
+            allowPhotosAlert()
+        }
         .onDisappear {
             viewModel.players.forEach({$0.player.pause()})
             viewModel.currentPlayer?.pause()
@@ -667,6 +671,7 @@ struct KeyboardView: View {
     
     @StateObject var viewModel = ConversationViewModel.shared
     @Binding var text: String
+    
     let authViewModel = AuthViewModel.shared
     
     var body: some View {
@@ -674,6 +679,7 @@ struct KeyboardView: View {
         HStack(alignment: .bottom) {
             
             Button {
+                
                 UIApplication.shared.endEditing()
                 
                 withAnimation {

@@ -168,17 +168,17 @@ struct ConversationService {
             let message = Message(dictionary: messageDic, id: id)
 
             if let timeStamp = messageDic["timestamp"] as? Timestamp {
+                
                 if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 || message.isTeamSayloMessage {
                     updatedMessageDic.append(messageDic)
                 } else {
-                    
                     reactionsDic.removeAll(where: {$0["messageId"] as? String == id})
                     savedMessagesDic.removeAll(where: {$0["messageId"] as? String == id})
                     
                     if message.type != .Text && !message.isSaved {
                         if message.type == .Video {
-                            
                            let storageRef = UploadType.video.getFilePath(messageId: id)
+                            
                             storageRef.delete { error in
                                 if let error = error {
                                     print("ERROR deleting storage ref: \(error.localizedDescription)")

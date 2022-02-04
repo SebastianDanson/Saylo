@@ -185,7 +185,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             if token == nil {
                 AuthViewModel.shared.updateTeamSayloChat(fcmToken: fcmToken)
             }
-
         }
     }
     
@@ -217,7 +216,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         if isFriendRequest {
             AuthViewModel.shared.hasUnseenFriendRequest = true
             AuthViewModel.shared.fetchUser {}
-
         }
         
         if acceptedFriendRequest {
