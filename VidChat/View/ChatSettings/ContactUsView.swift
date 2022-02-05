@@ -15,6 +15,10 @@ struct ContactUsView: View {
     
     let viewModel = ContactUsViewModel()
     
+    init() {
+        UITextView.appearance().backgroundColor = .clear
+    }
+    
     var body: some View {
         
         let emailSentAlert = Alert(
@@ -28,7 +32,7 @@ struct ContactUsView: View {
             )
         )
         
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .center, spacing: 16) {
             
             HStack {
                 
@@ -62,8 +66,8 @@ struct ContactUsView: View {
                 }
 
             }
-            .background(Color.systemWhite)
             .frame(width: SCREEN_WIDTH, height: 44)
+            .background(Color.systemWhite)
             
             Text("Ask or tell us anything!")
                 .font(.system(size: 22, weight: .semibold))
@@ -81,15 +85,31 @@ struct ContactUsView: View {
                     .frame(height: 160)
                     .padding(.horizontal)
                 
-                MultilineTextField("Message", text: $message, height: 160)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 8)
+                ZStack(alignment: .leading) {
+                    
+                    //Place holder
+                    if message.isEmpty {
+                        TextEditor(text: .constant("Message..."))
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 8)
+                            .foregroundColor(.gray)
+                            .disabled(true)
+
+                    }
+                    
+                    TextEditor(text: $message)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
+                }
+               
+                
+//                MultilineTextField("Message", text: $message, height: 160)
+                 
                 
             }
 
             
             Spacer()
-            
         }
         
     }

@@ -72,12 +72,16 @@ struct SettingsView: View {
 
             
         }
-        .frame(width: SCREEN_WIDTH - 40)
+        .frame(width: getWidth())
         .background(Color.popUpSystemWhite)
         .ignoresSafeArea()
         .cornerRadius(10)
         .shadow(color: Color(.init(white: 0, alpha: 0.04)), radius: 16, x: 0, y: 4)
         
+    }
+    
+    func getWidth() -> CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? SCREEN_WIDTH / 2 : SCREEN_WIDTH - 40
     }
 }
 

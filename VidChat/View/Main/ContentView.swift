@@ -23,7 +23,8 @@ struct ContentView: View {
                 NavigationView {
                     LandingPageView()
                         .navigationViewStyle(StackNavigationViewStyle())
-                }
+                }.navigationViewStyle(StackNavigationViewStyle())
+                
                 
             } else {
                 

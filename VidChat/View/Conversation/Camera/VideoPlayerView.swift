@@ -38,7 +38,7 @@ struct VideoPlayerView: View {
         ZStack {
             
             PlayerView(player: $player, shouldLoop: true)
-                .frame(width: CAMERA_WIDTH, height: ConversationViewModel.shared.showCamera || CameraViewModel.shared.showFullCameraView ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT)
+                .frame(width: CAMERA_WIDTH, height: getHeight())
                 .overlay(
                     HStack {
                         if showName && !(message?.isTeamSayloMessage ?? false) {
@@ -56,6 +56,7 @@ struct VideoPlayerView: View {
                 .onAppear {
                     
                     DispatchQueue.main.async {
+                        
                         if let id = message?.id {
                             
                              ConversationViewModel.shared.addPlayer(MessagePlayer(player: self.player, messageId: id))
@@ -70,10 +71,8 @@ struct VideoPlayerView: View {
                             }
                         }
                     }
-                 
                 }
         }
-     
     }
     
     func togglePlay() {
@@ -88,6 +87,9 @@ struct VideoPlayerView: View {
         }
     }
     
+    func getHeight() -> CGFloat {
+        ConversationViewModel.shared.showCamera || CameraViewModel.shared.showFullCameraView ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT
+    }
     
 }
 

@@ -35,16 +35,21 @@ struct MakeCallView: View {
                 VStack {
                     
                     ScrollView(showsIndicators: false) {
+                        
                         VStack {
+                            
                             LazyVGrid(columns: items, spacing: 14, content: {
+                                
                                 ForEach(Array(conversationGridViewModel.chats.enumerated()), id: \.1.id) { i, chat in
-                                    ConversationGridCell(chat: $conversationGridViewModel.chats[i])
-                                        .flippedUpsideDown()
-                                        .scaleEffect(x: -1, y: 1, anchor: .center)
-                                        .onTapGesture {
-                                            viewModel.createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
-                                        }
                                     
+                                    if !chat.isTeamSaylo {
+                                        ConversationGridCell(chat: $conversationGridViewModel.chats[i])
+                                            .flippedUpsideDown()
+                                            .scaleEffect(x: -1, y: 1, anchor: .center)
+                                            .onTapGesture {
+                                                viewModel.createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
+                                            }
+                                    }
                                 }
                             })
                                 .padding(.horizontal, 12)
@@ -62,7 +67,7 @@ struct MakeCallView: View {
                     .edgesIgnoringSafeArea(.top)
                 
             }
-         
+            
         }.ignoresSafeArea()
     }
 }
