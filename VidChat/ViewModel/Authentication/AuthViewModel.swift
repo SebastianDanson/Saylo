@@ -40,6 +40,7 @@ class AuthViewModel: ObservableObject {
             
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
             defaults?.set(user.uid, forKey: "userId")
+            defaults?.set(true, forKey: "hasCompletedSignUp")
             
             self.isSignedIn = true
             self.fetchUser {
@@ -47,13 +48,15 @@ class AuthViewModel: ObservableObject {
                 AppDelegate.shared.askToSendNotifications()
             }
             
+            
+            CameraViewModel.shared.cameraView.setupSession()
             completion(error)
         }
     }
     
     func register(withEmail email: String, password: String, completion: @escaping((Error?) -> Void)) {
         
-       
+        
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             
             guard let user = result?.user else {
@@ -62,7 +65,7 @@ class AuthViewModel: ObservableObject {
             }
             
             
-
+            
             let chatRef = COLLECTION_CONVERSATIONS.document()
             let chatId = chatRef.documentID
             
@@ -99,7 +102,7 @@ class AuthViewModel: ObservableObject {
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
             defaults?.set(user.uid, forKey: "userId")
             defaults?.set(chatId, forKey: "teamSayloId")
-
+            
             COLLECTION_USERS.document(user.uid).setData(data) { _ in }
             
             completion(error)
@@ -204,7 +207,7 @@ class AuthViewModel: ObservableObject {
             print(error, "ERROR")
             completion(error)
         })
-
+        
     }
     
     
@@ -233,7 +236,7 @@ class AuthViewModel: ObservableObject {
                 }
                 
                 ConversationGridViewModel.shared.setChatCache()
-
+                
                 self.isSignedIn = true
                 self.hasCompletedSignUp = true
                 CameraViewModel.shared.cameraView.setupSession()
@@ -246,7 +249,7 @@ class AuthViewModel: ObservableObject {
     func updateProfileImage(image: UIImage) {
         
         guard let currentUser = currentUser else { return }
-                
+        
         MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
             
             AuthViewModel.shared.currentUser?.profileImage = imageUrl
@@ -265,7 +268,7 @@ class AuthViewModel: ObservableObject {
             }) { (_, error) in }
             
             self.currentUser?.profileImage = imageUrl
-     
+            
         }
     }
     
@@ -293,8 +296,13 @@ class AuthViewModel: ObservableObject {
                     LandingPageViewModel.shared.setAuthView()
                 }
                 
+                if self.hasCompletedSignUp {
+                    let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+                    defaults?.set(true, forKey: "hasCompletedSignUp")
+                }
+                
                 let fcmToken = UserDefaults.standard.string(forKey: "fcmToken")
-
+                
                 if let fcmToken = fcmToken, !fcmToken.isEmpty {
                     
                     if user.fcmToken != fcmToken {
@@ -309,6 +317,7 @@ class AuthViewModel: ObservableObject {
                         self.currentUser?.fcmToken = fcmToken
                         self.updateChatsFcmToken()
                         
+                       
                     }
                 }
                 
@@ -411,11 +420,11 @@ class AuthViewModel: ObservableObject {
         guard let teamSayloId = defaults.string(forKey: "teamSayloId") else { return }
         guard let userId = defaults.string(forKey: "userId") else { return }
         
-
+        
         COLLECTION_USERS.document(userId).getDocument { snapshot, _ in
             
             if let data = snapshot?.data() {
-
+                
                 let user = User(dictionary: data, id: userId)
                 
                 let userData = [

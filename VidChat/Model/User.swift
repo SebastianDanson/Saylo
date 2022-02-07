@@ -46,7 +46,9 @@ class User: ChatMember, ObservableObject {
         //chat
         conversationsDic.forEach({self.chats.append(UserChat(dictionary: $0))})
         
-        if !AuthViewModel.shared.hasUnseenFriendRequest {
+        let uid = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") ?? ""
+        
+        if !AuthViewModel.shared.hasUnseenFriendRequest && uid == id {
             AuthViewModel.shared.hasUnseenFriendRequest = dictionary["hasUnseenFriendRequest"] as? Bool ?? false
         }
     }
@@ -61,6 +63,10 @@ struct UserChat {
         self.id = dictionary["id"] as? String ?? ""
         self.lastVisited = dictionary["lastVisited"] as? Timestamp ?? Timestamp(date: Date())
         self.notificationsEnbaled = dictionary["notificationsEnbaled"] as? Bool ?? true
+    }
+    
+    func getDictionary() -> [String:Any] {
+        return ["id":id, "lastVisited":lastVisited, "notificationsEnbaled":notificationsEnbaled]
     }
 }
 

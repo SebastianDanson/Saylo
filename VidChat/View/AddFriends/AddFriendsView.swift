@@ -89,6 +89,7 @@ struct AddFriendsView: View {
                     }
                     
                     if viewModel.friendRequests.count > 0 && viewModel.searchedUsers.count == 0 {
+                        
                         Text("Added Me")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))

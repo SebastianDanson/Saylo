@@ -25,11 +25,7 @@ class CameraViewModel: ObservableObject {
     @Published var isFrontFacing = true
     @Published var isRotating = false
     @Published var showFullCameraView = false
-    @Published var showAlert = false {
-        didSet {
-            print(showAlert, "SHOWALERT")
-        }
-    }
+    @Published var showAlert = false
 
     var isCameraAlert = false
     

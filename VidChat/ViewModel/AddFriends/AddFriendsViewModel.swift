@@ -204,7 +204,43 @@ class AddFriendsViewModel: ObservableObject {
     func removeFriendRequest(toUser user: ChatMember) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        
+        var chats = currentUser.chats
+        
+        let chatId: String!
+        
+        if currentUser.id > user.id {
+            chatId = currentUser.id + user.id
+        } else {
+            chatId = user.id + currentUser.id
+        }
+
+        chats.removeAll(where: { $0.id == chatId })
+        
+        var conversationsDic = [[String:Any]]()
+        
+        chats.forEach { chat in
+            conversationsDic.append(chat.getDictionary())
+        }
+        
+        
+        
+        
+        let userRef = COLLECTION_USERS.document(currentUser.id)
+        
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["conversations":conversationsDic], forDocument: userRef)
+            return nil
+        }) { (_, error) in
+            AuthViewModel.shared.fetchUser {
+                ConversationGridViewModel.shared.fetchConversations()
+            }
+        }
+        
+        
         COLLECTION_USERS.document(user.id).updateData(["friendRequests": FieldValue.arrayRemove([currentUser.id])])
+        
+        
         
     }
     
@@ -212,7 +248,32 @@ class AddFriendsViewModel: ObservableObject {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
         currentUser.friendRequests.removeAll(where: {$0 == user.id})
+        
         COLLECTION_USERS.document(currentUser.id).updateData(["friendRequests": FieldValue.arrayRemove([user.id])])
+        
+        let chatId: String!
+        
+        if currentUser.id > user.id {
+            chatId = currentUser.id + user.id
+        } else {
+            chatId = user.id + currentUser.id
+        }
+        
+        COLLECTION_USERS.document(user.id).getDocument { snapshot, _ in
+            
+            if let data = snapshot?.data() {
+                
+                var conversations = data["conversations"] as? [[String:Any]] ?? [[String:Any]]()
+                
+                conversations.removeAll(where: {$0["id"] as? String == chatId})
+                
+                let userRef = COLLECTION_USERS.document(user.id)
+                Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+                    transaction.updateData(["conversations": conversations], forDocument: userRef)
+                    return nil
+                }) { (_, error) in }
+            }
+        }
     }
     
     func acceptFriendRequest(fromUser friend: ChatMember) {
@@ -254,14 +315,16 @@ class AddFriendsViewModel: ObservableObject {
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
             transaction.updateData(["users":[userData,friendData], "messages": FieldValue.arrayUnion([messageData])], forDocument: chatRef)
             return nil
-        }) { (_, error) in  }
+        }) { (_, error) in
+            ConversationGridViewModel.shared.fetchConversations()
+        }
         
         
         let chatData = ["id":chatId,
                         "lastVisited": Timestamp(date: Date()),
                         "notificationsEnabled": true] as [String: Any]
         
-        ConversationGridViewModel.shared.addConversation(withId: chatId) { }
+//        ConversationGridViewModel.shared.addConversation(withId: chatId) { }
         
         COLLECTION_USERS.document(user.id)
             .updateData(
@@ -314,7 +377,7 @@ class AddFriendsViewModel: ObservableObject {
     }
     
     func setSeenFriendRequests() {
-        guard let currentUserId = AuthViewModel.shared.currentUser?.id else {return}
+        let currentUserId = AuthViewModel.shared.getUserId()
         AuthViewModel.shared.hasUnseenFriendRequest = false
         COLLECTION_USERS.document(currentUserId).updateData(["hasUnseenFriendRequest":false])
     }
