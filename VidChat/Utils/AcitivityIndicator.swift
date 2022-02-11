@@ -63,6 +63,7 @@ struct ActivityIndicatorRectangle: View {
     
     @Binding var shouldAnimate: Bool
     @State private var isLoading = false
+    
     let width: CGFloat
 
        var body: some View {

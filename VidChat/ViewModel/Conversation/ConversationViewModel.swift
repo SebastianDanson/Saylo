@@ -338,7 +338,7 @@ class ConversationViewModel: ObservableObject {
             data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
             data["metaData"] = ["chatId": chat.id, "userId": currentUser.id, "messageData":messageData]
         }
-        
+                
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     

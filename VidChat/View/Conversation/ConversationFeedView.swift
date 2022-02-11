@@ -206,10 +206,14 @@ struct ConversationFeedView: View {
         viewModel.seenLastPost.forEach { userId in
             
             if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
-                seenText += ", \(chatMember.firstName)"
+                
+                if chat.isDm {
+                    seenText += " \(chatMember.firstName)"
+                } else {
+                    seenText += ", \(chatMember.firstName)"
+                }
             }
         }
-        
         
         return seenText == "Seen by" ? nil : seenText
     }

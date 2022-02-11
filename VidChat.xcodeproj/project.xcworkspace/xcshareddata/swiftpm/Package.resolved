@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "Flurry",
+        "repositoryURL": "https://github.com/flurry/FlurrySwiftPackage/",
+        "state": {
+          "branch": null,
+          "revision": "45e0267992ef2d57f53f3d29f5cb66714ed2f05a",
+          "version": "11.4.0"
+        }
+      },
+      {
         "package": "GoogleAppMeasurement",
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {

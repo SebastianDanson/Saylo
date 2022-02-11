@@ -36,6 +36,7 @@
 		0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */; };
 		0660EE5A279A0CA700704AFE /* UnreadMessagePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */; };
 		0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */; };
+		066FE60F27B62344001B1DC6 /* AllowNotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066FE60E27B62344001B1DC6 /* AllowNotificationsView.swift */; };
 		067FBB5E279BB7B600B2EA04 /* DialCountriesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FBB5D279BB7B600B2EA04 /* DialCountriesController.swift */; };
 		067FBB60279BB7DE00B2EA04 /* CountriesAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FBB5F279BB7DE00B2EA04 /* CountriesAdapter.swift */; };
 		067FBB62279BB81E00B2EA04 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FBB61279BB81E00B2EA04 /* Country.swift */; };
@@ -74,6 +75,7 @@
 		06F1A32C277D522300A0F992 /* SetProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A32B277D522300A0F992 /* SetProfileImageView.swift */; };
 		06F1A32E277E7A9E00A0F992 /* SetUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A32D277E7A9E00A0F992 /* SetUsernameView.swift */; };
 		06F1A330277E811800A0F992 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A32F277E811800A0F992 /* LandingPageView.swift */; };
+		06F63F5327B61C670081A22D /* FlurryAnalyticsSPM in Frameworks */ = {isa = PBXBuildFile; productRef = 06F63F5227B61C670081A22D /* FlurryAnalyticsSPM */; };
 		3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F26E2700F768009E0029 /* ConversationGridCell.swift */; };
 		3F08F27227017A36009E0029 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27127017A36009E0029 /* CameraView.swift */; };
 		3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27327017A3D009E0029 /* CameraViewController.swift */; };
@@ -210,6 +212,8 @@
 		0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesScrollView.swift; sourceTree = "<group>"; };
 		0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagePlayerView.swift; sourceTree = "<group>"; };
 		0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUsersPopUpView.swift; sourceTree = "<group>"; };
+		066FE60D27B621E1001B1DC6 /* Saylo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saylo-Bridging-Header.h"; sourceTree = "<group>"; };
+		066FE60E27B62344001B1DC6 /* AllowNotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowNotificationsView.swift; sourceTree = "<group>"; };
 		067FBB5D279BB7B600B2EA04 /* DialCountriesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialCountriesController.swift; sourceTree = "<group>"; };
 		067FBB5F279BB7DE00B2EA04 /* CountriesAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountriesAdapter.swift; sourceTree = "<group>"; };
 		067FBB61279BB81E00B2EA04 /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
@@ -346,6 +350,7 @@
 				3F1768182713ED550049ADBA /* FirebaseFunctions in Frameworks */,
 				3F112B762720720900BA2A73 /* AgoraRtcKit in Frameworks */,
 				3F17681C2713ED550049ADBA /* FirebaseStorage in Frameworks */,
+				06F63F5327B61C670081A22D /* FlurryAnalyticsSPM in Frameworks */,
 				3F1768162713ED550049ADBA /* FirebaseFirestore in Frameworks */,
 				3F1768142713ED550049ADBA /* FirebaseDynamicLinks in Frameworks */,
 				3FDEE7B72721C1EE00DF43C6 /* AgoraRtmKit in Frameworks */,
@@ -547,6 +552,7 @@
 				3F485D8326FD453D0071532B /* Info.plist */,
 				063A89FE2783CC4E008A8B71 /* GoogleService-Info.plist */,
 				3F485D8026FD453D0071532B /* Preview Content */,
+				066FE60D27B621E1001B1DC6 /* Saylo-Bridging-Header.h */,
 			);
 			path = VidChat;
 			sourceTree = "<group>";
@@ -672,6 +678,7 @@
 				06F1A32D277E7A9E00A0F992 /* SetUsernameView.swift */,
 				06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */,
 				063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */,
+				066FE60E27B62344001B1DC6 /* AllowNotificationsView.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -853,6 +860,7 @@
 				3F112B752720720900BA2A73 /* AgoraRtcKit */,
 				3FDEE7B62721C1EE00DF43C6 /* AgoraRtmKit */,
 				062D28D9277AD21E00B25637 /* CropViewController */,
+				06F63F5227B61C670081A22D /* FlurryAnalyticsSPM */,
 			);
 			productName = VideoMessengerApp;
 			productReference = 3F485D7726FD453B0071532B /* Saylo.app */;
@@ -891,6 +899,7 @@
 				3F112B742720720900BA2A73 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */,
 				3FDEE7B52721C1EE00DF43C6 /* XCRemoteSwiftPackageReference "AgoraRtm_iOS" */,
 				062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
+				06F63F5127B61C670081A22D /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
 			);
 			productRefGroup = 3F485D7826FD453B0071532B /* Products */;
 			projectDirPath = "";
@@ -1045,6 +1054,7 @@
 				06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
+				066FE60F27B62344001B1DC6 /* AllowNotificationsView.swift in Sources */,
 				3F485DBE26FE23AB0071532B /* ImagePicker.swift in Sources */,
 				3F485DC626FE28860071532B /* LoginView.swift in Sources */,
 				0616EC0B2792899C006565FE /* CreateNewGroupView.swift in Sources */,
@@ -1192,6 +1202,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "VidChat/Saylo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1246,6 +1257,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "VidChat/Saylo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1345,6 +1357,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		06F63F5127B61C670081A22D /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/flurry/FlurrySwiftPackage/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
 		3F112B742720720900BA2A73 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AgoraIO/AgoraRtcEngine_iOS";
@@ -1384,6 +1404,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
+		};
+		06F63F5227B61C670081A22D /* FlurryAnalyticsSPM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 06F63F5127B61C670081A22D /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
+			productName = FlurryAnalyticsSPM;
 		};
 		3F112B752720720900BA2A73 /* AgoraRtcKit */ = {
 			isa = XCSwiftPackageProductDependency;

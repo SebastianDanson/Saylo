@@ -9,6 +9,7 @@ import UIKit
 import PushKit
 import Firebase
 import AVFoundation
+import FlurryAnalytics
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -31,8 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         providerDelegate = ProviderDelegate(callManager: callManager)
         
         FirebaseApp.configure()
-        
   
+        Flurry.startSession("WFHSSXFYSQFPR8SPM3ZQ", with: FlurrySessionBuilder
+           .init()
+           .withCrashReporting(true)
+           .withLogLevel(FlurryLogLevelAll))
         
 //        let audioSession = AVAudioSession.sharedInstance()
 //            do {
