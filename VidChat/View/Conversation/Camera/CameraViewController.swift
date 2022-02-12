@@ -390,7 +390,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         sessionAtSourceTime = nil
         
         
-        CameraViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
+        CameraViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(MAX_VIDEO_LENGTH), repeats: false) { timer in
             CameraViewModel.shared.stopRecording()
         }
         

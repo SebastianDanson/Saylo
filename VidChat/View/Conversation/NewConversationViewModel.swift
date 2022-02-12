@@ -113,6 +113,8 @@ class NewConversationViewModel: ObservableObject {
             let chat = Chat(dictionary: data, id: id)
             
             ConversationViewModel.shared.addMessage(text: "Created the group", type: .Text, chatId: id)
+          
+            
             ConversationViewModel.shared.setChat(chat: chat)
             
             ConversationGridViewModel.shared.allChats.append(chat)

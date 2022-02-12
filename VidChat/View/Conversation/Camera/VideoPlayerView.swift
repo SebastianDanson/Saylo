@@ -67,7 +67,7 @@ struct VideoPlayerView: View {
                                 chat.messages[chat.lastReadMessageIndex].id == id {
                                 
                                 ConversationViewModel.shared.currentPlayer = self.player
-                                ConversationViewModel.shared.currentPlayer?.play()
+                                ConversationViewModel.shared.currentPlayer?.playWithRate()
                             }
                         }
                     }
@@ -80,7 +80,7 @@ struct VideoPlayerView: View {
         if player.isPlaying {
             player.pause()
         } else {
-            player.play()
+            player.playWithRate()
             if ConversationViewModel.shared.chat != nil, ConversationViewModel.shared.showCamera == false {
                 ConversationViewModel.shared.currentPlayer = self.player
             }
@@ -212,7 +212,7 @@ class PlayerUIView: UIView {
         
         
         if !shouldLoop || ConversationViewModel.shared.showCamera {
-            player.play()
+            player.playWithRate()
         }
         
         if !shouldLoop {
@@ -291,7 +291,7 @@ class PlayerUIView: UIView {
         
         if playerLayer.player?.rate == 0
         {
-            playerLayer.player?.play()
+            playerLayer.player?.playWithRate()
         }
     }
     
@@ -324,8 +324,14 @@ class PlayerUIView: UIView {
 }
 
 extension AVPlayer {
+    
     var isPlaying: Bool {
         return rate != 0 && error == nil
+    }
+    
+    func playWithRate() {
+        self.play()
+        self.rate = ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
     }
 }
 

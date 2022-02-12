@@ -145,7 +145,7 @@ struct ConversationFeedView: View {
                         
                         viewModel.currentPlayer?.pause()
                         viewModel.currentPlayer = viewModel.players.first(where: {$0.messageId == messages[middleItemNo].id})?.player
-                        viewModel.currentPlayer?.play()
+                        viewModel.currentPlayer?.playWithRate()
                         
                         
                     })
@@ -203,15 +203,19 @@ struct ConversationFeedView: View {
         
         var seenText = "Seen by"
         
+        var isFirst = true
+        
         viewModel.seenLastPost.forEach { userId in
             
             if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
                 
-                if chat.isDm {
+                if isFirst {
                     seenText += " \(chatMember.firstName)"
                 } else {
                     seenText += ", \(chatMember.firstName)"
                 }
+                
+                isFirst = false
             }
         }
         

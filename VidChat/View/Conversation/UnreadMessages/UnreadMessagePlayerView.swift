@@ -26,7 +26,7 @@ struct UnreadMessagePlayerView: View {
         PlayerView(player: $player, shouldLoop: false)
             .frame(width: CAMERA_SMALL_WIDTH, height: CAMERA_SMALL_HEIGHT)
             .onAppear {
-                player.play()
+                player.playWithRate()
             }
             .onDisappear {
                 player.pause()

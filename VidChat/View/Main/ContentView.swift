@@ -14,29 +14,28 @@ struct ContentView: View {
     
     var body: some View {
         
-//        Group {
+        Group {
             
             //if not logged in -> show landing page
             // else show main interface
-//            if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
-//
-//                NavigationView {
-//                    LandingPageView()
-//                        .navigationViewStyle(StackNavigationViewStyle())
-//                }.navigationViewStyle(StackNavigationViewStyle())
-//
-//
-//            } else {
-//
-//                if conversationViewModel.showCall {
-//                    CallView().ignoresSafeArea()
-//                } else {
-//                    ConversationGridView()
-//                }
-//            }
-            
-            AllowNotificationsView()
-//        }
+            if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
+
+                NavigationView {
+                    LandingPageView()
+                        .navigationViewStyle(StackNavigationViewStyle())
+                }.navigationViewStyle(StackNavigationViewStyle())
+
+
+            } else {
+
+                if conversationViewModel.showCall {
+                    CallView().ignoresSafeArea()
+                } else {
+                    ConversationGridView()
+                }
+            }
+    
+        }
     }
 }
 

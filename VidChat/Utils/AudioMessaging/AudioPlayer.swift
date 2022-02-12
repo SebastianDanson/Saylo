@@ -34,7 +34,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
             let playerItem = AVPlayerItem(url: audio)
 
             audioPlayer = AVPlayer(playerItem: playerItem)
-            audioPlayer.play()
+            audioPlayer.playWithRate()
             hasFinished = false
             isPlaying = true
         
@@ -69,7 +69,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func resume() {
 
         if !hasFinished {
-            audioPlayer.play()
+            audioPlayer.playWithRate()
         } else {
             startPlayback(audio: audio)
         }

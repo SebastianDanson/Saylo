@@ -270,6 +270,7 @@ struct OptionsView: View {
                                             viewModel.showCamera = true
                                             viewModel.pauseVideos()
                                         }
+                                        
                                     }, label: {
                                         ActionView(image: Image(systemName: "camera.fill"), imageDimension: 30)
                                     }).transition(.scale)
@@ -361,7 +362,7 @@ struct OptionsView: View {
                                                     .stroke(Color(.systemRed), style: StrokeStyle(lineWidth: 5,
                                                                                                   lineCap: .round,
                                                                                                   lineJoin: .round))
-                                                    .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : 20), value: viewModel.audioProgress)
+                                                    .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : Double(MAX_VIDEO_LENGTH)), value: viewModel.audioProgress)
                                                     .frame(width: 48, height: 48)
                                                     .rotationEffect(Angle(degrees: 270))
                                                 // }
@@ -430,7 +431,7 @@ struct CameraCircle: View {
         Circle()
             .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
             .stroke(Color.white, style: StrokeStyle(lineWidth: 5.5, lineCap: .round, lineJoin: .round))
-            .animation(.linear(duration: viewModel.progress == 0 ? 0 : 30), value: viewModel.progress)
+            .animation(.linear(duration: viewModel.progress == 0 ? 0 : Double(MAX_VIDEO_LENGTH)), value: viewModel.progress)
             .frame(width: 56, height: 56)
             .rotationEffect(Angle(degrees: 270))
             .overlay(

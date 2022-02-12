@@ -83,7 +83,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.numberOfLoops = 2
-            player?.play()
+            player?.playWithRate()
         } catch {
             print("COULD NOT PLAY")
         }
@@ -231,5 +231,13 @@ extension VideoCallViewController: CallManagerDelegate {
         if callManger.remoteUserIDs.count > 0 {
             self.player?.pause()
         }
+    }
+}
+
+extension AVAudioPlayer {
+    
+    func playWithRate() {
+        self.play()
+        self.rate = ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
     }
 }

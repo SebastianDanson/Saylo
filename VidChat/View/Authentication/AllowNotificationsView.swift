@@ -10,9 +10,14 @@ import SwiftUI
 
 struct AllowNotificationsView: View {
     
+    @State var isLargeScale = false
+    
     var body: some View {
         
         ZStack {
+            
+            Color.mainBlue.ignoresSafeArea()
+
             
             VStack {
                 
@@ -35,28 +40,78 @@ struct AllowNotificationsView: View {
                 
                 Spacer()
                 
-                Image("AllowNotifications")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 270, height: 180)
-                    .overlay(
-                        
-                        Circle().stroke(Color(.systemBlue), lineWidth: 4)
-                            .frame(width: 64, height: 64)
-                            .padding(.trailing, 40)
-                            .padding(.bottom, -8)
-                            .animation(Animation.linear(duration: 0.5).repeatForever(autoreverses: true))
-                            .transition(.opacity), alignment: .bottomTrailing
-                    )
+                ZStack {
+                    
+                    Image("AllowNotifications")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 270, height: 180)
+                        .overlay(
+                            
+                            HStack(spacing: 0) {
+                                
+                                Button {
+                                    
+                                    AuthViewModel.shared.finishSignUp()
+                                    
+                                } label: {
+                                    
+                                    ZStack {
+                                        
+                                    }
+                                    .frame(width: 270/2, height: 44)
+                                    //                                    .background(Color.red)
+                                    
+                                }
+                                
+                                Spacer()
+                                
+                                ZStack {
+                                    
+                                    
+                                    
+                                    Button {
+                                        
+                                        AppDelegate.shared.askToSendNotifications {
+                                            AuthViewModel.shared.finishSignUp()
+                                        }
+                                        
+                                    } label: {
+                                        
+                                        ZStack {
+                                        }
+                                        .frame(width: 270/2, height: 44)
+                                        .overlay(
+                                            Circle().stroke(Color(.systemBlue), lineWidth: 3)
+                                                .frame(width: 56, height: 56)
+                                                .scaleEffect(isLargeScale ? 1.2 : 1)
+                                                .padding(.bottom, -5)
+                                                .padding(.trailing, 16)
+                                                .animation(Animation.linear(duration: 1).repeatForever(autoreverses: true))
+                                                .onAppear(perform: {
+                                                    self.isLargeScale = true
+                                                })
+                                            
+                                            , alignment: .bottom
+                                        )
+                                        //                                        .background(Color.blue)
+                                        
+                                    }
+                                }
+                                
+                            }
+                            , alignment: .bottom
+                        )
+                    
+                }
                 
                 Spacer()
                 
             }
             
         }
-        .frame(width: SCREEN_WIDTH)
-        .edgesIgnoringSafeArea(.all)
-        .background(Color.mainBlue)
+        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        
     }
     
 }

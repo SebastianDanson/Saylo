@@ -37,7 +37,8 @@ class ConversationViewModel: ObservableObject {
 
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
-    
+    @Published var isTwoTimesSpeed = false
+
     //    @Published var chatId = "Chat"
     
     
@@ -166,6 +167,7 @@ class ConversationViewModel: ObservableObject {
         ] as [String: Any]
         
         if let url = url {
+            
             dictionary["url"] = url.absoluteString
             
             if type == .Video {
@@ -196,7 +198,9 @@ class ConversationViewModel: ObservableObject {
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
         
         if chatId != "" {
+            
             if !self.chatId.isEmpty {
+                
                 let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
                 message.image = image
                 
@@ -215,9 +219,7 @@ class ConversationViewModel: ObservableObject {
                     ConversationGridViewModel.shared.chats[i].messages.append(message)
                 }
             }
-            
-            
-            
+                        
             uploadQueue.append(dictionary)
             
             if let url = url {
@@ -288,14 +290,16 @@ class ConversationViewModel: ObservableObject {
                         if self.chatId.isEmpty {
                             ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
                         } else {
+                            
                             self.isSending = false
                             self.hasSent = true
+                            
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 self.hasSent = false
                                 self.sendingMessageId = ""
                             }
                         }
-                        
+                                                
                         if hasNotification {
                             self.sendMessageNotification(chat: chat, messageData: data)
                         }
@@ -327,8 +331,8 @@ class ConversationViewModel: ObservableObject {
             
             let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id})
             data["token"] = chatMember?.fcmToken ?? ""
-            data["title"] = message.type == .Text ? userFullName : ""
-            data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
+            data["title"] = userFullName
+            data["body"] = message.type == .Text ? (message.text ?? "") : "Sent a Saylo"
             data["metaData"] = ["chatId": chat.id, "messageData":messageData]
             
         } else {
@@ -547,7 +551,7 @@ class ConversationViewModel: ObservableObject {
         
             self.currentPlayer?.pause()
             self.currentPlayer = self.players.first(where: {$0.messageId == self.messages[index].id})?.player
-            self.currentPlayer?.play()
+            self.currentPlayer?.playWithRate()
 //        }
 //
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

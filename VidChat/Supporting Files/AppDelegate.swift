@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            }
         
         if Auth.auth().currentUser != nil {
-            askToSendNotifications()
+            askToSendNotifications {}
         }
         
 //        try! Auth.auth().signOut()
@@ -164,14 +164,16 @@ extension AppDelegate: PKPushRegistryDelegate {
 
 extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     
-    func askToSendNotifications() {
+    func askToSendNotifications(completion: @escaping(() -> Void)) {
         let application = UIApplication.shared
         
         UNUserNotificationCenter.current().delegate = self
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(
             options: authOptions,
-            completionHandler: {_, _ in })
+            completionHandler: {_, _ in
+                completion()
+            })
         Messaging.messaging().delegate = self
         application.registerForRemoteNotifications()
     }

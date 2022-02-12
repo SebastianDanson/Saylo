@@ -51,7 +51,7 @@ class CameraViewModel: ObservableObject {
             return
         }
         
-        videoPlayerView.player.play()
+        videoPlayerView.player.playWithRate()
         
         if !videoPlayerView.player.isPlaying {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

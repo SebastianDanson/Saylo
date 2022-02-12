@@ -45,7 +45,7 @@ class AuthViewModel: ObservableObject {
             self.isSignedIn = true
             self.fetchUser {
                 ConversationGridViewModel.shared.fetchConversations()
-                AppDelegate.shared.askToSendNotifications()
+                AppDelegate.shared.askToSendNotifications {}
             }
             
             
@@ -214,6 +214,7 @@ class AuthViewModel: ObservableObject {
     func setProfileImage(image: UIImage, completion: @escaping(() -> Void)) {
         
         guard let currentUser = currentUser else { return }
+        
         CameraViewModel.shared.photo = nil
         
         MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
@@ -231,19 +232,29 @@ class AuthViewModel: ObservableObject {
                 
                 self.fetchUser {
                     ConversationGridViewModel.shared.fetchConversations()
-                    AppDelegate.shared.askToSendNotifications()
                     self.hasUnseenFriendRequest = true
                 }
                 
                 ConversationGridViewModel.shared.setChatCache()
                 
-                self.isSignedIn = true
-                self.hasCompletedSignUp = true
-                CameraViewModel.shared.cameraView.setupSession()
-                
                 completion()
             }
         }
+    }
+    
+    func finishSignUp() {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.isSignedIn = true
+                self.hasCompletedSignUp = true
+            }
+        }
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            CameraViewModel.shared.cameraView.setupSession()
+        }
+
     }
     
     func updateProfileImage(image: UIImage) {

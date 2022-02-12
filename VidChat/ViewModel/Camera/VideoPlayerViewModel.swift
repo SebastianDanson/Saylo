@@ -24,12 +24,12 @@ class VideoPlayerViewModel: ObservableObject {
         if player.isPlaying {
             player.pause()
         } else {
-            player.play()
+            player.playWithRate()
         }
     }
     
     func play() {
-        player.play()
+        player.playWithRate()
     }
     
     func pause() {

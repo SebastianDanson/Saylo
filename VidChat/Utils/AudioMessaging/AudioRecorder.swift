@@ -67,7 +67,7 @@ class AudioRecorder: NSObject,ObservableObject {
             print("Could not start recording")
         }
         
-        timer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { timer in
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(MAX_VIDEO_LENGTH), repeats: false) { timer in
             self.stopRecording()
         }
     }

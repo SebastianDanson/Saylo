@@ -22,6 +22,7 @@ struct VideoCell: View {
     //    let videoPlayerView: VideoPlayerView
     
     init(message: Message) {
+        
         self.message = message
         self.reactions = message.reactions
         self._isSaved = State(initialValue: message.isSaved)
@@ -112,6 +113,7 @@ struct VideoCell: View {
                             Button {
                                 showAlert = true
                             } label: {
+                                
                                 ZStack {
                                     
                                     Circle()
@@ -124,6 +126,7 @@ struct VideoCell: View {
                                         .foregroundColor(message.type == .Video || !message.savedByCurrentUser ? .white : .mainBlue)
                                         .frame(width: 18, height: 18)
                                 }
+                                
                             }.alert(isPresented: $showAlert) {
                                 savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
                                     withAnimation {
@@ -161,13 +164,13 @@ struct VideoCell: View {
                                 .scaledToFit()
                                 .frame(width: 16, height: 16)
                                 .foregroundColor(message.type == .Audio ? .mainBlue : .white)
-
+                            
                         }.transition(.opacity)
                         
                     }
                 }
             } .padding(.trailing, 10)
-            .padding(.bottom, 10),
+                .padding(.bottom, 10),
             alignment: .bottomTrailing)
         .padding(.vertical, 12)
     }
@@ -379,20 +382,58 @@ struct MessageInfoView: View {
     
     var body: some View {
         
-        HStack {
-            KFImage(URL(string: profileImage))
-                .resizable()
-                .scaledToFill()
-                .frame(width: 30, height: 30)
-                .clipShape(Circle())
+        VStack {
             
-            Text(name)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.white)
-            + Text(" • \(date.getFormattedDate())")
-                .font(.system(size: 12, weight: .regular))
-                .foregroundColor(.white)
+            HStack {
+                
+                TwoTimesSpeedView()
+                    .padding(.bottom, 6)
+                
+                Spacer()
+            }
+            
+            
+            HStack {
+                
+                KFImage(URL(string: profileImage))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 30, height: 30)
+                    .clipShape(Circle())
+                
+                Text(name)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                + Text(" • \(date.getFormattedDate())")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.white)
+                
+                Spacer()
+
+            }
+        }
+    }
+}
+
+struct TwoTimesSpeedView: View {
+    
+    @StateObject var viewModel = ConversationViewModel.shared
+
+    var body: some View {
+        
+        Button {
+            ConversationViewModel.shared.isTwoTimesSpeed.toggle()
+            ConversationViewModel.shared.currentPlayer?.rate = 2
+        } label: {
+            Circle().stroke(viewModel.isTwoTimesSpeed ? Color.mainBlue : Color.white, lineWidth: 2.5)
+                .frame(width: 30, height: 30)
+                .overlay(
+                    Text("2x")
+                        .foregroundColor(viewModel.isTwoTimesSpeed ? .mainBlue : .white)
+                        .font(.system(size: 14, weight: .semibold))
+                )
         }
         
     }
+    
 }

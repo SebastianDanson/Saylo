@@ -143,6 +143,7 @@ struct ConversationPlayerView: View {
                             HStack {
                                 
                                 if !viewModel.messages[viewModel.index].isForTakingVideo {
+                                    
                                     messageInfoView
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, viewModel.isPlayable() ? 36 : 20)

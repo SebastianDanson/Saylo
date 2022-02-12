@@ -24,7 +24,8 @@ struct SetProfileImageView: View {
         
         ZStack {
             
-            
+            NavigationLink(destination: AllowNotificationsView().navigationBarHidden(true), isActive: $signUpComplete) { EmptyView() }
+
             VStack {
                 
                 Text("Adding a photo helps your friends recognize you")
@@ -82,11 +83,13 @@ struct SetProfileImageView: View {
                 Button {
                     
                     if let profileImage = profileImage {
-                        isLoading = true
+//                        isLoading = true
                         AuthViewModel.shared.setProfileImage(image: profileImage) {
-                            isLoading = false
-                            signUpComplete = true
+//                            isLoading = false
                         }
+                        
+                        signUpComplete = true
+
                     } else {
                         
                         DispatchQueue.main.async {
@@ -170,7 +173,6 @@ struct SetProfileImageView: View {
                 
             }
             
-//            NavigationLink(destination: ConversationGridView().navigationBarHidden(true), isActive: $signUpComplete) { EmptyView() }
             
         }
         

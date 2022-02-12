@@ -178,7 +178,7 @@ struct AudioCell: View {
         if player.isPlaying {
             player.pause()
         } else {
-            player.play()
+            player.playWithRate()
         }
     }
 }

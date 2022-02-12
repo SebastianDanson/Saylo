@@ -43,6 +43,13 @@ class ConversationPlayerViewModel: ObservableObject {
     }
    
     func addMessage(_ message: Message) {
+        
+        let uid = AuthViewModel.shared.getUserId()
+        
+        guard message.userId != uid, uid != "" else { return }
+        
+        print("MESSAGE:",message.userId, "UID:",uid, "OKOK")
+        
         if let index = self.messages.lastIndex(where: {$0.chatId == message.chatId }), index < self.messages.count - 1 {
             self.messages.insert(message, at: index + 1)
         } else {
@@ -125,8 +132,6 @@ class ConversationPlayerViewModel: ObservableObject {
     func isPlayable() -> Bool {
         return messages[index].type == .Video || messages[index].type == .Audio
     }
-    
-    
     
 }
 
