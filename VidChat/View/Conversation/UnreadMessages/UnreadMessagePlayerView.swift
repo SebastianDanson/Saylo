@@ -26,6 +26,7 @@ struct UnreadMessagePlayerView: View {
         PlayerView(player: $player, shouldLoop: false)
             .frame(width: CAMERA_SMALL_WIDTH, height: CAMERA_SMALL_HEIGHT)
             .onAppear {
+                ConversationViewModel.shared.currentPlayer = player
                 player.playWithRate()
             }
             .onDisappear {

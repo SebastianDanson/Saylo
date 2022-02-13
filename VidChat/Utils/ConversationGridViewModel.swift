@@ -229,7 +229,7 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func sortChats() {
+    func sortChats(withAnimation: Bool = false) {
         self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
     }
     

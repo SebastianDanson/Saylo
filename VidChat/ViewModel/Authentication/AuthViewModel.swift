@@ -243,6 +243,7 @@ class AuthViewModel: ObservableObject {
     }
     
     func finishSignUp() {
+        
         DispatchQueue.main.async {
             withAnimation {
                 self.isSignedIn = true

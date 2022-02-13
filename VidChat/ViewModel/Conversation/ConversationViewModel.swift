@@ -37,7 +37,11 @@ class ConversationViewModel: ObservableObject {
 
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
-    @Published var isTwoTimesSpeed = false
+    @Published var isTwoTimesSpeed = false {
+        didSet {
+            ConversationViewModel.shared.currentPlayer?.rate = isTwoTimesSpeed ? 2 : 1
+        }
+    }
 
     //    @Published var chatId = "Chat"
     
@@ -197,6 +201,9 @@ class ConversationViewModel: ObservableObject {
         
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
         
+        let messageParams = ["userId":AuthViewModel.shared.currentUser?.id, "type": message.type.getString()]
+        Flurry.logEvent("MessageSent", withParameters: messageParams)
+
         if chatId != "" {
             
             if !self.chatId.isEmpty {
@@ -284,6 +291,10 @@ class ConversationViewModel: ObservableObject {
                 if let error = error {
                     print("ERROR uploading message \(error.localizedDescription)")
                 } else {
+                    
+                    withAnimation {
+                        ConversationGridViewModel.shared.sortChats()
+                    }
                     
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
                         

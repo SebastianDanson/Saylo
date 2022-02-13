@@ -49,7 +49,7 @@ struct ImageCell: View {
             
             HStack {
                 if showName {
-                    MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userProfileImage, name: message.username)
+                    MessageInfoView(date: message.timestamp.dateValue(), profileImage: message.userProfileImage, name: message.username, showTwoTimeSpeed: false)
                         .padding(.vertical, 0)
                         .padding(.horizontal, 3)
                 }

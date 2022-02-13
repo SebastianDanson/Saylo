@@ -27,10 +27,14 @@ struct NoMessagesView: View {
                 .padding(.top, 1)
                 .padding(.bottom, 0.5)
             
-            
-            Text("Messages disappear after 24 hours")
+            Text("Unsaved messages disappear after 24 hours")
                 .font(.system(size: 17, weight: .medium))
                 .foregroundColor(Color(.systemGray))
+            
+            Text("Tap and hold on a message to save it")
+                .font(.system(size: 17, weight: .medium))
+                .foregroundColor(Color(.systemGray))
+            
             
             Spacer()
         }

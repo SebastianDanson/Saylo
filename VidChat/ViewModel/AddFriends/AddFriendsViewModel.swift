@@ -288,6 +288,9 @@ class AddFriendsViewModel: ObservableObject {
             chatId = friend.id + user.id
         }
         
+        guard !user.chats.contains(where: {$0.id == chatId}) else { return }
+
+        
         let userData = [
             "userId": user.id,
             "profileImage": user.profileImage,
@@ -318,6 +321,7 @@ class AddFriendsViewModel: ObservableObject {
         }) { (_, error) in
             ConversationGridViewModel.shared.fetchConversations()
         }
+        
         
         
         let chatData = ["id":chatId,
@@ -378,8 +382,12 @@ class AddFriendsViewModel: ObservableObject {
     
     func setSeenFriendRequests() {
         let currentUserId = AuthViewModel.shared.getUserId()
+        
         AuthViewModel.shared.hasUnseenFriendRequest = false
-        COLLECTION_USERS.document(currentUserId).updateData(["hasUnseenFriendRequest":false])
+        
+        if currentUserId != "" {
+            COLLECTION_USERS.document(currentUserId).updateData(["hasUnseenFriendRequest":false])
+        }
     }
     
     func reset() {

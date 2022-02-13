@@ -344,10 +344,13 @@ struct ReactionView: View {
     }
     
     func handleReactionPressed(reactionType: ReactionType) {
+        
         guard let user = AuthViewModel.shared.currentUser else {return}
         
         if let index = reactions.firstIndex(where: { $0.userId == user.id && $0.reactionType == reactionType}) {
+            
             let reaction = reactions[index]
+            
             withAnimation {
                 reactions.remove(at: index)
             }
@@ -379,6 +382,7 @@ struct MessageInfoView: View {
     let date: Date
     let profileImage: String
     let name: String
+    let showTwoTimeSpeed: Bool
     
     var body: some View {
         
@@ -386,8 +390,10 @@ struct MessageInfoView: View {
             
             HStack {
                 
-                TwoTimesSpeedView()
-                    .padding(.bottom, 6)
+                if showTwoTimeSpeed {
+                    TwoTimesSpeedView()
+                        .padding(.bottom, 6)
+                }
                 
                 Spacer()
             }
@@ -422,16 +428,32 @@ struct TwoTimesSpeedView: View {
     var body: some View {
         
         Button {
-            ConversationViewModel.shared.isTwoTimesSpeed.toggle()
-            ConversationViewModel.shared.currentPlayer?.rate = 2
+            withAnimation {
+                ConversationViewModel.shared.isTwoTimesSpeed.toggle()
+            }
         } label: {
-            Circle().stroke(viewModel.isTwoTimesSpeed ? Color.mainBlue : Color.white, lineWidth: 2.5)
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Text("2x")
-                        .foregroundColor(viewModel.isTwoTimesSpeed ? .mainBlue : .white)
-                        .font(.system(size: 14, weight: .semibold))
-                )
+            
+            if viewModel.isTwoTimesSpeed {
+                Circle()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(.white)
+                    .overlay(
+                        Text("2x")
+                            .foregroundColor(.mainBlue)
+                            .font(.system(size: 16, weight: .semibold))
+                    )
+                    .transition(.opacity)
+            } else {
+                Circle().stroke(Color.white, lineWidth: 2.5)
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Text("2x")
+                            .foregroundColor(.white)
+                            .font(.system(size: 14, weight: .semibold))
+                    )
+                    .transition(.opacity)
+            }
+          
         }
         
     }

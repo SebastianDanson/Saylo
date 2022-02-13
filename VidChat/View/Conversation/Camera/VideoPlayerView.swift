@@ -44,7 +44,7 @@ struct VideoPlayerView: View {
                         if showName && !(message?.isTeamSayloMessage ?? false) {
                             MessageInfoView(date: message?.timestamp.dateValue() ?? Date(),
                                             profileImage: message?.userProfileImage ?? "",
-                                            name: message?.username ?? "")
+                                            name: message?.username ?? "", showTwoTimeSpeed: true)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 26)
                         }
@@ -330,8 +330,10 @@ extension AVPlayer {
     }
     
     func playWithRate() {
+        
         self.play()
-        self.rate = ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
+        self.rate = !ConversationViewModel.shared.showCamera && !CameraViewModel.shared.showFullCameraView && ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
     }
+    
 }
 

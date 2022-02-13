@@ -46,10 +46,8 @@ class ConversationPlayerViewModel: ObservableObject {
         
         let uid = AuthViewModel.shared.getUserId()
         
-        guard message.userId != uid, uid != "" else { return }
-        
-        print("MESSAGE:",message.userId, "UID:",uid, "OKOK")
-        
+        guard message.userId != uid, uid != "", message.userId != "" else { return }
+                
         if let index = self.messages.lastIndex(where: {$0.chatId == message.chatId }), index < self.messages.count - 1 {
             self.messages.insert(message, at: index + 1)
         } else {
