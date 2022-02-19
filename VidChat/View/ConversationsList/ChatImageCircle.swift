@@ -15,7 +15,6 @@ struct ChatImage: View {
     let profileImage2: String?
     let width: CGFloat
     let addedWidth: CGFloat
-    let ratio: CGFloat = 1.35
     
     init(chat: Chat, width: CGFloat) {
         
@@ -51,14 +50,15 @@ struct ChatImage: View {
                 
                 ZStack {
                     
-                    RoundedRectangle(cornerRadius: 8)
+
+                    Circle()
                         .stroke(Color.lighterGray, lineWidth: addedWidth)
-                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth) * ratio)
+                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth))
 
                     KFImage(URL(string: profileImage1))
                         .resizable()
                         .scaledToFill()
-                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth) * ratio)
+                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth))
                         .cornerRadius(9)
                     
                 }
@@ -69,15 +69,15 @@ struct ChatImage: View {
                 KFImage(URL(string: profileImage2))
                     .resizable()
                     .scaledToFill()
-                    .frame(width: width/1.8 + addedWidth, height: (width/1.8 + addedWidth) * ratio)
+                    .frame(width: width/1.8 + addedWidth, height: (width/1.8 + addedWidth))
                     .cornerRadius(10)
                     .padding(.bottom, width/2.3)
                     .padding(.leading, width/3.1)
                 
             }
-            .frame(width: width, height: width * 1.35)
+            .frame(width: width, height: width)
             .background(Color.lighterGray)
-            .cornerRadius(14)
+            .cornerRadius(width/2)
             .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 10, x: 0, y: 2)
 
             
@@ -87,8 +87,8 @@ struct ChatImage: View {
                 .resizable()
                 .scaledToFill()
                 .background(Color(.systemGray))
-                .frame(width: width, height: width * ratio)
-                .cornerRadius(14)
+                .frame(width: width, height: width)
+                .cornerRadius(width/2)
                 .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 6)
 //                .clipShape(Circle())
         }

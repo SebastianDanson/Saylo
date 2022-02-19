@@ -11,8 +11,11 @@ import AVFoundation
 
 struct CameraMainView: View {
     
+    private let items = [GridItem(), GridItem(), GridItem(), GridItem()]
+    
     @StateObject var viewModel = CameraViewModel.shared
     @StateObject var conversationViewModel = ConversationViewModel.shared
+    @StateObject private var gridviewModel = ConversationGridViewModel.shared
     
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
@@ -58,35 +61,76 @@ struct CameraMainView: View {
                     switchCamera()
                 })
             
+            VStack {
+                
+                Spacer()
+                
+             
+
+                    ScrollView(showsIndicators: false) {
+                        
+                        
+                        VStack {
+                            
+                            Color.black
+                            
+                            LazyVGrid(columns: items, spacing: 14, content: {
+                                                                
+                                ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                    
+                                    ConversationGridCell(chat: $gridviewModel.chats[i])
+                                        .onTapGesture(count: 1, perform: {
+                                            if gridviewModel.isSelectingChats {
+                                                withAnimation(.linear(duration: 0.15)) {
+                                                    gridviewModel.toggleSelectedChat(chat: chat)
+                                                }
+                                                
+                                            } else {
+                                                conversationViewModel.setChat(chat: chat)
+                                                gridviewModel.showConversation = true
+                                            }
+                                            CameraViewModel.shared.cameraView.stopRunning()
+                                        })
+                                }
+                            })
+                                .padding(.horizontal, 8)
+
+                        }
+
+                    }
+                    .frame(width: SCREEN_WIDTH, height: 242)
+
+            }
+            
         }
         .gesture(ConversationGridViewModel.shared.hasUnreadMessages ? nil :
+                    
+                    DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                    .onChanged { gesture in
+            dragOffset.height = max(0, gesture.translation.height)
+        }
+                    .onEnded { gesture in
             
-            DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                .onChanged { gesture in
-                    dragOffset.height = max(0, gesture.translation.height)
-                }
-                .onEnded { gesture in
+            withAnimation(.linear(duration: 0.2)) {
+                
+                if dragOffset.height > SCREEN_HEIGHT / 4 {
                     
-                    withAnimation(.linear(duration: 0.2)) {
-                        
-                        if dragOffset.height > SCREEN_HEIGHT / 4 {
-                            
-                            ConversationViewModel.shared.showCamera = false
-                            viewModel.isShowingPhotoCamera = false
-                            viewModel.isRecording = false
-                            //                            if !viewModel.isShowingPhotoCamera {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                viewModel.reset(hideCamera: true)
-                            }
-                            //                            }
-                            
-                        } else {
-                            dragOffset.height = 0
-                        }
+                    ConversationViewModel.shared.showCamera = false
+                    viewModel.isShowingPhotoCamera = false
+                    viewModel.isRecording = false
+                    //                            if !viewModel.isShowingPhotoCamera {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        viewModel.reset(hideCamera: true)
                     }
+                    //                            }
                     
-                    
+                } else {
+                    dragOffset.height = 0
                 }
+            }
+            
+            
+        }
         )
         .overlay(
             ZStack {
@@ -112,7 +156,7 @@ struct CameraMainView: View {
                     
                     //Will show these options unless taking profile picture
                     if conversationViewModel.showCamera {
-                    CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 0).zIndex(6)
+                        CameraOptions(isFrontFacing: $isFrontFacing, cameraView: cameraView).padding(.horizontal, 0).zIndex(6)
                     }
                 }
                 
@@ -136,9 +180,9 @@ struct CameraMainView: View {
         )
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         //        .ignoresSafeArea()
-        .background(Color(white: 0, opacity: ConversationGridViewModel.shared.hasUnreadMessages && !viewModel.showFullCameraView ? 0 : 1))
         .navigationBarHidden(true)
         .offset(dragOffset)
+        .background(Color.black)
         .onAppear {
             cameraView.startRunning()
         }
@@ -262,7 +306,7 @@ struct MediaOptions: View {
                                         viewModel.saveToPhotos(photo: photo)
                                         withAnimation { hasSaved = true }
                                     }
-                               
+                                    
                                 } else {
                                     PhotosViewModel.shared.showNoAccessToPhotosAlert = true
                                 }
@@ -479,15 +523,15 @@ struct CameraOptions: View {
                     
                     Spacer()
                     
-                        
-                        //Switch camera button
-                        Button(action: {
-                            cameraView.switchCamera()
-                            isFrontFacing.toggle()
-                        }, label: {
-                            CameraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
-                        })
-                    }
+                    
+                    //Switch camera button
+                    Button(action: {
+                        cameraView.switchCamera()
+                        isFrontFacing.toggle()
+                    }, label: {
+                        CameraOptionView(image: Image(systemName:"arrow.triangle.2.circlepath"), imageDimension: 32, circleDimension: 50)
+                    })
+                }
             }
         }
         .padding(.top, TOP_PADDING)

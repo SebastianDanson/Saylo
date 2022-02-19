@@ -11,9 +11,8 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
-    let width = SCREEN_WIDTH/4
+    let width = SCREEN_WIDTH/5.4
     let textColor: Color
-    let ratio = 1.35
     
     init(chat: Binding<Chat>, textColor: Color = Color(red: 136/255, green: 137/255, blue: 141/255)) {
         self._chat = chat
@@ -23,6 +22,7 @@ struct ConversationGridCell: View {
     var body: some View {
         
         ZStack(alignment:.top) {
+            
             VStack(alignment: .center, spacing: 6) {
                 
                 ZStack {
@@ -58,8 +58,8 @@ struct ConversationGridCell: View {
                                     
                                     ZStack {
                                         
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .frame(width: width, height: width * ratio)
+                                        Circle()
+                                            .frame(width: width, height: width)
                                             .foregroundColor(.mainBlue)
                                             .opacity(0.9)
                                         
@@ -89,7 +89,7 @@ struct ConversationGridCell: View {
                 
                 
                 Text(chat.name)
-                    .font(.system(size: 14, weight: .regular))
+                    .font(.system(size: 12, weight: .regular))
                     .lineLimit(1)
                     .foregroundColor(textColor)
                     .overlay(

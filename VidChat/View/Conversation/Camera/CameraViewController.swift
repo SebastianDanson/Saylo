@@ -69,33 +69,35 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if !CameraViewModel.shared.getHasCameraAccess() {
-            showAlert(isCameraAlert: true)
-        }
-        
-        if AuthViewModel.shared.isSignedIn {
-
-            if ConversationGridViewModel.shared.hasUnreadMessages {
-                setPreviewLayerSmallFrame()
-                view.backgroundColor = .clear
-            } else {
-                setPreviewLayerFullFrame()
-                view.backgroundColor = .black
-            }
-            
-            
-            if !CameraViewModel.shared.getHasMicAccess() {
-                showAlert(isCameraAlert: false)
-            }
-        }
-        
-        if !canRun {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                if !self.captureSession.isRunning {
-                    self.captureSession.startRunning()
-                }
-            }
-        }
+        self.setupSession()
+        self.captureSession.startRunning()
+//        if !CameraViewModel.shared.getHasCameraAccess() {
+//            showAlert(isCameraAlert: true)
+//        }
+//
+//        if AuthViewModel.shared.isSignedIn {
+//
+//            if ConversationGridViewModel.shared.hasUnreadMessages {
+////                setPreviewLayerSmallFrame()
+//                view.backgroundColor = .clear
+//            } else {
+////                setPreviewLayerFullFrame()
+//                view.backgroundColor = .black
+//            }
+//
+//
+//            if !CameraViewModel.shared.getHasMicAccess() {
+//                showAlert(isCameraAlert: false)
+//            }
+//        }
+//
+//        if !canRun {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                if !self.captureSession.isRunning {
+//                    self.captureSession.startRunning()
+//                }
+//            }
+//        }
         
         
     }
@@ -310,13 +312,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 16/9)
+        previewLayer.frame = CGRect(x: x, y: 0, width: width, height: width * 1.58)
         
-        previewLayer.cornerRadius = 20
+        previewLayer.cornerRadius = 16
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         
         self.view.layer.masksToBounds = true
-        self.view.layer.cornerRadius = 20
+        self.view.layer.cornerRadius = 16
         view.layer.addSublayer(previewLayer)
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
@@ -330,18 +332,18 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func startSession() {
         
         
-        DispatchQueue.main.async {
+//        DispatchQueue.main.async {
             self.captureSession.startRunning()
-            self.canRun = false
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.captureSession.stopRunning()
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.canRun = true
-                }
-            }
-        }
+//            self.canRun = false
+//
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                self.captureSession.stopRunning()
+//
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                    self.canRun = true
+//                }
+//            }
+//        }
         
     }
     

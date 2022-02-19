@@ -66,7 +66,6 @@
 		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
 		06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */; };
 		06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */; };
-		06D5F23B27C0AC1000D8292C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D5F23A27C0AC1000D8292C /* MainView.swift */; };
 		06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* Alerts.swift */; };
 		06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CF27739AFD00A8CF0C /* Helpers.swift */; };
 		06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */; };
@@ -245,7 +244,6 @@
 		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
 		06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSavedMessagesView.swift; sourceTree = "<group>"; };
 		06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoMessagesView.swift; sourceTree = "<group>"; };
-		06D5F23A27C0AC1000D8292C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/Utils/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
@@ -632,7 +630,6 @@
 				3F485D8E26FD45D80071532B /* Main */,
 				3F485D9626FD46260071532B /* ChatSettings */,
 				3F485D9426FD46140071532B /* Search */,
-				06D5F23A27C0AC1000D8292C /* MainView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1074,7 +1071,6 @@
 				069D11E3279762DC00988829 /* PhoneContact.swift in Sources */,
 				0616EC04279288D3006565FE /* AddUserToChatCell.swift in Sources */,
 				3FFD034B272CAE6A000BEADE /* VideoHelper.swift in Sources */,
-				06D5F23B27C0AC1000D8292C /* MainView.swift in Sources */,
 				065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */,
 				3F2A7EB52718BF0B00179390 /* AudioPlayer.swift in Sources */,
 				06F1A32E277E7A9E00A0F992 /* SetUsernameView.swift in Sources */,
