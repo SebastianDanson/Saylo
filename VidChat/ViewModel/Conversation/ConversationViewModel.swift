@@ -35,6 +35,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showUnreadMessages = false
     @Published var seenLastPost = [String]()
 
+    @Published var messageType: CreateMessageType = .Saylo
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {

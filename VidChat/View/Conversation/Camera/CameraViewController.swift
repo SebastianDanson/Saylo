@@ -309,16 +309,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         let width = CameraViewModel.shared.getCameraWidth()
         let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
-        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING
+        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: x, y: 0, width: width, height: width * 1.58)
+        previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 16/9)
         
-        previewLayer.cornerRadius = 16
+        previewLayer.cornerRadius = 14
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        
+        previewLayer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         self.view.layer.masksToBounds = true
-        self.view.layer.cornerRadius = 16
+        self.view.layer.cornerRadius = 14
         view.layer.addSublayer(previewLayer)
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))

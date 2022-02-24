@@ -11,10 +11,10 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
-    let width = SCREEN_WIDTH/5.4
+    let width = SCREEN_WIDTH/4.2
     let textColor: Color
     
-    init(chat: Binding<Chat>, textColor: Color = Color(red: 136/255, green: 137/255, blue: 141/255)) {
+    init(chat: Binding<Chat>, textColor: Color = Color(red: 96/255, green: 97/255, blue: 100/255)) {
         self._chat = chat
         self.textColor = textColor
     }
@@ -89,7 +89,7 @@ struct ConversationGridCell: View {
                 
                 
                 Text(chat.name)
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 13, weight: .regular))
                     .lineLimit(1)
                     .foregroundColor(textColor)
                     .overlay(

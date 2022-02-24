@@ -10,6 +10,10 @@ import Firebase
 import UIKit
 import AVFoundation
 
+enum CreateMessageType {
+    case Saylo, Voice, Camera, Photo, Note
+}
+
 enum MessageType {
     
     case Video, Audio, Text, Photo, NewChat

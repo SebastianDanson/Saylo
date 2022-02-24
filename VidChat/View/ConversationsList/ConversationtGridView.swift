@@ -302,7 +302,7 @@ struct NavView: View {
     
     @Binding var searchText: String
     
-    private let toolBarWidth: CGFloat = 38
+    private let toolBarWidth: CGFloat = 40
     
     var body: some View {
         
@@ -315,7 +315,7 @@ struct NavView: View {
                     
                     if !viewModel.isSelectingChats {
                         
-                        HStack(spacing: 12) {
+                        HStack(spacing: 8) {
                             
                             Button {
                                 viewModel.showSettingsView = true
@@ -335,14 +335,14 @@ struct NavView: View {
                                 
                                 Circle()
                                     .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .foregroundColor(.toolBarIconGray)
+                                    .foregroundColor(.fadedBlack)
                                     .overlay(
                                         Image(systemName: "phone.fill")
                                             .resizable()
                                             .renderingMode(.template)
                                             .scaledToFit()
-                                            .frame(height: toolBarWidth - 18)
-                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .frame(height: toolBarWidth - 20)
+                                            .foregroundColor(.white)
                                             .padding(.leading, 1)
                                     )
                                     .padding(.leading, -2)
@@ -352,12 +352,9 @@ struct NavView: View {
                         }
                         Spacer()
                         
-                        Text("Saylo")
-                            .font(.system(size: 19, weight: .semibold))
+                      
                         
-                        Spacer()
-                        
-                        HStack(alignment: .top, spacing: 10) {
+                        HStack(alignment: .top, spacing: 6) {
                             
                             Button {
                                 
@@ -372,15 +369,15 @@ struct NavView: View {
                                     
                                     Circle()
                                         .frame(width: toolBarWidth, height: toolBarWidth)
-                                        .foregroundColor(.toolBarIconGray)
+                                        .foregroundColor(.fadedBlack)
                                         .overlay(
                                             
                                             Image(systemName: "person.fill.badge.plus")
                                                 .resizable()
                                                 .renderingMode(.template)
                                                 .scaledToFit()
-                                                .frame(height: toolBarWidth - 15)
-                                                .foregroundColor(.toolBarIconDarkGray)
+                                                .frame(height: toolBarWidth - 17)
+                                                .foregroundColor(.white)
                                                 .padding(.leading, -1)
                                             
                                         )
@@ -414,14 +411,14 @@ struct NavView: View {
                                 
                                 Circle()
                                     .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .foregroundColor(.toolBarIconGray)
+                                    .foregroundColor(.fadedBlack)
                                     .overlay(
                                         Image("pencil")
                                             .resizable()
                                             .renderingMode(.template)
                                             .scaledToFit()
-                                            .frame(height: toolBarWidth - 18)
-                                            .foregroundColor(.toolBarIconDarkGray)
+                                            .frame(height: toolBarWidth - 19)
+                                            .foregroundColor(.white)
                                             .padding(.top, 0)
                                     )
                             }
@@ -476,7 +473,6 @@ struct NavView: View {
         }
         
         .frame(width: SCREEN_WIDTH, height: conversationViewModel.showKeyboard || conversationViewModel.showPhotos ? TOP_PADDING + 40 : TOP_PADDING + 50)
-        .background(Color.systemWhite)
         .zIndex(2)
         .ignoresSafeArea()
         

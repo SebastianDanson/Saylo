@@ -441,14 +441,13 @@ struct CameraCircle: View {
                         ZStack {
                             
                             Circle()
-                                .foregroundColor(.mainBlue)
-                                .frame(width: 56, height: 56)
+                                .stroke(Color.white, style: StrokeStyle(lineWidth: 7, lineCap: .round, lineJoin: .round))
+                                .frame(width: 62, height: 62)
                             
-                            Image(systemName: "video.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 27, height: 27)
-                                .foregroundColor(.systemWhite)
+//                            Circle()
+//                                .foregroundColor(Color(.systemRed))
+//                                .frame(width: 56, height: 56)
+                            
                         }
                     } else {
                         Circle()
