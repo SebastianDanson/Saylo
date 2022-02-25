@@ -18,6 +18,7 @@ struct CameraMainView: View {
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
     
     @State private var searchText = ""
+    @State private var noteText = ""
 
     
     @State var isFrontFacing = true
@@ -26,6 +27,10 @@ struct CameraMainView: View {
     
     
     var body: some View {
+        
+        let textView = MultilineTextField("Tap to type",text: $noteText) {
+            
+        }
         
         ZStack(alignment: .center) {
             
@@ -58,18 +63,58 @@ struct CameraMainView: View {
                 }.zIndex(3)
             }
             
-            //camera
-            cameraView
-                .onTapGesture(count: 2, perform: {
-                    switchCamera()
-                })
+            if conversationViewModel.messageType == .Saylo {
+                //camera
+                cameraView
+                    .onTapGesture(count: 2, perform: {
+                        switchCamera()
+                    })
+                
+            } else if conversationViewModel.messageType == .Voice {
+                VStack {
+                    
+                    Spacer()
+                    
+                    Image(systemName: "mic.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 72, height: 72)
+                            .foregroundColor(.white)
+                        
+                    
+                    Spacer()
+                    Spacer()
+                    
+                }
+                .frame(width: SCREEN_WIDTH)
+                .background(Color.alternateMainBlue)
+                
+            } else if conversationViewModel.messageType == .Note {
+                VStack {
+                    
+                    Spacer()
+                    
+                  
+                    textView
+                    
+                    Spacer()
+                    Spacer()
+                    
+                }
+                .frame(width: SCREEN_WIDTH)
+                .background(Color.black)
+                .onTapGesture {
+                    print("FIRST RESPONDER")
+                    textView.toggleBecomeFirstResponder()
+                }
+            }
             
             
             VStack {
-            NavView(searchText: $searchText)
+                NavView(searchText: $searchText)
                 Spacer()
             }
-
+            
             VStack(spacing: 6) {
                 
                 Spacer()
@@ -77,68 +122,69 @@ struct CameraMainView: View {
                 
                 ZStack {
                     
-                CameraCircle()
-                    .padding(.bottom, 16)
+                    CameraCircle()
                     
                     HStack {
                         
+                        Image(systemName: "photo.on.rectangle.angled")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.white)
+                        
+                        
                         Spacer()
                         
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.fadedBlack)
-                            
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .font(Font.title.weight(.semibold))
-                                .scaledToFit()
-                                .frame(width: 48, height: 48)
-                                .foregroundColor(.white)
-                            
-                        }.padding(.trailing, 24)
-
                         
-                    }
-                }
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .resizable()
+                            .font(Font.title.weight(.semibold))
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.white)
+                        
+                        
+                    }.frame(width: 240)
+                }.padding(.bottom, 16)
+                
                 
                 MessageOptions(type: $conversationViewModel.messageType)
-
-                    ScrollView(showsIndicators: false) {
+                
+                ScrollView(showsIndicators: false) {
+                    
+                    Color.white.ignoresSafeArea()
+                    
+                    VStack {
                         
-                        Color.white.ignoresSafeArea()
-
-                        VStack {
+                        LazyVGrid(columns: items, spacing: 12, content: {
                             
-                            LazyVGrid(columns: items, spacing: 14, content: {
-
-                                ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
-                                    
-                                    ConversationGridCell(chat: $gridviewModel.chats[i])
-                                        .onTapGesture(count: 1, perform: {
-                                            if gridviewModel.isSelectingChats {
-                                                withAnimation(.linear(duration: 0.15)) {
-                                                    gridviewModel.toggleSelectedChat(chat: chat)
-                                                }
-                                                
-                                            } else {
-                                                conversationViewModel.setChat(chat: chat)
-                                                gridviewModel.showConversation = true
+                            ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                
+                                ConversationGridCell(chat: $gridviewModel.chats[i])
+                                    .onTapGesture(count: 1, perform: {
+                                        if gridviewModel.isSelectingChats {
+                                            withAnimation(.linear(duration: 0.15)) {
+                                                gridviewModel.toggleSelectedChat(chat: chat)
                                             }
-                                            CameraViewModel.shared.cameraView.stopRunning()
-                                        })
-                                }
-                            })
-                                .padding(.horizontal, 8)
-                                .padding(.top, -8)
-
-                        }
-
+                                            
+                                        } else {
+                                            conversationViewModel.setChat(chat: chat)
+                                            gridviewModel.showConversation = true
+                                        }
+                                        CameraViewModel.shared.cameraView.stopRunning()
+                                    })
+                            }
+                        })
+                            .padding(.horizontal, 8)
+                            .padding(.top, -8)
+                        
                     }
-                    .background(Color.white)
-                    .frame(width: SCREEN_WIDTH, height: 265)
-                    .background(Color.white)
-                    .cornerRadius(14)
+                    
+                }
+                .background(Color.white)
+                .frame(width: SCREEN_WIDTH, height: 248)
+                .background(Color.white)
+                .cornerRadius(14)
             }
             
         }
@@ -166,7 +212,7 @@ struct CameraMainView: View {
                 } else {
                     dragOffset.height = 0
                 }
-            }            
+            }
         }
         )
         .overlay(

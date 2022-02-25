@@ -13,64 +13,36 @@ struct MessageOptions: View {
     
     var body: some View {
                      
-        HStack(spacing: 2) {
+        HStack(spacing: 0) {
             
-            Button {
-                setMessageType(type: .Camera)
-            } label: {
-                
-                Text("Camera")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Camera ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
-            }
-            
-            
+        
             Button {
                 setMessageType(type: .Voice)
             } label: {
                 Text("Voice")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Voice ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
+                    .foregroundColor(type == .Voice ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Voice ? 17 : 16, weight: type == .Voice ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
             }
             
             Button {
                 setMessageType(type: .Saylo)
             } label: {
                 Text("Saylo")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Saylo ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
+                    .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
             }
             
             Button {
                 setMessageType(type: .Note)
             } label: {
                 Text("Note")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Note ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
+                    .foregroundColor(type == .Note ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Note ? 17 : 16, weight: type == .Note ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
             }
             
-            Button {
-                setMessageType(type: .Photo)
-            } label: {
-                Text("Photo")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Photo ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
-            }
         }
     }
     

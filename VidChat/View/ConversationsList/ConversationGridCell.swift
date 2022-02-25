@@ -11,7 +11,7 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
-    let width = SCREEN_WIDTH/4.2
+    let width = SCREEN_WIDTH/4.5
     let textColor: Color
     
     init(chat: Binding<Chat>, textColor: Color = Color(red: 96/255, green: 97/255, blue: 100/255)) {
@@ -23,7 +23,7 @@ struct ConversationGridCell: View {
         
         ZStack(alignment:.top) {
             
-            VStack(alignment: .center, spacing: 6) {
+            VStack(alignment: .center, spacing: 4) {
                 
                 ZStack {
                     
