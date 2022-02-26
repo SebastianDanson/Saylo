@@ -1,3 +1,10 @@
+//
+//  CameraMainView.swift
+//  Saylo
+//
+//  Created by Student on 2021-09-27.
+//
+
 import SwiftUI
 import Kingfisher
 import AVFoundation
@@ -12,10 +19,10 @@ struct CameraMainView: View {
     
     @State private var searchText = ""
     @State private var noteText = ""
-
     
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
+    
     var cameraView = CameraView()
     
     
@@ -107,56 +114,6 @@ struct CameraMainView: View {
                     NavView(searchText: $searchText)
                     Spacer()
                 }
-            if conversationViewModel.messageType == .Saylo {
-                //camera
-                cameraView
-                    .onTapGesture(count: 2, perform: {
-                        switchCamera()
-                    })
-                
-            } else if conversationViewModel.messageType == .Voice {
-                VStack {
-                    
-                    Spacer()
-                    
-                    Image(systemName: "mic.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 72, height: 72)
-                            .foregroundColor(.white)
-                        
-                    
-                    Spacer()
-                    Spacer()
-                    
-                }
-                .frame(width: SCREEN_WIDTH)
-                .background(Color.alternateMainBlue)
-                
-            } else if conversationViewModel.messageType == .Note {
-                VStack {
-                    
-                    Spacer()
-                    
-                  
-                    textView
-                    
-                    Spacer()
-                    Spacer()
-                    
-                }
-                .frame(width: SCREEN_WIDTH)
-                .background(Color.black)
-                .onTapGesture {
-                    print("FIRST RESPONDER")
-                    textView.toggleBecomeFirstResponder()
-                }
-            }
-            
-            
-            VStack {
-                NavView(searchText: $searchText)
-                Spacer()
             }
             
             VStack(spacing: 6) {
@@ -237,38 +194,6 @@ struct CameraMainView: View {
                     
                     !viewModel.isRecording ? Color.white.ignoresSafeArea() : Color.black.ignoresSafeArea()
                     
-=======
-                    CameraCircle()
-                    
-                    HStack {
-                        
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 35, height: 35)
-                            .foregroundColor(.white)
-                        
-                        
-                        Spacer()
-                        
-                        
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .resizable()
-                            .font(Font.title.weight(.semibold))
-                            .scaledToFit()
-                            .frame(width: 40, height: 40)
-                            .foregroundColor(.white)
-                        
-                        
-                    }.frame(width: 240)
-                }.padding(.bottom, 16)
-                
-                
-                MessageOptions(type: $conversationViewModel.messageType)
-                
-                ScrollView(showsIndicators: false) {
-                    
-                    Color.white.ignoresSafeArea()
                     
                     VStack {
                         
@@ -288,18 +213,6 @@ struct CameraMainView: View {
                                         gridviewModel.showConversation = true
                                         //                                        }
                                         //                                        CameraViewModel.shared.cameraView.stopRunning()
-                                ConversationGridCell(chat: $gridviewModel.chats[i])
-                                    .onTapGesture(count: 1, perform: {
-                                        if gridviewModel.isSelectingChats {
-                                            withAnimation(.linear(duration: 0.15)) {
-                                                gridviewModel.toggleSelectedChat(chat: chat)
-                                            }
-                                            
-                                        } else {
-                                            conversationViewModel.setChat(chat: chat)
-                                            gridviewModel.showConversation = true
-                                        }
-                                        CameraViewModel.shared.cameraView.stopRunning()
                                     })
                             }
                         })
@@ -310,11 +223,6 @@ struct CameraMainView: View {
                 }
                 .frame(width: SCREEN_WIDTH, height: 248)
                 .background(!viewModel.isRecording ? Color.white : Color.black)
-                    
-                }
-                .background(Color.white)
-                .frame(width: SCREEN_WIDTH, height: 248)
-                .background(Color.white)
                 .cornerRadius(14)
             }
             .zIndex(3)
@@ -470,3 +378,4 @@ struct FlashView: View {
             .edgesIgnoringSafeArea(.all)
     }
 }
+

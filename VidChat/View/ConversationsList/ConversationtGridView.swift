@@ -1,11 +1,9 @@
-
 //
 //  ChatView.swift
 //  Saylo
 //
 //  Created by Student on 2021-09-26.
 //
-
 import SwiftUI
 import Kingfisher
 
@@ -93,7 +91,6 @@ struct ConversationGridView: View {
                                                     CameraViewModel.shared.cameraView.stopRunning()
                                                 })
                                         }
-                                    }).padding(.horizontal, 15)
                                     })
                                         .padding(.horizontal, 20)
                                     
@@ -638,5 +635,3 @@ struct SelectedChatView: View {
         }
     }
 }
-
-

@@ -28,12 +28,6 @@ struct ConversationGridCell: View {
                 
                 ZStack {
                     
-
-                    if chat.id == selectedChatId {
-                        Circle()
-                            .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                            .frame(width: width + 6, height: width + 6)
-                    }
                     
                     ChatImage(chat: chat, width: width)
                         .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)
@@ -89,28 +83,39 @@ struct ConversationGridCell: View {
                                         ZStack {
                                             
                                             ActivityIndicator(shouldAnimate: $chat.isSending, diameter: width + 6)
-                                                .padding(.bottom, 10)
                                                 .transition(.opacity)
                                             
+                                                
                                             ZStack {
                                                 
                                                 Circle()
-                                                    .frame(width: width/2, height: width/2)
-                                                    .foregroundColor(.fadedBlack)
+                                                    .frame(width: width, height: width)
+                                                    .foregroundColor(Color(white: 0, opacity: 0.4))
                                                 
+                                                VStack(spacing: 2) {
+
                                                 Image(systemName: "trash.fill")
                                                     .resizable()
-                                                    .frame(width: width/2, height: width/2)
+                                                    .scaledToFit()
+                                                    .frame(width: width/4, height: width/4)
                                                     .foregroundColor(.white)
+                                                    
+                                                    Text("Cancel")
+                                                        .foregroundColor(.white)
+                                                        .font(.system(size: 12, weight: .semibold))
+                                                
                                                 
                                             }
-                                            
-                                        }
+                                                
+                                              
+                                            }
+                                        }.padding(.bottom, 10)
+
                                         
                                     }
                                 }
                             }
-                        )
+                            ,alignment: .center)
                 }.overlay(
                     ZStack {
                         if chat.id == selectedChatId && !chat.isSending {

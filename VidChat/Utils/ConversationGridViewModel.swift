@@ -240,9 +240,9 @@ class ConversationGridViewModel: ObservableObject {
     
 //    func updateLastRead() {
 //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//        
+//
 //        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
-//        
+//
 //        notificationArray?.forEach({ chatId in
 //            if let index = chats.firstIndex(where: { return $0.id == chatId }) {
 //                DispatchQueue.main.async {
@@ -268,14 +268,7 @@ class ConversationGridViewModel: ObservableObject {
 
         if let chat = self.chats.first(where: {$0.id == selectedChatId}) {
             ConversationViewModel.shared.setChat(chat: chat)
-        } 
-//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//        let selectedChatId = defaults?.string(forKey: "selectedChatId")
-//       ]guard let selectedChatId = selectedChatId else {return}
-//        
-//        if let chat = self.chats.first(where: {$0.id == selectedChatId}) {
-//            ConversationViewModel.shared.setChat(chat: chat)
-//        }
+        }
     }
     
     func getCachedChats() -> [Chat] {

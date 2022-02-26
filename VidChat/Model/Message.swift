@@ -11,7 +11,7 @@ import UIKit
 import AVFoundation
 
 
-enum MainViewType {
+enum CreateMessageType {
     case Saylo, Voice, Video, Photo, Note
 }
 

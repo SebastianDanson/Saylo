@@ -64,10 +64,11 @@ struct MessageOptions: View {
                 }
                 
             }
+        }
+    }
     
-    
-    func setMessageType(type: MainViewType) {
-//        ConversationViewModel.shared.mainViewType = type
+    func setMessageType(type: CreateMessageType) {
+        ConversationViewModel.shared.messageType = type
     }
 }
 

@@ -159,22 +159,6 @@ class CameraViewModel: ObservableObject {
                 print("YESSIR")
             }
         }
-        
-        isRecording ? stopRecording() : startRecording()
-        
-//        
-//
-//        if ConversationViewModel.shared.showCamera || showFullCameraView {
-//            if CameraViewModel.shared.isShowingPhotoCamera {
-//                takePhoto()
-//            } else {
-//                isRecording ? stopRecording() : startRecording()
-//            }
-//        } else {
-//            cameraView.addAudio()
-//            cameraView.startRunning()
-//            startRecording(addDelay: true)
-//        }
     }
     
     
@@ -232,7 +216,7 @@ class CameraViewModel: ObservableObject {
     }
     
     func getCameraHeight() -> CGFloat {
-        ConversationGridViewModel.shared.hasUnreadMessages ? CAMERA_SMALL_HEIGHT : CAMERA_HEIGHT 
+        ConversationGridViewModel.shared.hasUnreadMessages ? CAMERA_SMALL_HEIGHT : CAMERA_HEIGHT
     }
     
     //    func requestAuthorization(completion: @escaping ()->Void) {
