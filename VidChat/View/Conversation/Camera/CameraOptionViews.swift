@@ -4,7 +4,6 @@
 //
 //  Created by Sebastian Danson on 2022-02-24.
 //
-
 import SwiftUI
 
 struct MessageOptions: View {
@@ -13,64 +12,55 @@ struct MessageOptions: View {
     
     var body: some View {
                      
-        HStack(spacing: 2) {
+        HStack(spacing: 0) {
             
-            Button {
-                setMessageType(type: .Camera)
-            } label: {
-                
-                Text("Camera")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Camera ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
-            }
-            
-            
-            Button {
-                setMessageType(type: .Voice)
-            } label: {
-                Text("Voice")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Voice ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
-            }
-            
-            Button {
-                setMessageType(type: .Saylo)
-            } label: {
-                Text("Saylo")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Saylo ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
-            }
-            
-            Button {
-                setMessageType(type: .Note)
-            } label: {
-                Text("Note")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Note ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
-            }
             
             Button {
                 setMessageType(type: .Photo)
             } label: {
                 Text("Photo")
-                    .foregroundColor(.white)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .frame(width: 70, height: 28)
-                    .background(type == .Photo ? Color.mainBlue : Color.clear)
-                    .clipShape(Capsule())
+                    .foregroundColor(type == .Photo ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Photo ? 17 : 16, weight: type == .Photo ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
             }
+
+            Button {
+                setMessageType(type: .Voice)
+            } label: {
+                Text("Voice")
+                    .foregroundColor(type == .Voice ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Voice ? 17 : 16, weight: type == .Voice ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
+            }
+
+            Button {
+                setMessageType(type: .Video)
+            } label: {
+                Text("Video")
+                    .foregroundColor(type == .Video ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Video ? 17 : 16, weight: type == .Video ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
+            }
+
+            Button {
+                setMessageType(type: .Note)
+            } label: {
+                Text("Note")
+                    .foregroundColor(type == .Note ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Note ? 17 : 16, weight: type == .Note ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
+            }
+
+
+            Button {
+                setMessageType(type: .Saylo)
+            } label: {
+                Text("Saylos")
+                    .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
+                    .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
+                    .frame(width: 70)
+            }
+            
         }
     }
     

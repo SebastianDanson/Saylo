@@ -11,7 +11,7 @@ import UIKit
 import AVFoundation
 
 enum CreateMessageType {
-    case Saylo, Voice, Camera, Photo, Note
+    case Saylo, Voice, Video, Photo, Note
 }
 
 enum MessageType {

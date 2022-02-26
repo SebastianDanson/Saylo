@@ -77,7 +77,7 @@ struct ConversationGridView: View {
                                         
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                             
-                                            ConversationGridCell(chat: $viewModel.chats[i])
+                                            ConversationGridCell(chat: $viewModel.chats[i], selectedChatId: .constant(""))
                                                 .flippedUpsideDown()
                                                 .scaleEffect(x: -1, y: 1, anchor: .center)
                                                 .onTapGesture(count: 1, perform: {

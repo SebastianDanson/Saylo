@@ -136,22 +136,40 @@ class CameraViewModel: ObservableObject {
         self.progress = 0
         
         timer?.invalidate()
+        
+        handleSend()
     }
+    
+    func handleSend() {
+        
+        withAnimation(.linear(duration: 0.2)) {
+            
+            let conversationVM = ConversationViewModel.shared
+            
+            if let chat = conversationVM.chat {
+                conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
+                conversationVM.isSending = true
+            }
+        }
+    }
+    
     
     func handleTap() {
         
+        isRecording ? stopRecording() : startRecording()
 
-        if ConversationViewModel.shared.showCamera || showFullCameraView {
-            if CameraViewModel.shared.isShowingPhotoCamera {
-                takePhoto()
-            } else {
-                isRecording ? stopRecording() : startRecording()
-            }
-        } else {
-            cameraView.addAudio()
-            cameraView.startRunning()
-            startRecording(addDelay: true)
-        }
+
+//        if ConversationViewModel.shared.showCamera || showFullCameraView {
+//            if CameraViewModel.shared.isShowingPhotoCamera {
+//                takePhoto()
+//            } else {
+//                isRecording ? stopRecording() : startRecording()
+//            }
+//        } else {
+//            cameraView.addAudio()
+//            cameraView.startRunning()
+//            startRecording(addDelay: true)
+//        }
     }
     
     func startRunning() {

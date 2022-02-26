@@ -18,7 +18,8 @@ struct CameraMainView: View {
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
     
     @State private var searchText = ""
-
+    @State private var noteText = ""
+    
     
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
@@ -27,20 +28,24 @@ struct CameraMainView: View {
     
     var body: some View {
         
+        let textView = MultilineTextField("Tap to type",text: $noteText) {
+            
+        }
+        
         ZStack(alignment: .center) {
             
             //video player
-            if viewModel.videoUrl != nil {
-                
-                VStack {
-                    
-                    viewModel.videoPlayerView
-                        .padding(.top, TOP_PADDING)
-                    
-                    Spacer()
-                    
-                }.zIndex(3)
-            }
+//            if viewModel.videoUrl != nil {
+//
+//                VStack {
+//
+//                    viewModel.videoPlayerView
+//                        .padding(.top, TOP_PADDING - 12)
+//
+//                    Spacer()
+//
+//                }.zIndex(2)
+//            }
             
             if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
                 
@@ -58,88 +63,147 @@ struct CameraMainView: View {
                 }.zIndex(3)
             }
             
-            //camera
-            cameraView
-                .onTapGesture(count: 2, perform: {
-                    switchCamera()
-                })
-            
-            
-            VStack {
-            NavView(searchText: $searchText)
-                Spacer()
+            if conversationViewModel.messageType == .Video {
+                //camera
+                cameraView
+                    .onTapGesture(count: 2, perform: {
+                        switchCamera()
+                    })
+                
+            } else if conversationViewModel.messageType == .Voice {
+                VStack {
+                    
+                    Spacer()
+                    
+                    Image(systemName: "mic.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 72, height: 72)
+                        .foregroundColor(.white)
+                    
+                    
+                    Spacer()
+                    Spacer()
+                    
+                }
+                .frame(width: SCREEN_WIDTH)
+                .background(Color.alternateMainBlue)
+                
+            } else if conversationViewModel.messageType == .Note {
+                VStack {
+                    
+                    Spacer()
+                    
+                    
+                    textView
+                    
+                    Spacer()
+                    Spacer()
+                    
+                }
+                .frame(width: SCREEN_WIDTH)
+                .background(Color.black)
+                .onTapGesture {
+                    textView.toggleBecomeFirstResponder()
+                }
             }
-
+            
+            
+            if !viewModel.isRecording {
+                VStack {
+                    NavView(searchText: $searchText)
+                    Spacer()
+                }
+            }
+            
             VStack(spacing: 6) {
                 
                 Spacer()
                 
                 
+                
                 ZStack {
                     
-                CameraCircle()
-                    .padding(.bottom, 16)
-                    
-                    HStack {
+                    if conversationViewModel.messageType == .Video || conversationViewModel.messageType == .Photo || conversationViewModel.messageType == .Voice {
                         
-                        Spacer()
+                        Button {
+                            withAnimation {
+                                viewModel.handleTap()
+                            }
+                        } label: {
+                            CameraCircle()
+                        }
                         
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.fadedBlack)
-                            
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .font(Font.title.weight(.semibold))
-                                .scaledToFit()
-                                .frame(width: 48, height: 48)
-                                .foregroundColor(.white)
-                            
-                        }.padding(.trailing, 24)
-
+                        if !viewModel.isRecording {
+                            HStack {
+                                
+                                Image(systemName: "photo.on.rectangle.angled")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 35, height: 35)
+                                    .foregroundColor(.white)
+                                
+                                
+                                Spacer()
+                                
+                                
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .resizable()
+                                    .font(Font.title.weight(.semibold))
+                                    .scaledToFit()
+                                    .frame(width: 40, height: 40)
+                                    .foregroundColor(.white)
+                                
+                                
+                            }.frame(width: 240)
+                        }
                         
                     }
+                    
+                }.padding(.bottom, 16)
+                
+                
+                if !viewModel.isRecording {
+                    
+                    MessageOptions(type: $conversationViewModel.messageType)
                 }
                 
-                MessageOptions(type: $conversationViewModel.messageType)
-
-                    ScrollView(showsIndicators: false) {
+                ScrollView(showsIndicators: false) {
+                    
+                    !viewModel.isRecording ? Color.white.ignoresSafeArea() : Color.black.ignoresSafeArea()
+                    
                         
-                        Color.white.ignoresSafeArea()
-
                         VStack {
                             
-                            LazyVGrid(columns: items, spacing: 14, content: {
-
+                            LazyVGrid(columns: items, spacing: 12, content: {
+                                
                                 ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                     
-                                    ConversationGridCell(chat: $gridviewModel.chats[i])
+                                    ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
                                         .onTapGesture(count: 1, perform: {
-                                            if gridviewModel.isSelectingChats {
-                                                withAnimation(.linear(duration: 0.15)) {
-                                                    gridviewModel.toggleSelectedChat(chat: chat)
-                                                }
-                                                
-                                            } else {
-                                                conversationViewModel.setChat(chat: chat)
-                                                gridviewModel.showConversation = true
-                                            }
-                                            CameraViewModel.shared.cameraView.stopRunning()
+                                            //                                        if gridviewModel.isSelectingChats {
+                                            //                                            withAnimation(.linear(duration: 0.15)) {
+                                            //                                                gridviewModel.toggleSelectedChat(chat: chat)
+                                            //                                            }
+                                            //
+                                            //                                        } else {
+                                            conversationViewModel.setChat(chat: chat)
+                                            gridviewModel.showConversation = true
+                                            //                                        }
+                                            //                                        CameraViewModel.shared.cameraView.stopRunning()
                                         })
                                 }
                             })
                                 .padding(.horizontal, 8)
                                 .padding(.top, -8)
-
-                        }
-
+                            
                     }
-                    .background(Color.white)
-                    .frame(width: SCREEN_WIDTH, height: 265)
-                    .background(Color.white)
-                    .cornerRadius(14)
+                }
+                .frame(width: SCREEN_WIDTH, height: 248)
+                .background(!viewModel.isRecording ? Color.white : Color.black)
+                .cornerRadius(14)
             }
+            .zIndex(3)
             
         }
         .gesture(ConversationGridViewModel.shared.hasUnreadMessages ? nil :
@@ -166,7 +230,7 @@ struct CameraMainView: View {
                 } else {
                     dragOffset.height = 0
                 }
-            }            
+            }
         }
         )
         .overlay(
@@ -197,21 +261,21 @@ struct CameraMainView: View {
                     }
                 }
                 
-                if viewModel.photo != nil || viewModel.videoUrl != nil {
-                    
-                    VStack {
-                        
-                        ZStack {
-                            
-                            
-                            MediaOptions()
-                                .padding(.top, TOP_PADDING)
-                            
-                            
-                        }
-                        
-                    }
-                }
+//                if viewModel.photo != nil || viewModel.videoUrl != nil {
+//
+//                    VStack {
+//
+//                        ZStack {
+//
+//
+//                            MediaOptions()
+//                                .padding(.top, TOP_PADDING)
+//
+//
+//                        }
+//
+//                    }
+//                }
                 
             }
         )
