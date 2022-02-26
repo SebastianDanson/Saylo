@@ -28,6 +28,12 @@ struct ConversationGridCell: View {
                 
                 ZStack {
                     
+
+                    if chat.id == selectedChatId {
+                        Circle()
+                            .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                            .frame(width: width + 6, height: width + 6)
+                    }
                     
                     ChatImage(chat: chat, width: width)
                         .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)

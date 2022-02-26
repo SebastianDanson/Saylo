@@ -73,7 +73,7 @@ struct ConversationGridView: View {
                                 
                                 VStack {
                                     
-                                    LazyVGrid(columns: items, spacing: 20, content: {
+                                    LazyVGrid(columns: items, spacing: 12, content: {
                                         
                                         ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                             
@@ -94,6 +94,8 @@ struct ConversationGridView: View {
                                                 })
                                         }
                                     }).padding(.horizontal, 15)
+                                    })
+                                        .padding(.horizontal, 20)
                                     
                                     Rectangle()
                                         .frame(width: SCREEN_WIDTH, height: TOP_PADDING + 70)
@@ -353,7 +355,7 @@ struct NavView: View {
                         
                       
                         
-                        HStack(alignment: .top, spacing: 6) {
+                        HStack(alignment: .top, spacing: 6 ) {
                             
                             Button {
                                 

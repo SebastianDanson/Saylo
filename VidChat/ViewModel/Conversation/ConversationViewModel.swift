@@ -36,6 +36,7 @@ class ConversationViewModel: ObservableObject {
     @Published var seenLastPost = [String]()
 
     @Published var messageType: CreateMessageType = .Video
+
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
@@ -43,8 +44,6 @@ class ConversationViewModel: ObservableObject {
             ConversationViewModel.shared.currentPlayer?.rate = isTwoTimesSpeed ? 2 : 1
         }
     }
-
-    //    @Published var chatId = "Chat"
     
     
     @Published var showConversationPlayer = false
@@ -107,6 +106,8 @@ class ConversationViewModel: ObservableObject {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chat.id, forKey: "selectedChatId")
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        defaults?.set(chat.id, forKey: "selectedChatId")
 //        self.setIsSameId(messages: chat.messages)
 //        self.messages = chat.messages
 //        self.seenLastPost = chat.seenLastPost
