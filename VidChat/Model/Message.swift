@@ -10,8 +10,8 @@ import Firebase
 import UIKit
 import AVFoundation
 
-enum CreateMessageType {
-    case Saylo, Voice, Camera, Photo, Note
+enum MainViewType {
+    case Saylo, Voice, Video, Photo, Note
 }
 
 enum MessageType {

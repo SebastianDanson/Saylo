@@ -1,10 +1,3 @@
-//
-//  CameraViewController.swift
-//  Saylo
-//
-//  Created by Student on 2021-09-27.
-//
-
 import UIKit
 import AVFoundation
 import SwiftUI
@@ -617,4 +610,3 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         }
     }
 }
-

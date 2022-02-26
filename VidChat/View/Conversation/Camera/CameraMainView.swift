@@ -1,10 +1,3 @@
-//
-//  CameraMainView.swift
-//  Saylo
-//
-//  Created by Student on 2021-09-27.
-//
-
 import SwiftUI
 import Kingfisher
 import AVFoundation
@@ -338,4 +331,3 @@ struct FlashView: View {
             .edgesIgnoringSafeArea(.all)
     }
 }
-

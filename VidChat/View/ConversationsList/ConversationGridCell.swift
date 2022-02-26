@@ -11,11 +11,13 @@ import Kingfisher
 struct ConversationGridCell: View {
     
     @Binding var chat: Chat
+    @Binding var selectedChatId: String
     let width = SCREEN_WIDTH/4.5
     let textColor: Color
     
-    init(chat: Binding<Chat>, textColor: Color = Color(red: 96/255, green: 97/255, blue: 100/255)) {
+    init(chat: Binding<Chat>, selectedChatId: Binding<String>, textColor: Color = Color(red: 96/255, green: 97/255, blue: 100/255)) {
         self._chat = chat
+        self._selectedChatId = selectedChatId
         self.textColor = textColor
     }
     
@@ -26,6 +28,12 @@ struct ConversationGridCell: View {
             VStack(alignment: .center, spacing: 4) {
                 
                 ZStack {
+                    
+                    if chat.id == selectedChatId {
+                        Circle()
+                            .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                            .frame(width: width + 6, height: width + 6)
+                    }
                     
                     ChatImage(chat: chat, width: width)
                         .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)

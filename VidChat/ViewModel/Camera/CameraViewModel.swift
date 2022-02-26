@@ -140,18 +140,21 @@ class CameraViewModel: ObservableObject {
     
     func handleTap() {
         
-
-        if ConversationViewModel.shared.showCamera || showFullCameraView {
-            if CameraViewModel.shared.isShowingPhotoCamera {
-                takePhoto()
-            } else {
-                isRecording ? stopRecording() : startRecording()
-            }
-        } else {
-            cameraView.addAudio()
-            cameraView.startRunning()
-            startRecording(addDelay: true)
-        }
+        isRecording ? stopRecording() : startRecording()
+        
+//        
+//
+//        if ConversationViewModel.shared.showCamera || showFullCameraView {
+//            if CameraViewModel.shared.isShowingPhotoCamera {
+//                takePhoto()
+//            } else {
+//                isRecording ? stopRecording() : startRecording()
+//            }
+//        } else {
+//            cameraView.addAudio()
+//            cameraView.startRunning()
+//            startRecording(addDelay: true)
+//        }
     }
     
     func startRunning() {

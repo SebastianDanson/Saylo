@@ -9,45 +9,64 @@ import SwiftUI
 
 struct MessageOptions: View {
     
-    @Binding var type: CreateMessageType
+    @Binding var type: MainViewType
     
     var body: some View {
                      
         HStack(spacing: 0) {
             
-        
-            Button {
-                setMessageType(type: .Voice)
-            } label: {
-                Text("Voice")
-                    .foregroundColor(type == .Voice ? .white : Color(.systemGray5))
-                    .font(.system(size: type == .Voice ? 17 : 16, weight: type == .Voice ? .bold : .semibold, design: .rounded))
-                    .frame(width: 70)
-            }
             
-            Button {
-                setMessageType(type: .Saylo)
-            } label: {
-                Text("Saylo")
-                    .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
-                    .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
-                    .frame(width: 70)
-            }
-            
-            Button {
-                setMessageType(type: .Note)
-            } label: {
-                Text("Note")
-                    .foregroundColor(type == .Note ? .white : Color(.systemGray5))
-                    .font(.system(size: type == .Note ? 17 : 16, weight: type == .Note ? .bold : .semibold, design: .rounded))
-                    .frame(width: 70)
-            }
+//            Button {
+//                setMessageType(type: .Photo)
+//            } label: {
+//                Text("Photo")
+//                    .foregroundColor(type == .Photo ? .white : Color(.systemGray5))
+//                    .font(.system(size: type == .Photo ? 17 : 16, weight: type == .Photo ? .bold : .semibold, design: .rounded))
+//                    .frame(width: 70)
+//            }
+//
+//            Button {
+//                setMessageType(type: .Voice)
+//            } label: {
+//                Text("Voice")
+//                    .foregroundColor(type == .Voice ? .white : Color(.systemGray5))
+//                    .font(.system(size: type == .Voice ? 17 : 16, weight: type == .Voice ? .bold : .semibold, design: .rounded))
+//                    .frame(width: 70)
+//            }
+//
+//            Button {
+//                setMessageType(type: .Saylo)
+//            } label: {
+//                Text("Video")
+//                    .foregroundColor(type == .Video ? .white : Color(.systemGray5))
+//                    .font(.system(size: type == .Video ? 17 : 16, weight: type == .Video ? .bold : .semibold, design: .rounded))
+//                    .frame(width: 70)
+//            }
+//
+//            Button {
+//                setMessageType(type: .Note)
+//            } label: {
+//                Text("Note")
+//                    .foregroundColor(type == .Note ? .white : Color(.systemGray5))
+//                    .font(.system(size: type == .Note ? 17 : 16, weight: type == .Note ? .bold : .semibold, design: .rounded))
+//                    .frame(width: 70)
+//            }
+//
+//
+//            Button {
+//                setMessageType(type: .Saylo)
+//            } label: {
+//                Text("Saylos")
+//                    .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
+//                    .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
+//                    .frame(width: 70)
+//            }
             
         }
     }
     
-    func setMessageType(type: CreateMessageType) {
-        ConversationViewModel.shared.messageType = type
+    func setMessageType(type: MainViewType) {
+//        ConversationViewModel.shared.mainViewType = type
     }
 }
 

@@ -25,7 +25,7 @@ class ConversationViewModel: ObservableObject {
     
     var chat: Chat?
     
-    var chatId = ""
+    @Published var chatId = ""
     var sendingMessageDic = [String:Any]()
     
     @Published var messages = [Message]()
@@ -35,7 +35,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showUnreadMessages = false
     @Published var seenLastPost = [String]()
 
-    @Published var messageType: CreateMessageType = .Note
+//    @Published var mainViewType: MainViewType = .Video
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
@@ -43,8 +43,6 @@ class ConversationViewModel: ObservableObject {
             ConversationViewModel.shared.currentPlayer?.rate = isTwoTimesSpeed ? 2 : 1
         }
     }
-
-    //    @Published var chatId = "Chat"
     
     
     @Published var showConversationPlayer = false
@@ -104,13 +102,16 @@ class ConversationViewModel: ObservableObject {
     func setChat(chat: Chat) {
         self.chat = chat
         self.chatId = chat.id
-        self.setIsSameId(messages: chat.messages)
-        self.messages = chat.messages
-        self.seenLastPost = chat.seenLastPost
-        self.addListener()
-        self.chat?.hasUnreadMessage = false
-        self.noMessages = false
-        ConversationService.updateLastVisited(forChat: chat)
+        
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        defaults?.set(chat.id, forKey: "selectedChatId")
+//        self.setIsSameId(messages: chat.messages)
+//        self.messages = chat.messages
+//        self.seenLastPost = chat.seenLastPost
+//        self.addListener()
+//        self.chat?.hasUnreadMessage = false
+//        self.noMessages = false
+//        ConversationService.updateLastVisited(forChat: chat)
     }
     
     func removeChat() {
