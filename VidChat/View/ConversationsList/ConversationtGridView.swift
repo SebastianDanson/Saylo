@@ -93,8 +93,7 @@ struct ConversationGridView: View {
                                                     CameraViewModel.shared.cameraView.stopRunning()
                                                 })
                                         }
-                                    })
-                                        .padding(.horizontal, 15)
+                                    }).padding(.horizontal, 15)
                                     
                                     Rectangle()
                                         .frame(width: SCREEN_WIDTH, height: TOP_PADDING + 70)

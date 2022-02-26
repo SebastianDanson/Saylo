@@ -35,17 +35,17 @@ struct CameraMainView: View {
         ZStack(alignment: .center) {
             
             //video player
-//            if viewModel.videoUrl != nil {
-//
-//                VStack {
-//
-//                    viewModel.videoPlayerView
-//                        .padding(.top, TOP_PADDING - 12)
-//
-//                    Spacer()
-//
-//                }.zIndex(2)
-//            }
+            //            if viewModel.videoUrl != nil {
+            //
+            //                VStack {
+            //
+            //                    viewModel.videoPlayerView
+            //                        .padding(.top, TOP_PADDING - 12)
+            //
+            //                    Spacer()
+            //
+            //                }.zIndex(2)
+            //            }
             
             if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
                 
@@ -134,69 +134,91 @@ struct CameraMainView: View {
                             CameraCircle()
                         }
                         
-                        if !viewModel.isRecording {
-                            HStack {
+                        HStack {
+                            
+                            if !viewModel.isRecording {
                                 
                                 Image(systemName: "photo.on.rectangle.angled")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 35, height: 35)
                                     .foregroundColor(.white)
+                            } else {
+                                
+                                Button {
+                                    
+                                    viewModel.cancelRecording()
+                                    
+                                } label: {
+                                    ZStack {
+                                        
+                                        Circle()
+                                            .frame(width: 48, height: 48)
+                                            .foregroundColor(.fadedBlack)
+                                        
+                                        Image("x")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 28, height: 28)
+                                            .padding()
+                                        
+                                    }
+                                }
                                 
                                 
-                                Spacer()
-                                
-                                
-                                Image(systemName: "arrow.triangle.2.circlepath")
-                                    .resizable()
-                                    .font(Font.title.weight(.semibold))
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundColor(.white)
-                                
-                                
-                            }.frame(width: 240)
-                        }
-                        
+                            }
+                            
+                            Spacer()
+                            
+                            
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                                .resizable()
+                                .font(Font.title.weight(.semibold))
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.white)
+                            
+                            
+                        }.frame(width: 240)
                     }
                     
-                }.padding(.bottom, 16)
-                
-                
-                if !viewModel.isRecording {
                     
-                    MessageOptions(type: $conversationViewModel.messageType)
-                }
+                    
+                }.padding(.bottom, 8)
+                
+                
+                MessageOptions(type: $conversationViewModel.messageType, isRecording: $viewModel.isRecording)
+                    .frame(height: 24)
                 
                 ScrollView(showsIndicators: false) {
                     
                     !viewModel.isRecording ? Color.white.ignoresSafeArea() : Color.black.ignoresSafeArea()
                     
+                    
+                    VStack {
                         
-                        VStack {
+                        LazyVGrid(columns: items, spacing: 12, content: {
                             
-                            LazyVGrid(columns: items, spacing: 12, content: {
+                            ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                 
-                                ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
-                                    
-                                    ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
-                                        .onTapGesture(count: 1, perform: {
-                                            //                                        if gridviewModel.isSelectingChats {
-                                            //                                            withAnimation(.linear(duration: 0.15)) {
-                                            //                                                gridviewModel.toggleSelectedChat(chat: chat)
-                                            //                                            }
-                                            //
-                                            //                                        } else {
-                                            conversationViewModel.setChat(chat: chat)
-                                            gridviewModel.showConversation = true
-                                            //                                        }
-                                            //                                        CameraViewModel.shared.cameraView.stopRunning()
-                                        })
-                                }
-                            })
-                                .padding(.horizontal, 8)
-                                .padding(.top, -8)
-                            
+                                ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+                                    .onTapGesture(count: 1, perform: {
+                                        //                                        if gridviewModel.isSelectingChats {
+                                        //                                            withAnimation(.linear(duration: 0.15)) {
+                                        //                                                gridviewModel.toggleSelectedChat(chat: chat)
+                                        //                                            }
+                                        //
+                                        //                                        } else {
+                                        conversationViewModel.setChat(chat: chat)
+                                        gridviewModel.showConversation = true
+                                        //                                        }
+                                        //                                        CameraViewModel.shared.cameraView.stopRunning()
+                                    })
+                            }
+                        })
+                            .padding(.horizontal, 8)
+                            .padding(.top, -8)
+                        
                     }
                 }
                 .frame(width: SCREEN_WIDTH, height: 248)
@@ -261,21 +283,21 @@ struct CameraMainView: View {
                     }
                 }
                 
-//                if viewModel.photo != nil || viewModel.videoUrl != nil {
-//
-//                    VStack {
-//
-//                        ZStack {
-//
-//
-//                            MediaOptions()
-//                                .padding(.top, TOP_PADDING)
-//
-//
-//                        }
-//
-//                    }
-//                }
+                //                if viewModel.photo != nil || viewModel.videoUrl != nil {
+                //
+                //                    VStack {
+                //
+                //                        ZStack {
+                //
+                //
+                //                            MediaOptions()
+                //                                .padding(.top, TOP_PADDING)
+                //
+                //
+                //                        }
+                //
+                //                    }
+                //                }
                 
             }
         )

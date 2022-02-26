@@ -137,7 +137,14 @@ class CameraViewModel: ObservableObject {
         
         timer?.invalidate()
         
-        handleSend()
+    }
+    
+    func cancelRecording() {
+        self.cameraView.cancelRecording()
+        self.isRecording = false
+        self.progress = 0
+    
+        timer?.invalidate()
     }
     
     func handleSend() {
@@ -148,7 +155,8 @@ class CameraViewModel: ObservableObject {
             
             if let chat = conversationVM.chat {
                 conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
-                conversationVM.isSending = true
+                chat.isSending = true
+                print("YESSIR")
             }
         }
     }

@@ -32,7 +32,7 @@ class Chat: ObservableObject {
     var nameDictionary: [String:Any]?
     
     @Published var isSelected = false
-    @Published var isSending = false {
+    @Published var isSending = true {
         didSet {
             print("")
         }
