@@ -22,13 +22,13 @@ struct CameraMainView: View {
     
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
-
+    
     var cameraView = CameraView()
     
     
     var body: some View {
         
-        let textView = MultilineTextField("Tap to type",text: $noteText) {
+        let textView = MultilineTextField(text: $noteText, height: SCREEN_WIDTH * 1.5) {
             
         }
         
@@ -90,33 +90,35 @@ struct CameraMainView: View {
                 .background(Color.alternateMainBlue)
                 
             } else if conversationViewModel.messageType == .Note {
-                
+                      
                 VStack {
+                ZStack {
                     
-                    Spacer()
+                   
+                    
+                    if !conversationViewModel.isTyping && noteText.isEmpty {
+                        Text("Tap to type")
+                            .font(.system(size: 28, weight: .semibold))
+                            .foregroundColor(.white)
+                            
+                    }
                     
                     textView
-                    
-                    Spacer()
-                    Spacer()
-                    
+                        .frame(width: SCREEN_WIDTH - 40)
+                        .onTapGesture {
+                            conversationViewModel.isTyping = true
+                        }
                 }
+                    Spacer()
+                }
+                .ignoresSafeArea(edges: .bottom)
                 .frame(width: SCREEN_WIDTH)
-                .background(Color.black)
-                .onTapGesture {
-                    textView.toggleBecomeFirstResponder()
-                }
+                .background(Color.alternateMainBlue)
+                
             } else if conversationViewModel.messageType == .Saylo {
                 ConversationView()
             }
             
-            
-            if !viewModel.isRecording {
-                VStack {
-                    NavView(searchText: $searchText)
-                    Spacer()
-                }
-            }
             
             VStack(spacing: 6) {
                 
@@ -223,6 +225,7 @@ struct CameraMainView: View {
 
                 }
                 .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT - SCREEN_WIDTH * 1.5 - TOP_PADDING + 22)
+                .ignoresSafeArea(edges: .bottom)
                 .background(Color.white)
                 .cornerRadius(14)
             }
@@ -259,15 +262,12 @@ struct CameraMainView: View {
         .overlay(
             ZStack {
                 
-                if SCREEN_RATIO > 2 {
-                    //                    VStack{
-                    //                        RoundedRectangle(cornerRadius: 24).strokeBorder(Color.black, style: StrokeStyle(lineWidth: 10))
-                    //                            .frame(width: CAMERA_WIDTH + 20, height: CAMERA_WIDTH * 16/9 + 20)
-                    //
-                    //
-                    //                        Spacer()
-                    //                    }.padding(.top, TOP_PADDING - 10)
-                    
+                if !viewModel.isRecording {
+                    VStack {
+                        NavView(searchText: $searchText)
+                        Spacer()
+                    }
+
                 }
                 
                 if (viewModel.isRecording || viewModel.isTakingPhoto) && isFrontFacing && viewModel.hasFlash {
@@ -301,11 +301,13 @@ struct CameraMainView: View {
                 //                }
                 
             }
+                .ignoresSafeArea(edges: .bottom)
         )
         //        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         //        .ignoresSafeArea()
         .navigationBarHidden(true)
         .background(Color.black)
+        .ignoresSafeArea(edges: .bottom)
         .onAppear {
             cameraView.startRunning()
         }

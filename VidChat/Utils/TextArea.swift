@@ -11,13 +11,14 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     
     typealias UIViewType = UITextView
 
-    let textView = UITextView()
     @Binding var text: String
     @Binding var calculatedHeight: CGFloat
         
     var onDone: (() -> Void)?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
+        let textView = UITextView()
+
         textView.delegate = context.coordinator
 
         textView.isEditable = true
@@ -29,9 +30,10 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textView.textAlignment = .center
 //        textView.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
         textView.returnKeyType = .default
-        textView.backgroundColor = .black
+        textView.backgroundColor = .clear
         textView.font = UIFont.systemFont(ofSize: 28, weight: .medium)
         textView.textColor = .white
+        
 //        textView.layer.borderColor = UIColor.borderGray.cgColor
 //        textView.layer.borderWidth = 0.9
 //        textView.layer.cornerRadius = 18
@@ -47,12 +49,11 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 //        placeholderLabel.centerY(inView: textView)
         
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        textView.centerVertically()
         return textView
     }
 
-    func becomeFirstResponder() {
-        self.textView.becomeFirstResponder()
-    }
+
     
     func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<UITextViewWrapper>) {
         if uiView.text != self.text {
@@ -62,13 +63,14 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 //            uiView.becomeFirstResponder()
         }
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
+        uiView.centerVertically()
     }
 
     fileprivate static func recalculateHeight(view: UIView, result: Binding<CGFloat>) {
         let newSize = view.sizeThatFits(CGSize(width: view.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
         if result.wrappedValue != newSize.height {
             DispatchQueue.main.async {
-                result.wrappedValue = min(newSize.height,150) // !! must be called asynchronously
+                result.wrappedValue = min(newSize.height, SCREEN_WIDTH * 1.5) // !! must be called asynchronously
             }
         }
     }
@@ -95,7 +97,25 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             }
         }
 
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            textView.centerVertically()
+        }
+        
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+            if text == "\n" {
+                textView.resignFirstResponder()
+                ConversationViewModel.shared.isTyping = false
+                return false
+            }
+            
+            let currentText = textView.text ?? ""
+            guard let stringRange = Range(range, in: currentText) else { return false }
+            let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+            print(updatedText.count)
+            if updatedText.count > 300 {
+                return false
+            }
+            
 //            if let onDone = self.onDone, text == "\n" {
 //                textView.resignFirstResponder()
 //                onDone()
@@ -113,17 +133,15 @@ struct MultilineTextField: View {
     private var onCommit: (() -> Void)?
 
     @Binding private var text: String
-    private var internalText: Binding<String> {
-        Binding<String>(get: { self.text } ) {
-            self.text = $0
-            self.showingPlaceholder = $0.isEmpty
-        }
-    }
+//    private var internalText: Binding<String> {
+//        Binding<String>(get: { self.text } ) {
+//            self.text = $0
+//            self.showingPlaceholder = $0.isEmpty
+//        }
+//    }
 
     @State private var dynamicHeight: CGFloat
     @State private var showingPlaceholder = false
-
-    @State private var becomeFirstResponder = false
     
     
     init (_ placeholder: String = "", text: Binding<String>, height: CGFloat = 100, onCommit: (() -> Void)? = nil) {
@@ -136,40 +154,33 @@ struct MultilineTextField: View {
 
     var body: some View {
         
-        let textviewwrapper = UITextViewWrapper(text: self.internalText, calculatedHeight: $dynamicHeight, onDone: onCommit)
+        let textviewwrapper = UITextViewWrapper(text: $text, calculatedHeight: $dynamicHeight, onDone: onCommit)
            
-        
         textviewwrapper
-            .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
-            .overlay(placeholderView.padding(.top, 0).padding(.leading, 10), alignment: .leading)
-            .onChange(of: becomeFirstResponder) { newValue in
-                textviewwrapper.becomeFirstResponder()
-            }
-        
+            .frame(height: SCREEN_WIDTH * 1.5)
+//            .overlay(placeholderView.padding(.top, 0).padding(.leading, 10), alignment: .leading)
+    
     }
     
-    func toggleBecomeFirstResponder() {
-        becomeFirstResponder.toggle()
-    }
 
-    var placeholderView: some View {
-        Group {
-            if showingPlaceholder {
-                
-                HStack {
-                    
-                    Spacer()
-                    
-                    Text(placeholder)
-                        .foregroundColor(Color.white)
-                        .font(.system(size: 28, weight: .medium))
-                    
-                    Spacer()
-                }
-               
-            }
-        }
-    }
+//    var placeholderView: some View {
+//        Group {
+//            if showingPlaceholder {
+//
+//                HStack {
+//
+//                    Spacer()
+//
+//                    Text(placeholder)
+//                        .foregroundColor(Color.white)
+//                        .font(.system(size: 28, weight: .medium))
+//
+//                    Spacer()
+//                }
+//
+//            }
+//        }
+//    }
     
    
 }
@@ -202,5 +213,15 @@ struct TextView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<TextView>) {
    
+    }
+}
+
+extension UITextView {
+    func centerVertically() {
+        let fittingSize = CGSize(width: bounds.width, height: CGFloat.greatestFiniteMagnitude)
+        let size = sizeThatFits(fittingSize)
+        let topOffset = (bounds.size.height - size.height * zoomScale) / 2
+        let positiveTopOffset = max(1, topOffset)
+        contentOffset.y = -positiveTopOffset
     }
 }

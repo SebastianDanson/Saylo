@@ -470,9 +470,7 @@ struct NavView: View {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
         
-        .frame(width: SCREEN_WIDTH, height: conversationViewModel.showKeyboard || conversationViewModel.showPhotos ? TOP_PADDING + 40 : TOP_PADDING + 50)
-        .zIndex(2)
-        .ignoresSafeArea()
+        .frame(width: SCREEN_WIDTH)
         
     }
 }

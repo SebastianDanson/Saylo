@@ -26,6 +26,7 @@ class ConversationViewModel: ObservableObject {
     var chat: Chat?
     
     @Published var chatId = ""
+    @Published var isTyping = false
     var sendingMessageDic = [String:Any]()
     
     @Published var messages = [Message]()
@@ -35,7 +36,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showUnreadMessages = false
     @Published var seenLastPost = [String]()
 
-    @Published var messageType: CreateMessageType = .Video
+    @Published var messageType: CreateMessageType = .Note
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
