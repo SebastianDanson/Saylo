@@ -158,7 +158,15 @@ class CameraViewModel: ObservableObject {
             if let chat = conversationVM.chat {
                 conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
             }
+            
+            videoUrl = nil
+            photo = nil
         }
+    }
+    
+    func sendPhoto() {
+        guard photo != nil, videoUrl == nil else { return }
+        handleSend()
     }
     
     

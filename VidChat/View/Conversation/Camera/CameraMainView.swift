@@ -63,7 +63,7 @@ struct CameraMainView: View {
                 }.zIndex(3)
             }
             
-            if conversationViewModel.messageType == .Video {
+            if conversationViewModel.messageType == .Video  || conversationViewModel.messageType == .Photo {
                 //camera
                 cameraView
                     .onTapGesture(count: 2, perform: {
@@ -128,6 +128,8 @@ struct CameraMainView: View {
                     
                     if conversationViewModel.messageType == .Video || conversationViewModel.messageType == .Photo || conversationViewModel.messageType == .Voice {
                         
+                        
+                        //Voice and Video button
                         Button {
                             withAnimation {
                                 
@@ -138,8 +140,43 @@ struct CameraMainView: View {
                                 }
                             }
                         } label: {
-                            CameraCircle()
+                            ZStack {
+                                
+                                CameraCircle()
+                                
+                                if conversationViewModel.messageType == .Photo {
+                                    Circle()
+                                        .frame(width: 45, height: 45)
+                                        .foregroundColor(.white)
+                                }
+                            }
                         }
+                        
+                        
+                        //Camera button
+                        
+                        Button {
+                            if viewModel.photo == nil {
+                                viewModel.takePhoto()
+                            } else {
+                                viewModel.sendPhoto()
+                            }
+                        } label: {
+                            
+                            ZStack {
+                                
+                                Circle()
+                                    .stroke(Color.white, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                    .frame(width: 62, height: 62)
+                                
+                                Circle()
+                                    .frame(width: 56, height: 56)
+                                    .foregroundColor(.white)
+                                
+                            }
+                           
+                        }
+
                         
                         HStack {
                             
@@ -179,10 +216,32 @@ struct CameraMainView: View {
                             
                             
                         }.frame(width: 240)
+                    } else if conversationViewModel.messageType == .Note {
+                        
+                        Button {
+                            conversationViewModel.sendMessage(text: noteText, type: .Text)
+                            noteText = ""
+                        } label: {
+                            
+                            ZStack {
+                                
+                                Circle()
+                                    .frame(width: 64, height: 64)
+                                    .foregroundColor(.white)
+                                
+                                Image(systemName: "chevron.forward")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.title.weight(.semibold))
+                                    .frame(width: 32, height: 32)
+                                    .foregroundColor(.alternateMainBlue)
+                                    .padding(.leading, 4)
+
+                            }
+                        }
+   
                     }
-                    
-                    
-                    
+         
                 }.padding(.bottom, 8)
                 
                 

@@ -33,7 +33,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textView.backgroundColor = .clear
         textView.font = UIFont.systemFont(ofSize: 28, weight: .medium)
         textView.textColor = .white
-        
+    
 //        textView.layer.borderColor = UIColor.borderGray.cgColor
 //        textView.layer.borderWidth = 0.9
 //        textView.layer.cornerRadius = 18
@@ -111,7 +111,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             let currentText = textView.text ?? ""
             guard let stringRange = Range(range, in: currentText) else { return false }
             let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
-            print(updatedText.count)
+
             if updatedText.count > 300 {
                 return false
             }
