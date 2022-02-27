@@ -154,9 +154,12 @@ class ConversationViewModel: ObservableObject {
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
+                
         
-        //       guard let user = AuthViewModel.shared.currentUser else {return}
-        
+        if let chat = ConversationViewModel.shared.chat {
+            chat.isSending = true
+        }
+
         let id = NSUUID().uuidString
         
         if !self.chatId.isEmpty {
@@ -235,14 +238,23 @@ class ConversationViewModel: ObservableObject {
             
             if let url = url {
                 
+                let sendDelay: TimeInterval = 1.5
+                
                 if type == .Video {
+                    let ref = UploadType.video.getFilePath(messageId: id)
+                    MediaUploader.shared.uploadVideo(url: url, messageId: id, ref: ref, isFromPhotoLibrary: isFromPhotoLibrary) { _ in }
+            
                     
-                    MediaUploader.shared.uploadVideo(url: url, messageId: id, isFromPhotoLibrary: isFromPhotoLibrary) { newURL in
-                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + sendDelay) {
+                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: ref.fullPath)
                     }
+                    
                 } else {
-                    MediaUploader.shared.uploadAudio(url: url, messageId: id) { newURL in
-                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
+                    let ref = UploadType.audio.getFilePath(messageId: id)
+                    MediaUploader.shared.uploadAudio(url: url, messageId: id, ref: ref) { _ in }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + sendDelay) {
+                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: ref.fullPath)
                     }
                 }
             } else if text != nil {
@@ -290,6 +302,7 @@ class ConversationViewModel: ObservableObject {
         if !isUploadingMessage {
             self.isUploadingMessage = true
             let data = uploadQueue[0]
+
             
             ConversationService.uploadMessage(toDocWithId: docId, data: data) { error in
                 if let error = error {
@@ -301,8 +314,7 @@ class ConversationViewModel: ObservableObject {
                     }
                     
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
-                        
-                        if self.chatId.isEmpty {
+                        if !self.chatId.isEmpty {
                             ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
                         } else {
                             

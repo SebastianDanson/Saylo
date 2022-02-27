@@ -22,7 +22,7 @@ struct CameraMainView: View {
     
     @State var isFrontFacing = true
     @State var dragOffset: CGSize = .zero
-    
+
     var cameraView = CameraView()
     
     
@@ -90,10 +90,10 @@ struct CameraMainView: View {
                 .background(Color.alternateMainBlue)
                 
             } else if conversationViewModel.messageType == .Note {
+                
                 VStack {
                     
                     Spacer()
-                    
                     
                     textView
                     
@@ -106,6 +106,8 @@ struct CameraMainView: View {
                 .onTapGesture {
                     textView.toggleBecomeFirstResponder()
                 }
+            } else if conversationViewModel.messageType == .Saylo {
+                ConversationView()
             }
             
             
@@ -120,15 +122,18 @@ struct CameraMainView: View {
                 
                 Spacer()
                 
-                
-                
                 ZStack {
                     
                     if conversationViewModel.messageType == .Video || conversationViewModel.messageType == .Photo || conversationViewModel.messageType == .Voice {
                         
                         Button {
                             withAnimation {
-                                viewModel.handleTap()
+                                
+                                if conversationViewModel.messageType == .Video {
+                                    viewModel.handleTap()
+                                } else if conversationViewModel.messageType == .Voice {
+                                    viewModel.handleAudioTap()
+                                }
                             }
                         } label: {
                             CameraCircle()
@@ -150,11 +155,6 @@ struct CameraMainView: View {
                                     viewModel.cancelRecording()
                                     
                                 } label: {
-                                    ZStack {
-                                        
-                                        Circle()
-                                            .frame(width: 48, height: 48)
-                                            .foregroundColor(.fadedBlack)
                                         
                                         Image("x")
                                             .resizable()
@@ -162,14 +162,11 @@ struct CameraMainView: View {
                                             .frame(width: 28, height: 28)
                                             .padding()
                                         
-                                    }
                                 }
-                                
                                 
                             }
                             
                             Spacer()
-                            
                             
                             Image(systemName: "arrow.triangle.2.circlepath")
                                 .resizable()
@@ -189,10 +186,11 @@ struct CameraMainView: View {
                 
                 MessageOptions(type: $conversationViewModel.messageType, isRecording: $viewModel.isRecording)
                     .frame(height: 24)
+                    
                 
                 ScrollView(showsIndicators: false) {
                     
-                    !viewModel.isRecording ? Color.white.ignoresSafeArea() : Color.black.ignoresSafeArea()
+                 Color.white.ignoresSafeArea()
                     
                     
                     VStack {
@@ -202,6 +200,7 @@ struct CameraMainView: View {
                             ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                 
                                 ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+                                    .scaleEffect(x: -1, y: 1, anchor: .center)
                                     .onTapGesture(count: 1, perform: {
                                         //                                        if gridviewModel.isSelectingChats {
                                         //                                            withAnimation(.linear(duration: 0.15)) {
@@ -210,7 +209,7 @@ struct CameraMainView: View {
                                         //
                                         //                                        } else {
                                         conversationViewModel.setChat(chat: chat)
-                                        gridviewModel.showConversation = true
+//                                        gridviewModel.showConversation = true
                                         //                                        }
                                         //                                        CameraViewModel.shared.cameraView.stopRunning()
                                     })
@@ -220,9 +219,11 @@ struct CameraMainView: View {
                             .padding(.top, -8)
                         
                     }
+                    .scaleEffect(x: -1, y: 1, anchor: .center)
+
                 }
-                .frame(width: SCREEN_WIDTH, height: 248)
-                .background(!viewModel.isRecording ? Color.white : Color.black)
+                .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT - SCREEN_WIDTH * 1.5 - TOP_PADDING + 22)
+                .background(Color.white)
                 .cornerRadius(14)
             }
             .zIndex(3)

@@ -82,8 +82,7 @@ class MediaUploader {
         }
     }
     
-    func uploadAudio(url: URL, messageId: String, completion: @escaping(String) -> Void) {
-        let ref = UploadType.audio.getFilePath(messageId: messageId)
+    func uploadAudio(url: URL, messageId: String, ref: StorageReference, completion: @escaping(String) -> Void) {
         
         ref.putFile(from: url, metadata: nil) { _, error in
             if let error = error {
@@ -103,8 +102,7 @@ class MediaUploader {
         }
     }
     
-    func uploadVideo(url: URL, messageId: String, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
-        let ref = UploadType.video.getFilePath(messageId: messageId)
+    func uploadVideo(url: URL, messageId: String, ref: StorageReference, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
         
         if isFromPhotoLibrary {
             let videoData = try! Data(contentsOf: url)

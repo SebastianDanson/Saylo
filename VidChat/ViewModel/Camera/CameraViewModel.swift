@@ -27,6 +27,8 @@ class CameraViewModel: ObservableObject {
     @Published var showFullCameraView = false
     @Published var showAlert = false
 
+    var audioRecorder = AudioRecorder()
+    
     var isCameraAlert = false
     
     var timer: Timer?
@@ -105,28 +107,28 @@ class CameraViewModel: ObservableObject {
     }
     
     func startRecording(addDelay: Bool = false) {
-        
-        if addDelay {
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation {
-                    self.isRecording = true
-                    self.progress = 1
-                }
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                self.cameraView.startRecording()
-                
-            }
-            
-        } else {
+//
+//        if addDelay {
+//
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                withAnimation {
+//                    self.isRecording = true
+//                    self.progress = 1
+//                }
+//            }
+//
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+//                self.cameraView.startRecording()
+//
+//            }
+//
+//        } else {
             self.cameraView.startRecording()
             withAnimation {
                 self.isRecording = true
                 self.progress = 1
             }
-        }
+//        }
         
     }
     
@@ -155,12 +157,24 @@ class CameraViewModel: ObservableObject {
             
             if let chat = conversationVM.chat {
                 conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
-                chat.isSending = true
-                print("YESSIR")
             }
         }
     }
     
+    
+    func handleAudioTap() {
+        
+        if self.isRecording {
+            audioRecorder.stopRecording()
+            self.isRecording = false
+            self.progress = 0
+        } else {
+            audioRecorder.startRecording()
+            self.isRecording = true
+            self.progress = 1
+        }
+       
+    }
     
     func handleTap() {
         

@@ -75,18 +75,20 @@ class AudioRecorder: NSObject,ObservableObject {
     func stopRecording(startPlayback: Bool = true) {
         timer?.invalidate()
         audioRecorder.stop()
-        recording = false
         
-        ConversationViewModel.shared.audioProgress = 0.0
-        ConversationViewModel.shared.showAudio = false
+        sendRecording()
+//        recording = false
         
-        if ConversationViewModel.shared.chatId.isEmpty {
-            ConversationGridViewModel.shared.isSelectingChats = true
-        }
-        
-        if startPlayback {
-            audioPlayer.startPlayback(audio: audioUrl)
-        }
+//        ConversationViewModel.shared.audioProgress = 0.0
+//        ConversationViewModel.shared.showAudio = false
+//
+//        if ConversationViewModel.shared.chatId.isEmpty {
+//            ConversationGridViewModel.shared.isSelectingChats = true
+//        }
+//
+//        if startPlayback {
+//            audioPlayer.startPlayback(audio: audioUrl)
+//        }
         
     }
     

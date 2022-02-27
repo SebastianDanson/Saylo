@@ -444,10 +444,6 @@ struct CameraCircle: View {
                                 .stroke(Color.white, style: StrokeStyle(lineWidth: 7, lineCap: .round, lineJoin: .round))
                                 .frame(width: 62, height: 62)
                             
-//                            Circle()
-//                                .foregroundColor(Color(.systemRed))
-//                                .frame(width: 56, height: 56)
-                            
                         }
                     } else {
                         Circle()

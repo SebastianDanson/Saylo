@@ -312,7 +312,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 16/9)
+        previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 1.5)
         
         previewLayer.cornerRadius = 14
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
