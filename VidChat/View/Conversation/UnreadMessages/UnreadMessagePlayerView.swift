@@ -8,45 +8,56 @@
 import SwiftUI
 import AVFoundation
 
+
 struct UnreadMessagePlayerView: View {
     
     @State var player: AVPlayer
     var isVideo: Bool
+    var isMiniDisplay: Bool
     
-    init(url: URL, isVideo: Bool) {
+    init(url: URL, isVideo: Bool, isMiniDisplay: Bool = false) {
+        
         let player = AVPlayer(url: url)
         self._player = State(initialValue: player)
         player.automaticallyWaitsToMinimizeStalling = false
         
         self.isVideo = isVideo
+        self.isMiniDisplay = isMiniDisplay
     }
     
     var body: some View {
         
+        
         PlayerView(player: $player, shouldLoop: false)
-            .frame(width: CAMERA_WIDTH, height: CAMERA_HEIGHT)
+            .frame(width: isMiniDisplay ? MINI_MESSAGE_WIDTH : CAMERA_WIDTH, height: isMiniDisplay ? MINI_MESSAGE_HEIGHT : CAMERA_HEIGHT)
             .onAppear {
-                ConversationViewModel.shared.currentPlayer = player
-                player.playWithRate()
+                
+                if !isMiniDisplay {
+                    ConversationViewModel.shared.currentPlayer = player
+                    player.playWithRate()
+                } else {
+                    player.pause()
+                }
             }
             .onDisappear {
-                player.pause()
+                if !isMiniDisplay {
+                    player.pause()
+                }
             }
             .background(isVideo ? Color.systemBlack :  Color.mainBlue)
-            .cornerRadius(22)
+            .cornerRadius(isMiniDisplay ? 6 : 16)
             .overlay(
                 ZStack {
                     if !isVideo {
                         Image(systemName: "waveform")
                             .resizable()
-                            .frame(width: 120, height: 120)
+                            .frame(width: isMiniDisplay ? 20 : 120, height: isMiniDisplay ? 2 : 120)
                             .foregroundColor(.white)
                             .scaledToFill()
-                            .padding(.top, 8)
+                            .padding(.top, isMiniDisplay ? 2 : 8)
                     }
                 }
             )
-            
     }
     
     func setPlayer(_ player: AVPlayer) {

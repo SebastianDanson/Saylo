@@ -12,13 +12,9 @@ import AVFoundation
 class ConversationPlayerViewModel: ObservableObject {
     
     @Published var dragOffset: CGSize = .zero
-    @Published var index: Int = 0 {
-        didSet {
-            self.hasChanged.toggle()
-        }
-    }
+  
+
     @Published var messages = [Message]()
-    @Published var hasChanged = false
 
     static let shared = ConversationPlayerViewModel()
     
@@ -28,18 +24,22 @@ class ConversationPlayerViewModel: ObservableObject {
     
     func setMessages() {
         
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//
+//        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+//
+//        newMessagesArray.forEach { messageData in
+//            let id = messageData["id"] as? String ?? ""
+//            let message = Message(dictionary: messageData, id: id)
+//
+//           addMessage(message)
+//        }
+//
+//        addReplyMessages()
         
-        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+        guard let chat = ConversationViewModel.shared.chat else { return }
         
-        newMessagesArray.forEach { messageData in
-            let id = messageData["id"] as? String ?? ""
-            let message = Message(dictionary: messageData, id: id)
-            
-           addMessage(message)
-        }
         
-        addReplyMessages()
     }
    
     func addMessage(_ message: Message) {
@@ -84,51 +84,51 @@ class ConversationPlayerViewModel: ObservableObject {
         }
     }
     
-    func showNextMessage() {
-        
-        if index == messages.count - 1 {
-            self.removePlayerView()
-        } else {
-            index += 1
-            
-            if messages[index].isForTakingVideo {
-                
-                let lastSeenChatId = messages[index - 1].chatId
-                updateLastVisitedForChat(withId: lastSeenChatId)
-                
-            }
-        }
-    }
+//    func showNextMessage() {
+//        
+//        if index == messages.count - 1 {
+//            self.removePlayerView()
+//        } else {
+//            index += 1
+//            
+//            if messages[index].isForTakingVideo {
+//                
+//                let lastSeenChatId = messages[index - 1].chatId
+//                updateLastVisitedForChat(withId: lastSeenChatId)
+//                
+//            }
+//        }
+//    }
     
     
-    func showPreviousMessage() {
-        index = max(0, index - 1)
-    }
-    
-    func updateLastVisitedForChat(withId id: String) {
-        let viewModel = ConversationGridViewModel.shared
-        
-        if let index = viewModel.chats.firstIndex(where: {$0.id == id}) {
-            viewModel.chats[index].hasUnreadMessage = false
-            viewModel.chats[index].lastReadMessageIndex = viewModel.chats[index].messages.count - 1
-            ConversationService.updateLastVisited(forChat: viewModel.chats[index])
-        }
-    }
-    
-    func removePlayerView() {
-        
-        updateLastVisitedForChat(withId: messages[index].chatId)
-        index = 0
-  
-        withAnimation {
-            ConversationGridViewModel.shared.hasUnreadMessages = false
-        }
-        
-    }
-    
-    func isPlayable() -> Bool {
-        return messages[index].type == .Video || messages[index].type == .Audio
-    }
+//    func showPreviousMessage() {
+//        index = max(0, index - 1)
+//    }
+//
+//    func updateLastVisitedForChat(withId id: String) {
+//        let viewModel = ConversationGridViewModel.shared
+//
+//        if let index = viewModel.chats.firstIndex(where: {$0.id == id}) {
+//            viewModel.chats[index].hasUnreadMessage = false
+//            viewModel.chats[index].lastReadMessageIndex = viewModel.chats[index].messages.count - 1
+//            ConversationService.updateLastVisited(forChat: viewModel.chats[index])
+//        }
+//    }
+//
+//    func removePlayerView() {
+//
+//        updateLastVisitedForChat(withId: messages[index].chatId)
+//        index = 0
+//
+//        withAnimation {
+//            ConversationGridViewModel.shared.hasUnreadMessages = false
+//        }
+//
+//    }
+//
+//    func isPlayable() -> Bool {
+//        return messages[index].type == .Video || messages[index].type == .Audio
+//    }
     
 }
 

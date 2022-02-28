@@ -25,6 +25,11 @@ struct MainView: View {
         
         ZStack(alignment: .center) {
             
+            //            if let chat = viewModel.chat {
+            //                NavigationLink(destination: ChatSettingsView(chat: chat, showSettings: $showSettings)
+            //                                .navigationBarHidden(true)
+            //                               , isActive: $showSettings) { EmptyView() }
+            //            }
             
             //The photo that was just taken
             if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
@@ -48,7 +53,7 @@ struct MainView: View {
             
             //Saylo View
             if viewModel.selectedView == .Saylo {
-                ConversationView()
+                ConversationPlayerView()
             }
             
             if viewModel.showPhotos {
@@ -109,7 +114,7 @@ struct MainView: View {
                         .frame(height: 24)
                 }
                 
-                ChatsView()
+                ChatsView(selectedView: $viewModel.selectedView)
                 
             }
             .zIndex(3)
@@ -121,19 +126,17 @@ struct MainView: View {
                 
                 //NavView
                 if !viewModel.isRecording {
+                    
                     VStack {
                         NavView(searchText: $searchText)
                         Spacer()
                     }
-                    
                 }
                 
                 //Camera Flash View
                 if viewModel.isRecording && isFrontFacing && viewModel.hasFlash {
                     FlashView().zIndex(4)
                 }
-                
-                
             }
         )
         .navigationBarHidden(true)
@@ -249,27 +252,40 @@ struct PhotosView: View {
     
     @StateObject var viewModel = MainViewModel.shared
     @State var showPhotoPickerAlert = false
-
+    
     var body: some View {
         
         VStack {
             
-            PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
-                .frame(width: SCREEN_WIDTH)
-                .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
-                .padding(.top, viewModel.photoBaseHeight/2)
-                .overlay(
-                
-                    Image(systemName: "chevron.down")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(.black)
-                        .padding(.top, 4)
-                        .padding(.horizontal, 24) , alignment: .topLeading
-                )
-       
             Spacer()
+            
+            PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
+                .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight * 2)
+                .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
+                .overlay(
+                    
+                    Button(action: {
+                        viewModel.showPhotos = false
+                    }, label: {
+                        ZStack {
+                            
+                            Circle()
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(Color(white: 0, opacity: 0.5))
+                            
+                            Image("x")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 32, height: 32)
+                            
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
+                    })
+                    , alignment: .bottomTrailing
+                )
+                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
+            
         }
         
     }
@@ -366,11 +382,19 @@ struct PhotoLibraryAndSwitchCameraView: View {
             
             if !viewModel.isRecording {
                 
-                Image(systemName: "photo.on.rectangle.angled")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 35, height: 35)
-                    .foregroundColor(.white)
+                Button {
+                    withAnimation {
+                        viewModel.showPhotos = true
+                    }
+                } label: {
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 35, height: 35)
+                        .foregroundColor(.white)
+                }
+                
+                
             } else {
                 
                 Button {
@@ -413,6 +437,8 @@ struct ChatsView: View {
     
     @StateObject var conversationViewModel = ConversationViewModel.shared
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
+    @Binding var selectedView: MainViewType
+    
     
     var body: some View {
         
@@ -442,9 +468,10 @@ struct ChatsView: View {
             .scaleEffect(x: -1, y: 1, anchor: .center)
             
         }
-        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET + 10)
+        .frame(width: SCREEN_WIDTH, height: selectedView == .Saylo ? CHATS_VIEW_SMALL_HEIGHT : CHATS_VIEW_HEIGHT)
         .ignoresSafeArea(edges: .bottom)
         .background(Color.white)
         .cornerRadius(14)
     }
+    
 }

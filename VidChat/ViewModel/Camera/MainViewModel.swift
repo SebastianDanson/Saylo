@@ -21,9 +21,9 @@ class MainViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var isFrontFacing = true
     @Published var showAlert = false
-    @Published var selectedView: MainViewType = .Video
+    @Published var selectedView: MainViewType = .Saylo
     @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
-    @Published var showPhotos = true
+    @Published var showPhotos = false
     
     var audioRecorder = AudioRecorder()
     
@@ -41,6 +41,7 @@ class MainViewModel: ObservableObject {
     static let shared = MainViewModel()
     
     private init() {
+    
         //        cameraView.setupSession()
     }
     
@@ -157,7 +158,6 @@ class MainViewModel: ObservableObject {
         if let videoUrl = videoUrl {
             videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
         }
-
     }
     
     func showCamera() -> Bool {

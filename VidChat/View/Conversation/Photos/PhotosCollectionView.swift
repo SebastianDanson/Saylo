@@ -40,16 +40,16 @@ class PhotosCollectionView: UIView {
     
     let sendButton: UIButton = {
         let button = UIButton()
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 64, weight: .regular, scale: .medium)
-        button.setImage(UIImage(systemName: "arrow.up.circle.fill", withConfiguration: largeConfig), for: .normal)
-        button.tintColor = .mainBlue
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 32, weight: .semibold)
+        button.setImage(UIImage(systemName: "chevron.right", withConfiguration: largeConfig), for: .normal)
+        button.tintColor = .alternateMainBlue
         button.backgroundColor = .systemWhite
         let width: CGFloat = 64
         button.setDimensions(height: width, width: width)
         button.layer.cornerRadius = width / 2
         button.isHidden = false
         button.isEnabled = false
-        button.alpha = 0.5
+        button.alpha = 1
         return button
     }()
     
@@ -66,8 +66,11 @@ class PhotosCollectionView: UIView {
     private let dragView: UIView = {
         
         let view = UIView()
-        view.setDimensions(height: 36, width: UIScreen.main.bounds.width)
+        view.setDimensions(height: 16, width: UIScreen.main.bounds.width)
         view.backgroundColor = .systemGray6
+        
+        view.layer.cornerRadius = 8
+        view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         
         return view
     }()
@@ -104,15 +107,16 @@ class PhotosCollectionView: UIView {
         }
         
         addSubview(sendButton)
-        sendButton.anchor(bottom: bottomAnchor, right: rightAnchor, paddingBottom: 12, paddingRight: 12)
+        sendButton.anchor(bottom: bottomAnchor, paddingBottom: 20)
+        sendButton.centerX(inView: self)
         sendButton.addTarget(self, action: #selector(sendImages), for: .touchUpInside)
         
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
-        pan.delegate = self
-        self.collectionView.addGestureRecognizer(pan)
+//        let pan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+//        pan.delegate = self
+//        self.collectionView.addGestureRecognizer(pan)
         
         addSubview(dragView)
-        dragView.anchor(top: topAnchor)
+        dragView.anchor(bottom: collectionView.topAnchor)
         dragView.centerX(inView: self)
         
 //        let dragPan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
@@ -131,15 +135,15 @@ class PhotosCollectionView: UIView {
             
             if viewModel.selectedChats.count > 0 && ConversationViewModel.shared.hasSelectedAssets {
                 sendButton.isEnabled = true
-                sendButton.alpha = 1
+//                sendButton.alpha = 1
             } else {
                 sendButton.isEnabled = false
-                sendButton.alpha = 0.5
+//                sendButton.alpha = 0.5
             }
             
         } else {
             sendButton.isEnabled = selectedIndexes.isEmpty ? false : true
-            sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
+//            sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
         }
     }
     
@@ -153,7 +157,7 @@ class PhotosCollectionView: UIView {
                     let type: MessageType = asset.mediaType == .image ? .Photo : .Video
                     withAnimation(.easeInOut(duration: 0.2)) {
                         ConversationViewModel.shared.sendMessage(image: image, type: type)
-                        ConversationGridViewModel.shared.stopSelectingChats()
+                        MainViewModel.shared.showPhotos = false
                     }
                     
                 }
@@ -163,7 +167,7 @@ class PhotosCollectionView: UIView {
                     guard let asset = asset as? AVURLAsset else { return }
                     withAnimation(.easeInOut(duration: 0.2)) {
                         ConversationViewModel.shared.sendMessage(url: asset.url, type: .Video)
-                        ConversationGridViewModel.shared.stopSelectingChats()
+                        MainViewModel.shared.showPhotos = false
                     }
                 }
             }

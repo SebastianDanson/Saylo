@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import Kingfisher
+import AVKit
 
 struct UnreadMessagesScrollView: View {
     
-    @ObservedObject var viewModel = ConversationPlayerViewModel.shared
+    @ObservedObject var viewModel = ConversationViewModel.shared
     
     var body: some View {
         
@@ -17,7 +19,7 @@ struct UnreadMessagesScrollView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 
-                HStack {
+                HStack(spacing: 4) {
                     
                     ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
                         
@@ -27,35 +29,100 @@ struct UnreadMessagesScrollView: View {
                             
                             ZStack {
                                 
-                                if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == message.chatId}) {
+                                
+                                ZStack {
                                     
-                                    ZStack {
+                                    if i == viewModel.index {
                                         
-                                        if i == viewModel.index {
-                                            
-                                            Circle().stroke(Color.mainBlue, lineWidth: 2)
-                                                .frame(width: 64, height: 64)
-                                                .transition(.opacity)
-                                            
-                                        }
-                                        
-                                        ChatImageCircle(chat: chat, diameter: 56)
-                                            .overlay(ReplyView(isForTakingVideo: message.isForTakingVideo))
-                                            .environment(\.colorScheme, .dark)
-                                            .padding(.horizontal, 4)
+                                        //                                            Circle().stroke(Color.mainBlue, lineWidth: 2)
+                                        //                                                .frame(width: 64, height: 64)
+                                        //                                                .transition(.opacity)
                                         
                                         
                                     }
+                                    
+                                    ZStack {
+                                        
+                                        if i < viewModel.messages.count {
+                                            
+                                            
+                                            if viewModel.isPlayable(index: i), let urlString = viewModel.messages[i].url, let url = URL(string: urlString) {
+                                                
+                                                if let image = createVideoThumbnail(from: url) {
+                                                    Image(uiImage: image)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                        .cornerRadius(6)
+                                                        .clipped()
+                                                }
+                                                
+                                                
+                                                
+                                                
+                                            } else if viewModel.messages[i].type == .Text, let text = viewModel.messages[i].text {
+                                                
+                                                ZStack {
+                                                    
+                                                    Text(text)
+                                                        .foregroundColor(.white)
+                                                        .font(.system(size: 28, weight: .bold))
+                                                        .padding()
+                                                    
+                                                }
+                                                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                .background(Color.alternateMainBlue)
+                                                .cornerRadius(6)
+                                                
+                                                
+                                            } else if viewModel.messages[i].type == .Photo {
+                                                
+                                                if let url = viewModel.messages[i].url {
+                                                    KFImage(URL(string: url))
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                        .cornerRadius(6)
+                                                        .clipped()
+                                                } else if let image = viewModel.messages[i].image {
+                                                    Image(uiImage: image)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                        .cornerRadius(6)
+                                                        .clipped()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
                                 }
-                                
-                            }.frame(width: 68, height: 68)
+                            }
                         }
                     }
                 }
-                .padding(.leading, 20)
-                .padding(.trailing, 68)
-            }
+            }.frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
         }
+    }
+    
+    private func createVideoThumbnail(from url: URL) -> UIImage? {
+        
+        let asset = AVAsset(url: url)
+        let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+        assetImgGenerate.appliesPreferredTrackTransform = true
+        assetImgGenerate.maximumSize = CGSize(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+        
+        let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 600)
+        do {
+            let img = try assetImgGenerate.copyCGImage(at: time, actualTime: nil)
+            let thumbnail = UIImage(cgImage: img)
+            return thumbnail
+        }
+        catch {
+            print(error.localizedDescription)
+            return nil
+        }
+        
     }
 }
 
@@ -86,6 +153,7 @@ struct ReplyView: View {
             }
         }
     }
+    
 }
 
 

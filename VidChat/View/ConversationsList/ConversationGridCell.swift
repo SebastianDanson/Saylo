@@ -29,7 +29,7 @@ struct ConversationGridCell: View {
                 ZStack {
                     
                     
-                    ChatImage(chat: chat, width: width)
+                    ChatImageCircle(chat: chat, diameter: width)
                         .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)
                         .overlay(
                             

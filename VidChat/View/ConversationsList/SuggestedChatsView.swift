@@ -47,7 +47,7 @@ struct SuggestedChatView: View {
             
             VStack(alignment: .center, spacing: 4) {
                 
-                ChatImage(chat: chat, width: 60)
+                ChatImageCircle(chat: chat, diameter: 60)
                     .environment(\.colorScheme, .dark)
 
                 Text(chat.name)

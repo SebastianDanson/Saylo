@@ -12,18 +12,9 @@ import Kingfisher
 
 struct ConversationView: View {
     
-    @Environment(\.presentationMode) var mode: Binding<PresentationMode>
-
-    @StateObject var cameraViewModel = MainViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
-    @StateObject private var photosViewModel = PhotosViewModel.shared
 
-    @State private var scrollViewContentOffset = CGFloat(0) // Content offset available to use
     @State private var dragOffset = CGSize.zero
-    @State private var text = ""
-    @State private var showSettings = false
-    @State private var scrollToBottom = false
-    @State var showPhotoPickerAlert = false
     
     private var isFirstLoad = true
     
@@ -32,11 +23,6 @@ struct ConversationView: View {
         
         ZStack {
             
-            if let chat = viewModel.chat {
-                NavigationLink(destination: ChatSettingsView(chat: chat, showSettings: $showSettings)
-                                .navigationBarHidden(true)
-                               , isActive: $showSettings) { EmptyView() }
-            }
             
             VStack(spacing: 0) {
                 
@@ -92,17 +78,17 @@ struct ConversationView: View {
                         //                            .transition(.move(edge: .bottom))
                     }
                     
-                    if showSettings {
-                        Button {
-                            withAnimation(.linear(duration: 0.1)) {
-                                showSettings = false
-                            }
-                        } label: {
-                            Rectangle()
-                                .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                                .foregroundColor(.clear)
-                        }
-                    }
+//                    if showSettings {
+//                        Button {
+//                            withAnimation(.linear(duration: 0.1)) {
+//                                showSettings = false
+//                            }
+//                        } label: {
+//                            Rectangle()
+//                                .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+//                                .foregroundColor(.clear)
+//                        }
+//                    }
                 }
                 
                 if viewModel.showPhotos {
@@ -131,18 +117,14 @@ struct ConversationView: View {
                             Spacer()
                         }
                         
-//                        PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
-//                            .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
-//                            .transition(.move(edge: .bottom))
-//                            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
                     }
                     
                 }
                 
                 
-                if viewModel.showKeyboard {
-                    KeyboardView(text: $text)
-                }
+//                if viewModel.showKeyboard {
+//                    KeyboardView(text: $text)
+//                }
                 
                 
             }
@@ -153,9 +135,9 @@ struct ConversationView: View {
                         
                         VStack {
                             
-                            if !viewModel.showCamera {
-                                ChatOptions(showSettings: $showSettings)
-                            }
+//                            if !viewModel.showCamera {
+//                                ChatOptions(showSettings: $showSettings)
+//                            }
                             
                             Spacer()
                             
@@ -208,19 +190,13 @@ struct ConversationView: View {
         }
         .background(Color.systemWhite)
         .edgesIgnoringSafeArea(viewModel.showKeyboard ? .top : .all)
-        .onChange(of: viewModel.hideChat, perform: { newValue in
-                mode.wrappedValue.dismiss()
-        })
-        .alert(isPresented: $photosViewModel.showNoAccessToPhotosAlert) {
-            allowPhotosAlert()
-        }
         .onDisappear {
             viewModel.players.forEach({$0.player.pause()})
             viewModel.currentPlayer?.pause()
 
-            if !showSettings {
-                viewModel.removeChat()
-            }
+//            if !showSettings {
+//                viewModel.removeChat()
+//            }
             
             //Ensure that this is true once they have signed up
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)

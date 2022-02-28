@@ -25,6 +25,12 @@ class ConversationViewModel: ObservableObject {
     
     var chat: Chat?
     
+    @Published var index: Int = 0 {
+        didSet {
+            self.hasChanged.toggle()
+        }
+    }
+    @Published var hasChanged = false
     @Published var chatId = ""
     @Published var isTyping = false
     var sendingMessageDic = [String:Any]()
@@ -35,7 +41,7 @@ class ConversationViewModel: ObservableObject {
     @Published var noMessages = false
     @Published var showUnreadMessages = false
     @Published var seenLastPost = [String]()
-
+    
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
@@ -76,14 +82,13 @@ class ConversationViewModel: ObservableObject {
     @Published var hasSent = false
     @Published var sendingMessageId = ""
     
-    @Published var index = 0
     var currentPlayer: AVPlayer?
     
     @Published var scrollToBottom = false
     @Published var isPlaying = true
     
     @Published var hideChat = false
-
+    
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?
@@ -104,13 +109,13 @@ class ConversationViewModel: ObservableObject {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chat.id, forKey: "selectedChatId")
-//        self.setIsSameId(messages: chat.messages)
-//        self.messages = chat.messages
-//        self.seenLastPost = chat.seenLastPost
-//        self.addListener()
-//        self.chat?.hasUnreadMessage = false
-//        self.noMessages = false
-//        ConversationService.updateLastVisited(forChat: chat)
+        self.addListener()
+        self.messages = chat.messages
+        ConversationService.updateLastVisited(forChat: chat)
+        //        self.setIsSameId(messages: chat.messages)
+        //        self.seenLastPost = chat.seenLastPost
+        //        self.chat?.hasUnreadMessage = false
+        //        self.noMessages = false
     }
     
     func removeChat() {
@@ -151,12 +156,12 @@ class ConversationViewModel: ObservableObject {
     }
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
-                
+        
         
         if let chat = ConversationViewModel.shared.chat {
             chat.isSending = true
         }
-
+        
         let id = NSUUID().uuidString
         
         if !self.chatId.isEmpty {
@@ -207,7 +212,7 @@ class ConversationViewModel: ObservableObject {
         
         let messageParams = ["userId":AuthViewModel.shared.currentUser?.id, "type": message.type.getString()]
         Flurry.logEvent("MessageSent", withParameters: messageParams)
-
+        
         if chatId != "" {
             
             if !self.chatId.isEmpty {
@@ -230,7 +235,7 @@ class ConversationViewModel: ObservableObject {
                     ConversationGridViewModel.shared.chats[i].messages.append(message)
                 }
             }
-                        
+            
             uploadQueue.append(dictionary)
             
             if let url = url {
@@ -240,7 +245,7 @@ class ConversationViewModel: ObservableObject {
                 if type == .Video {
                     let ref = UploadType.video.getFilePath(messageId: id)
                     MediaUploader.shared.uploadVideo(url: url, messageId: id, ref: ref, isFromPhotoLibrary: isFromPhotoLibrary) { _ in }
-            
+                    
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + sendDelay) {
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: ref.fullPath)
@@ -299,7 +304,7 @@ class ConversationViewModel: ObservableObject {
         if !isUploadingMessage {
             self.isUploadingMessage = true
             let data = uploadQueue[0]
-
+            
             
             ConversationService.uploadMessage(toDocWithId: docId, data: data) { error in
                 if let error = error {
@@ -323,7 +328,7 @@ class ConversationViewModel: ObservableObject {
                                 self.sendingMessageId = ""
                             }
                         }
-                                                
+                        
                         if hasNotification {
                             self.sendMessageNotification(chat: chat, messageData: data)
                         }
@@ -366,7 +371,7 @@ class ConversationViewModel: ObservableObject {
             data["body"] = message.type == .Text ? (message.text ?? "") : "from \(userFullName)"
             data["metaData"] = ["chatId": chat.id, "userId": currentUser.id, "messageData":messageData]
         }
-                
+        
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
@@ -423,7 +428,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func addReactionToMessage(withId id: String, reaction: Reaction) {
-    
+        
         guard let message = self.messages.first(where: {$0.id == id}),
               let user = AuthViewModel.shared.currentUser,
               let chat = ConversationViewModel.shared.chat else {return}
@@ -534,7 +539,7 @@ class ConversationViewModel: ObservableObject {
         }
         
         UIApplication.shared.applicationIconBadgeNumber = notificationArray?.count ?? 0
-
+        
     }
     
     func cleanNotificationsArray() {
@@ -567,40 +572,80 @@ class ConversationViewModel: ObservableObject {
     }
     
     func updatePlayer(index: Int) {
-            
         
-//        DispatchQueue.main.async {
-//            self.isPlaying = true
-//        }
         
-            self.currentPlayer?.pause()
-            self.currentPlayer = self.players.first(where: {$0.messageId == self.messages[index].id})?.player
-            self.currentPlayer?.playWithRate()
-//        }
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            if self.playerIndex == index {
-          
-//            }
-//        }
-       
+        //        DispatchQueue.main.async {
+        //            self.isPlaying = true
+        //        }
+        
+        self.currentPlayer?.pause()
+        self.currentPlayer = self.players.first(where: {$0.messageId == self.messages[index].id})?.player
+        self.currentPlayer?.playWithRate()
+        //        }
+        //
+        //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        //            if self.playerIndex == index {
+        
+        //            }
+        //        }
+        
     }
     
     func removeCurrentPlayer() {
-//        DispatchQueue.main.async {
-//            self.isPlaying = false
+        //        DispatchQueue.main.async {
+        //            self.isPlaying = false
         if currentPlayer != nil {
             self.currentPlayer?.pause()
             self.currentPlayer = nil
             
-//            DispatchQueue.main.async {
-//                self.isPlaying = false
-//            }
+            //            DispatchQueue.main.async {
+            //                self.isPlaying = false
+            //            }
             
         }
         
         
-//        }
+        //        }
+        
+    }
     
+    func showNextMessage() {
+        
+        if index == messages.count - 1 {
+            //            self.removePlayerView()
+        } else {
+            
+            if index < messages.count - 1 {
+                index += 1
+                
+                if messages[index].isForTakingVideo {
+                    
+                    let lastSeenChatId = messages[index - 1].chatId
+                    updateLastVisitedForChat(withId: lastSeenChatId)
+                    
+                }
+            }
+        }
+    }
+    
+    
+    func showPreviousMessage() {
+        index = max(0, index - 1)
+    }
+    
+    func updateLastVisitedForChat(withId id: String) {
+        let viewModel = ConversationGridViewModel.shared
+        
+        if let index = viewModel.chats.firstIndex(where: {$0.id == id}) {
+            viewModel.chats[index].hasUnreadMessage = false
+            viewModel.chats[index].lastReadMessageIndex = viewModel.chats[index].messages.count - 1
+            ConversationService.updateLastVisited(forChat: viewModel.chats[index])
+        }
+    }
+    
+    func isPlayable(index: Int? = nil) -> Bool {
+        let index = index ?? self.index
+        guard index < messages.count else { return false }
+        return messages[index].type == .Video || messages[index].type == .Audio
     }
 }

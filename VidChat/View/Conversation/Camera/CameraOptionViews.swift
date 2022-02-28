@@ -79,7 +79,9 @@ struct MessageOptions: View {
             mainViewModel.reset()
         }
         
-        mainViewModel.selectedView = type
+        withAnimation {
+            mainViewModel.selectedView = type
+        }
     }
 }
 

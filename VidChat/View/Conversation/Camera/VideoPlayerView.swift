@@ -300,9 +300,9 @@ class PlayerUIView: UIView {
         let xLoc = sender.location(in: self).x
         
         if xLoc > SCREEN_WIDTH/2 {
-            ConversationPlayerViewModel.shared.showNextMessage()
+            ConversationViewModel.shared.showNextMessage()
         } else  {
-            ConversationPlayerViewModel.shared.showPreviousMessage()
+            ConversationViewModel.shared.showPreviousMessage()
         }
     }
     
@@ -318,7 +318,7 @@ class PlayerUIView: UIView {
                 playerLayer.player?.pause()
             }
         } else {
-            ConversationPlayerViewModel.shared.showNextMessage()
+            ConversationViewModel.shared.showNextMessage()
         }
     }
 }

@@ -15,9 +15,9 @@ struct VideoCell: View {
     @StateObject var viewModel = ConversationViewModel.shared
     
     let message: Message
-    @State var showReactions = false
     @State var isSaved: Bool
     @State var showAlert = false
+    @State var showReactions = false
     @State var reactions: [Reaction]
     //    let videoPlayerView: VideoPlayerView
     
@@ -77,10 +77,10 @@ struct VideoCell: View {
                     VStack(spacing: 12) {
                         
                         
-                        if showReactions {
+//                        if showReactions {
                             ReactionView(messageId: message.id, reactions: $reactions, showReactions: $showReactions)
                                 .transition(.scale)
-                        }
+//                        }
                         
                         Button {
                             withAnimation(.linear(duration: 0.2)) {
