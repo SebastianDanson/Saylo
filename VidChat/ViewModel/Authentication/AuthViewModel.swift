@@ -49,7 +49,7 @@ class AuthViewModel: ObservableObject {
             }
             
             
-            CameraViewModel.shared.cameraView.setupSession()
+            MainViewModel.shared.cameraView.setupSession()
             completion(error)
         }
     }
@@ -215,7 +215,7 @@ class AuthViewModel: ObservableObject {
         
         guard let currentUser = currentUser else { return }
         
-        CameraViewModel.shared.photo = nil
+        MainViewModel.shared.photo = nil
         
         MediaUploader.uploadImage(image: image, type: .profile, messageId: UUID().uuidString) { imageUrl in
             
@@ -253,7 +253,7 @@ class AuthViewModel: ObservableObject {
         
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            CameraViewModel.shared.cameraView.setupSession()
+            MainViewModel.shared.cameraView.setupSession()
         }
 
     }

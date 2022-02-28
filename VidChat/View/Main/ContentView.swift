@@ -35,7 +35,7 @@ struct ContentView: View {
 //                }
 //            }
             
-            CameraViewModel.shared.cameraView
+            MainViewModel.shared.cameraView
                 .ignoresSafeArea()
         }
     }

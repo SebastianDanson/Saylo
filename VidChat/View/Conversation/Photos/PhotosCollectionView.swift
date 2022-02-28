@@ -64,18 +64,10 @@ class PhotosCollectionView: UIView {
     }()
     
     private let dragView: UIView = {
+        
         let view = UIView()
-        view.setDimensions(height: 20, width: UIScreen.main.bounds.width)
+        view.setDimensions(height: 36, width: UIScreen.main.bounds.width)
         view.backgroundColor = .systemGray6
-        
-        let lineView = UIView()
-        lineView.backgroundColor = .systemGray4
-        lineView.setDimensions(height: 5, width: 40)
-        lineView.layer.cornerRadius = 2.5
-        
-        view.addSubview(lineView)
-        lineView.centerX(inView: view)
-        lineView.centerY(inView: view)
         
         return view
     }()
@@ -100,7 +92,7 @@ class PhotosCollectionView: UIView {
         collectionView.allowsMultipleSelection = true
         addSubview(collectionView)
         collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 20)
-        collectionView.setDimensions(height: ConversationViewModel.shared.photoBaseHeight, width: SCREEN_WIDTH)
+        collectionView.setDimensions(height: MainViewModel.shared.photoBaseHeight, width: SCREEN_WIDTH)
         
         resetCache()
         updateSelectedItems()
@@ -123,9 +115,9 @@ class PhotosCollectionView: UIView {
         dragView.anchor(top: topAnchor)
         dragView.centerX(inView: self)
         
-        let dragPan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
-        dragPan.delegate = self
-        self.dragView.addGestureRecognizer(dragPan)
+//        let dragPan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+//        dragPan.delegate = self
+//        self.dragView.addGestureRecognizer(dragPan)
     }
     
     required init?(coder: NSCoder) {
@@ -136,6 +128,7 @@ class PhotosCollectionView: UIView {
         let viewModel = ConversationGridViewModel.shared
         
         if viewModel.isSelectingChats {
+            
             if viewModel.selectedChats.count > 0 && ConversationViewModel.shared.hasSelectedAssets {
                 sendButton.isEnabled = true
                 sendButton.alpha = 1
@@ -148,7 +141,6 @@ class PhotosCollectionView: UIView {
             sendButton.isEnabled = selectedIndexes.isEmpty ? false : true
             sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
         }
-        
     }
     
     //MARK: - Selectors
@@ -173,8 +165,6 @@ class PhotosCollectionView: UIView {
                         ConversationViewModel.shared.sendMessage(url: asset.url, type: .Video)
                         ConversationGridViewModel.shared.stopSelectingChats()
                     }
-                    
-                    
                 }
             }
         }
@@ -255,9 +245,7 @@ extension PhotosCollectionView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let asset = currentAssetAtIndex(indexPath.item)
-        
-        
-        
+  
         selectedAssets.append(asset)
         
         if let view = collectionView.cellForItem(at: indexPath) as? AssetCell{

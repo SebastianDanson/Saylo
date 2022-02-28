@@ -18,7 +18,7 @@ struct SetProfileImageView: View {
     @State var showCamera: Bool = false
     @State private var isLoading = false
 
-    let cameraView = CameraMainView()
+    let cameraView = MainView()
     
     var body: some View {
         
@@ -62,8 +62,8 @@ struct SetProfileImageView: View {
                                         showImagePicker = true
                                     },
                                     .default(Text("Take a photo")) {
-                                        CameraViewModel.shared.isTakingPhoto = true
-                                        CameraViewModel.shared.cameraView.setupProfileImageCamera()
+//                                        MainViewModel.shared.isTakingPhoto = true
+                                        MainViewModel.shared.cameraView.setupProfileImageCamera()
                                         showCamera = true
                                     },
                                     .cancel()
@@ -134,7 +134,7 @@ struct SetProfileImageView: View {
             
             if showCamera {
                 
-                CameraViewModel.shared.cameraView
+                MainViewModel.shared.cameraView
                     .ignoresSafeArea()
                     .transition(.opacity)
                     .zIndex(6)
@@ -160,7 +160,7 @@ struct SetProfileImageView: View {
                             Spacer()
                             
                             Button(action: {
-                                CameraViewModel.shared.takePhoto()
+                                MainViewModel.shared.takePhoto()
                                 setImage()
                             }, label: {
                                 Circle()
@@ -182,7 +182,7 @@ struct SetProfileImageView: View {
     func setImage() {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            if let photo = CameraViewModel.shared.photo {
+            if let photo = MainViewModel.shared.photo {
                 profileImage = photo
                 showCameraImageCropper = true
                 showCamera = false

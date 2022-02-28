@@ -22,7 +22,7 @@ struct SuggestedChatsView: View {
                     
                     Button {
                         ConversationViewModel.shared.sendCameraMessage(chatId: chat.id, chat: chat)
-                        CameraViewModel.shared.reset(hideCamera: true)
+//                        MainViewModel.shared.reset(hideCamera: true)
                     } label: {
                         ChatImageCircle(chat: chat, diameter: 64)
                             .environment(\.colorScheme, .dark)

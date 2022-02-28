@@ -133,13 +133,6 @@ struct MultilineTextField: View {
     private var onCommit: (() -> Void)?
 
     @Binding private var text: String
-//    private var internalText: Binding<String> {
-//        Binding<String>(get: { self.text } ) {
-//            self.text = $0
-//            self.showingPlaceholder = $0.isEmpty
-//        }
-//    }
-
     @State private var dynamicHeight: CGFloat
     @State private var showingPlaceholder = false
     
@@ -158,31 +151,8 @@ struct MultilineTextField: View {
            
         textviewwrapper
             .frame(height: SCREEN_WIDTH * 1.5)
-//            .overlay(placeholderView.padding(.top, 0).padding(.leading, 10), alignment: .leading)
     
     }
-    
-
-//    var placeholderView: some View {
-//        Group {
-//            if showingPlaceholder {
-//
-//                HStack {
-//
-//                    Spacer()
-//
-//                    Text(placeholder)
-//                        .foregroundColor(Color.white)
-//                        .font(.system(size: 28, weight: .medium))
-//
-//                    Spacer()
-//                }
-//
-//            }
-//        }
-//    }
-    
-   
 }
 
 

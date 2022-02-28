@@ -10,7 +10,7 @@ import Firebase
 import SwiftUI
 import Photos
 
-class CameraViewModel: ObservableObject {
+class MainViewModel: ObservableObject {
     
     @Published var videoUrl: URL?
     @Published var photo: UIImage?
@@ -18,29 +18,27 @@ class CameraViewModel: ObservableObject {
     @Published var progress = 0.0
     @Published var isRecording = false
     @Published var isShowingPhotoCamera = false
-    @Published var isTakingPhoto = false
-    @Published var hasSentWithoutCrop = false
     @Published var isPlaying = false
-    @Published var isFirstLoad = true
     @Published var isFrontFacing = true
-    @Published var isRotating = false
-    @Published var showFullCameraView = false
     @Published var showAlert = false
-
+    @Published var selectedView: MainViewType = .Video
+    @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
+    @Published var showPhotos = true
+    
     var audioRecorder = AudioRecorder()
     
     var isCameraAlert = false
     
     var timer: Timer?
     
-    var cameraView = CameraMainView()
+    var cameraView = MainView()
     var videoPlayerView: VideoPlayerView? {
         didSet {
             playVideo()
         }
     }
     
-    static let shared = CameraViewModel()
+    static let shared = MainViewModel()
     
     private init() {
         //        cameraView.setupSession()
@@ -68,68 +66,26 @@ class CameraViewModel: ObservableObject {
         isRecording = false
     }
     
-    func reset(hideCamera: Bool = false) {
+    func reset() {
         
-        if !isRecording && videoUrl == nil && photo == nil || hideCamera {
-            closeCamera()
-            isShowingPhotoCamera = false
-            
-            if ConversationViewModel.shared.selectedChat != nil {
-                ConversationViewModel.shared.selectedChat = nil
-                ConversationViewModel.shared.chatId = ""
-            }
-            
-            //            cameraView.cancelRecording()
-            //            cameraView.addAudio()
+        if isRecording {
+            selectedView == .Video ? cancelRecording() : audioRecorder.cancelRecording()
         }
         
-        videoPlayerView = nil
         videoUrl = nil
         progress = 0.0
         isRecording = false
         photo = nil
-        
-        
-        ConversationGridViewModel.shared.stopSelectingChats()
-        ConversationGridViewModel.shared.selectedChats = [Chat]()
     }
-    
-    func closeCamera() {
-        withAnimation(.linear(duration: 0.15)) {
-            
-            ConversationViewModel.shared.showCamera = false
-            
-            if showFullCameraView {
-                cameraView.setPreviewLayerSmallFrame()
-                showFullCameraView = false
-            }
-        }
-    }
+
     
     func startRecording(addDelay: Bool = false) {
-//
-//        if addDelay {
-//
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                withAnimation {
-//                    self.isRecording = true
-//                    self.progress = 1
-//                }
-//            }
-//
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-//                self.cameraView.startRecording()
-//
-//            }
-//
-//        } else {
+
             self.cameraView.startRecording()
             withAnimation {
                 self.isRecording = true
                 self.progress = 1
             }
-//        }
-        
     }
     
     func stopRecording() {
@@ -187,19 +143,6 @@ class CameraViewModel: ObservableObject {
     func handleTap() {
         
         isRecording ? stopRecording() : startRecording()
-
-
-//        if ConversationViewModel.shared.showCamera || showFullCameraView {
-//            if CameraViewModel.shared.isShowingPhotoCamera {
-//                takePhoto()
-//            } else {
-//                isRecording ? stopRecording() : startRecording()
-//            }
-//        } else {
-//            cameraView.addAudio()
-//            cameraView.startRunning()
-//            startRecording(addDelay: true)
-//        }
     }
     
     func startRunning() {
@@ -210,48 +153,54 @@ class CameraViewModel: ObservableObject {
         self.cameraView.takePhoto()
     }
     
-    func toggleIsFrontFacing() {
-        
-        
-        withAnimation {
-            
-            self.isRotating = true
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.isFrontFacing.toggle()
-                self.isRotating = false
-            }
-        }
-        self.cameraView.switchCamera()
-    }
-    
     func setVideoPlayer() {
         if let videoUrl = videoUrl {
             videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
         }
-        
-        
+
+    }
+    
+    func showCamera() -> Bool {
+        selectedView == .Video  || selectedView == .Photo
+    }
+    
+    func showRecordButton() -> Bool {
+        (selectedView == .Video  || selectedView == .Voice) && !showPhotos
+    }
+    
+    func handleRecordButtonTapped() {
+        if selectedView == .Video {
+            handleTap()
+        } else if selectedView == .Voice {
+            handleAudioTap()
+        }
+    }
+    
+    func handlePhotoButtonTapped() {
+        if photo == nil {
+            takePhoto()
+        } else {
+           sendPhoto()
+        }
     }
     
     func getCameraWidth() -> CGFloat {
-        ConversationGridViewModel.shared.hasUnreadMessages ? CAMERA_SMALL_WIDTH : CAMERA_WIDTH
+        CAMERA_WIDTH
     }
     
     func getCameraHeight() -> CGFloat {
-        ConversationGridViewModel.shared.hasUnreadMessages ? CAMERA_SMALL_HEIGHT : CAMERA_HEIGHT
+        CAMERA_HEIGHT
     }
     
-    //    func requestAuthorization(completion: @escaping ()->Void) {
-    //            if PHPhotoLibrary.authorizationStatus() == .notDetermined {
-    //                PHPhotoLibrary.requestAuthorization { (status) in
-    //                    DispatchQueue.main.async {
-    //                        completion()
-    //                    }
-    //                }
-    //            } else if PHPhotoLibrary.authorizationStatus() == .authorized{
-    //                completion()
-    //            }
-    //        }
+    
+    func savePhoto() {
+        
+        guard let photo = photo else {
+            return
+        }
+
+       saveToPhotos(photo: photo)
+    }
     
     func saveToPhotos(url: URL) {
         PHPhotoLibrary.shared().performChanges({

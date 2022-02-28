@@ -88,7 +88,7 @@ struct VideoPlayerView: View {
     }
     
     func getHeight() -> CGFloat {
-        ConversationViewModel.shared.showCamera || CameraViewModel.shared.showFullCameraView ? CAMERA_WIDTH * 16/9 : CAMERA_HEIGHT
+        CAMERA_HEIGHT
     }
     
 }
@@ -332,8 +332,7 @@ extension AVPlayer {
     func playWithRate() {
         
         self.play()
-        self.rate = !ConversationViewModel.shared.showCamera && !CameraViewModel.shared.showFullCameraView && ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
+        self.rate = !ConversationViewModel.shared.showCamera && ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
     }
-    
 }
 

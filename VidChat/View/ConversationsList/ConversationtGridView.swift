@@ -29,10 +29,10 @@ struct ConversationGridView: View {
     
     var body: some View {
         
-        let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight,
-                                          height: $conversationViewModel.photoBaseHeight,
-                                          showVideoLengthAlert: $showPhotoPickerAlert)
-            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
+//        let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight,
+//                                          height: $conversationViewModel.photoBaseHeight,
+//                                          showVideoLengthAlert: $showPhotoPickerAlert)
+//            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
         
         
         NavigationView {
@@ -88,7 +88,7 @@ struct ConversationGridView: View {
                                                         conversationViewModel.setChat(chat: chat)
                                                         viewModel.showConversation = true
                                                     }
-                                                    CameraViewModel.shared.cameraView.stopRunning()
+                                                    MainViewModel.shared.cameraView.stopRunning()
                                                 })
                                         }
                                     })
@@ -111,7 +111,7 @@ struct ConversationGridView: View {
                         
                         
                         if conversationViewModel.showCamera && !viewModel.isSelectingChats {
-                            CameraViewModel.shared.cameraView
+                            MainViewModel.shared.cameraView
                                 .zIndex(viewModel.cameraViewZIndex)
                         }
                     }
@@ -122,9 +122,9 @@ struct ConversationGridView: View {
                     }
                     
                     if conversationViewModel.showPhotos {
-                        photoPicker
-                            .frame(width: SCREEN_WIDTH, height: conversationViewModel.photoBaseHeight)
-                            .transition(.move(edge: .bottom))
+//                        photoPicker
+//                            .frame(width: SCREEN_WIDTH, height: conversationViewModel.photoBaseHeight)
+//                            .transition(.move(edge: .bottom))
                     }
                     
                     
@@ -171,9 +171,9 @@ struct ConversationGridView: View {
                 }
                 
                 if viewModel.hasUnreadMessages {
-                    ConversationPlayerView()
-                        .zIndex(3)
-                        
+//                    ConversationPlayerView()
+//                        .zIndex(3)
+//
                 }
                 
                 
@@ -295,7 +295,7 @@ struct NavView: View {
     
     @StateObject private var viewModel = ConversationGridViewModel.shared
     @StateObject private var conversationViewModel = ConversationViewModel.shared
-    @StateObject private var cameraViewModel = CameraViewModel.shared
+    @StateObject private var cameraViewModel = MainViewModel.shared
     @StateObject private var authViewModel = AuthViewModel.shared
     
     @Binding var searchText: String
@@ -348,9 +348,16 @@ struct NavView: View {
                             
                             
                         }
+                        
                         Spacer()
                         
+                        if let chat = conversationViewModel.chat {
+                            Text(chat.name)
+                                .foregroundColor(.white)
+                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                        }
                       
+                        Spacer()
                         
                         HStack(alignment: .top, spacing: 6 ) {
                             
@@ -547,7 +554,7 @@ struct SelectedChatsView: View {
                                 
                             }
                             
-                            CameraViewModel.shared.reset(hideCamera: true)
+//                            MainViewModel.shared.reset(hideCamera: true)
                             viewModel.cameraViewZIndex = 3
                             viewModel.stopSelectingChats()
                             

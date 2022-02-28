@@ -63,7 +63,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         if AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
-            CameraViewModel.shared.cameraView.setupSession()
+            MainViewModel.shared.cameraView.setupSession()
         }
             
         ConversationGridViewModel.shared.showCachedChats()
@@ -77,8 +77,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         if ConversationViewModel.shared.showCamera {
-            CameraViewModel.shared.stopRecording()
-            CameraViewModel.shared.cameraView.stopSession()
+            MainViewModel.shared.stopRecording()
+            MainViewModel.shared.cameraView.stopSession()
         }
         
         ConversationGridViewModel.shared.setChatCache()

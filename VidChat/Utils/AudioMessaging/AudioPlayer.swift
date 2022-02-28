@@ -12,7 +12,7 @@ class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     @Published var isPlaying = false {
         didSet {
-            CameraViewModel.shared.isPlaying = isPlaying
+            MainViewModel.shared.isPlaying = isPlaying
             objectWillChange.send(self)
         }
     }

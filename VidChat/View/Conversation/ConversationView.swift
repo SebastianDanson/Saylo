@@ -14,7 +14,7 @@ struct ConversationView: View {
     
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
 
-    @StateObject var cameraViewModel = CameraViewModel.shared
+    @StateObject var cameraViewModel = MainViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     @StateObject private var photosViewModel = PhotosViewModel.shared
 
@@ -78,7 +78,7 @@ struct ConversationView: View {
                     }
                     //Camera
                     if viewModel.showCamera {
-                        CameraViewModel.shared.cameraView
+                        MainViewModel.shared.cameraView
                             .ignoresSafeArea()
                             .onDisappear {
                                 if viewModel.isSending {
@@ -131,10 +131,10 @@ struct ConversationView: View {
                             Spacer()
                         }
                         
-                        PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
-                            .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
-                            .transition(.move(edge: .bottom))
-                            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
+//                        PhotoPickerView(baseHeight: viewModel.photoBaseHeight, height: $viewModel.photoBaseHeight, showVideoLengthAlert: $showPhotoPickerAlert)
+//                            .frame(width: SCREEN_WIDTH, height: viewModel.photoBaseHeight)
+//                            .transition(.move(edge: .bottom))
+//                            .alert(isPresented: $showPhotoPickerAlert) {videoTooLongAlert()}
                     }
                     
                 }
@@ -168,10 +168,10 @@ struct ConversationView: View {
                 ,alignment: .bottom)
             
             if viewModel.showConversationPlayer {
-                ConversationPlayerView()
-                    .transition(AnyTransition.asymmetric(insertion: .scale, removal: .move(edge: .bottom)))
-                    .zIndex(6)
-                    .ignoresSafeArea()
+//                ConversationPlayerView()
+//                    .transition(AnyTransition.asymmetric(insertion: .scale, removal: .move(edge: .bottom)))
+//                    .zIndex(6)
+//                    .ignoresSafeArea()
             }
             
             if viewModel.showImageDetailView {
@@ -236,7 +236,7 @@ struct ConversationView: View {
 struct OptionsView: View {
     
     
-    @StateObject var cameraViewModel = CameraViewModel.shared
+    @StateObject var cameraViewModel = MainViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     
     @State var audioRecorder = AudioRecorder()
@@ -280,7 +280,7 @@ struct OptionsView: View {
                                     
                                     Button(action: {
                                         
-                                        viewModel.photoBaseHeight = viewModel.chatId.isEmpty ? PHOTO_PICKER_SMALL_HEIGHT : PHOTO_PICKER_BASE_HEIGHT
+//                                        viewModel.photoBaseHeight = viewModel.chatId.isEmpty ? PHOTO_PICKER_SMALL_HEIGHT : PHOTO_PICKER_BASE_HEIGHT
                                         
                                         withAnimation(.linear(duration: 0.15)) {
                                             
@@ -312,7 +312,7 @@ struct OptionsView: View {
                                     viewModel.pauseVideos()
                                     
                                 }, label: {
-                                    CameraCircle().padding(.leading, 15).padding(.trailing, 12)
+                                    RecordButton().padding(.leading, 15).padding(.trailing, 12)
                                 }).transition(.scale)
                             }
                             
@@ -420,11 +420,11 @@ struct VisualEffectView: UIViewRepresentable {
     }
 }
 
-/* The button that records video */
+/* The button that records videos and voice */
 
-struct CameraCircle: View {
+struct RecordButton: View {
     
-    @StateObject var viewModel = CameraViewModel.shared
+    @StateObject var viewModel = MainViewModel.shared
     
     var body: some View {
         
@@ -437,15 +437,7 @@ struct CameraCircle: View {
             .overlay(
                 
                 ZStack {
-                    if !viewModel.isShowingPhotoCamera && !viewModel.isRecording {
-                        ZStack {
-                            
-                            Circle()
-                                .stroke(Color.white, style: StrokeStyle(lineWidth: 7, lineCap: .round, lineJoin: .round))
-                                .frame(width: 62, height: 62)
-                            
-                        }
-                    } else {
+                
                         Circle()
                             .stroke(viewModel.isRecording ? .clear : .white,
                                     style: StrokeStyle(lineWidth: 7))
@@ -465,7 +457,6 @@ struct CameraCircle: View {
                             ).frame(width: viewModel.isShowingPhotoCamera ? 64 : 62,
                                     height: viewModel.isShowingPhotoCamera ? 64 : 62)
                     }
-                }
             )
             .padding(.horizontal, 5)
     }
@@ -479,7 +470,7 @@ struct ChatOptions: View {
     @Binding var showSettings: Bool
     
     @StateObject var viewModel = ConversationViewModel.shared
-    @StateObject var cameraViewModel = CameraViewModel.shared
+    @StateObject var cameraViewModel = MainViewModel.shared
     
     private let topPadding = UIApplication.shared.windows[0].safeAreaInsets.top
     
@@ -606,7 +597,7 @@ struct AudioOptions: View {
                         viewModel.isRecordingAudio = false
                     }
                     
-                    audioRecorder.stopRecording(startPlayback: false)
+                    audioRecorder.stopRecording()
                     viewModel.audioProgress = 0.0
                     viewModel.showAudio = false
                     ConversationGridViewModel.shared.stopSelectingChats()
@@ -747,7 +738,7 @@ struct KeyboardView: View {
 struct SavedPostsOptionsView: View {
     
     
-    @StateObject var cameraViewModel = CameraViewModel.shared
+    @StateObject var cameraViewModel = MainViewModel.shared
     @StateObject var viewModel = ConversationViewModel.shared
     
     @State var audioRecorder = AudioRecorder()

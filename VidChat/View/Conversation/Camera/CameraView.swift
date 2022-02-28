@@ -17,7 +17,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> CameraViewController {
       //  cameraViewController.delegate = context.coordinator
-        cameraViewController.isVideo = CameraViewModel.shared.isRecording
+        cameraViewController.isVideo = MainViewModel.shared.isRecording
         return cameraViewController
     }
     
@@ -61,14 +61,6 @@ struct CameraView: UIViewControllerRepresentable {
         cameraViewController.setupSession(addAudio: false)
         cameraViewController.setupPreview()
         cameraViewController.startRunning()
-    }
-    
-    public func setPreviewlayerFullFrame() {
-        cameraViewController.setPreviewLayerFullFrame()
-    }
-    
-    public func setPreviewlayerSmallFrame() {
-        cameraViewController.setPreviewLayerSmallFrame()
     }
     
     public func startRunning() {

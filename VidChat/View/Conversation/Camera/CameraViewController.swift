@@ -140,17 +140,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
     }
     
-    func setPreviewLayerFullFrame() {
-        let width = CAMERA_WIDTH
-        previewLayer.frame = CGRect(x: (SCREEN_WIDTH - width)/2, y: TOP_PADDING, width: width, height: width * 16/9)
-        view.layoutIfNeeded()
-    }
-    
-    func setPreviewLayerSmallFrame() {
-        let width = CAMERA_SMALL_WIDTH
-        previewLayer.frame = CGRect(x: 0, y: 0, width: width, height: width * 16/9)
-        view.layoutIfNeeded()
-    }
     
     func stopRunning() {
         captureSession.stopRunning()
@@ -158,7 +147,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupAudio() {
         
-        guard CameraViewModel.shared.getHasMicAccess() else { return }
+        guard MainViewModel.shared.getHasMicAccess() else { return }
         
         DispatchQueue.main.async {
             
@@ -194,7 +183,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupSession(addAudio: Bool = true) {
         
-        guard CameraViewModel.shared.getHasCameraAccess() else { return }
+        guard MainViewModel.shared.getHasCameraAccess() else { return }
 
         DispatchQueue.main.async {
             
@@ -307,12 +296,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupPreview() {
         
-        let width = CameraViewModel.shared.getCameraWidth()
-        let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
-        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
+//        let width = MainViewModel.shared.getCameraWidth()
+//        let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
+//        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: x, y: y, width: width, height: width * 1.5)
+        previewLayer.frame = CGRect(x: 0, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
         
         previewLayer.cornerRadius = 14
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
@@ -350,7 +339,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     public func captureMovie(withFlash hasFlash: Bool) {
         
-        guard CameraViewModel.shared.getHasCameraAccess() && CameraViewModel.shared.getHasMicAccess() else {return}
+        guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
 
         self.hasFlash = hasFlash
         
@@ -392,8 +381,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         sessionAtSourceTime = nil
         
         
-        CameraViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(MAX_VIDEO_LENGTH), repeats: false) { timer in
-            CameraViewModel.shared.stopRecording()
+        MainViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(MAX_VIDEO_LENGTH), repeats: false) { timer in
+            MainViewModel.shared.stopRecording()
         }
         
         // Dispatch.main.async {
@@ -452,7 +441,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func canWrite() -> Bool {
-        return CameraViewModel.shared.isRecording && videoWriter != nil && videoWriter?.status == .writing
+        return MainViewModel.shared.isRecording && videoWriter != nil && videoWriter?.status == .writing
     }
     
     
@@ -468,7 +457,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
         }
         
-        if !CameraViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
+        if !MainViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
             
             connection.videoOrientation = .portrait
             
@@ -533,7 +522,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
             withAnimation {
-                CameraViewModel.shared.reset(hideCamera: true)
+                MainViewModel.shared.reset()
             }
         }))
         
@@ -547,7 +536,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     public func stopRecording(showVideo: Bool = true) {
         
-        guard CameraViewModel.shared.getHasCameraAccess() && CameraViewModel.shared.getHasMicAccess() else {return}
+        guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
         
         videoWriterInput.markAsFinished()
         audioWriterInput.markAsFinished()
@@ -558,11 +547,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             DispatchQueue.main.async {
                 
                 if showVideo {
-                    CameraViewModel.shared.videoUrl = self.outputURL
-                    CameraViewModel.shared.setVideoPlayer()
-                    CameraViewModel.shared.handleSend()
+                    MainViewModel.shared.videoUrl = self.outputURL
+                    MainViewModel.shared.setVideoPlayer()
+                    MainViewModel.shared.handleSend()
                 } else {
-                    CameraViewModel.shared.videoUrl = nil
+                    MainViewModel.shared.videoUrl = nil
                 }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
                 self.setUpWriter()
@@ -570,7 +559,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
         }
         
-        CameraViewModel.shared.timer?.invalidate()
+        MainViewModel.shared.timer?.invalidate()
         audioCaptureSession.stopRunning()
         
     }
@@ -610,10 +599,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        CameraViewModel.shared.isTakingPhoto = false
+//        MainViewModel.shared.isTakingPhoto = false
         if let imageData = photo.fileDataRepresentation() {
             if let uiImage = UIImage(data: imageData){
-                CameraViewModel.shared.photo = uiImage
+                MainViewModel.shared.photo = uiImage
             }
         }
     }

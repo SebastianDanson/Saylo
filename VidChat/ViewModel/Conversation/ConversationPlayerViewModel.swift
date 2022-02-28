@@ -122,7 +122,6 @@ class ConversationPlayerViewModel: ObservableObject {
   
         withAnimation {
             ConversationGridViewModel.shared.hasUnreadMessages = false
-            CameraViewModel.shared.cameraView.setPreviewLayerFullFrame()
         }
         
     }

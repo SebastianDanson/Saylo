@@ -36,7 +36,6 @@ class ConversationViewModel: ObservableObject {
     @Published var showUnreadMessages = false
     @Published var seenLastPost = [String]()
 
-    @Published var messageType: CreateMessageType = .Photo
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
@@ -44,8 +43,6 @@ class ConversationViewModel: ObservableObject {
             ConversationViewModel.shared.currentPlayer?.rate = isTwoTimesSpeed ? 2 : 1
         }
     }
-
-    //    @Published var chatId = "Chat"
     
     
     @Published var showConversationPlayer = false
@@ -67,7 +64,6 @@ class ConversationViewModel: ObservableObject {
     //Photos
     @Published var showPhotos = false
     
-    @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
     
     //Camera
     @Published var showCamera = false
@@ -269,7 +265,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func sendCameraMessage(chatId: String?, chat: Chat?) {
-        let cameraViewModel = CameraViewModel.shared
+        let cameraViewModel = MainViewModel.shared
         addMessage(url: cameraViewModel.videoUrl, image: cameraViewModel.photo,
                    type: cameraViewModel.videoUrl == nil ? .Photo : .Video,
                    isFromPhotoLibrary: false, shouldExport: false, chatId: chatId)
