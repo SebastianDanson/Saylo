@@ -257,17 +257,16 @@ class ConversationGridViewModel: ObservableObject {
 //    }
     
     func showCachedChats() {
+        
         self.chats = getCachedChats()
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let selectedChatId = defaults?.string(forKey: "selectedChatId")
         
-        guard let selectedChatId = selectedChatId else {
-            return
-        }
-
-        if let chat = self.chats.first(where: {$0.id == selectedChatId}) {
+        if let selectedChatId = selectedChatId, let chat = self.chats.first(where: {$0.id == selectedChatId}) {
             ConversationViewModel.shared.setChat(chat: chat)
+        } else if chats.count > 0 {
+            ConversationViewModel.shared.setChat(chat: chats [0])
         }
     }
     

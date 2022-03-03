@@ -44,16 +44,16 @@ struct UnreadMessagePlayerView: View {
                     player.pause()
                 }
             }
-            .background(isVideo ? Color.systemBlack :  Color.mainBlue)
+            .background(isVideo ? Color.systemBlack :  Color.alternateMainBlue)
             .cornerRadius(isMiniDisplay ? 6 : 16)
             .overlay(
                 ZStack {
                     if !isVideo {
-                        Image(systemName: "waveform")
+                        Image(systemName: "mic.fill")
                             .resizable()
+                            .scaledToFit()
                             .frame(width: isMiniDisplay ? 20 : 120, height: isMiniDisplay ? 2 : 120)
                             .foregroundColor(.white)
-                            .scaledToFill()
                             .padding(.top, isMiniDisplay ? 2 : 8)
                     }
                 }

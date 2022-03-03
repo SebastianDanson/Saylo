@@ -28,6 +28,7 @@ struct VideoCell: View {
         self._isSaved = State(initialValue: message.isSaved)
         //        self.videoPlayerView =
         //        self.videoPlayerView.player.pause()
+        
     }
     
     var body: some View {
@@ -97,14 +98,13 @@ struct VideoCell: View {
                                         .foregroundColor(.point3AlphaSystemBlack)
                                 }
                                 
-                                if viewModel.sendingMessageId != message.id {
                                     
                                     Image(systemName: "face.smiling")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 32, height: 32)
                                         .foregroundColor(.white)
-                                }
+                                
                             }
                         }
                         
@@ -141,37 +141,37 @@ struct VideoCell: View {
                 }
             }
         }
-        .overlay(
-            
-            ZStack {
-                if viewModel.sendingMessageId == message.id {
-                    
-                    if viewModel.isSending {
-                        ActivityIndicator(shouldAnimate: .constant(true), diameter: 25)
-                        
-                    } else if viewModel.hasSent {
-                        
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 30, height: 30)
-                                .foregroundColor(message.type == .Audio ? .white : .mainBlue)
-                                .opacity(0.9)
-                            
-                            Image(systemName: "checkmark")
-                                .resizable()
-                                .font(Font.title.weight(.semibold))
-                                .scaledToFit()
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(message.type == .Audio ? .mainBlue : .white)
-                            
-                        }.transition(.opacity)
-                        
-                    }
-                }
-            } .padding(.trailing, 10)
-                .padding(.bottom, 10),
-            alignment: .bottomTrailing)
+//        .overlay(
+//            
+//            ZStack {
+//                if viewModel.sendingMessageId == message.id {
+//                    
+//                    if viewModel.isSending {
+//                        ActivityIndicator(shouldAnimate: .constant(true), diameter: 25)
+//                        
+//                    } else if viewModel.hasSent {
+//                        
+//                        ZStack {
+//                            
+//                            Circle()
+//                                .frame(width: 30, height: 30)
+//                                .foregroundColor(message.type == .Audio ? .white : .mainBlue)
+//                                .opacity(0.9)
+//                            
+//                            Image(systemName: "checkmark")
+//                                .resizable()
+//                                .font(Font.title.weight(.semibold))
+//                                .scaledToFit()
+//                                .frame(width: 16, height: 16)
+//                                .foregroundColor(message.type == .Audio ? .mainBlue : .white)
+//                            
+//                        }.transition(.opacity)
+//                        
+//                    }
+//                }
+//            } .padding(.trailing, 10)
+//                .padding(.bottom, 10),
+//            alignment: .bottomTrailing)
         .padding(.vertical, 12)
     }
 }

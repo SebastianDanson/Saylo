@@ -305,10 +305,10 @@ struct NoteView: View {
             ZStack {
                 
                 if isTyping && noteText.isEmpty {
+                    
                     Text("Tap to type")
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundColor(.white)
-                    
                 }
                 
                 MultilineTextField(text: $noteText, height: MESSAGE_HEIGHT)

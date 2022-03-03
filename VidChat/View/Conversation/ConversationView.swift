@@ -67,13 +67,12 @@ struct ConversationView: View {
                         MainViewModel.shared.cameraView
                             .ignoresSafeArea()
                             .onDisappear {
-                                if viewModel.isSending {
                                     
                                     DispatchQueue.main.async {
                                         viewModel.currentPlayer?.pause()
                                         viewModel.scrollToBottomOfFeed()
                                     }
-                                }
+                                
                             }
                         //                            .transition(.move(edge: .bottom))
                     }

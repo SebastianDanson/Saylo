@@ -48,13 +48,30 @@ struct UnreadMessagesScrollView: View {
                                             
                                             if viewModel.isPlayable(index: i), let urlString = viewModel.messages[i].url, let url = URL(string: urlString) {
                                                 
-                                                if let image = createVideoThumbnail(from: url) {
-                                                    Image(uiImage: image)
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                                                        .cornerRadius(6)
-                                                        .clipped()
+                                                
+                                                if viewModel.messages[i].type == .Video {
+                                                    if let image = createVideoThumbnail(from: url) {
+                                                        Image(uiImage: image)
+                                                            .resizable()
+                                                            .scaledToFill()
+                                                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                            .cornerRadius(6)
+                                                            .clipped()
+                                                    }
+                                                } else {
+                                                    
+                                                    VStack {
+                                                        Spacer()
+                                                        Image(systemName: "mic.fill")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .frame(width: 32, height: 32)
+                                                            .foregroundColor(.white)
+                                                        Spacer()
+                                                    }
+                                                    .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                    .background(Color.alternateMainBlue)
+                                                    .cornerRadius(6)
                                                 }
                                                 
                                                 
@@ -66,7 +83,7 @@ struct UnreadMessagesScrollView: View {
                                                     
                                                     Text(text)
                                                         .foregroundColor(.white)
-                                                        .font(.system(size: 28, weight: .bold))
+                                                        .font(.system(size: 10, weight: .bold))
                                                         .padding()
                                                     
                                                 }
@@ -101,7 +118,8 @@ struct UnreadMessagesScrollView: View {
                         }
                     }
                 }
-            }.frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+            }
+            .frame(width: SCREEN_WIDTH)
         }
     }
     

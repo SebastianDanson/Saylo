@@ -76,6 +76,7 @@ class AudioRecorder: NSObject,ObservableObject {
         timer?.invalidate()
         audioRecorder.stop()
         sendRecording()
+        print("YESSIR")
     }
     
     func cancelRecording() {
@@ -84,9 +85,12 @@ class AudioRecorder: NSObject,ObservableObject {
     }
     
     func sendRecording() {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            ConversationViewModel.shared.sendMessage(url: audioUrl, text: nil, type: .Audio)
-        }
+//        withAnimation(.easeInOut(duration: 0.2)) {
+//        audioPlayer.startPlayback(audio: audioUrl)
+
+        
+        ConversationViewModel.shared.sendMessage(url: audioUrl, text: nil, type: .Audio)
+//        }
     }
     
     func playRecording() {

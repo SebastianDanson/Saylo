@@ -30,6 +30,7 @@ class ConversationViewModel: ObservableObject {
             self.hasChanged.toggle()
         }
     }
+    
     @Published var hasChanged = false
     @Published var chatId = ""
     @Published var isTyping = false
@@ -76,11 +77,7 @@ class ConversationViewModel: ObservableObject {
     
     //Calling
     @Published var showCall = false
-    
-    //Indicate a message is being sent
-    @Published var isSending = false
-    @Published var hasSent = false
-    @Published var sendingMessageId = ""
+
     
     var currentPlayer: AVPlayer?
     
@@ -112,6 +109,7 @@ class ConversationViewModel: ObservableObject {
         self.addListener()
         self.messages = chat.messages
         ConversationService.updateLastVisited(forChat: chat)
+        
         //        self.setIsSameId(messages: chat.messages)
         //        self.seenLastPost = chat.seenLastPost
         //        self.chat?.hasUnreadMessage = false
@@ -163,10 +161,6 @@ class ConversationViewModel: ObservableObject {
         }
         
         let id = NSUUID().uuidString
-        
-        if !self.chatId.isEmpty {
-            sendingMessageId = id
-        }
         
         let chatId = chatId ?? self.chatId
         
@@ -243,21 +237,18 @@ class ConversationViewModel: ObservableObject {
                 let sendDelay: TimeInterval = 1.5
                 
                 if type == .Video {
-                    let ref = UploadType.video.getFilePath(messageId: id)
-                    MediaUploader.shared.uploadVideo(url: url, messageId: id, ref: ref, isFromPhotoLibrary: isFromPhotoLibrary) { _ in }
                     
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + sendDelay) {
-                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: ref.fullPath)
+                    MediaUploader.shared.uploadVideo(url: url, messageId: id, isFromPhotoLibrary: isFromPhotoLibrary) { newUrl in
+                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newUrl)
                     }
                     
                 } else {
-                    let ref = UploadType.audio.getFilePath(messageId: id)
-                    MediaUploader.shared.uploadAudio(url: url, messageId: id, ref: ref) { _ in }
                     
-                    DispatchQueue.main.asyncAfter(deadline: .now() + sendDelay) {
-                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: ref.fullPath)
+
+                    MediaUploader.shared.uploadAudio(url: url, messageId: id) { newUrl in
+                        self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newUrl)
                     }
+                    
                 }
             } else if text != nil {
                 self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id, hasNotification: hasNotification)
@@ -316,23 +307,12 @@ class ConversationViewModel: ObservableObject {
                     }
                     
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
-                        if !self.chatId.isEmpty {
-                            ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
-                        } else {
-                            
-                            self.isSending = false
-                            self.hasSent = true
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                self.hasSent = false
-                                self.sendingMessageId = ""
-                            }
-                        }
                         
+                        ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
+                       
                         if hasNotification {
                             self.sendMessageNotification(chat: chat, messageData: data)
                         }
-                        
                     }
                 }
                 
@@ -413,6 +393,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func fetchSavedMessages() {
+        
         ConversationService.fetchSavedMessages(forDocWithId: self.chatId) { messages in
             self.setIsSameId(messages: messages)
             self.savedMessages = messages
@@ -505,19 +486,20 @@ class ConversationViewModel: ObservableObject {
         players.forEach({$0.player.pause()})
     }
     
-    func sendMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil) {
+    func sendMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
         
-        if self.chatId.isEmpty {
+//        if self.chatId.isEmpty {
             
-            ConversationGridViewModel.shared.selectedChats.forEach { chat in
-                addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
+//            ConversationGridViewModel.shared.selectedChats.forEach { chat in
+        if let chat = chat {
+               addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
                 ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
-            }
-            
-        } else {
-            isSending = true
-            addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
         }
+//            }
+            
+//        } else {
+//            addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
+//        }
     }
     
     func updateNoticationsArray(chatId: String) {
@@ -539,7 +521,6 @@ class ConversationViewModel: ObservableObject {
         }
         
         UIApplication.shared.applicationIconBadgeNumber = notificationArray?.count ?? 0
-        
     }
     
     func cleanNotificationsArray() {
@@ -611,7 +592,9 @@ class ConversationViewModel: ObservableObject {
     
     func showNextMessage() {
         
+        print(messages[0].chatId)
         if index == messages.count - 1 {
+            
             //            self.removePlayerView()
         } else {
             

@@ -29,7 +29,8 @@ struct VideoPlayerView: View {
         self.message = message
 
         player.automaticallyWaitsToMinimizeStalling = false
-        
+     
+      
     }
     
   
@@ -144,7 +145,7 @@ class PlayerUIView: UIView {
     private var prevTranslation: CGPoint = .zero
     private var progressBarHighlightedObserver: NSKeyValueObservation?
     private var timeObserverToken: Any?
-    private let playbackSlider = UISlider()
+//    private let playbackSlider = UISlider()
     private var shouldLoop = false
     
     required init?(coder: NSCoder) {
@@ -175,24 +176,24 @@ class PlayerUIView: UIView {
 
         layer.addSublayer(playerLayer)
 
-        playbackSlider.setDimensions(height: 30, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
-        playbackSlider.minimumValue = 0
-        playbackSlider.maximumValue = 1
-        playbackSlider.thumbTintColor = .clear
+//        playbackSlider.setDimensions(height: 30, width: ConversationViewModel.shared.showCamera ? SCREEN_WIDTH - 64 : SCREEN_WIDTH - 100)
+//        playbackSlider.minimumValue = 0
+//        playbackSlider.maximumValue = 1
+//        playbackSlider.thumbTintColor = .clear
+//
+//        playbackSlider.isContinuous = true
+//        playbackSlider.tintColor = UIColor.white
+//
+//        playbackSlider.addTarget(self, action: #selector(self.playbackSliderValueChanged(_:)), for: .valueChanged)
+//        self.addSubview(playbackSlider)
+//        playbackSlider.centerX(inView: self)
+//        playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 8)
+//        addPeriodicTimeObserver()
         
-        playbackSlider.isContinuous = true
-        playbackSlider.tintColor = UIColor.white
-        
-        playbackSlider.addTarget(self, action: #selector(self.playbackSliderValueChanged(_:)), for: .valueChanged)
-        self.addSubview(playbackSlider)
-        playbackSlider.centerX(inView: self)
-        playbackSlider.anchor(bottom: bottomAnchor, paddingBottom: 8)
-        addPeriodicTimeObserver()
-        
-        if ConversationViewModel.shared.showCamera {
-            playbackSlider.isHidden = true
-        }
- 
+//        if ConversationViewModel.shared.showCamera {
+//            playbackSlider.isHidden = true
+//        }
+//
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidReachEnd(notification:)),
                                                name: .AVPlayerItemDidPlayToEndTime,
@@ -228,20 +229,20 @@ class PlayerUIView: UIView {
     
     func addPeriodicTimeObserver() {
         // Notify every half second
-        let timeScale = CMTimeScale(NSEC_PER_SEC)
-        let time = CMTime(seconds: 0.05, preferredTimescale: timeScale)
-        
-        timeObserverToken = playerLayer.player?.addPeriodicTimeObserver(forInterval: time,
-                                                                        queue: .main) {
-            [weak self] time in
-            
-            if self?.playbackSlider.state ?? .normal == .normal {
-                let duration : CMTime = self?.playerLayer.player?.currentItem?.asset.duration ?? .zero
-                
-                self?.playbackSlider.setValue(Float(CMTimeGetSeconds(time) / CMTimeGetSeconds(duration)), animated: true)
-                self?.playbackSlider.thumbTintColor = .clear
-            }
-        }
+//        let timeScale = CMTimeScale(NSEC_PER_SEC)
+//        let time = CMTime(seconds: 0.05, preferredTimescale: timeScale)
+//        
+//        timeObserverToken = playerLayer.player?.addPeriodicTimeObserver(forInterval: time,
+//                                                                        queue: .main) {
+//            [weak self] time in
+//            
+//            if self?.playbackSlider.state ?? .normal == .normal {
+//                let duration : CMTime = self?.playerLayer.player?.currentItem?.asset.duration ?? .zero
+//                
+//                self?.playbackSlider.setValue(Float(CMTimeGetSeconds(time) / CMTimeGetSeconds(duration)), animated: true)
+//                self?.playbackSlider.thumbTintColor = .clear
+//            }
+//        }
     }
     
     func removePeriodicTimeObserver() {
@@ -308,18 +309,16 @@ class PlayerUIView: UIView {
     
     @objc
     func playerItemDidReachEnd(notification: Notification) {
-        
-        ConversationViewModel.shared.index += 1
-        
-        if shouldLoop {
-            playerLayer.player?.seek(to: CMTime.zero)
-            
-            if !ConversationViewModel.shared.showCamera {
-                playerLayer.player?.pause()
-            }
-        } else {
-            ConversationViewModel.shared.showNextMessage()
-        }
+                
+//        if shouldLoop {
+//            playerLayer.player?.seek(to: CMTime.zero)
+//            
+//            if !ConversationViewModel.shared.showCamera {
+//                playerLayer.player?.pause()
+//            }
+//        } else {
+//            ConversationViewModel.shared.showNextMessage()
+//        }
     }
 }
 

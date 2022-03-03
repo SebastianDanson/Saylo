@@ -23,21 +23,23 @@ struct NoMessagesView: View {
             ChatImageCircle(chat: chat, diameter: 110)
             
             Text(chat.name)
-                .font(.system(size: 24, weight: .bold))
+                .foregroundColor(.white)
+                .font(.system(size: 26, weight: .bold, design: .rounded))
                 .padding(.top, 1)
                 .padding(.bottom, 0.5)
+                       
+            Text("Unsaved Saylos disappear after 24h")
+                .font(.system(size: 20, weight: .medium, design: .rounded))
+                .foregroundColor(.white)
+                .padding(.bottom, 40)
             
-            Text("Unsaved messages disappear after 24 hours")
-                .font(.system(size: 17, weight: .medium))
-                .foregroundColor(Color(.systemGray))
-            
-            Text("Tap and hold on a message to save it")
-                .font(.system(size: 17, weight: .medium))
-                .foregroundColor(Color(.systemGray))
-            
-            
-            Spacer()
+            Spacer()            
+          
         }
+        .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+//        .background(Color.blue)
+//        .cornerRadius(14)
+//        .padding(.top, TOP_PADDING_OFFSET)
     }
 }
 

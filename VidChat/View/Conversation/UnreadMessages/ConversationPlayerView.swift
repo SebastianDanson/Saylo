@@ -20,31 +20,35 @@ struct ConversationPlayerView: View {
     @State var reactions = [Reaction]()
     @State var isSaved = false
     @State var showAlert = false
-
-    //    @State var showPlayerViewTutorial: Bool
     
-    //    private var hasSeenPlayerViewTutorial: Bool
+    @State var showPlayerViewTutorial: Bool
+    
+    private var hasSeenPlayerViewTutorial: Bool
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
+    init() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        hasSeenPlayerViewTutorial = defaults?.bool(forKey: "hasSeenPlayerViewTutorial") ?? false
+        self._showPlayerViewTutorial = State(initialValue: !hasSeenPlayerViewTutorial)
+        defaults?.set(true, forKey: "hasSeenPlayerViewTutorial")
+    }
+    
     //    init() {
     //
-    //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-    //        hasSeenPlayerViewTutorial = defaults?.bool(forKey: "hasSeenPlayerViewTutorial") ?? false
-    //        self._showPlayerViewTutorial = State(initialValue: !hasSeenPlayerViewTutorial)
-    //        defaults?.set(true, forKey: "hasSeenPlayerViewTutorial")
     //    }
     
     var body: some View {
         
         VStack {
-               
+            
             let addedReactions = AddedReactionsContainerView(reactions: $reactions)
                 .padding(.leading, 16)
                 .padding(.bottom, 76)
             
             if viewModel.messages.count > viewModel.index {
-               
+                
                 
                 let messageInfoView = MessageInfoView(date: viewModel.messages[viewModel.index].timestamp.dateValue(),
                                                       profileImage: viewModel.messages[viewModel.index].userProfileImage,
@@ -57,13 +61,11 @@ struct ConversationPlayerView: View {
                         
                         if viewModel.isPlayable(), let urlString = viewModel.messages[viewModel.index].url, let url = URL(string: urlString) {
                             
-                            
                             if viewModel.hasChanged {
                                 UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
                             } else {
                                 UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
                             }
-                            
                             
                         } else if viewModel.messages[viewModel.index].type == .Text, let text = viewModel.messages[viewModel.index].text {
                             
@@ -101,6 +103,30 @@ struct ConversationPlayerView: View {
                     }
                     .zIndex(3)
                     .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+                    .gesture(DragGesture(minimumDistance: 0)
+                                .onChanged { gesture in
+                        //                             viewModel.dragOffset.height = max(0, gesture.translation.height)
+                    }
+                                .onEnded({ (value) in
+                        
+                        
+                        let xLoc = value.location.x
+                        
+                        if xLoc > SCREEN_WIDTH/2 {
+                            
+                            viewModel.showNextMessage()
+                            
+                            if viewModel.messages[viewModel.index].isForTakingVideo && isFirstReplyOption && !hasSeenPlayerViewTutorial {
+                                self.showPlayerViewTutorial = true
+                                self.isFirstReplyOption = false
+                                self.stopShowingTutorialView()
+                            }
+                            
+                            
+                        } else  {
+                            viewModel.showPreviousMessage()
+                        }
+                    }))
                     .overlay(
                         
                         ZStack {
@@ -115,12 +141,16 @@ struct ConversationPlayerView: View {
                                         
                                         messageInfoView
                                             .padding(.horizontal, 16)
-                                            .padding(.vertical, viewModel.isPlayable() ? 36 : 20)
+                                            .padding(.vertical, 0)
                                     }
                                     
                                     Spacer()
                                     
                                 }
+                                
+                                PlaybackSlider()
+                                    .padding(.leading, 20)
+                                    .padding(.trailing, 20)
                             }
                             
                             VStack {
@@ -141,10 +171,10 @@ struct ConversationPlayerView: View {
                                     VStack(spacing: 12) {
                                         
                                         
-                //                        if showReactions {
+                                        //                        if showReactions {
                                         ReactionView(messageId: viewModel.messages[viewModel.index].id, reactions: $reactions, showReactions: $showReactions)
-                                                .transition(.scale)
-                //                        }
+                                            .transition(.scale)
+                                        //                        }
                                         
                                         Button {
                                             withAnimation(.linear(duration: 0.2)) {
@@ -161,14 +191,13 @@ struct ConversationPlayerView: View {
                                                         .foregroundColor(.point3AlphaSystemBlack)
                                                 }
                                                 
-                                                if viewModel.sendingMessageId != viewModel.messages[viewModel.index].id {
                                                     
                                                     Image(systemName: "face.smiling")
                                                         .resizable()
                                                         .scaledToFit()
                                                         .frame(width: 32, height: 32)
                                                         .foregroundColor(.white)
-                                                }
+                                                
                                             }
                                         }
                                         
@@ -211,240 +240,34 @@ struct ConversationPlayerView: View {
                     )
                     
                     
-                        
-                        UnreadMessagesScrollView()
-                            .padding(.top, 4)
-                            .zIndex(10)
-                        
+                    UnreadMessagesScrollView()
+                        .padding(.top, 4)
+                        .zIndex(10)
+                    
                     Spacer()
                     
                 }.frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT - CHATS_VIEW_SMALL_HEIGHT)
+                    .padding(.top, TOP_PADDING_OFFSET)
                 
-            .padding(.top, TOP_PADDING_OFFSET)
-                
+            } else if viewModel.messages.isEmpty, let chat = viewModel.chat {
+                NoMessagesView(chat: chat)
             }
+            
             Spacer()
         }
-        
-        
-       
-        
-        //        VStack {
-        //
-        //            Spacer()
-        //
-        //
-        //            ZStack {
-        //
-        //                if viewModel.messages.count > viewModel.index {
-        //
-        //                    let messageInfoView = MessageInfoView(date: viewModel.messages[viewModel.index].timestamp.dateValue(),
-        //                                                          profileImage: viewModel.messages[viewModel.index].userProfileImage,
-        //                                                          name: viewModel.messages[viewModel.index].username,
-        //                                                          showTwoTimeSpeed: viewModel.isPlayable())
-        //
-        //
-        //                    ZStack {
-        //
-        //
-        //                        VStack {
-        //
-        //                            ZStack {
-        //
-        //                                if viewModel.isPlayable(), let urlString = viewModel.messages[viewModel.index].url, let url = URL(string: urlString) {
-        //
-        //
-        //                                    if viewModel.hasChanged {
-        //                                        UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
-        //                                    } else {
-        //                                        UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
-        //                                    }
-        //
-        //
-        //                                } else if viewModel.messages[viewModel.index].type == .Text, let text = viewModel.messages[viewModel.index].text {
-        //
-        //                                    ZStack {
-        //                                        Text(text)
-        //                                            .foregroundColor(.white)
-        //                                            .font(.system(size: 28, weight: .bold))
-        //                                            .padding()
-        //
-        //                                    }
-        //                                    .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
-        //                                    .background(Color.mainBlue)
-        //                                    .cornerRadius(14)
-        //
-        //
-        //                                } else if viewModel.messages[viewModel.index].type == .Photo {
-        //
-        //                                    if let url = viewModel.messages[viewModel.index].url {
-        //                                        KFImage(URL(string: url))
-        //                                            .resizable()
-        //                                            .scaledToFill()
-        //                                            .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-        //                                            .cornerRadius(14)
-        //                                            .clipped()
-        //                                    } else if let image = viewModel.messages[viewModel.index].image {
-        //                                        Image(uiImage: image)
-        //                                            .resizable()
-        //                                            .scaledToFill()
-        //                                            .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-        //                                            .cornerRadius(14)
-        //                                            .clipped()
-        //                                    }
-        //                                }
-        //                            }
-        //                            .zIndex(3)
-        //                            .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
-        //                            .overlay(
-        //
-        //                                ZStack {
-        //
-        //                                    VStack {
-        //
-        //                                        Spacer()
-        //
-        //                                        HStack {
-        //
-        //                                            if !viewModel.messages[viewModel.index].isForTakingVideo {
-        //
-        //                                                messageInfoView
-        //                                                    .padding(.horizontal, 16)
-        //                                                    .padding(.vertical, viewModel.isPlayable() ? 36 : 20)
-        //                                            }
-        //
-        //                                            Spacer()
-        //
-        //                                        }
-        //                                    }
-        //
-        //                                    //                                if showPlayerViewTutorial {
-        //                                    //                                    MessageNavigationInstructionsView()
-        //                                    //                                }
-        //
-        //                                }
-        //
-        //
-        //                            )
-        //
-        //                            //                HStack(alignment: .center) {
-        //
-        //                            ZStack {
-        //
-        //                                UnreadMessagesScrollView()
-        //                                    .padding(.top, 4)
-        //
-        //                                HStack {
-        //
-        //                                    Spacer()
-        //
-        //                                    Button(action: {
-        //                                        //                                withAnimation(.linear(duration: 0.1)) {
-        //                                        //                                    viewModel.removePlayerView()
-        //                                        //                                }
-        //                                    }, label: {
-        //
-        //                                        ZStack {
-        //
-        //                                            Circle()
-        //                                                .frame(width: 48, height: 48)
-        //                                                .foregroundColor(.lightGray)
-        //
-        //                                            Image("x")
-        //                                                .resizable()
-        //                                                .scaledToFit()
-        //                                                .frame(width: 25, height: 25)
-        //
-        //                                        }.padding(.trailing, 20)
-        //
-        //                                    })
-        //                                }
-        //                            }.padding(.bottom, BOTTOM_PADDING + 16)
-        //
-        //
-        //
-        //                        }
-        //                    }
-        //                    .onAppear {
-        //                        //                    if !hasSeenPlayerViewTutorial {
-        //                        //                        self.stopShowingTutorialView()
-        //                        //                    }
-        //                    }
-        //
-        //                }
-        //            }
-        //            .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT - getBottomPadding())
-        //            .background(Color.white)
-        //            .padding(.bottom, getBottomPadding())
-        //        }
-        //    }
-        //
-        //    func getBottomPadding() -> CGFloat {
-        //        (SCREEN_HEIGHT  - MESSAGE_HEIGHT)/2 - TOP_PADDING_OFFSET
-        //    }
-        //
-        //    func stopShowingTutorialView() {
-        //        //        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-        //        //            self.showPlayerViewTutorial = false
-        //        //        }
-        //    }
-        //}
-        //
-        //
-        //struct MessageNavigationInstructionsView: View {
-        //
-        //    var body: some View {
-        //
-        //        HStack {
-        //
-        //            Spacer()
-        //
-        //            VStack {
-        //
-        //                Image(systemName: "hand.tap.fill")
-        //                    .resizable()
-        //                    .scaledToFit()
-        //                    .foregroundColor(.white)
-        //                    .frame(width: 48, height: 48)
-        //                    .scaleEffect(x: -1, y: 1, anchor: .center)
-        //
-        //                Text("Previous")
-        //                    .font(.system(size: 22))
-        //                    .foregroundColor(.white)
-        //            }.frame(width: 120)
-        //
-        //            Spacer()
-        //
-        //            Line()
-        //                .stroke(style: StrokeStyle(lineWidth: 2, dash: [5]))
-        //                .frame(width: 1)
-        //                .foregroundColor(.white)
-        //
-        //            Spacer()
-        //
-        //            VStack {
-        //
-        //                Image(systemName: "hand.tap.fill")
-        //                    .resizable()
-        //                    .scaledToFit()
-        //                    .foregroundColor(.white)
-        //                    .frame(width: 48, height: 48)
-        //
-        //                Text("Next")
-        //                    .font(.system(size: 22))
-        //                    .foregroundColor(.white)
-        //            }.frame(width: 120)
-        //
-        //
-        //        }.background(Color(white: 0, opacity: 0.3))
-        //
-        //
-        //    }
+        .onAppear {
+            if !hasSeenPlayerViewTutorial {
+                self.stopShowingTutorialView()
+            }
+        }
     }
     
-    func getChatsViewHeight() -> CGFloat {
-        (SCREEN_HEIGHT  - MESSAGE_HEIGHT)/2 - TOP_PADDING_OFFSET
-    }
+    func stopShowingTutorialView() {
+           DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+               self.showPlayerViewTutorial = false
+           }
+       }
+    
 }
 
 struct Line: Shape {

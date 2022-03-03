@@ -82,8 +82,10 @@ class MediaUploader {
         }
     }
     
-    func uploadAudio(url: URL, messageId: String, ref: StorageReference, completion: @escaping(String) -> Void) {
+    func uploadAudio(url: URL, messageId: String, completion: @escaping(String) -> Void) {
         
+        let ref = UploadType.audio.getFilePath(messageId: messageId)
+
         ref.putFile(from: url, metadata: nil) { _, error in
             if let error = error {
                 print("DEBUG: Failed to upload audio \(error.localizedDescription)")
@@ -102,8 +104,10 @@ class MediaUploader {
         }
     }
     
-    func uploadVideo(url: URL, messageId: String, ref: StorageReference, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
+    func uploadVideo(url: URL, messageId: String, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
         
+        let ref = UploadType.video.getFilePath(messageId: messageId)
+
         if isFromPhotoLibrary {
             let videoData = try! Data(contentsOf: url)
             
