@@ -11,6 +11,7 @@ struct ConversationGridCell: View {
     
     @Binding var chat: Chat
     @Binding var selectedChatId: String
+
     let width = SCREEN_WIDTH/4.5
     let textColor: Color
     
@@ -77,13 +78,17 @@ struct ConversationGridCell: View {
                                 
                                 
                                 if chat.isSending {
+                                    
                                     VStack {
+                                        
                                         Spacer()
                                         
                                         ZStack {
                                             
                                             ActivityIndicator(shouldAnimate: $chat.isSending, diameter: width + 6)
                                                 .transition(.opacity)
+                                               
+                                            
                                             
                                                 
                                             ZStack {

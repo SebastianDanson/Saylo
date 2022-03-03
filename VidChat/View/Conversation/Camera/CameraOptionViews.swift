@@ -56,6 +56,7 @@ struct MessageOptions: View {
                 
                 Button {
                     setMessageType(type: .Saylo)
+                    ConversationViewModel.shared.updateLastVisitedForChat(withId: ConversationViewModel.shared.chatId)
                 } label: {
                     Text("Saylos")
                         .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))

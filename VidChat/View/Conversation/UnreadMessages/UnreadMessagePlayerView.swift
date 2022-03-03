@@ -35,6 +35,9 @@ struct UnreadMessagePlayerView: View {
                 if !isMiniDisplay {
                     ConversationViewModel.shared.currentPlayer = player
                     player.playWithRate()
+                    
+                    ConversationViewModel.shared.setVideoLength()
+
                 } else {
                     player.pause()
                 }

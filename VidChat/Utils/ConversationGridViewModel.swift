@@ -76,7 +76,10 @@ class ConversationGridViewModel: ObservableObject {
     
     func hasSentChat(chat: Chat, hasSent: Bool) {
         
+        
+        
         withAnimation {
+            
             
             chat.hasSent = hasSent
             chat.isSending = false
@@ -92,6 +95,7 @@ class ConversationGridViewModel: ObservableObject {
         if hasSent {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.hasSentChat(chat: chat, hasSent: false)
+                ConversationViewModel.shared.uploadProgress = 0.0
             }
         }
     }

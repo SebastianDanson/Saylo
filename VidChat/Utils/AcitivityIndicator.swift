@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct ActivityIndicator: View {
-    
+        
     @State private var isCircleRotating = true
     @State private var animateStart = false
     @State private var animateEnd = true
     
     @Binding var shouldAnimate: Bool
-    
+    @StateObject var viewModel = ConversationViewModel.shared
     let diameter: CGFloat
 
     var body: some View {
@@ -27,19 +27,25 @@ struct ActivityIndicator: View {
                 .frame(width: diameter, height: diameter)
             
             Circle()
-                .trim(from: animateStart ? 1/3 : 1/9, to: animateEnd ? 2/5 : 1)
+                .trim(from: 0.0, to: CGFloat(min(viewModel.uploadProgress, 1.0)))
                 .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: max(diameter/20, 4), lineCap: .round, lineJoin: .round))
-                .rotationEffect(.degrees(isCircleRotating ? 360 : 0))
+//                .rotationEffect(.degrees(uploadProgress * 360))
                 .frame(width: diameter, height: diameter)
                 .onAppear() {
                     
-                    if shouldAnimate {
-                        withAnimation(Animation
-                                        .linear(duration: 1)
-                                        .repeatForever(autoreverses: false)) {
-                            self.isCircleRotating.toggle()
-                        }
-                    }
+                  
+                    
+                    
+                       
+                    
+                    
+//                    if shouldAnimate {
+//                        withAnimation(Animation
+//                                        .linear(duration: 1)
+//                                        .repeatForever(autoreverses: false)) {
+//                            self.isCircleRotating.toggle()
+//                        }
+//                    }
                     //                      withAnimation(Animation
                     //                                      .linear(duration: 1)
                     //                                      .delay(0.5)

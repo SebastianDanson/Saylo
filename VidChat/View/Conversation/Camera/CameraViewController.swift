@@ -400,6 +400,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             let url = getTempUrl()!
             outputURL = url
             videoWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.mp4)
+            videoWriter.shouldOptimizeForNetworkUse = true
             
             // add audio input
             let audioSettings : [String : Any] = [
@@ -411,7 +412,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
             audioWriterInput.expectsMediaDataInRealTime = true
-            
+        
             if videoWriter.canAdd(audioWriterInput!) {
                 videoWriter.add(audioWriterInput!)
             }
@@ -419,15 +420,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             // add video input
             videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: [
                 AVVideoCodecKey : AVVideoCodecType.h264,
-                AVVideoWidthKey : 720,
-                AVVideoHeightKey : 1280,
+                AVVideoWidthKey : 540,
+                AVVideoHeightKey : 960,
                 AVVideoCompressionPropertiesKey : [
-                    AVVideoAverageBitRateKey : 1024 * 1024 * 4,
+                    AVVideoAverageBitRateKey : 1024 * 1024 * 2,
                 ],
             ])
             
-            videoWriterInput.expectsMediaDataInRealTime = true
             
+            videoWriterInput.expectsMediaDataInRealTime = true
             if videoWriter.canAdd(videoWriterInput) {
                 videoWriter.add(videoWriterInput)
             }
@@ -460,15 +461,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         if !MainViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
             
             connection.videoOrientation = .portrait
-            
             if connection.isVideoMirroringSupported, isFrontFacing {
                 connection.isVideoMirrored = self.isFrontFacing
             }
+            
         }
         
         
         if writable, output == videoDataOutput,
            (videoWriterInput.isReadyForMoreMediaData) {
+            
             videoWriterInput.append(sampleBuffer)
         } else if writable, output == audioDataOutput,
                   (audioWriterInput.isReadyForMoreMediaData) {

@@ -29,8 +29,7 @@ struct VideoPlayerView: View {
         self.message = message
 
         player.automaticallyWaitsToMinimizeStalling = false
-     
-      
+   
     }
     
   

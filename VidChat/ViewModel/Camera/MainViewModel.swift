@@ -21,7 +21,7 @@ class MainViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var isFrontFacing = true
     @Published var showAlert = false
-    @Published var selectedView: MainViewType = .Saylo
+    @Published var selectedView: MainViewType = .Video
     @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
     @Published var showPhotos = false
     

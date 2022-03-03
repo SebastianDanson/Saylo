@@ -43,6 +43,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showUnreadMessages = false
     @Published var seenLastPost = [String]()
     
+    @Published var videoLength = 0.0
     @Published var players = [MessagePlayer]()
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
@@ -51,6 +52,7 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    @Published var uploadProgress = 0.0
     
     @Published var showConversationPlayer = false
     
@@ -70,7 +72,6 @@ class ConversationViewModel: ObservableObject {
     
     //Photos
     @Published var showPhotos = false
-    
     
     //Camera
     @Published var showCamera = false
@@ -233,9 +234,7 @@ class ConversationViewModel: ObservableObject {
             uploadQueue.append(dictionary)
             
             if let url = url {
-                
-                let sendDelay: TimeInterval = 1.5
-                
+                                
                 if type == .Video {
                     
                     MediaUploader.shared.uploadVideo(url: url, messageId: id, isFromPhotoLibrary: isFromPhotoLibrary) { newUrl in
@@ -286,6 +285,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func mediaFinishedUploading(chatId: String, messageId: String, newUrl: String) {
+        
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
         self.uploadQueue[index!]["url"] = newUrl
         self.atomicallyUploadMessage(toDocWithId: chatId, messageId: messageId, hasNotification: true)
@@ -592,25 +592,55 @@ class ConversationViewModel: ObservableObject {
     
     func showNextMessage() {
         
-        print(messages[0].chatId)
         if index == messages.count - 1 {
             
             //            self.removePlayerView()
         } else {
             
             if index < messages.count - 1 {
+                
                 index += 1
                 
-                if messages[index].isForTakingVideo {
-                    
-                    let lastSeenChatId = messages[index - 1].chatId
-                    updateLastVisitedForChat(withId: lastSeenChatId)
-                    
+                if !isPlayable(index: index) {
+                    setVideoLength()
                 }
+                
+//                print(videoLength, "LENGTH")
+//                if messages[index].isForTakingVideo {
+//
+//                    let lastSeenChatId = messages[index - 1].chatId
+//                    updateLastVisitedForChat(withId: lastSeenChatId)
+//
+//                }
             }
         }
     }
     
+    
+    
+    
+    func setVideoLength() {
+        
+        let message = messages[index]
+        
+        if isPlayable(index: index) {
+            if let duration = currentPlayer?.currentItem?.asset.duration.seconds {
+                videoLength = duration
+            }
+        } else if message.type == .Text {
+            
+            let textCount = message.text?.count ?? 0
+            
+            if textCount > 200 {
+                videoLength = 5
+            } else {
+                videoLength = 3
+            }
+        } else {
+            videoLength = 4
+        }
+        
+    }
     
     func showPreviousMessage() {
         index = max(0, index - 1)

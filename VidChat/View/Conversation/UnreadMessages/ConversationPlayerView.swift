@@ -20,7 +20,7 @@ struct ConversationPlayerView: View {
     @State var reactions = [Reaction]()
     @State var isSaved = false
     @State var showAlert = false
-    
+    @State var sliderValue = 0.0
     @State var showPlayerViewTutorial: Bool
     
     private var hasSeenPlayerViewTutorial: Bool
@@ -148,7 +148,7 @@ struct ConversationPlayerView: View {
                                     
                                 }
                                 
-                                PlaybackSlider()
+                                PlaybackSlider(sliderValue: $sliderValue)
                                     .padding(.leading, 20)
                                     .padding(.trailing, 20)
                             }
@@ -186,6 +186,7 @@ struct ConversationPlayerView: View {
                                             ZStack {
                                                 
                                                 if showReactions {
+                                                    
                                                     Circle()
                                                         .frame(width: 46, height: 46)
                                                         .foregroundColor(.point3AlphaSystemBlack)
@@ -255,6 +256,9 @@ struct ConversationPlayerView: View {
             
             Spacer()
         }
+        .onChange(of: viewModel.index, perform: { _ in
+            sliderValue = 0
+        })
         .onAppear {
             if !hasSeenPlayerViewTutorial {
                 self.stopShowingTutorialView()

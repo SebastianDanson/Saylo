@@ -37,6 +37,7 @@ class Chat: ObservableObject {
             print("")
         }
     }
+//    @Published var uploadProgress: Double = 0.0 
     @Published var hasSent = false
     @Published var hasUnreadMessage = false
 

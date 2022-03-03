@@ -11,6 +11,7 @@ import AVFoundation
 import AssetsLibrary
 import Foundation
 import QuartzCore
+import SwiftUI
 
 enum UploadType {
     case profile, video, photo, audio, chat
@@ -64,7 +65,7 @@ class MediaUploader {
         
         let ref = type.getFilePath(messageId: messageId)
         
-        ref.putData(imageData, metadata: nil) { _, error in
+        let uploadTask = ref.putData(imageData, metadata: nil) { _, error in
             if let error = error {
                 print("DEBUG: Failed to upload image \(error.localizedDescription)")
                 return
@@ -80,13 +81,23 @@ class MediaUploader {
                 completion(imageUrl)
             }
         }
+        
+        uploadTask.observe(.progress) { snapshot in
+            
+            if let progress = snapshot.progress {
+            
+                withAnimation {
+                    ConversationViewModel.shared.uploadProgress = progress.fractionCompleted
+                }
+            }
+        }
     }
     
     func uploadAudio(url: URL, messageId: String, completion: @escaping(String) -> Void) {
         
         let ref = UploadType.audio.getFilePath(messageId: messageId)
 
-        ref.putFile(from: url, metadata: nil) { _, error in
+        let uploadTask = ref.putFile(from: url, metadata: nil) { _, error in
             if let error = error {
                 print("DEBUG: Failed to upload audio \(error.localizedDescription)")
                 return
@@ -102,6 +113,16 @@ class MediaUploader {
                 completion(audioUrl)
             }
         }
+        
+        uploadTask.observe(.progress) { snapshot in
+            
+            if let progress = snapshot.progress {
+            
+                withAnimation {
+                    ConversationViewModel.shared.uploadProgress = progress.fractionCompleted
+                }
+            }
+        }
     }
     
     func uploadVideo(url: URL, messageId: String, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
@@ -114,7 +135,7 @@ class MediaUploader {
             let metadata = StorageMetadata()
             metadata.contentType = "video/quicktime"
             
-            ref.putData(videoData, metadata: metadata) { _, error in
+            let uploadTask = ref.putData(videoData, metadata: metadata) { _, error in
                 if let error = error {
                     print("DEBUG: Failed to upload video \(error.localizedDescription)")
                     return
@@ -128,10 +149,22 @@ class MediaUploader {
                     
                     guard let videoUrl = url?.absoluteString else {return}
                     completion(videoUrl)
+                }
+            }
+            
+            uploadTask.observe(.progress) { snapshot in
+                
+                if let progress = snapshot.progress {
+                
+                    withAnimation {
+                        ConversationViewModel.shared.uploadProgress = progress.fractionCompleted
+                    }
                 }
             }
         } else {
-            ref.putFile(from: url, metadata: nil) { _, error in
+            
+            
+           let uploadTask = ref.putFile(from: url, metadata: nil) { _, error in
                 
                 if let error = error {
                     print("DEBUG: Failed to upload video \(error.localizedDescription)")
@@ -148,6 +181,17 @@ class MediaUploader {
                     completion(videoUrl)
                 }
             }
+            
+            uploadTask.observe(.progress) { snapshot in
+                
+                if let progress = snapshot.progress {
+                
+                    withAnimation {
+                        ConversationViewModel.shared.uploadProgress = progress.fractionCompleted
+                    }
+                }
+            }
+
         }
     }
     

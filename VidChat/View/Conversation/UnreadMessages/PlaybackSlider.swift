@@ -11,20 +11,20 @@ import SwiftUI
 
 struct PlaybackSlider: View {
     
-    @State var sliderValue: Double = 0
+    @Binding var sliderValue: Double
     @State var time = 5
     @State var timer: Timer?
     
     @State var prevValue = 0.0
-    let stepAmount = 0.002
+    let viewModel = ConversationViewModel.shared
+
     var body: some View {
 
         Slider(value: $sliderValue, in: 0...1, step: 0.001)
             .accentColor(Color.white)
             .onChange(of: sliderValue) { newValue in
                 
-                if abs(newValue - prevValue) > 2 * stepAmount {
-                    print("YESSIR")
+                if abs(newValue - prevValue) > 2 * ( 0.01 / viewModel.videoLength) {
                 }
                 
                 if newValue >= 1 {
@@ -49,9 +49,8 @@ struct PlaybackSlider: View {
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) {
             timer in
-            
             withAnimation {
-                self.sliderValue += stepAmount
+                self.sliderValue += 0.01 / viewModel.videoLength
             }
         
         }
