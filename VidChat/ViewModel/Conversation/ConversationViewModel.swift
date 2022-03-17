@@ -61,6 +61,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showImageDetailView = false
     @Published var selectedUrl: String?
     @Published var selectedImage: UIImage?
+    @Published var showPlaybackControls = false 
     
     //Texting
     @Published var showKeyboard = false
@@ -78,7 +79,7 @@ class ConversationViewModel: ObservableObject {
     
     //Calling
     @Published var showCall = false
-
+    
     
     var currentPlayer: AVPlayer?
     
@@ -234,7 +235,7 @@ class ConversationViewModel: ObservableObject {
             uploadQueue.append(dictionary)
             
             if let url = url {
-                                
+                
                 if type == .Video {
                     
                     MediaUploader.shared.uploadVideo(url: url, messageId: id, isFromPhotoLibrary: isFromPhotoLibrary) { newUrl in
@@ -243,7 +244,7 @@ class ConversationViewModel: ObservableObject {
                     
                 } else {
                     
-
+                    
                     MediaUploader.shared.uploadAudio(url: url, messageId: id) { newUrl in
                         self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newUrl)
                     }
@@ -309,7 +310,7 @@ class ConversationViewModel: ObservableObject {
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
                         
                         ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: true)
-                       
+                        
                         if hasNotification {
                             self.sendMessageNotification(chat: chat, messageData: data)
                         }
@@ -484,22 +485,23 @@ class ConversationViewModel: ObservableObject {
     
     func pauseVideos() {
         players.forEach({$0.player.pause()})
+        self.isPlaying = false
     }
     
     func sendMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
         
-//        if self.chatId.isEmpty {
-            
-//            ConversationGridViewModel.shared.selectedChats.forEach { chat in
+        //        if self.chatId.isEmpty {
+        
+        //            ConversationGridViewModel.shared.selectedChats.forEach { chat in
         if let chat = chat {
-               addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
-                ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
+            addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chat.id)
+            ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
         }
-//            }
-            
-//        } else {
-//            addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
-//        }
+        //            }
+        
+        //        } else {
+        //            addMessage(url: url, text: text, image: image, type: type, isFromPhotoLibrary: isFromPhotoLibrary, shouldExport: shouldExport, chatId: chatId)
+        //        }
     }
     
     func updateNoticationsArray(chatId: String) {
@@ -562,6 +564,7 @@ class ConversationViewModel: ObservableObject {
         self.currentPlayer?.pause()
         self.currentPlayer = self.players.first(where: {$0.messageId == self.messages[index].id})?.player
         self.currentPlayer?.playWithRate()
+        self.isPlaying = true
         //        }
         //
         //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -578,6 +581,7 @@ class ConversationViewModel: ObservableObject {
         if currentPlayer != nil {
             self.currentPlayer?.pause()
             self.currentPlayer = nil
+            self.isPlaying = false
             
             //            DispatchQueue.main.async {
             //                self.isPlaying = false
@@ -590,28 +594,45 @@ class ConversationViewModel: ObservableObject {
         
     }
     
+    func showMessage(atIndex i: Int) {
+        showPlaybackControls = false
+        
+        self.index = i
+        self.isPlaying = true
+        
+        if !isPlayable(index: index) {
+            setVideoLength()
+        }
+    }
+    
+    func toggleIsPlaying() {
+
+        isPlaying.toggle()
+        showPlaybackControls = !isPlaying
+        
+        if !isPlaying {
+            self.currentPlayer?.pause()
+        } else {
+            self.currentPlayer?.playWithRate()
+        }
+    }
+    
     func showNextMessage() {
         
+        showPlaybackControls = false
+        
         if index == messages.count - 1 {
-            
-            //            self.removePlayerView()
+            self.isPlaying = false
         } else {
             
             if index < messages.count - 1 {
                 
                 index += 1
+                self.isPlaying = true
                 
                 if !isPlayable(index: index) {
                     setVideoLength()
                 }
-                
-//                print(videoLength, "LENGTH")
-//                if messages[index].isForTakingVideo {
-//
-//                    let lastSeenChatId = messages[index - 1].chatId
-//                    updateLastVisitedForChat(withId: lastSeenChatId)
-//
-//                }
             }
         }
     }
@@ -643,6 +664,9 @@ class ConversationViewModel: ObservableObject {
     }
     
     func showPreviousMessage() {
+        print("prev")
+
+        showPlaybackControls = false
         index = max(0, index - 1)
     }
     

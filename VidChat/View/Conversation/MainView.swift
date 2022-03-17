@@ -49,6 +49,7 @@ struct MainView: View {
             //Note View
             if viewModel.selectedView == .Note {
                 NoteView(noteText: $noteText, isTyping: $isTyping)
+                 
             }
             
             //Saylo View
@@ -125,7 +126,7 @@ struct MainView: View {
                 
                 
                 //NavView
-                if !viewModel.isRecording {
+                if !viewModel.isRecording && viewModel.selectedView != .Saylo {
                     
                     VStack {
                         NavView(searchText: $searchText)
@@ -304,7 +305,7 @@ struct NoteView: View {
             
             ZStack {
                 
-                if isTyping && noteText.isEmpty {
+                if !isTyping && noteText.isEmpty {
                     
                     Text("Tap to type")
                         .font(.system(size: 28, weight: .semibold))
@@ -398,7 +399,12 @@ struct PhotoLibraryAndSwitchCameraView: View {
             } else {
                 
                 Button {
-                    viewModel.cancelRecording()
+                    if viewModel.selectedView == .Voice {
+                        viewModel.audioRecorder.cancelRecording()
+                        viewModel.cancelRecording()
+                    } else {
+                        viewModel.cancelRecording()
+                    }
                 } label: {
                     
                     Image(systemName: "x.circle")

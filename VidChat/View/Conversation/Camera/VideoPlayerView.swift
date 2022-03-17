@@ -215,14 +215,14 @@ class PlayerUIView: UIView {
             player.playWithRate()
         }
         
-        if !shouldLoop {
-
-            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-            self.addGestureRecognizer(tap)
-            
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            self.addGestureRecognizer(pan)
-        }
+//        if !shouldLoop {
+//
+//            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+//            self.addGestureRecognizer(tap)
+//            
+//            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+//            self.addGestureRecognizer(pan)
+//        }
         
     }
     

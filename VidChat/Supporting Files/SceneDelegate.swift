@@ -77,9 +77,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         if ConversationViewModel.shared.showCamera {
-            MainViewModel.shared.stopRecording()
-            MainViewModel.shared.cameraView.stopSession()
+            MainViewModel.shared.cancelRecording()
         }
+        
+        MainViewModel.shared.cameraView.stopSession()
+//        MainViewModel.shared.audioRecorder.s
         
         ConversationGridViewModel.shared.setChatCache()
     

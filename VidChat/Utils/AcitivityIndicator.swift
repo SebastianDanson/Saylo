@@ -15,6 +15,7 @@ struct ActivityIndicator: View {
     
     @Binding var shouldAnimate: Bool
     @StateObject var viewModel = ConversationViewModel.shared
+    
     let diameter: CGFloat
 
     var body: some View {
@@ -29,36 +30,9 @@ struct ActivityIndicator: View {
             Circle()
                 .trim(from: 0.0, to: CGFloat(min(viewModel.uploadProgress, 1.0)))
                 .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: max(diameter/20, 4), lineCap: .round, lineJoin: .round))
-//                .rotationEffect(.degrees(uploadProgress * 360))
+                .rotationEffect(.degrees(-90))
                 .frame(width: diameter, height: diameter)
-                .onAppear() {
-                    
-                  
-                    
-                    
-                       
-                    
-                    
-//                    if shouldAnimate {
-//                        withAnimation(Animation
-//                                        .linear(duration: 1)
-//                                        .repeatForever(autoreverses: false)) {
-//                            self.isCircleRotating.toggle()
-//                        }
-//                    }
-                    //                      withAnimation(Animation
-                    //                                      .linear(duration: 1)
-                    //                                      .delay(0.5)
-                    //                                      .repeatForever(autoreverses: true)) {
-                    //                          self.animateStart.toggle()
-                    //                      }
-                    //                      withAnimation(Animation
-                    //                                      .linear(duration: 1)
-                    //                                      .delay(1)
-                    //                                      .repeatForever(autoreverses: true)) {
-                    //                          self.animateEnd.toggle()
-                    //                      }
-                }
+               
         }
     }
     

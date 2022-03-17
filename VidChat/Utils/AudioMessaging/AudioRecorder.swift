@@ -80,6 +80,7 @@ class AudioRecorder: NSObject,ObservableObject {
     }
     
     func cancelRecording() {
+        print("CANCELLED")
         audioRecorder.stop()
         timer?.invalidate()
     }

@@ -24,22 +24,18 @@ struct UnreadMessagesScrollView: View {
                     ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
                         
                         Button {
-                            viewModel.index = i
+                            if viewModel.index == i {
+                                viewModel.toggleIsPlaying()
+                            } else {
+                                viewModel.showMessage(atIndex: i)
+                            }
                         } label: {
                             
                             ZStack {
                                 
                                 
+                                
                                 ZStack {
-                                    
-                                    if i == viewModel.index {
-                                        
-                                        //                                            Circle().stroke(Color.mainBlue, lineWidth: 2)
-                                        //                                                .frame(width: 64, height: 64)
-                                        //                                                .transition(.opacity)
-                                        
-                                        
-                                    }
                                     
                                     ZStack {
                                         
@@ -73,8 +69,6 @@ struct UnreadMessagesScrollView: View {
                                                     .background(Color.alternateMainBlue)
                                                     .cornerRadius(6)
                                                 }
-                                                
-                                                
                                                 
                                                 
                                             } else if viewModel.messages[i].type == .Text, let text = viewModel.messages[i].text {
@@ -113,6 +107,21 @@ struct UnreadMessagesScrollView: View {
                                         }
                                     }
                                     
+                                    if i == viewModel.index {
+                                                          
+                                        ZStack {
+                                            Color.init(white: 0, opacity: 0.5)
+                                        }
+                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+
+                                        Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(.white)
+                                            .frame(width: 32, height: 32)
+                                        
+                                        
+                                    }
                                 }
                             }
                         }

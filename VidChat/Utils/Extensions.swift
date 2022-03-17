@@ -99,6 +99,8 @@ extension UIColor {
     
     static let mainBlue = UIColor(red: 15/255, green: 168/255, blue: 246/255, alpha: 1)
     
+    static let sliderGray = UIColor(red: 87/255, green: 88/255, blue: 92/255, alpha: 1)
+
     
     static let lightGray = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? .systemGray2 : UIColor(red: 0.67, green: 0.67, blue: 0.67, alpha: 1)
@@ -470,4 +472,13 @@ extension UserDefaults {
         }
     }
     
+}
+
+
+extension Double {
+    /// Rounds the double to decimal places value
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
 }

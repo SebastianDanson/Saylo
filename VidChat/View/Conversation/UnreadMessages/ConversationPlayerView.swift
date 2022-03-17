@@ -17,23 +17,23 @@ struct ConversationPlayerView: View {
     
     @State var isFirstReplyOption = true
     @State var showReactions = false
-    @State var reactions = [Reaction]()
     @State var isSaved = false
     @State var showAlert = false
     @State var sliderValue = 0.0
-    @State var showPlayerViewTutorial: Bool
     
-    private var hasSeenPlayerViewTutorial: Bool
+//    @State var showPlayerViewTutorial: Bool
+    
+//    private var hasSeenPlayerViewTutorial: Bool
     private var token: NSKeyValueObservation?
     private var textMessages = [Message]()
     
-    init() {
-        
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        hasSeenPlayerViewTutorial = defaults?.bool(forKey: "hasSeenPlayerViewTutorial") ?? false
-        self._showPlayerViewTutorial = State(initialValue: !hasSeenPlayerViewTutorial)
-        defaults?.set(true, forKey: "hasSeenPlayerViewTutorial")
-    }
+//    init() {
+//
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        hasSeenPlayerViewTutorial = defaults?.bool(forKey: "hasSeenPlayerViewTutorial") ?? false
+//        self._showPlayerViewTutorial = State(initialValue: !hasSeenPlayerViewTutorial)
+//        defaults?.set(true, forKey: "hasSeenPlayerViewTutorial")
+//    }
     
     //    init() {
     //
@@ -42,11 +42,7 @@ struct ConversationPlayerView: View {
     var body: some View {
         
         VStack {
-            
-            let addedReactions = AddedReactionsContainerView(reactions: $reactions)
-                .padding(.leading, 16)
-                .padding(.bottom, 76)
-            
+                        
             if viewModel.messages.count > viewModel.index {
                 
                 
@@ -79,7 +75,7 @@ struct ConversationPlayerView: View {
                             }
                             .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
                             .background(Color.alternateMainBlue)
-                            .cornerRadius(14)
+                            .cornerRadius(12)
                             
                             
                         } else if viewModel.messages[viewModel.index].type == .Photo {
@@ -89,152 +85,145 @@ struct ConversationPlayerView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-                                    .cornerRadius(14)
+                                    .cornerRadius(12)
                                     .clipped()
                             } else if let image = viewModel.messages[viewModel.index].image {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-                                    .cornerRadius(14)
+                                    .cornerRadius(12)
                                     .clipped()
                             }
                         }
                     }
                     .zIndex(3)
                     .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
-                    .gesture(DragGesture(minimumDistance: 0)
-                                .onChanged { gesture in
-                        //                             viewModel.dragOffset.height = max(0, gesture.translation.height)
-                    }
-                                .onEnded({ (value) in
-                        
-                        
-                        let xLoc = value.location.x
-                        
-                        if xLoc > SCREEN_WIDTH/2 {
-                            
-                            viewModel.showNextMessage()
-                            
-                            if viewModel.messages[viewModel.index].isForTakingVideo && isFirstReplyOption && !hasSeenPlayerViewTutorial {
-                                self.showPlayerViewTutorial = true
-                                self.isFirstReplyOption = false
-                                self.stopShowingTutorialView()
-                            }
-                            
-                            
-                        } else  {
-                            viewModel.showPreviousMessage()
+                    .onTapGesture(perform: {
+                        withAnimation {
+                            viewModel.toggleIsPlaying()
                         }
-                    }))
+                    })
                     .overlay(
                         
                         ZStack {
                             
-                            VStack {
+                            
+                            if !viewModel.showPlaybackControls {
                                 
-                                Spacer()
-                                
-                                HStack {
-                                    
-                                    if !viewModel.messages[viewModel.index].isForTakingVideo {
-                                        
-                                        messageInfoView
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 0)
-                                    }
+                                VStack {
                                     
                                     Spacer()
                                     
-                                }
-                                
-                                PlaybackSlider(sliderValue: $sliderValue)
-                                    .padding(.leading, 20)
-                                    .padding(.trailing, 20)
-                            }
-                            
-                            VStack {
-                                
-                                Spacer()
-                                
-                                HStack(alignment: .bottom) {
-                                    
-                                    VStack {
+                                    HStack(alignment: .bottom) {
+                                        
+                                        VStack {
+                                            Spacer()
+                                            
+                                            
+                                            AddedReactionsContainerView(reactions: $viewModel.messages[viewModel.index].reactions)
+                                                .padding(.leading, 16)
+                                                .padding(.bottom, 76)
+                                        }
+                                        
                                         Spacer()
                                         
-                                        
-                                        addedReactions
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    VStack(spacing: 12) {
-                                        
-                                        
-                                        //                        if showReactions {
-                                        ReactionView(messageId: viewModel.messages[viewModel.index].id, reactions: $reactions, showReactions: $showReactions)
-                                            .transition(.scale)
-                                        //                        }
-                                        
-                                        Button {
-                                            withAnimation(.linear(duration: 0.2)) {
-                                                showReactions.toggle()
-                                                ConversationViewModel.shared.isShowingReactions.toggle()
-                                            }
-                                        } label: {
+                                        VStack(spacing: 12) {
                                             
-                                            ZStack {
-                                                
-                                                if showReactions {
-                                                    
-                                                    Circle()
-                                                        .frame(width: 46, height: 46)
-                                                        .foregroundColor(.point3AlphaSystemBlack)
+                                            
+                                            if showReactions {
+                                                ReactionView(messageId: viewModel.messages[viewModel.index].id, reactions: $viewModel.messages[viewModel.index].reactions, showReactions: $showReactions)
+                                                    .transition(.scale)
+                                            }
+                                            
+                                            
+                                            Button {
+                                                withAnimation(.linear(duration: 0.2)) {
+                                                    showReactions.toggle()
+                                                    ConversationViewModel.shared.isShowingReactions.toggle()
                                                 }
+                                            } label: {
                                                 
+                                                ZStack {
+                                                    
+                                                    if showReactions {
+                                                        
+                                                        Circle()
+                                                            .frame(width: 46, height: 46)
+                                                            .foregroundColor(.point3AlphaSystemBlack)
+                                                    }
+                                                    
                                                     
                                                     Image(systemName: "face.smiling")
                                                         .resizable()
                                                         .scaledToFit()
                                                         .frame(width: 32, height: 32)
                                                         .foregroundColor(.white)
-                                                
+                                                }                                                
                                             }
-                                        }
-                                        
-                                        if isSaved {
                                             
-                                            Button {
-                                                showAlert = true
-                                            } label: {
+                                            if isSaved {
                                                 
-                                                ZStack {
+                                                Button {
+                                                    showAlert = true
+                                                } label: {
                                                     
-                                                    Circle()
-                                                        .frame(width: 36, height: 36)
-                                                        .foregroundColor(viewModel.messages[viewModel.index].savedByCurrentUser ? (viewModel.messages[viewModel.index].type == .Video ? .mainBlue : .white) : .lightGray)
-                                                    
-                                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .foregroundColor(viewModel.messages[viewModel.index].type == .Video || !viewModel.messages[viewModel.index].savedByCurrentUser ? .white : .mainBlue)
-                                                        .frame(width: 18, height: 18)
-                                                }
-                                                
-                                            }.alert(isPresented: $showAlert) {
-                                                savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == viewModel.messages[viewModel.index].id}), completion: { isSaved in
-                                                    withAnimation {
-                                                        self.isSaved = isSaved
+                                                    ZStack {
+                                                        
+                                                        Circle()
+                                                            .frame(width: 36, height: 36)
+                                                            .foregroundColor(viewModel.messages[viewModel.index].savedByCurrentUser ? (viewModel.messages[viewModel.index].type == .Video ? .mainBlue : .white) : .lightGray)
+                                                        
+                                                        Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .foregroundColor(viewModel.messages[viewModel.index].type == .Video || !viewModel.messages[viewModel.index].savedByCurrentUser ? .white : .mainBlue)
+                                                            .frame(width: 18, height: 18)
                                                     }
-                                                })
+                                                    
+                                                }.alert(isPresented: $showAlert) {
+                                                    savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == viewModel.messages[viewModel.index].id}), completion: { isSaved in
+                                                        withAnimation {
+                                                            self.isSaved = isSaved
+                                                        }
+                                                    })
+                                                }
                                             }
                                         }
+                                        .padding(.trailing, 18)
+                                        .padding(.bottom, 36)
                                     }
-                                    .padding(.trailing, 18)
-                                    .padding(.bottom, 36)
                                 }
+                                
+                                
                             }
                             
+                            VStack {
+                                
+                                Spacer()
+                                
+                                if !viewModel.showPlaybackControls {
+                                    HStack {
+                                        
+                                        if !viewModel.messages[viewModel.index].isForTakingVideo {                                            
+                                            messageInfoView
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                    }
+                                }
+                                
+                                
+                                if viewModel.showPlaybackControls {
+                                    PlaybackControls(showPlaybackControls: $viewModel.showPlaybackControls, sliderValue: $sliderValue)
+                                }
+                                
+                                PlaybackSlider(sliderValue: $sliderValue, isPlaying: $viewModel.isPlaying, showPlaybackControls: $viewModel.showPlaybackControls)
+                                    .padding(.leading, 20)
+                                    .padding(.trailing, 20)
+                            }
+                            .padding(.horizontal, 12)
                         }
                         
                         
@@ -257,20 +246,12 @@ struct ConversationPlayerView: View {
             Spacer()
         }
         .onChange(of: viewModel.index, perform: { _ in
+            print("")
             sliderValue = 0
         })
-        .onAppear {
-            if !hasSeenPlayerViewTutorial {
-                self.stopShowingTutorialView()
-            }
-        }
+        
     }
     
-    func stopShowingTutorialView() {
-           DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-               self.showPlayerViewTutorial = false
-           }
-       }
     
 }
 

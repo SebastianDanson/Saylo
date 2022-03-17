@@ -6,13 +6,15 @@
 //
 
 //import UIKit
-//import AVKit
+import AVKit
 import SwiftUI
 
 struct PlaybackSlider: View {
     
     @Binding var sliderValue: Double
-    @State var time = 5
+    @Binding var isPlaying: Bool
+    @Binding var showPlaybackControls: Bool
+
     @State var timer: Timer?
     
     @State var prevValue = 0.0
@@ -20,11 +22,19 @@ struct PlaybackSlider: View {
 
     var body: some View {
 
-        Slider(value: $sliderValue, in: 0...1, step: 0.001)
-            .accentColor(Color.white)
+        
+        SwiftUISlider(thumbColor: showPlaybackControls ? .white : .clear, minTrackColor: .white, maxTrackColor: .systemGray,
+                      value: $sliderValue, showPlaybackControls: $showPlaybackControls)
             .onChange(of: sliderValue) { newValue in
                 
-                if abs(newValue - prevValue) > 2 * ( 0.01 / viewModel.videoLength) {
+                if abs(newValue - prevValue) > 2 * ( 0.1 / viewModel.videoLength) {
+//                    viewModel.isPlaying = false
+//                    viewModel.currentPlayer?.pause()
+                    handleSliderChanged()
+                    print("UUUUU")
+                } else {
+//                    viewModel.isPlaying = true
+//                    viewModel.currentPlayer?.playWithRate()
                 }
                 
                 if newValue >= 1 {
@@ -45,17 +55,86 @@ struct PlaybackSlider: View {
             }
     }
     
+    func handleSliderChanged() {
+        let seconds = sliderValue
+        let duration = viewModel.currentPlayer?.currentItem?.asset.duration ?? .zero
+        
+        let targetTime:CMTime = CMTime(seconds: duration.seconds * seconds, preferredTimescale: 1)
+        viewModel.currentPlayer?.seek(to: targetTime)
+    }
+    
     func start() {
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) {
             timer in
-            withAnimation {
-                self.sliderValue += 0.01 / viewModel.videoLength
+            if let curentPlayer = viewModel.currentPlayer, curentPlayer.isPlaying, curentPlayer.currentTime() != .zero {
+                
+                let value = curentPlayer.currentTime().seconds / (curentPlayer.currentItem?.duration.seconds ?? 0)
+
+                withAnimation(.linear(duration: 0.01)) {
+                    self.sliderValue = value
+                }
             }
-        
+            
         }
     }
 }
+
+struct SwiftUISlider: UIViewRepresentable {
+
+  final class Coordinator: NSObject {
+    // The class property value is a binding: It’s a reference to the SwiftUISlider
+    // value, which receives a reference to a @State variable value in ContentView.
+    var value: Binding<Double>
+
+    // Create the binding when you initialize the Coordinator
+    init(value: Binding<Double>) {
+      self.value = value
+    }
+
+    // Create a valueChanged(_:) action
+    @objc func valueChanged(_ sender: UISlider) {
+      self.value.wrappedValue = Double(sender.value)
+    }
+  }
+
+  var thumbColor: UIColor = .white
+  var minTrackColor: UIColor?
+  var maxTrackColor: UIColor?
+
+  @Binding var value: Double
+    @Binding var showPlaybackControls: Bool
+
+  func makeUIView(context: Context) -> UISlider {
+      let slider = UISlider(frame: .zero)
+
+    slider.thumbTintColor = thumbColor
+    slider.minimumTrackTintColor = minTrackColor
+    slider.maximumTrackTintColor = maxTrackColor
+    slider.value = Float(value)
+
+    slider.addTarget(
+      context.coordinator,
+      action: #selector(Coordinator.valueChanged(_:)),
+      for: .valueChanged
+    )
+
+    return slider
+  }
+
+  func updateUIView(_ uiView: UISlider, context: Context) {
+    // Coordinating data between UIView and SwiftUI view
+     uiView.value = Float(self.value)
+      uiView.thumbTintColor = showPlaybackControls ? .white : .clear
+  }
+    
+
+  func makeCoordinator() -> SwiftUISlider.Coordinator {
+    Coordinator(value: $value)
+  }
+}
+
+
 //struct PlaybackSlider: UIViewRepresentable {
 //
 //    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlaybackSlider>) {
@@ -139,3 +218,4 @@ struct PlaybackSlider: View {
 //        }
 //    }
 //}
+

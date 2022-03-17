@@ -45,6 +45,7 @@
 		0687E9F72794B1E1004E1187 /* ChatMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F62794B1E1004E1187 /* ChatMembersView.swift */; };
 		0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F82794B38A004E1187 /* ChatMemberCell.swift */; };
 		0687E9FB2794B9A0004E1187 /* ChatMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9FA2794B9A0004E1187 /* ChatMember.swift */; };
+		0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29427E38D13007E5A54 /* PlaybackControls.swift */; };
 		069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11DE2797573F00988829 /* EnableContactsView.swift */; };
 		069D11E12797626100988829 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11E02797626100988829 /* ContactsViewModel.swift */; };
 		069D11E3279762DC00988829 /* PhoneContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11E2279762DC00988829 /* PhoneContact.swift */; };
@@ -224,6 +225,7 @@
 		0687E9F62794B1E1004E1187 /* ChatMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMembersView.swift; sourceTree = "<group>"; };
 		0687E9F82794B38A004E1187 /* ChatMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberCell.swift; sourceTree = "<group>"; };
 		0687E9FA2794B9A0004E1187 /* ChatMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMember.swift; sourceTree = "<group>"; };
+		0692D29427E38D13007E5A54 /* PlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControls.swift; sourceTree = "<group>"; };
 		069D11DE2797573F00988829 /* EnableContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableContactsView.swift; sourceTree = "<group>"; };
 		069D11E02797626100988829 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		069D11E2279762DC00988829 /* PhoneContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneContact.swift; sourceTree = "<group>"; };
@@ -413,6 +415,7 @@
 				0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */,
 				06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */,
 				06D027AC27D071A600A26869 /* PlaybackSlider.swift */,
+				0692D29427E38D13007E5A54 /* PlaybackControls.swift */,
 			);
 			path = UnreadMessages;
 			sourceTree = "<group>";
@@ -1059,6 +1062,7 @@
 				069D11E72798775600988829 /* MessageView.swift in Sources */,
 				3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */,
 				063CAAB9277BDED900C84318 /* FindFriendsView.swift in Sources */,
+				0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */,
 				06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
