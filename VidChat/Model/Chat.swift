@@ -114,6 +114,7 @@ class Chat: ObservableObject {
         
         self.hasUnreadMessage = getHasUnreadMessage()
         self.lastReadMessageIndex = getLastReadMessageIndex()
+
         
         //Add unread messages to player view
         if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {

@@ -36,11 +36,7 @@ class MainViewModel: ObservableObject {
     var timer: Timer?
     
     var cameraView = MainView()
-    var videoPlayerView: VideoPlayerView? {
-        didSet {
-            playVideo()
-        }
-    }
+    
     
     static let shared = MainViewModel()
     
@@ -52,17 +48,17 @@ class MainViewModel: ObservableObject {
     
     func playVideo() {
         
-        guard let videoPlayerView = videoPlayerView else {
-            return
-        }
-        
-        videoPlayerView.player.playWithRate()
-        
-        if !videoPlayerView.player.isPlaying {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.playVideo()
-            }
-        }
+//        guard let videoPlayerView = videoPlayerView else {
+//            return
+//        }
+//
+//        videoPlayerView.player.playWithRate()
+//
+//        if !videoPlayerView.player.isPlaying {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                self.playVideo()
+//            }
+//        }
     }
     
     func removeVideo() {
@@ -150,9 +146,9 @@ class MainViewModel: ObservableObject {
     }
     
     func setVideoPlayer() {
-        if let videoUrl = videoUrl {
-            videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
-        }
+//        if let videoUrl = videoUrl {
+//            videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
+//        }
     }
     
     func showCamera() -> Bool {

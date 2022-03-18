@@ -19,6 +19,8 @@ struct UnreadMessagesScrollView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 
+                ScrollViewReader { reader in
+
                 HStack(spacing: 4) {
                     
                     ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
@@ -123,9 +125,13 @@ struct UnreadMessagesScrollView: View {
                                         
                                     }
                                 }
+                                .onAppear {
+                                    reader.scrollTo(viewModel.messages[viewModel.messages.count - 1].id, anchor: .trailing)
+                                }
                             }
                         }
                     }
+                }
                 }
             }
             .frame(width: SCREEN_WIDTH)

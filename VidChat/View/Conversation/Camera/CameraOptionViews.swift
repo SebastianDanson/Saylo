@@ -170,7 +170,7 @@ struct MediaOptions: View {
                             
                             Button {
                                 
-                                viewModel.videoPlayerView = nil
+//                                viewModel.videoPlayerView = nil
                                 viewModel.videoUrl = nil
                                 viewModel.isRecording = false
                                 viewModel.handleTap()

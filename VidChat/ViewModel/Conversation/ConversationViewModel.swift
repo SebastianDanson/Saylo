@@ -36,7 +36,20 @@ class ConversationViewModel: ObservableObject {
     @Published var isTyping = false
     var sendingMessageDic = [String:Any]()
     
-    @Published var messages = [Message]()
+    @Published var messages = [Message]() {
+        didSet {
+            
+            if messages.count > 0, let chat = chat  {
+                self.index = chat.lastReadMessageIndex
+                
+                if chat.hasUnreadMessage {
+                    MainViewModel.shared.selectedView = .Saylo
+                }
+            } else {
+                self.index = messages.count - 1
+            }
+        }
+    }
     @Published var savedMessages = [Message]()
     @Published var noSavedMessages = false
     @Published var noMessages = false
@@ -61,7 +74,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showImageDetailView = false
     @Published var selectedUrl: String?
     @Published var selectedImage: UIImage?
-    @Published var showPlaybackControls = false 
+    @Published var showPlaybackControls = false
     
     //Texting
     @Published var showKeyboard = false
@@ -414,7 +427,6 @@ class ConversationViewModel: ObservableObject {
     func updateLastSeenPost() {
         
         guard let chat = chat else {return}
-        
         ConversationService.updateSeenLastPost(forChat: chat)
     }
     
@@ -673,8 +685,6 @@ class ConversationViewModel: ObservableObject {
     }
     
     func showPreviousMessage() {
-        print("prev")
-        
         showPlaybackControls = false
         index = max(0, index - 1)
     }

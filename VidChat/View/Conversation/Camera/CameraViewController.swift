@@ -550,7 +550,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 
                 if showVideo {
                     MainViewModel.shared.videoUrl = self.outputURL
-                    MainViewModel.shared.setVideoPlayer()
+//                    MainViewModel.shared.setVideoPlayer()
                     MainViewModel.shared.handleSend()
                 } else {
                     MainViewModel.shared.videoUrl = nil
