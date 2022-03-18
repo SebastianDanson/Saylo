@@ -15,16 +15,20 @@ class MainViewModel: ObservableObject {
     @Published var videoUrl: URL?
     @Published var photo: UIImage?
     @Published var hasFlash = false
-    @Published var progress = 0.0
     @Published var isRecording = false
     @Published var isShowingPhotoCamera = false
     @Published var isPlaying = false
     @Published var isFrontFacing = true
     @Published var showAlert = false
-    @Published var selectedView: MainViewType = .Saylo
+    @Published var selectedView: MainViewType = .Video
     @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
     @Published var showPhotos = false
-    
+    @Published var showAddFriends: Bool = false
+    @Published var showFindFriends: Bool = false
+    @Published var showNewChat: Bool = false
+    @Published var showSettingsView: Bool = false
+    @Published var isCalling: Bool = false
+
     var audioRecorder = AudioRecorder()
     
     var isCameraAlert = false
@@ -63,7 +67,6 @@ class MainViewModel: ObservableObject {
     
     func removeVideo() {
         videoUrl = nil
-        progress = 0.0
         isRecording = false
     }
     
@@ -74,7 +77,6 @@ class MainViewModel: ObservableObject {
         }
         
         videoUrl = nil
-        progress = 0.0
         isRecording = false
         photo = nil
     }
@@ -85,23 +87,19 @@ class MainViewModel: ObservableObject {
             self.cameraView.startRecording()
             withAnimation {
                 self.isRecording = true
-                self.progress = 1
             }
     }
     
     func stopRecording() {
         self.cameraView.stopRecording()
         self.isRecording = false
-        self.progress = 0
         
         timer?.invalidate()
-        
     }
     
     func cancelRecording() {
         self.cameraView.cancelRecording()
         self.isRecording = false
-        self.progress = 0
     
         timer?.invalidate()
     }
@@ -132,13 +130,10 @@ class MainViewModel: ObservableObject {
         if self.isRecording {
             audioRecorder.stopRecording()
             self.isRecording = false
-            self.progress = 0
         } else {
             audioRecorder.startRecording()
             self.isRecording = true
-            self.progress = 1
-        }
-       
+        }       
     }
     
     func handleTap() {

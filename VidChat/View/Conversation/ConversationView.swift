@@ -239,6 +239,7 @@ struct OptionsView: View {
                                     
                                     //Camera button
                                     Button(action: {
+                                        
                                         withAnimation(.linear(duration: 0.15)) {
                                             cameraViewModel.isShowingPhotoCamera = true
                                             cameraViewModel.startRunning()
@@ -280,10 +281,7 @@ struct OptionsView: View {
                                 Button(action: {
                                     
                                     cameraViewModel.handleTap()
-                                    
-                                    //                                    withAnimation {
                                     viewModel.showCamera = true
-                                    //                                    }
                                     viewModel.pauseVideos()
                                     
                                 }, label: {
@@ -404,35 +402,22 @@ struct RecordButton: View {
     var body: some View {
         
         Circle()
-            .trim(from: 0.0, to: CGFloat(min(viewModel.progress, 1.0)))
-            .stroke(Color.white, style: StrokeStyle(lineWidth: 5.5, lineCap: .round, lineJoin: .round))
-            .animation(.linear(duration: viewModel.progress == 0 ? 0 : Double(MAX_VIDEO_LENGTH)), value: viewModel.progress)
-            .frame(width: 62, height: 62)
-            .rotationEffect(Angle(degrees: 270))
-            .overlay(
+            .stroke(.white, style: StrokeStyle(lineWidth: viewModel.isRecording ? 5.0 : 7.0 ))
+            .scaledToFit()
+            .background(
                 
-                ZStack {
-                
-                        Circle()
-                            .stroke(viewModel.isRecording ? .clear : .white,
-                                    style: StrokeStyle(lineWidth: 7))
-                            .scaledToFit()
-                            .background(
-                                
-                                VStack {
-                                    
-                                    if viewModel.isRecording {
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .frame(width: 30,
-                                                   height: 30)
-                                            .foregroundColor(Color(.systemRed))
-                                            .transition(.scale)
-                                    }
-                                }
-                            ).frame(width: viewModel.isShowingPhotoCamera ? 64 : 62,
-                                    height: viewModel.isShowingPhotoCamera ? 64 : 62)
+                VStack {
+                    
+                    if viewModel.isRecording {
+                        RoundedRectangle(cornerRadius: 6)
+                            .frame(width: 30,
+                                   height: 30)
+                            .foregroundColor(Color(.systemRed))
+                            .transition(.scale)
                     }
-            )
+                }
+            ).frame(width: viewModel.isShowingPhotoCamera ? 64 : 62,
+                    height: viewModel.isShowingPhotoCamera ? 64 : 62)
             .padding(.horizontal, 5)
     }
 }

@@ -327,6 +327,15 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func cancelUpload() {
+        
+        if let chat = ConversationViewModel.shared.chat {
+            chat.isSending = true
+            self.uploadQueue.removeAll(where: {$0["chatId"] as? String == chat.id})
+            ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: false)
+        }
+    }
+    
     func sendMessageNotification(chat: Chat, messageData: [String:Any]) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else { return }
@@ -606,7 +615,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func toggleIsPlaying() {
-
+        
         isPlaying.toggle()
         showPlaybackControls = !isPlaying
         
@@ -665,7 +674,7 @@ class ConversationViewModel: ObservableObject {
     
     func showPreviousMessage() {
         print("prev")
-
+        
         showPlaybackControls = false
         index = max(0, index - 1)
     }

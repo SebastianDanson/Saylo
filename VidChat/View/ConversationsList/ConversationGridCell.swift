@@ -90,30 +90,37 @@ struct ConversationGridCell: View {
                                                
                                             
                                             
-                                                
-                                            ZStack {
-                                                
-                                                Circle()
-                                                    .frame(width: width, height: width)
-                                                    .foregroundColor(Color(white: 0, opacity: 0.4))
-                                                
-                                                VStack(spacing: 2) {
-
-                                                Image(systemName: "trash.fill")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: width/4, height: width/4)
-                                                    .foregroundColor(.white)
+                                            Button {
+                                                MediaUploader.uploadTask?.cancel()
+                                                ConversationViewModel.shared.cancelUpload()
+                                                chat.isSending = false
+                                            } label: {
+                                                ZStack {
                                                     
-                                                    Text("Cancel")
-                                                        .foregroundColor(.white)
-                                                        .font(.system(size: 12, weight: .semibold))
-                                                
-                                                
+                                                    Circle()
+                                                        .frame(width: width, height: width)
+                                                        .foregroundColor(Color(white: 0, opacity: 0.4))
+                                                    
+                                                    VStack(spacing: 2) {
+                                                        
+                                                        Image(systemName: "trash.fill")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .frame(width: width/4, height: width/4)
+                                                            .foregroundColor(.white)
+                                                        
+                                                        Text("Cancel")
+                                                            .foregroundColor(.white)
+                                                            .font(.system(size: 12, weight: .semibold))
+                                                        
+                                                        
+                                                    }
+                                                    
+                                                    
+                                                }
                                             }
-                                                
-                                              
-                                            }
+
+                                           
                                         }.padding(.bottom, 10)
 
                                         

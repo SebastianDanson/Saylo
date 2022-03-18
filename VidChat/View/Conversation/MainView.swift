@@ -120,16 +120,39 @@ struct MainView: View {
             }
             .zIndex(3)
             
+            if viewModel.showAddFriends {
+                AddFriendsView()
+                    .zIndex(5)
+                    .transition(.move(edge: .bottom))
+            }
+            
+            if viewModel.showFindFriends {
+                ContactsView()
+                    .zIndex(5)
+                    .transition(.move(edge: .bottom))
+            }
+            
+            if viewModel.showNewChat {
+                NewConversationView()
+                    .zIndex(5)
+                    .transition(.move(edge: .bottom))
+            }
         }
         .overlay(
             ZStack {
                 
                 
                 //NavView
-                if !viewModel.isRecording && viewModel.selectedView != .Saylo {
+                if !viewModel.isRecording && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends {
                     
                     VStack {
                         NavView(searchText: $searchText)
+                        Spacer()
+                    }
+                } else if viewModel.isRecording {
+                    VStack {
+                        RecordTimerView()
+                            .padding(.top, TOP_PADDING_OFFSET + 8)
                         Spacer()
                     }
                 }

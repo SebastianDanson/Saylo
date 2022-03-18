@@ -146,7 +146,7 @@ struct NewConversationView: View {
                     chatName = ""
                     
                     withAnimation {
-                        gridViewModel.showNewChat = false
+                        MainViewModel.shared.showNewChat = false
                     }
                     
                 } label: {

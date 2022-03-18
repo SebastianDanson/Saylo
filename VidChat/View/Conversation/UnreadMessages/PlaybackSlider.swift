@@ -31,7 +31,6 @@ struct PlaybackSlider: View {
 //                    viewModel.isPlaying = false
 //                    viewModel.currentPlayer?.pause()
                     handleSliderChanged()
-                    print("UUUUU")
                 } else {
 //                    viewModel.isPlaying = true
 //                    viewModel.currentPlayer?.playWithRate()
@@ -68,11 +67,13 @@ struct PlaybackSlider: View {
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) {
             timer in
             if let curentPlayer = viewModel.currentPlayer, curentPlayer.isPlaying, curentPlayer.currentTime() != .zero {
-                
                 let value = curentPlayer.currentTime().seconds / (curentPlayer.currentItem?.duration.seconds ?? 0)
-
                 withAnimation(.linear(duration: 0.01)) {
                     self.sliderValue = value
+                }
+            } else if isPlaying {
+                withAnimation(.linear(duration: 0.01)) {
+                    self.sliderValue += 0.01 / viewModel.videoLength
                 }
             }
             

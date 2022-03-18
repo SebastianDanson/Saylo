@@ -293,7 +293,7 @@ struct ShowCameraView: View {
 
 struct NavView: View {
     
-    @StateObject private var viewModel = ConversationGridViewModel.shared
+    @StateObject private var viewModel = MainViewModel.shared
     @StateObject private var conversationViewModel = ConversationViewModel.shared
     @StateObject private var cameraViewModel = MainViewModel.shared
     @StateObject private var authViewModel = AuthViewModel.shared
@@ -311,7 +311,6 @@ struct NavView: View {
                 
                 HStack(alignment: .center) {
                     
-                    if !viewModel.isSelectingChats {
                         
                         HStack(spacing: 8) {
                             
@@ -429,38 +428,7 @@ struct NavView: View {
                             }
                             
                         }
-                    } else {
-                        ZStack {
-                            Text("Send To...")
-                                .font(.headline)
-                            HStack {
-                                
-                                if conversationViewModel.showCamera {
-                                    Button {
-                                        withAnimation(.linear(duration: 0.2)) {
-                                            viewModel.stopSelectingChats()
-                                            viewModel.hideFeed = true
-                                        }
-                                        
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                            viewModel.cameraViewZIndex = 3
-                                            viewModel.hideFeed = false
-                                        }
-                                    } label: {
-                                        Image(systemName: "chevron.down")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: toolBarWidth - 14, height: toolBarWidth - 14)
-                                            .foregroundColor(.systemBlack)
-                                            .padding(.leading, 8)
-                                            .padding(.top, -3)
-                                    }
-                                }
-                                Spacer()
-                            }
-                            
-                        }
-                    }
+                  
                 }
                 .padding(.horizontal)
                 .padding(.top, TOP_PADDING)

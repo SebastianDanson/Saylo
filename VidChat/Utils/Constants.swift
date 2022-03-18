@@ -54,7 +54,7 @@ let PHOTO_PICKER_SMALL_HEIGHT = UIScreen.main.bounds.width/4*2 + 20
 let NON_CAMERA_HEIGHT = UIScreen.main.bounds.height - (UIScreen.main.bounds.width * 16/9) // Camera aspect ratio is 16/9
 
 //Video length
-let MAX_VIDEO_LENGTH = 40 //in seconds
+let MAX_VIDEO_LENGTH = 600 //in seconds
 
 //Call
 let TIMEOUT_DURATION = 20

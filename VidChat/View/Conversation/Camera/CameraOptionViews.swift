@@ -172,7 +172,6 @@ struct MediaOptions: View {
                                 
                                 viewModel.videoPlayerView = nil
                                 viewModel.videoUrl = nil
-                                viewModel.progress = 0.0
                                 viewModel.isRecording = false
                                 viewModel.handleTap()
                                 

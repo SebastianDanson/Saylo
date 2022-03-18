@@ -109,7 +109,7 @@ struct ConversationPlayerView: View {
                         ZStack {
                             
                             
-                            if !viewModel.showPlaybackControls {
+//                            if !viewModel.showPlaybackControls {
                                 
                                 VStack {
                                     
@@ -120,10 +120,10 @@ struct ConversationPlayerView: View {
                                         VStack {
                                             Spacer()
                                             
-                                            
                                             AddedReactionsContainerView(reactions: $viewModel.messages[viewModel.index].reactions)
                                                 .padding(.leading, 16)
-                                                .padding(.bottom, 76)
+                                                .padding(.bottom, viewModel.isPlayable() && !viewModel.showPlaybackControls ? 116 :
+                                                            viewModel.showPlaybackControls ? 32 : 76)
                                         }
                                         
                                         Spacer()
@@ -194,9 +194,8 @@ struct ConversationPlayerView: View {
                                         .padding(.bottom, 36)
                                     }
                                 }
+                                .padding(.bottom, viewModel.showPlaybackControls ? 60 : 0)
                                 
-                                
-                            }
                             
                             VStack {
                                 

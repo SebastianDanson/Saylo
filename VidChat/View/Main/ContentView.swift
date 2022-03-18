@@ -37,6 +37,8 @@ struct ContentView: View {
             
             MainViewModel.shared.cameraView
                 .ignoresSafeArea()
+            
+//            RecordTimerView()
         }
     }
 }

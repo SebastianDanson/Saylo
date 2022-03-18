@@ -46,6 +46,7 @@
 		0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F82794B38A004E1187 /* ChatMemberCell.swift */; };
 		0687E9FB2794B9A0004E1187 /* ChatMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9FA2794B9A0004E1187 /* ChatMember.swift */; };
 		0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29427E38D13007E5A54 /* PlaybackControls.swift */; };
+		0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29627E41406007E5A54 /* RecordTimerView.swift */; };
 		069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11DE2797573F00988829 /* EnableContactsView.swift */; };
 		069D11E12797626100988829 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11E02797626100988829 /* ContactsViewModel.swift */; };
 		069D11E3279762DC00988829 /* PhoneContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11E2279762DC00988829 /* PhoneContact.swift */; };
@@ -226,6 +227,7 @@
 		0687E9F82794B38A004E1187 /* ChatMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberCell.swift; sourceTree = "<group>"; };
 		0687E9FA2794B9A0004E1187 /* ChatMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMember.swift; sourceTree = "<group>"; };
 		0692D29427E38D13007E5A54 /* PlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControls.swift; sourceTree = "<group>"; };
+		0692D29627E41406007E5A54 /* RecordTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimerView.swift; sourceTree = "<group>"; };
 		069D11DE2797573F00988829 /* EnableContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableContactsView.swift; sourceTree = "<group>"; };
 		069D11E02797626100988829 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		069D11E2279762DC00988829 /* PhoneContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneContact.swift; sourceTree = "<group>"; };
@@ -416,6 +418,7 @@
 				06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */,
 				06D027AC27D071A600A26869 /* PlaybackSlider.swift */,
 				0692D29427E38D13007E5A54 /* PlaybackControls.swift */,
+				0692D29627E41406007E5A54 /* RecordTimerView.swift */,
 			);
 			path = UnreadMessages;
 			sourceTree = "<group>";
@@ -983,6 +986,7 @@
 				06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				0616EC0927928978006565FE /* AddedChatsView.swift in Sources */,
+				0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */,
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
 				067FBB60279BB7DE00B2EA04 /* CountriesAdapter.swift in Sources */,
 				06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */,

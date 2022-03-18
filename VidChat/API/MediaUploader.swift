@@ -37,6 +37,7 @@ enum UploadType {
 class MediaUploader {
     
     static let shared = MediaUploader()
+    static var uploadTask: StorageUploadTask?
     
     func checkFileSize(sizeUrl: URL, message:String){
         let data = NSData(contentsOf: sizeUrl)!
@@ -82,6 +83,7 @@ class MediaUploader {
             }
         }
         
+    
         uploadTask.observe(.progress) { snapshot in
             
             if let progress = snapshot.progress {
@@ -91,6 +93,9 @@ class MediaUploader {
                 }
             }
         }
+        
+        MediaUploader.uploadTask = uploadTask
+
     }
     
     func uploadAudio(url: URL, messageId: String, completion: @escaping(String) -> Void) {
@@ -123,6 +128,9 @@ class MediaUploader {
                 }
             }
         }
+        
+        MediaUploader.uploadTask = uploadTask
+
     }
     
     func uploadVideo(url: URL, messageId: String, isFromPhotoLibrary: Bool, completion: @escaping(String) -> Void) {
@@ -161,6 +169,9 @@ class MediaUploader {
                     }
                 }
             }
+            
+            MediaUploader.uploadTask = uploadTask
+
         } else {
             
             
@@ -182,6 +193,7 @@ class MediaUploader {
                 }
             }
             
+            
             uploadTask.observe(.progress) { snapshot in
                 
                 if let progress = snapshot.progress {
@@ -192,6 +204,8 @@ class MediaUploader {
                 }
             }
 
+            MediaUploader.uploadTask = uploadTask
+            
         }
     }
     

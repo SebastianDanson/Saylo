@@ -59,7 +59,7 @@ struct AllowContactsView: View {
                     Button {
                         
                         withAnimation {
-                            ConversationGridViewModel.shared.showFindFriends = false
+                            MainViewModel.shared.showFindFriends = false
                         }
                         
                     } label: {
