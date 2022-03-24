@@ -106,17 +106,25 @@ struct MainView: View {
                         PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
                     }
                     
-                }.padding(.bottom, 12)
+                }.padding(.bottom, 16)
                 
                 
                 if !viewModel.isRecording && !viewModel.showPhotos {
                     //The 5 buttons that toggle the message types
+                    
                     MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
                         .frame(height: 24)
-                        .padding(.bottom, 16)
+                        .padding(.bottom, 8)
+                        .background(
+                            LinearGradient(gradient: Gradient(colors: [.clear, Color(white: 0, opacity: 0.6)]), startPoint: .top, endPoint: .bottom)
+                                .frame(width: SCREEN_WIDTH)
+                        )
+                    
                 }
                 
+                
                 UnreadMessagesScrollView().padding(.bottom, 2)
+                
                 
                 ChatsView(selectedView: $viewModel.selectedView)
                 

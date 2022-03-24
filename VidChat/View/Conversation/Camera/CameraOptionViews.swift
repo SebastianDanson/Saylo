@@ -22,7 +22,7 @@ struct MessageOptions: View {
                 } label: {
                     Text("Photo")
                         .foregroundColor(type == .Photo ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Photo ? 17 : 16, weight: type == .Photo ? .bold : .semibold, design: .rounded))
+                        .font(.system(size: type == .Photo ? 18 : 17, weight: type == .Photo ? .bold : .semibold, design: .rounded))
                         .frame(width: 70)
                 }
                 
@@ -31,7 +31,7 @@ struct MessageOptions: View {
                 } label: {
                     Text("Voice")
                         .foregroundColor(type == .Voice ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Voice ? 17 : 16, weight: type == .Voice ? .bold : .semibold, design: .rounded))
+                        .font(.system(size: type == .Voice ? 18 : 17, weight: type == .Voice ? .bold : .semibold, design: .rounded))
                         .frame(width: 70)
                 }
                 
@@ -40,7 +40,7 @@ struct MessageOptions: View {
                 } label: {
                     Text("Video")
                         .foregroundColor(type == .Video ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Video ? 17 : 16, weight: type == .Video ? .bold : .semibold, design: .rounded))
+                        .font(.system(size: type == .Video ? 18 : 17, weight: type == .Video ? .bold : .semibold, design: .rounded))
                         .frame(width: 70)
                 }
                 
@@ -49,20 +49,20 @@ struct MessageOptions: View {
                 } label: {
                     Text("Note")
                         .foregroundColor(type == .Note ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Note ? 17 : 16, weight: type == .Note ? .bold : .semibold, design: .rounded))
+                        .font(.system(size: type == .Note ? 18 : 17, weight: type == .Note ? .bold : .semibold, design: .rounded))
                         .frame(width: 70)
                 }
                 
-                
-                Button {
-                    setMessageType(type: .Saylo)
-                    ConversationViewModel.shared.updateLastVisitedForChat(withId: ConversationViewModel.shared.chatId)
-                } label: {
-                    Text("Saylos")
-                        .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
-                        .frame(width: 70)
-                }
+//
+//                Button {
+//                    setMessageType(type: .Saylo)
+//                    ConversationViewModel.shared.updateLastVisitedForChat(withId: ConversationViewModel.shared.chatId)
+//                } label: {
+//                    Text("Saylos")
+//                        .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
+//                        .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
+//                        .frame(width: 70)
+//                }
                 
             }
         }
