@@ -12,7 +12,7 @@ struct ConversationGridCell: View {
     @Binding var chat: Chat
     @Binding var selectedChatId: String
 
-    let width = SCREEN_WIDTH/4.5
+    let width = SCREEN_WIDTH/5.5
     let textColor: Color
     
     init(chat: Binding<Chat>, selectedChatId: Binding<String>, textColor: Color = Color(red: 96/255, green: 97/255, blue: 100/255)) {

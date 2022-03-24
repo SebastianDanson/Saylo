@@ -106,14 +106,17 @@ struct MainView: View {
                         PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
                     }
                     
-                }.padding(.bottom, 8)
+                }.padding(.bottom, 12)
                 
                 
                 if !viewModel.isRecording && !viewModel.showPhotos {
                     //The 5 buttons that toggle the message types
                     MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
                         .frame(height: 24)
+                        .padding(.bottom, 16)
                 }
+                
+                UnreadMessagesScrollView().padding(.bottom, 2)
                 
                 ChatsView(selectedView: $viewModel.selectedView)
                 
@@ -137,6 +140,8 @@ struct MainView: View {
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
             }
+            
+            
         }
         .overlay(
             ZStack {
@@ -462,7 +467,7 @@ struct PhotoLibraryAndSwitchCameraView: View {
 //Chats scroll view at bottom of screen
 struct ChatsView: View {
     
-    private let items = [GridItem(), GridItem(), GridItem()]
+    private let items = [GridItem(), GridItem(), GridItem(), GridItem()]
     
     @StateObject var conversationViewModel = ConversationViewModel.shared
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
@@ -478,7 +483,7 @@ struct ChatsView: View {
             
             VStack {
                 
-                LazyVGrid(columns: items, spacing: 12, content: {
+                LazyVGrid(columns: items, spacing: 40, content: {
                     
                     ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
                         

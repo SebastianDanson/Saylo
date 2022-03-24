@@ -446,6 +446,7 @@ struct NavView: View {
         }
         
         .frame(width: SCREEN_WIDTH)
+        .padding(.top, 8)
         
     }
 }
