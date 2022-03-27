@@ -33,6 +33,8 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textView.backgroundColor = .clear
         textView.font = UIFont.systemFont(ofSize: 28, weight: .medium)
         textView.textColor = .white
+        textView.becomeFirstResponder()
+        textView.returnKeyType = .send
     
 //        textView.layer.borderColor = UIColor.borderGray.cgColor
 //        textView.layer.borderWidth = 0.9
@@ -60,7 +62,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             uiView.text = self.text
         }
         if uiView.window != nil, !uiView.isFirstResponder {
-//            uiView.becomeFirstResponder()
+            uiView.becomeFirstResponder()
         }
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
         uiView.centerVertically()
@@ -103,8 +105,15 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
             if text == "\n" {
-                textView.resignFirstResponder()
-                ConversationViewModel.shared.isTyping = false
+                
+                MainViewModel.shared.selectedView = .Video
+
+                if !self.text.wrappedValue.isEmpty {
+                    ConversationViewModel.shared.sendMessage(text: self.text.wrappedValue, type: .Text)
+                }
+                
+                self.text.wrappedValue = ""
+//                textView.resignFirstResponder()
                 return false
             }
             
@@ -123,6 +132,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 //            }
             return true
         }
+        
     }
 
 }

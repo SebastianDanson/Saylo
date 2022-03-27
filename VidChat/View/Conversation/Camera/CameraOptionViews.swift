@@ -26,18 +26,19 @@ struct MessageOptions: View {
                         .scaledToFit()
                         .frame(width: 34, height: 34)
                         .foregroundColor(.white)
-                        .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                 }
                 
                 Button {
                     setMessageType(type: .Voice)
+                    MainViewModel.shared.handleRecordButtonTapped()
                 } label: {
                     Image(systemName: "waveform")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 34, height: 34)
                         .foregroundColor(.white)
-                        .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                     
                 }
             }
@@ -51,7 +52,7 @@ struct MessageOptions: View {
                     .scaledToFit()
                     .frame(width: 34, height: 34)
                     .foregroundColor(.white)
-                    .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
             }
             
             //

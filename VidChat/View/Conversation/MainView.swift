@@ -48,13 +48,13 @@ struct MainView: View {
             
             //Note View
             if viewModel.selectedView == .Note {
-                NoteView(noteText: $noteText, isTyping: $isTyping)
+                NoteView(noteText: $noteText)
                 
             }
             
             //Saylo View
             if viewModel.selectedView == .Saylo {
-//                ConversationPlayerView()
+                //                ConversationPlayerView()
             }
             
             if viewModel.showPhotos {
@@ -73,6 +73,10 @@ struct MainView: View {
                         if viewModel.showRecordButton() {
                             Button {
                                 viewModel.handleRecordButtonTapped()
+                                
+                                if viewModel.selectedView == .Voice {
+                                    viewModel.selectedView = .Video
+                                }
                             } label: {
                                 RecordButton()
                             }
@@ -82,93 +86,95 @@ struct MainView: View {
                         if viewModel.selectedView == .Photo {
                             Button {
                                 viewModel.handlePhotoButtonTapped()
+                                viewModel.selectedView == .Video
+                                viewModel.photo = nil
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
                             }
                         }
                         
-                        //Writing Note
-                        if viewModel.selectedView == .Note {
-                            
-                            Button {
-                                ConversationViewModel.shared.sendMessage(text: noteText, type: .Text)
-                                noteText = ""
-                            } label: {
-                                SendButton()
-                            }
-                        }
                         
-                        
-                        if viewModel.photo != nil {
-                            //The Buttons on either of the photo button
-                            TakenPhotoOptions()
-                        } else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
-                            //The Buttons on either of the record button
-                            //                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
-                        }
+                        //                        if viewModel.photo != nil {
+                        //                            //The Buttons on either of the photo button
+                        //                            TakenPhotoOptions()
+                        //                        } else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
+                        //                            //The Buttons on either of the record button
+                        //                            //                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
+                        //                        }
                         
                     }.padding(.bottom, 12)
                     
                     
-                    if !viewModel.isRecording && !viewModel.showPhotos {
-                        //The 5 buttons that toggle the message types
-                        
-                        HStack {
+                    ZStack {
+                        if !viewModel.isRecording && !viewModel.showPhotos {
+                            //The 5 buttons that toggle the message types
                             
-                            Button {
-                                viewModel.showPhotos = true
-                            } label: {
-                                LastPhotoView()
+                            HStack {
+                                
+                                Button {
+                                    viewModel.showPhotos = true
+                                } label: {
+                                    LastPhotoView()
+                                }
+                                
+                                Spacer()
+                                
+                                if viewModel.selectedView != .Photo {
+                                    MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
+                                }
+                                
+                                Spacer()
+                                
+                                Button {
+                                    cameraView.switchCamera()
+                                } label: {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                        .resizable()
+                                        .font(Font.title.weight(.semibold))
+                                        .scaledToFit()
+                                        .frame(width: 36, height: 36)
+                                        .foregroundColor(.white)
+                                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                }
                             }
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 12)
                             
-                            Spacer()
-                            
-                            MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
-                            
-                            Spacer()
+                        }
+                        
+                        if viewModel.isRecording || viewModel.selectedView == .Photo {
                             
                             Button {
-                                cameraView.switchCamera()
+                                if viewModel.selectedView == .Voice {
+                                    viewModel.audioRecorder.cancelRecording()
+                                    viewModel.cancelRecording()
+                                    viewModel.selectedView = .Video
+                                } else if viewModel.selectedView == .Photo {
+                                    viewModel.photo = nil
+                                    viewModel.selectedView = .Video
+                                } else  {
+                                    viewModel.cancelRecording()
+                                }
                             } label: {
-                                Image(systemName: "arrow.triangle.2.circlepath")
+                                Image("x")
                                     .resizable()
-                                    .font(Font.title.weight(.semibold))
+                                    .renderingMode(.template)
                                     .scaledToFit()
-                                    .frame(width: 36, height: 36)
                                     .foregroundColor(.white)
-                                    .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+                                    .frame(width: 28, height: 28)
+                                    .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
                             }
+                            .frame(width: 36, height: 36)
+                            .padding(.bottom, 12)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 12)
                         
-                    } else if viewModel.isRecording {
+                        //                ZStack {
                         
-                        Button {
-                            if viewModel.selectedView == .Voice {
-                                viewModel.audioRecorder.cancelRecording()
-                                viewModel.cancelRecording()
-                            } else {
-                                viewModel.cancelRecording()
-                            }
-                        } label: {
-                            Image("x")
-                                .resizable()
-                                .renderingMode(.template)
-                                .scaledToFit()
-                                .foregroundColor(.white)
-                                .frame(width: 28, height: 28)
-                                .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
-                        }
-                        .frame(width: 36, height: 36)
-                        .padding(.bottom, 12)
+                        //                }
                     }
-                    
-                    //                ZStack {
-                    
-                    //                }
                 }
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
+                
                 
                 VStack {
                     Spacer()
@@ -210,7 +216,7 @@ struct MainView: View {
                 
                 
                 //NavView
-                if !viewModel.isRecording && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends {
+                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends {
                     
                     VStack {
                         NavView(searchText: $searchText)
@@ -306,7 +312,7 @@ struct TakenPhotoView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: CAMERA_WIDTH, height: MESSAGE_HEIGHT)
-                .cornerRadius(20)
+                .cornerRadius(14, corners: [.topRight, .topLeft])
                 .padding(.top, TOP_PADDING_OFFSET)
             
             Spacer()
@@ -320,22 +326,25 @@ struct VoiceView: View {
     var body: some View {
         
         VStack {
+            VStack {
+                
+                Spacer()
+                
+                Image(systemName: "mic.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 72, height: 72)
+                    .foregroundColor(.white)
+                
+                
+                Spacer()
+                
+            }
+            .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT + TOP_PADDING)
+            .background(Color.alternateMainBlue)
             
             Spacer()
-            
-            Image(systemName: "mic.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 72, height: 72)
-                .foregroundColor(.white)
-            
-            
-            Spacer()
-            Spacer()
-            
         }
-        .frame(width: SCREEN_WIDTH)
-        .background(Color.alternateMainBlue)
     }
 }
 
@@ -386,7 +395,7 @@ struct PhotosView: View {
 struct NoteView: View {
     
     @Binding var noteText: String
-    @Binding var isTyping: Bool
+    //    @Binding var isTyping: Bool
     
     
     var body: some View {
@@ -395,24 +404,48 @@ struct NoteView: View {
             
             ZStack {
                 
-                if !isTyping && noteText.isEmpty {
+                if noteText.isEmpty {
                     
-                    Text("Tap to type")
-                        .font(.system(size: 28, weight: .semibold))
+                    Text("Start typing...")
+                        .font(.system(size: 28, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                 }
                 
                 MultilineTextField(text: $noteText, height: MESSAGE_HEIGHT)
                     .frame(width: SCREEN_WIDTH - 40)
-                    .onTapGesture {
-                        isTyping = true
+                //                    .onTapGesture {
+                //                        isTyping = true
+                //                    }
+                
+                
+                VStack {
+                    
+                    HStack {
+                        
+                        Button {
+                            MainViewModel.shared.selectedView = .Video
+                            noteText = ""
+                        } label: {
+                            Image("x")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 28, height: 28)
+                                .padding(.leading)
+                                .padding(.top, TOP_PADDING + 40)
+                        }
+                        
+                        Spacer()
                     }
+                    
+                    Spacer()
+                }
             }
+            .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT + TOP_PADDING)
+            .background(Color.alternateMainBlue)
+            .cornerRadius(20, corners: [.topLeft, .topRight])
+            
             Spacer()
         }
-        .ignoresSafeArea(edges: .bottom)
-        .frame(width: SCREEN_WIDTH)
-        .background(Color.alternateMainBlue)
     }
 }
 
@@ -533,7 +566,7 @@ struct ChatsView: View {
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
     @Binding var selectedView: MainViewType
     @State var dragOffset: CGSize = .zero
-
+    
     let maxHeight = -CHATS_VIEW_HEIGHT * 2 - 4
     let backgroundColor = Color(red: 48/255, green: 54/255, blue: 64/255)
     
@@ -556,11 +589,11 @@ struct ChatsView: View {
                                 ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
                                     .scaleEffect(x: -1, y: 1, anchor: .center)
                                     .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
-
+                                
                             }
                         }
                     })
-                    .padding(.horizontal, 8)
+                        .padding(.horizontal, 8)
                     
                 } else {
                     
@@ -568,7 +601,8 @@ struct ChatsView: View {
                         
                         
                         VStack {
-                            LazyVGrid(columns: items, spacing: 12, content: {
+                            
+                            LazyVGrid(columns: items, spacing: 16, content: {
                                 
                                 
                                 ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
@@ -586,19 +620,19 @@ struct ChatsView: View {
                                                    value: -$0.frame(in: .named("scroll")).origin.y)
                             
                         })
-                        .onPreferenceChange(ViewOffsetKey.self) {
-                            
-                            if $0 < -10 {
+                            .onPreferenceChange(ViewOffsetKey.self) {
                                 
-                                withAnimation {
-                                    dragOffset = .zero
+                                if $0 < -10 {
+                                    
+                                    withAnimation {
+                                        dragOffset = .zero
+                                    }
                                 }
                             }
-                        }
                     }
                     .coordinateSpace(name: "scroll")
                     
-                   
+                    
                 }
                 
                 Spacer()
@@ -649,13 +683,13 @@ struct ChatsView: View {
     
     func handleTapGesture(chat: Chat) {
         
-            conversationViewModel.setChat(chat: chat)
-            selectedView = .Saylo
-            MainViewModel.shared.reset()
-            
-            withAnimation {
-                dragOffset = .zero
-            }
+        conversationViewModel.setChat(chat: chat)
+        selectedView = .Saylo
+        MainViewModel.shared.reset()
+        
+        withAnimation {
+            dragOffset = .zero
+        }
     }
     
 }
@@ -666,5 +700,22 @@ struct ViewOffsetKey: PreferenceKey {
     static var defaultValue = CGFloat.zero
     static func reduce(value: inout Value, nextValue: () -> Value) {
         value += nextValue()
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
+struct RoundedCorner: Shape {
+    
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

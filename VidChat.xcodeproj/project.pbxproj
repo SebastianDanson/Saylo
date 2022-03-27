@@ -30,6 +30,7 @@
 		063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */; };
 		0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0640D63227990FF500D7A244 /* SuggestedChatsView.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
+		065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */; };
 		065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */; };
 		065D2DF72788C1C1002F3816 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF62788C1C1002F3816 /* PageView.swift */; };
 		065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065E93952787755D0025C90C /* AcitivityIndicator.swift */; };
@@ -211,6 +212,7 @@
 		063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyPhoneNumberView.swift; sourceTree = "<group>"; };
 		0640D63227990FF500D7A244 /* SuggestedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedChatsView.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
+		065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardHeightModifier.swift; sourceTree = "<group>"; };
 		065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatImageCircle.swift; sourceTree = "<group>"; };
 		065D2DF62788C1C1002F3816 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 		065E93952787755D0025C90C /* AcitivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcitivityIndicator.swift; sourceTree = "<group>"; };
@@ -603,6 +605,7 @@
 				06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */,
 				0687E9F427949B5C004E1187 /* NameTextField.swift */,
 				069D11E62798775600988829 /* MessageView.swift */,
+				065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1054,6 +1057,7 @@
 				3F112B732720716300BA2A73 /* VideoCallView.swift in Sources */,
 				3FB8B5DA270FB6F800355DB9 /* TextCell.swift in Sources */,
 				3F8B027726FEC03100841565 /* Message.swift in Sources */,
+				065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */,
 				06DEA9CE27C7FEB6000D60B0 /* CameraOptionViews.swift in Sources */,
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,
