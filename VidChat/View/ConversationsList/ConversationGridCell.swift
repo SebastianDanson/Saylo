@@ -142,7 +142,7 @@ struct ConversationGridCell: View {
                 Text(chat.name)
                     .font(.system(size: 13, weight: .regular))
                     .lineLimit(1)
-                    .foregroundColor(textColor)
+                    .foregroundColor(.white)
                     .overlay(
                         ZStack {
                             if chat.hasUnreadMessage {

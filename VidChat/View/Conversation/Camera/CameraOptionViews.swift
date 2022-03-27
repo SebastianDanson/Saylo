@@ -13,58 +13,59 @@ struct MessageOptions: View {
     
     var body: some View {
         
-        HStack(spacing: 0) {
+        HStack(spacing: 32) {
             
             if !isRecording {
                 
                 Button {
                     setMessageType(type: .Photo)
                 } label: {
-                    Text("Photo")
-                        .foregroundColor(type == .Photo ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Photo ? 18 : 17, weight: type == .Photo ? .bold : .semibold, design: .rounded))
-                        .frame(width: 70)
+                    
+                    Image(systemName: "camera")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 34, height: 34)
+                        .foregroundColor(.white)
+                        .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
                 }
                 
                 Button {
                     setMessageType(type: .Voice)
                 } label: {
-                    Text("Voice")
-                        .foregroundColor(type == .Voice ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Voice ? 18 : 17, weight: type == .Voice ? .bold : .semibold, design: .rounded))
-                        .frame(width: 70)
+                    Image(systemName: "waveform")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 34, height: 34)
+                        .foregroundColor(.white)
+                        .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+                    
                 }
-                
-                Button {
-                    setMessageType(type: .Video)
-                } label: {
-                    Text("Video")
-                        .foregroundColor(type == .Video ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Video ? 18 : 17, weight: type == .Video ? .bold : .semibold, design: .rounded))
-                        .frame(width: 70)
-                }
-                
-                Button {
-                    setMessageType(type: .Note)
-                } label: {
-                    Text("Note")
-                        .foregroundColor(type == .Note ? .white : Color(.systemGray5))
-                        .font(.system(size: type == .Note ? 18 : 17, weight: type == .Note ? .bold : .semibold, design: .rounded))
-                        .frame(width: 70)
-                }
-                
-//
-//                Button {
-//                    setMessageType(type: .Saylo)
-//                    ConversationViewModel.shared.updateLastVisitedForChat(withId: ConversationViewModel.shared.chatId)
-//                } label: {
-//                    Text("Saylos")
-//                        .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
-//                        .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
-//                        .frame(width: 70)
-//                }
-                
             }
+            
+            
+            Button {
+                setMessageType(type: .Note)
+            } label: {
+                Image(systemName: "textformat")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 34, height: 34)
+                    .foregroundColor(.white)
+                    .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+            }
+            
+            //
+            //                Button {
+            //                    setMessageType(type: .Saylo)
+            //                    ConversationViewModel.shared.updateLastVisitedForChat(withId: ConversationViewModel.shared.chatId)
+            //                } label: {
+            //                    Text("Saylos")
+            //                        .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
+            //                        .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
+            //                        .frame(width: 70)
+            //                }
+            
+            //            }
         }
     }
     
@@ -90,7 +91,7 @@ struct SaveButton: View {
     
     @State var hasSaved = false
     var viewModel = MainViewModel.shared
-
+    
     var body: some View {
         
         Button {
@@ -164,13 +165,13 @@ struct MediaOptions: View {
                         
                         Spacer()
                         
-                      
+                        
                         
                         if viewModel.videoUrl != nil {
                             
                             Button {
                                 
-//                                viewModel.videoPlayerView = nil
+                                //                                viewModel.videoPlayerView = nil
                                 viewModel.videoUrl = nil
                                 viewModel.isRecording = false
                                 viewModel.handleTap()
@@ -317,22 +318,22 @@ struct TakenPhotoOptions: View {
         
         HStack {
             
-                Button {
-                    viewModel.photo = nil
-                } label: {
-                    
-                    Image(systemName: "trash.fill")
-                        .resizable()
-                        .font(Font.title.weight(.medium))
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 30, height: 30)
-                }
+            Button {
+                viewModel.photo = nil
+            } label: {
+                
+                Image(systemName: "trash.fill")
+                    .resizable()
+                    .font(Font.title.weight(.medium))
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(width: 30, height: 30)
+            }
             
             Spacer()
             
             SaveButton()
-                        
+            
         }.frame(width: 240)
     }
 }

@@ -305,7 +305,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         previewLayer.cornerRadius = 14
         previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-//        previewLayer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        previewLayer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         self.view.layer.masksToBounds = true
         self.view.layer.cornerRadius = 14
         view.layer.addSublayer(previewLayer)

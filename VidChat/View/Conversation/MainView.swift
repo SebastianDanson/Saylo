@@ -49,7 +49,7 @@ struct MainView: View {
             //Note View
             if viewModel.selectedView == .Note {
                 NoteView(noteText: $noteText, isTyping: $isTyping)
-                 
+                
             }
             
             //Saylo View
@@ -61,72 +61,126 @@ struct MainView: View {
                 PhotosView()
             }
             
-            //Overlay Buttons
-            VStack(spacing: 6) {
-                
-                Spacer()
-                
-                ZStack {
+            ZStack {
+                //Overlay Buttons
+                VStack(spacing: 6) {
                     
-                    //Recording voice or video
-                    if viewModel.showRecordButton() {
-                        Button {
-                            viewModel.handleRecordButtonTapped()
-                        } label: {
-                            RecordButton()
+                    Spacer()
+                    
+                    ZStack {
+                        
+                        //Recording voice or video
+                        if viewModel.showRecordButton() {
+                            Button {
+                                viewModel.handleRecordButtonTapped()
+                            } label: {
+                                RecordButton()
+                            }
                         }
-                    }
-                    
-                    //Taking Photo
-                    if viewModel.selectedView == .Photo {
-                        Button {
-                            viewModel.handlePhotoButtonTapped()
-                        } label: {
-                            PhotoButton(photo: $viewModel.photo)
+                        
+                        //Taking Photo
+                        if viewModel.selectedView == .Photo {
+                            Button {
+                                viewModel.handlePhotoButtonTapped()
+                            } label: {
+                                PhotoButton(photo: $viewModel.photo)
+                            }
                         }
-                    }
+                        
+                        //Writing Note
+                        if viewModel.selectedView == .Note {
+                            
+                            Button {
+                                ConversationViewModel.shared.sendMessage(text: noteText, type: .Text)
+                                noteText = ""
+                            } label: {
+                                SendButton()
+                            }
+                        }
+                        
+                        
+                        if viewModel.photo != nil {
+                            //The Buttons on either of the photo button
+                            TakenPhotoOptions()
+                        } else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
+                            //The Buttons on either of the record button
+                            //                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
+                        }
+                        
+                    }.padding(.bottom, 12)
                     
-                    //Writing Note
-                    if viewModel.selectedView == .Note {
+                    
+                    if !viewModel.isRecording && !viewModel.showPhotos {
+                        //The 5 buttons that toggle the message types
+                        
+                        HStack {
+                            
+                            Button {
+                                viewModel.showPhotos = true
+                            } label: {
+                                LastPhotoView()
+                            }
+                            
+                            Spacer()
+                            
+                            MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
+                            
+                            Spacer()
+                            
+                            Button {
+                                cameraView.switchCamera()
+                            } label: {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .resizable()
+                                    .font(Font.title.weight(.semibold))
+                                    .scaledToFit()
+                                    .frame(width: 36, height: 36)
+                                    .foregroundColor(.white)
+                                    .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 12)
+                        
+                    } else if viewModel.isRecording {
                         
                         Button {
-                            ConversationViewModel.shared.sendMessage(text: noteText, type: .Text)
-                            noteText = ""
+                            if viewModel.selectedView == .Voice {
+                                viewModel.audioRecorder.cancelRecording()
+                                viewModel.cancelRecording()
+                            } else {
+                                viewModel.cancelRecording()
+                            }
                         } label: {
-                            SendButton()
+                            Image("x")
+                                .resizable()
+                                .renderingMode(.template)
+                                .scaledToFit()
+                                .foregroundColor(.white)
+                                .frame(width: 28, height: 28)
+                                .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
                         }
+                        .frame(width: 36, height: 36)
+                        .padding(.bottom, 12)
                     }
                     
+                    //                ZStack {
                     
-                    if viewModel.photo != nil {
-                        //The Buttons on either of the photo button
-                        TakenPhotoOptions()
-                    } else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
-                        //The Buttons on either of the record button
-                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
-                    }
-                    
-                }.padding(.bottom, 16)
+                    //                }
+                }
+                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
                 
-                
-                if !viewModel.isRecording && !viewModel.showPhotos {
-                    //The 5 buttons that toggle the message types
-                    
-                    MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
-                        .frame(height: 24)
-                        .padding(.bottom, 8)
-                        .background(
-                            LinearGradient(gradient: Gradient(colors: [.clear, Color(white: 0, opacity: 0.6)]), startPoint: .top, endPoint: .bottom)
-                                .frame(width: SCREEN_WIDTH)
-                        )
-                    
+                VStack {
+                    Spacer()
+                    UnreadMessagesScrollView()
+                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
                 }
                 
+                VStack {
+                    Spacer()
+                    ChatsView(selectedView: $viewModel.selectedView)
+                }
                 
-                UnreadMessagesScrollView().padding(.bottom, 2)
-                
-                
-                ChatsView(selectedView: $viewModel.selectedView)
                 
             }
             .zIndex(3)
@@ -481,39 +535,53 @@ struct ChatsView: View {
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
     @Binding var selectedView: MainViewType
     
-    
+    let backgroundColor = Color(red: 48/255, green: 54/255, blue: 64/255)
     var body: some View {
         
-        ScrollView(showsIndicators: false) {
+        ZStack {
             
-            Color.white.ignoresSafeArea()
-            
+            backgroundColor.ignoresSafeArea()
             
             VStack {
                 
+                
                 LazyVGrid(columns: items, spacing: 40, content: {
                     
-                    ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                    if gridviewModel.chats.count > 0 {
                         
-                        ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
-                            .scaleEffect(x: -1, y: 1, anchor: .center)
-                            .onTapGesture(count: 1, perform: {
-                                conversationViewModel.setChat(chat: chat)
-                                MainViewModel.shared.reset()
-                            })
+                        ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count, 3)].enumerated()), id: \.1.id) { i, chat in
+                            
+                            ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+                                .scaleEffect(x: -1, y: 1, anchor: .center)
+                                .onTapGesture(count: 1, perform: {
+                                    conversationViewModel.setChat(chat: chat)
+                                    MainViewModel.shared.reset()
+                                })
+                        }
                     }
                 })
                     .padding(.horizontal, 8)
-                    .padding(.top, -8)
                 
             }
             .scaleEffect(x: -1, y: 1, anchor: .center)
+            .padding(.bottom, 4)
+            
+            
+            VStack {
+                Rectangle()
+                    .foregroundColor(Color(.systemGray))
+                    .frame(width: 48, height: 4)
+                    .clipShape(Capsule())
+                    .padding(.top, 6)
+                
+                Spacer()
+            }
             
         }
         .frame(width: SCREEN_WIDTH, height: selectedView == .Saylo ? CHATS_VIEW_SMALL_HEIGHT : CHATS_VIEW_HEIGHT)
         .ignoresSafeArea(edges: .bottom)
-        .background(Color.white)
-        .cornerRadius(14)
+        .background(backgroundColor)
+        .cornerRadius(20)
     }
     
 }

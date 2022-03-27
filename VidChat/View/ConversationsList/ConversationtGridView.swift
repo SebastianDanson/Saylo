@@ -190,7 +190,6 @@ struct ConversationGridView: View {
                     conversationViewModel.showPhotos = false
                     conversationViewModel.showKeyboard = false
                     
-                    
                 }
                 
             })
@@ -300,7 +299,7 @@ struct NavView: View {
     
     @Binding var searchText: String
     
-    private let toolBarWidth: CGFloat = 40
+    private let toolBarWidth: CGFloat = 38
     
     var body: some View {
         
@@ -322,43 +321,46 @@ struct NavView: View {
                                     .scaledToFill()
                                     .frame(width: toolBarWidth, height: toolBarWidth)
                                     .clipShape(Circle())
+                                    .padding(1) // Width of the border
+                                    .background(Color.white) // Color of the border
+                                    .clipShape(Circle())
                             }
                             
-                            Button {
-                                withAnimation {
-                                    viewModel.isCalling = true
-                                }
-                            } label: {
-                                
-                                Circle()
-                                    .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .foregroundColor(.fadedBlack)
-                                    .overlay(
-                                        Image(systemName: "phone.fill")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .scaledToFit()
-                                            .frame(height: toolBarWidth - 20)
-                                            .foregroundColor(.white)
-                                            .padding(.leading, 1)
-                                    )
-                                    .padding(.leading, -2)
-                            }
+//                            Button {
+//                                withAnimation {
+//                                    viewModel.isCalling = true
+//                                }
+//                            } label: {
+//
+//                                Circle()
+//                                    .frame(width: toolBarWidth, height: toolBarWidth)
+//                                    .foregroundColor(.fadedBlack)
+//                                    .overlay(
+//                                        Image(systemName: "phone.fill")
+//                                            .resizable()
+//                                            .renderingMode(.template)
+//                                            .scaledToFit()
+//                                            .frame(height: toolBarWidth - 20)
+//                                            .foregroundColor(.white)
+//                                            .padding(.leading, 1)
+//                                    )
+//                                    .padding(.leading, -2)
+//                            }
                             
                             
                         }
                         
-                        Spacer()
-                        
-                        if let chat = conversationViewModel.chat {
-                            Text(chat.name)
-                                .foregroundColor(.white)
-                                .font(.system(size: 22, weight: .semibold, design: .rounded))
-                        }
+//                        Spacer()
+//
+//                        if let chat = conversationViewModel.chat {
+//                            Text(chat.name)
+//                                .foregroundColor(.white)
+//                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+//                        }
                       
                         Spacer()
                         
-                        HStack(alignment: .top, spacing: 6 ) {
+                        HStack(alignment: .top, spacing: 8 ) {
                             
                             Button {
                                 
@@ -376,11 +378,11 @@ struct NavView: View {
                                         .foregroundColor(.fadedBlack)
                                         .overlay(
                                             
-                                            Image(systemName: "person.fill.badge.plus")
+                                            Image("plusPerson")
                                                 .resizable()
                                                 .renderingMode(.template)
                                                 .scaledToFit()
-                                                .frame(height: toolBarWidth - 17)
+                                                .frame(height: toolBarWidth - 20)
                                                 .foregroundColor(.white)
                                                 .padding(.leading, -1)
                                             
@@ -389,6 +391,7 @@ struct NavView: View {
                                     
                                     
                                     if authViewModel.hasUnseenFriendRequest {
+                                        
                                         VStack {
                                             HStack {
                                                 Spacer()

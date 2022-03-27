@@ -402,7 +402,7 @@ struct RecordButton: View {
     var body: some View {
         
         Circle()
-            .stroke(.white, style: StrokeStyle(lineWidth: viewModel.isRecording ? 5.0 : 7.0 ))
+            .stroke(.white, style: StrokeStyle(lineWidth: viewModel.isRecording ? 5.0 : 4.5 ))
             .scaledToFit()
             .background(
                 
@@ -414,6 +414,13 @@ struct RecordButton: View {
                                    height: 30)
                             .foregroundColor(Color(.systemRed))
                             .transition(.scale)
+                    } else {
+                        Blur(style: .light)
+                            .foregroundColor(.clear)
+                            .frame(width: 62, height: 62)
+                            .clipShape(Circle())
+
+//                            .opacity(0.5)
                     }
                 }
             ).frame(width: viewModel.isShowingPhotoCamera ? 64 : 62,
@@ -766,5 +773,15 @@ struct SavedPostsOptionsView: View {
         .frame(width: SCREEN_WIDTH, height: BOTTOM_PADDING + 70)
         .background(!viewModel.showCamera && !viewModel.showPhotos && !viewModel.showKeyboard ? .point7AlphaSystemWhite : Color.clear)
         
+    }
+}
+
+struct Blur: UIViewRepresentable {
+    var style: UIBlurEffect.Style = .systemMaterial
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        return UIVisualEffectView(effect: UIBlurEffect(style: style))
+    }
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        uiView.effect = UIBlurEffect(style: style)
     }
 }
