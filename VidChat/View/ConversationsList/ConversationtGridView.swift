@@ -311,7 +311,7 @@ struct NavView: View {
                 HStack(alignment: .center) {
                     
                         
-                        HStack(spacing: 8) {
+                        HStack(spacing: 12) {
                             
                             Button {
                                 viewModel.showSettingsView = true
@@ -326,37 +326,37 @@ struct NavView: View {
                                     .clipShape(Circle())
                             }
                             
-//                            Button {
-//                                withAnimation {
-//                                    viewModel.isCalling = true
-//                                }
-//                            } label: {
-//
-//                                Circle()
-//                                    .frame(width: toolBarWidth, height: toolBarWidth)
-//                                    .foregroundColor(.fadedBlack)
-//                                    .overlay(
-//                                        Image(systemName: "phone.fill")
-//                                            .resizable()
-//                                            .renderingMode(.template)
-//                                            .scaledToFit()
-//                                            .frame(height: toolBarWidth - 20)
-//                                            .foregroundColor(.white)
-//                                            .padding(.leading, 1)
-//                                    )
-//                                    .padding(.leading, -2)
-//                            }
+                            Button {
+                                withAnimation {
+                                    viewModel.isCalling = true
+                                }
+                            } label: {
+
+                                Circle()
+                                    .frame(width: toolBarWidth, height: toolBarWidth)
+                                    .foregroundColor(.fadedBlack)
+                                    .overlay(
+                                        Image(systemName: "phone.fill")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .scaledToFit()
+                                            .frame(height: toolBarWidth - 20)
+                                            .foregroundColor(.white)
+                                            .padding(.leading, 1)
+                                    )
+                                    .padding(.leading, -2)
+                            }
                             
                             
                         }
                         
-//                        Spacer()
-//
-//                        if let chat = conversationViewModel.chat {
-//                            Text(chat.name)
-//                                .foregroundColor(.white)
-//                                .font(.system(size: 22, weight: .semibold, design: .rounded))
-//                        }
+                        Spacer()
+
+                        if let chat = conversationViewModel.chat {
+                            Text(chat.name)
+                                .foregroundColor(.white)
+                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                        }
                       
                         Spacer()
                         

@@ -12,6 +12,7 @@ import AVKit
 struct UnreadMessagesScrollView: View {
     
     @ObservedObject var viewModel = ConversationViewModel.shared
+    @Binding var selectedView: MainViewType
     
     var body: some View {
         
@@ -23,7 +24,7 @@ struct UnreadMessagesScrollView: View {
                     
                     ScrollViewReader { reader in
                         
-                        HStack(spacing: 4) {
+                        HStack(spacing: 3) {
                             
                             ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
                                 
@@ -106,7 +107,7 @@ struct UnreadMessagesScrollView: View {
                                                 }
                                             }
                                             
-                                            if i == viewModel.index {
+                                            if i == viewModel.index && selectedView == .Saylo {
                                                 
                                                 ZStack {
                                                     Color.init(white: 0, opacity: 0.5)

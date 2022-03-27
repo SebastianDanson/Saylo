@@ -228,10 +228,10 @@ struct ConversationPlayerView: View {
                         
                     )
                     
-                    
-                    UnreadMessagesScrollView()
-                        .padding(.top, 4)
-                        .zIndex(10)
+//                    
+//                    UnreadMessagesScrollView()
+//                        .padding(.top, 4)
+//                        .zIndex(10)
                     
                     Spacer()
                     

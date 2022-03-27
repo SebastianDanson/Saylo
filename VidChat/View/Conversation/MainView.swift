@@ -54,7 +54,7 @@ struct MainView: View {
             
             //Saylo View
             if viewModel.selectedView == .Saylo {
-                ConversationPlayerView()
+//                ConversationPlayerView()
             }
             
             if viewModel.showPhotos {
@@ -172,7 +172,7 @@ struct MainView: View {
                 
                 VStack {
                     Spacer()
-                    UnreadMessagesScrollView()
+                    UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
                         .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
                 }
                 
@@ -485,7 +485,6 @@ struct PhotoLibraryAndSwitchCameraView: View {
                         .foregroundColor(.white)
                 }
                 
-                
             } else {
                 
                 Button {
@@ -520,7 +519,6 @@ struct PhotoLibraryAndSwitchCameraView: View {
             }
             
             
-            
         }.frame(width: 240)
     }
 }
@@ -534,8 +532,11 @@ struct ChatsView: View {
     @StateObject var conversationViewModel = ConversationViewModel.shared
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
     @Binding var selectedView: MainViewType
-    
+    @State var dragOffset: CGSize = .zero
+
+    let maxHeight = -CHATS_VIEW_HEIGHT * 2 - 4
     let backgroundColor = Color(red: 48/255, green: 54/255, blue: 64/255)
+    
     var body: some View {
         
         ZStack {
@@ -544,27 +545,67 @@ struct ChatsView: View {
             
             VStack {
                 
-                
-                LazyVGrid(columns: items, spacing: 40, content: {
+                if dragOffset == .zero {
                     
-                    if gridviewModel.chats.count > 0 {
+                    LazyVGrid(columns: items, spacing: 0, content: {
                         
-                        ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count, 3)].enumerated()), id: \.1.id) { i, chat in
+                        if gridviewModel.chats.count > 0 {
                             
-                            ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
-                                .scaleEffect(x: -1, y: 1, anchor: .center)
-                                .onTapGesture(count: 1, perform: {
-                                    conversationViewModel.setChat(chat: chat)
-                                    MainViewModel.shared.reset()
-                                })
+                            ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count, 3)].enumerated()), id: \.1.id) { i, chat in
+                                
+                                ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+                                    .scaleEffect(x: -1, y: 1, anchor: .center)
+                                    .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
+
+                            }
+                        }
+                    })
+                    .padding(.horizontal, 8)
+                    
+                } else {
+                    
+                    ScrollView {
+                        
+                        
+                        VStack {
+                            LazyVGrid(columns: items, spacing: 12, content: {
+                                
+                                
+                                ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                    
+                                    ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+                                        .scaleEffect(x: -1, y: 1, anchor: .center)
+                                        .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
+                                }
+                            })
+                                .padding(.horizontal, 8)
+                                .padding(.top, 8)
+                            
+                        }.background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self,
+                                                   value: -$0.frame(in: .named("scroll")).origin.y)
+                            
+                        })
+                        .onPreferenceChange(ViewOffsetKey.self) {
+                            
+                            if $0 < -10 {
+                                
+                                withAnimation {
+                                    dragOffset = .zero
+                                }
+                            }
                         }
                     }
-                })
-                    .padding(.horizontal, 8)
+                    .coordinateSpace(name: "scroll")
+                    
+                   
+                }
+                
+                Spacer()
                 
             }
             .scaleEffect(x: -1, y: 1, anchor: .center)
-            .padding(.bottom, 4)
+            .padding(.top, 14)
             
             
             VStack {
@@ -578,10 +619,52 @@ struct ChatsView: View {
             }
             
         }
-        .frame(width: SCREEN_WIDTH, height: selectedView == .Saylo ? CHATS_VIEW_SMALL_HEIGHT : CHATS_VIEW_HEIGHT)
-        .ignoresSafeArea(edges: .bottom)
-        .background(backgroundColor)
+        .frame(width: SCREEN_WIDTH, height: CHATS_VIEW_HEIGHT * 3)
         .cornerRadius(20)
+        .offset(dragOffset)
+        .padding(.bottom, -CHATS_VIEW_HEIGHT*2)
+        .gesture(
+            
+            DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                .onChanged { gesture in
+                    let height = dragOffset.height + (gesture.translation.height - dragOffset.height)
+                    dragOffset.height = min(max(height, maxHeight), 0)
+                }
+                .onEnded { gesture in
+                    
+                    withAnimation(.linear(duration: 0.2)) {
+                        
+                        if abs(dragOffset.height) > 200 {
+                            dragOffset.height = maxHeight
+                        } else {
+                            dragOffset = .zero
+                        }
+                    }
+                }
+        )
+        .ignoresSafeArea(edges: .bottom)
+        
+        
     }
     
+    func handleTapGesture(chat: Chat) {
+        
+            conversationViewModel.setChat(chat: chat)
+            selectedView = .Saylo
+            MainViewModel.shared.reset()
+            
+            withAnimation {
+                dragOffset = .zero
+            }
+    }
+    
+}
+
+
+struct ViewOffsetKey: PreferenceKey {
+    typealias Value = CGFloat
+    static var defaultValue = CGFloat.zero
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value += nextValue()
+    }
 }

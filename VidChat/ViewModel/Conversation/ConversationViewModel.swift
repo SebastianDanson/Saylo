@@ -123,6 +123,7 @@ class ConversationViewModel: ObservableObject {
         defaults?.set(chat.id, forKey: "selectedChatId")
         self.addListener()
         self.messages = chat.messages
+        self.index = max(0, chat.messages.count - 1)
         ConversationService.updateLastVisited(forChat: chat)
         
         //        self.setIsSameId(messages: chat.messages)
