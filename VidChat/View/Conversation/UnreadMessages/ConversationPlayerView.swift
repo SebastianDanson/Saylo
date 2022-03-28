@@ -43,7 +43,7 @@ struct ConversationPlayerView: View {
         
         VStack {
                         
-            if viewModel.messages.count > viewModel.index {
+            if viewModel.messages.count > viewModel.index && viewModel.index >= 0 {
                 
                 
                 let messageInfoView = MessageInfoView(date: viewModel.messages[viewModel.index].timestamp.dateValue(),
@@ -75,8 +75,8 @@ struct ConversationPlayerView: View {
                             }
                             .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
                             .background(Color.alternateMainBlue)
-                            .cornerRadius(12)
-                            
+                            .cornerRadius(14, corners: [.topLeft, .topRight])
+
                             
                         } else if viewModel.messages[viewModel.index].type == .Photo {
                             
@@ -85,16 +85,37 @@ struct ConversationPlayerView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-                                    .cornerRadius(12)
+                                    .cornerRadius(14, corners: [.topLeft, .topRight])
                                     .clipped()
                             } else if let image = viewModel.messages[viewModel.index].image {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-                                    .cornerRadius(12)
+                                    .cornerRadius(14, corners: [.topLeft, .topRight])
                                     .clipped()
                             }
+                        }
+                        
+                        VStack {
+                            
+                            HStack {
+                                
+                                Button {
+                                    MainViewModel.shared.selectedView = .Video
+                                } label: {
+                                    Image("x")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 28, height: 28)
+                                        .padding(.leading)
+                                        .padding(.top, 20)
+                                }
+                                
+                                Spacer()
+                            }
+                            
+                            Spacer()
                         }
                     }
                     .zIndex(3)
@@ -118,6 +139,7 @@ struct ConversationPlayerView: View {
                                     HStack(alignment: .bottom) {
                                         
                                         VStack {
+                                            
                                             Spacer()
                                             
                                             AddedReactionsContainerView(reactions: $viewModel.messages[viewModel.index].reactions)
@@ -128,12 +150,25 @@ struct ConversationPlayerView: View {
                                         
                                         Spacer()
                                         
-                                        VStack(spacing: 12) {
+                                        VStack(spacing: 8) {
                                             
                                             
                                             if showReactions {
                                                 ReactionView(messageId: viewModel.messages[viewModel.index].id, reactions: $viewModel.messages[viewModel.index].reactions, showReactions: $showReactions)
                                                     .transition(.scale)
+                                            } else {
+                                                
+                                                Button {
+                                                    
+                                                } label: {
+                                                    
+                                                    Image(systemName: "ellipsis")
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .frame(width: 30, height: 30)
+                                                        .foregroundColor(.white)
+                                                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                                }
                                             }
                                             
                                             
@@ -206,6 +241,7 @@ struct ConversationPlayerView: View {
                                         
                                         if !viewModel.messages[viewModel.index].isForTakingVideo {                                            
                                             messageInfoView
+                                                .padding(.bottom, -8)
                                         }
                                         
                                         Spacer()
@@ -227,19 +263,18 @@ struct ConversationPlayerView: View {
                         
                         
                     )
+                    .padding(.top, TOP_PADDING)
+
                     
-//                    
+//
 //                    UnreadMessagesScrollView()
 //                        .padding(.top, 4)
 //                        .zIndex(10)
                     
                     Spacer()
                     
-                }.frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT - CHATS_VIEW_SMALL_HEIGHT)
-                    .padding(.top, TOP_PADDING_OFFSET)
+                }
                 
-            } else if viewModel.messages.isEmpty, let chat = viewModel.chat {
-                NoMessagesView(chat: chat)
             }
             
             Spacer()
@@ -250,8 +285,6 @@ struct ConversationPlayerView: View {
         })
         
     }
-    
-    
 }
 
 struct Line: Shape {

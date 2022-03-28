@@ -20,6 +20,7 @@ struct MainView: View {
     @State var isTyping = false
     
     var cameraView = CameraView()
+    let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
     
     var body: some View {
         
@@ -54,7 +55,7 @@ struct MainView: View {
             
             //Saylo View
             if viewModel.selectedView == .Saylo {
-                //                ConversationPlayerView()
+                ConversationPlayerView()
             }
             
             if viewModel.showPhotos {
@@ -86,7 +87,7 @@ struct MainView: View {
                         if viewModel.selectedView == .Photo {
                             Button {
                                 viewModel.handlePhotoButtonTapped()
-                                viewModel.selectedView == .Video
+                                viewModel.selectedView = .Video
                                 viewModel.photo = nil
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
@@ -102,92 +103,104 @@ struct MainView: View {
                         //                            //                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
                         //                        }
                         
-                    }.padding(.bottom, 12)
+                    }.padding(.bottom, bottomPadding)
                     
                     
-                    ZStack {
-                        if !viewModel.isRecording && !viewModel.showPhotos {
-                            //The 5 buttons that toggle the message types
-                            
-                            HStack {
-                                
-                                Button {
-                                    viewModel.showPhotos = true
-                                } label: {
-                                    LastPhotoView()
-                                }
-                                
-                                Spacer()
-                                
-                                if viewModel.selectedView != .Photo {
-                                    MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
-                                }
-                                
-                                Spacer()
-                                
-                                Button {
-                                    cameraView.switchCamera()
-                                } label: {
-                                    Image(systemName: "arrow.triangle.2.circlepath")
-                                        .resizable()
-                                        .font(Font.title.weight(.semibold))
-                                        .scaledToFit()
-                                        .frame(width: 36, height: 36)
-                                        .foregroundColor(.white)
-                                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 12)
-                            
-                        }
+                    VStack(spacing: 0) {
                         
-                        if viewModel.isRecording || viewModel.selectedView == .Photo {
-                            
-                            Button {
-                                if viewModel.selectedView == .Voice {
-                                    viewModel.audioRecorder.cancelRecording()
-                                    viewModel.cancelRecording()
-                                    viewModel.selectedView = .Video
-                                } else if viewModel.selectedView == .Photo {
-                                    viewModel.photo = nil
-                                    viewModel.selectedView = .Video
-                                } else  {
-                                    viewModel.cancelRecording()
+                        ZStack {
+                            if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo {
+                                //The 5 buttons that toggle the message types
+                                
+                                HStack {
+                                    
+                                    Button {
+                                        viewModel.showPhotos = true
+                                    } label: {
+                                        LastPhotoView()
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    if viewModel.selectedView != .Photo {
+                                        MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Button {
+                                        cameraView.switchCamera()
+                                    } label: {
+                                        Image(systemName: "arrow.triangle.2.circlepath")
+                                            .resizable()
+                                            .font(Font.title.weight(.semibold))
+                                            .scaledToFit()
+                                            .frame(width: 35, height: 35)
+                                            .foregroundColor(.white)
+                                            .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                    }
                                 }
-                            } label: {
-                                Image("x")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .scaledToFit()
-                                    .foregroundColor(.white)
-                                    .frame(width: 28, height: 28)
-                                    .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+                                .padding(.horizontal, 20)
+                                .padding(.bottom, bottomPadding)
+                                
                             }
-                            .frame(width: 36, height: 36)
-                            .padding(.bottom, 12)
+                            
+                            
+                            
+                            
+                            
+                            if viewModel.isRecording || viewModel.selectedView == .Photo {
+                                
+                                Button {
+                                    if viewModel.selectedView == .Voice {
+                                        viewModel.audioRecorder.cancelRecording()
+                                        viewModel.cancelRecording()
+                                        viewModel.selectedView = .Video
+                                    } else if viewModel.selectedView == .Photo {
+                                        viewModel.photo = nil
+                                        viewModel.selectedView = .Video
+                                    } else  {
+                                        viewModel.cancelRecording()
+                                    }
+                                } label: {
+                                    Image("x")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .scaledToFit()
+                                        .foregroundColor(.white)
+                                        .frame(width: 28, height: 28)
+                                        .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+                                }
+                                .frame(width: 36, height: 36)
+                                .padding(.bottom, bottomPadding)
+                            }
                         }
                         
                         //                ZStack {
                         
                         //                }
+                        
+                        if IS_SMALL_PHONE {
+                            UnreadMessagesScrollView(selectedView: $viewModel.selectedView).padding(.bottom, 5)
+                        }
                     }
                 }
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
                 
                 
-                VStack {
-                    Spacer()
-                    UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
+                if !IS_SMALL_PHONE {
+                    VStack {
+                        Spacer()
+                        
+                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
+                    }
                 }
                 
                 VStack {
                     Spacer()
-                    ChatsView(selectedView: $viewModel.selectedView)
+                    ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
                 }
-                
-                
             }
             .zIndex(3)
             
@@ -209,19 +222,19 @@ struct MainView: View {
                     .transition(.move(edge: .bottom))
             }
             
-            
         }
         .overlay(
             ZStack {
                 
                 
                 //NavView
-                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends {
+                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends {
                     
                     VStack {
                         NavView(searchText: $searchText)
                         Spacer()
                     }
+                    
                 } else if viewModel.isRecording {
                     VStack {
                         RecordTimerView()
@@ -439,6 +452,8 @@ struct NoteView: View {
                     
                     Spacer()
                 }
+                .ignoresSafeArea(.keyboard, edges: .bottom)
+                
             }
             .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT + TOP_PADDING)
             .background(Color.alternateMainBlue)
@@ -565,7 +580,7 @@ struct ChatsView: View {
     @StateObject var conversationViewModel = ConversationViewModel.shared
     @StateObject private var gridviewModel = ConversationGridViewModel.shared
     @Binding var selectedView: MainViewType
-    @State var dragOffset: CGSize = .zero
+    @Binding var dragOffset: CGSize
     
     let maxHeight = -CHATS_VIEW_HEIGHT * 2 - 4
     let backgroundColor = Color(red: 48/255, green: 54/255, blue: 64/255)
@@ -632,7 +647,6 @@ struct ChatsView: View {
                     }
                     .coordinateSpace(name: "scroll")
                     
-                    
                 }
                 
                 Spacer()
@@ -654,7 +668,7 @@ struct ChatsView: View {
             
         }
         .frame(width: SCREEN_WIDTH, height: CHATS_VIEW_HEIGHT * 3)
-        .cornerRadius(20)
+        .cornerRadius(IS_SMALL_PHONE ? 12 : 20)
         .offset(dragOffset)
         .padding(.bottom, -CHATS_VIEW_HEIGHT*2)
         .gesture(
@@ -665,7 +679,7 @@ struct ChatsView: View {
                     dragOffset.height = min(max(height, maxHeight), 0)
                 }
                 .onEnded { gesture in
-                    
+
                     withAnimation(.linear(duration: 0.2)) {
                         
                         if abs(dragOffset.height) > 200 {
@@ -684,7 +698,7 @@ struct ChatsView: View {
     func handleTapGesture(chat: Chat) {
         
         conversationViewModel.setChat(chat: chat)
-        selectedView = .Saylo
+        selectedView = .Video
         MainViewModel.shared.reset()
         
         withAnimation {

@@ -66,11 +66,20 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     var canRun = true
     var outputURL: URL!
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        self.setupSession()
-        self.captureSession.startRunning()
+//        DispatchQueue.global().async {
+            self.setupSession()
+            self.captureSession.startRunning()
+            self.previewLayer.session = captureSession
+
+//        self.setupPreview()
+//        }
+        
 //        if !CameraViewModel.shared.getHasCameraAccess() {
 //            showAlert(isCameraAlert: true)
 //        }
@@ -108,6 +117,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         captureSession.stopRunning()
         audioCaptureSession.stopRunning()
+        self.previewLayer.session = nil
+    
     }
     
     

@@ -20,7 +20,7 @@ struct LastPhotoView: View {
                 Image(uiImage: selectedImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 36, height: 36)
+                    .frame(width: 35, height: 35)
                     .cornerRadius(8)
                     .padding(1) // Width of the border
                     .background(Color.white) // Color of the border

@@ -31,6 +31,7 @@
 		0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0640D63227990FF500D7A244 /* SuggestedChatsView.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */; };
+		065CD73E27F22CCB00F04EB7 /* MessageOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065CD73D27F22CCB00F04EB7 /* MessageOptionsView.swift */; };
 		065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */; };
 		065D2DF72788C1C1002F3816 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2DF62788C1C1002F3816 /* PageView.swift */; };
 		065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065E93952787755D0025C90C /* AcitivityIndicator.swift */; };
@@ -213,6 +214,7 @@
 		0640D63227990FF500D7A244 /* SuggestedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedChatsView.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardHeightModifier.swift; sourceTree = "<group>"; };
+		065CD73D27F22CCB00F04EB7 /* MessageOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageOptionsView.swift; sourceTree = "<group>"; };
 		065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatImageCircle.swift; sourceTree = "<group>"; };
 		065D2DF62788C1C1002F3816 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 		065E93952787755D0025C90C /* AcitivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcitivityIndicator.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 		0660EE562799F06D00704AFE /* UnreadMessages */ = {
 			isa = PBXGroup;
 			children = (
+				065CD73D27F22CCB00F04EB7 /* MessageOptionsView.swift */,
 				0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */,
 				0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */,
 				06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */,
@@ -989,6 +992,7 @@
 				0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */,
 				3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */,
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
+				065CD73E27F22CCB00F04EB7 /* MessageOptionsView.swift in Sources */,
 				06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				0616EC0927928978006565FE /* AddedChatsView.swift in Sources */,
@@ -1131,7 +1135,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.16;
+				MARKETING_VERSION = 1.18;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1159,7 +1163,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.16;
+				MARKETING_VERSION = 1.18;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1305,7 +1309,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.16;
+				MARKETING_VERSION = 1.18;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1332,7 +1336,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.16;
+				MARKETING_VERSION = 1.18;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

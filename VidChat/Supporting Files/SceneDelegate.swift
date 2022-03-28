@@ -45,6 +45,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
            
+            
+            MainViewModel.shared.chatsViewDragOffset = .zero
     
         }
     

@@ -38,6 +38,12 @@ struct ContentView: View {
             MainViewModel.shared.cameraView
                 .ignoresSafeArea()
             
+//            VStack {
+//                Spacer()
+//                MessageOptionsView()
+//            }.background(Color.black)
+            
+            
 //            RecordTimerView()
         }
     }

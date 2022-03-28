@@ -398,6 +398,7 @@ struct VisualEffectView: UIViewRepresentable {
 struct RecordButton: View {
     
     @StateObject var viewModel = MainViewModel.shared
+    let mainDimension: CGFloat = IS_SMALL_PHONE ? 56 : 62
     
     var body: some View {
         
@@ -410,21 +411,21 @@ struct RecordButton: View {
                     
                     if viewModel.isRecording {
                         RoundedRectangle(cornerRadius: 6)
-                            .frame(width: 30,
-                                   height: 30)
+                            .frame(width: IS_SMALL_PHONE ? 27 : 30,
+                                   height: IS_SMALL_PHONE ? 27 : 30)
                             .foregroundColor(Color(.systemRed))
                             .transition(.scale)
-                    } else {
+                    } else if !IS_SMALL_PHONE {
                         Blur(style: .light)
                             .foregroundColor(.clear)
-                            .frame(width: 62, height: 62)
+                            .frame(width: mainDimension, height: mainDimension)
                             .clipShape(Circle())
 
 //                            .opacity(0.5)
-                    }
+                    } 
                 }
-            ).frame(width: viewModel.isShowingPhotoCamera ? 64 : 62,
-                    height: viewModel.isShowingPhotoCamera ? 64 : 62)
+            ).frame(width: viewModel.isShowingPhotoCamera ?  mainDimension + 2 : mainDimension,
+                    height: viewModel.isShowingPhotoCamera ? mainDimension + 2 : mainDimension)
             .padding(.horizontal, 5)
     }
 }

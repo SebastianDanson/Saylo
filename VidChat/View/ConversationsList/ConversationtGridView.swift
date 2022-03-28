@@ -360,7 +360,7 @@ struct NavView: View {
                       
                         Spacer()
                         
-                        HStack(alignment: .top, spacing: 8 ) {
+                        HStack(alignment: .top, spacing: 6 ) {
                             
                             Button {
                                 

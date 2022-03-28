@@ -38,15 +38,18 @@ class ConversationViewModel: ObservableObject {
     
     @Published var messages = [Message]() {
         didSet {
-            
-            if messages.count > 0, let chat = chat  {
-                self.index = chat.lastReadMessageIndex
-                
-                if chat.hasUnreadMessage {
-                    MainViewModel.shared.selectedView = .Saylo
+            if MainViewModel.shared.selectedView != .Saylo {
+                if messages.count > 0, let chat = chat  {
+                    
+                    if chat.hasUnreadMessage {
+                        MainViewModel.shared.selectedView = .Saylo
+                        showMessage(atIndex: index)
+                    } else {
+                        self.index = chat.lastReadMessageIndex
+                    }
+                } else {
+                    self.index = messages.count - 1
                 }
-            } else {
-                self.index = messages.count - 1
             }
         }
     }
@@ -65,6 +68,7 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    @Published var selectedMessageIndexes = [Int]()
     @Published var uploadProgress = 0.0
     
     @Published var showConversationPlayer = false
@@ -116,6 +120,7 @@ class ConversationViewModel: ObservableObject {
     
     
     func setChat(chat: Chat) {
+        self.selectedMessageIndexes.removeAll()
         self.chat = chat
         self.chatId = chat.id
         
@@ -125,6 +130,7 @@ class ConversationViewModel: ObservableObject {
         self.messages = chat.messages
         self.index = max(0, chat.messages.count - 1)
         ConversationService.updateLastVisited(forChat: chat)
+        chat.hasUnreadMessage = false
         
         //        self.setIsSameId(messages: chat.messages)
         //        self.seenLastPost = chat.seenLastPost
@@ -144,16 +150,10 @@ class ConversationViewModel: ObservableObject {
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
         
-        self.chat = nil
-        self.chatId = ""
-        self.messages = [Message]()
+//        self.chat = nil
+//        self.chatId = ""
+//        self.messages = [Message]()
         self.removeListener()
-        
-        withAnimation {
-            self.showKeyboard = false
-            self.showPhotos = false
-            self.showAudio = false
-        }
     }
     
     func addPlayer(_ player: MessagePlayer) {
@@ -617,6 +617,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func showMessage(atIndex i: Int) {
+        MainViewModel.shared.selectedView = .Saylo
         showPlaybackControls = false
         
         self.index = i
@@ -664,6 +665,8 @@ class ConversationViewModel: ObservableObject {
     
     func setVideoLength() {
         
+        guard index >= 0 && index < messages.count else { return }
+        
         let message = messages[index]
         
         if isPlayable(index: index) {
@@ -702,7 +705,7 @@ class ConversationViewModel: ObservableObject {
     
     func isPlayable(index: Int? = nil) -> Bool {
         let index = index ?? self.index
-        guard index < messages.count else { return false }
+        guard index < messages.count && index >= 0 else { return false }
         return messages[index].type == .Video || messages[index].type == .Audio
     }
 }

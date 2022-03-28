@@ -11,6 +11,8 @@ struct MessageOptions: View {
     @Binding var type: MainViewType
     @Binding var isRecording: Bool
     
+    let dimension: CGFloat = IS_SMALL_PHONE ? 32 : 34
+    
     var body: some View {
         
         HStack(spacing: 32) {
@@ -24,7 +26,7 @@ struct MessageOptions: View {
                     Image(systemName: "camera")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 34, height: 34)
+                        .frame(width: dimension, height: dimension)
                         .foregroundColor(.white)
                         .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                 }
@@ -36,7 +38,7 @@ struct MessageOptions: View {
                     Image(systemName: "waveform")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 34, height: 34)
+                        .frame(width: dimension, height: dimension)
                         .foregroundColor(.white)
                         .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                     
@@ -50,7 +52,7 @@ struct MessageOptions: View {
                 Image(systemName: "textformat")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 34, height: 34)
+                    .frame(width: dimension, height: dimension)
                     .foregroundColor(.white)
                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
             }

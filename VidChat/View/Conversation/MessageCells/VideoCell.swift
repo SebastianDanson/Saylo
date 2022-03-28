@@ -52,7 +52,7 @@ struct VideoCell: View {
             }
         
         let addedReactions = AddedReactionsContainerView(reactions: $reactions)
-            .padding(.leading, 16)
+            .padding(.leading, 12)
             .padding(.bottom, 76)
         
         ZStack {
@@ -354,6 +354,7 @@ struct ReactionView: View {
             withAnimation {
                 reactions.remove(at: index)
             }
+            
             viewModel.removeReactionFromMessage(withId: messageId, reaction: reaction) {}
         } else if let index = reactions.firstIndex(where: {$0.userId == user.id}) {
             let reaction = reactions[index]

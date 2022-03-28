@@ -28,6 +28,7 @@ class MainViewModel: ObservableObject {
     @Published var showNewChat: Bool = false
     @Published var showSettingsView: Bool = false
     @Published var isCalling: Bool = false
+    @Published var chatsViewDragOffset: CGSize = .zero
 
     var audioRecorder = AudioRecorder()
     

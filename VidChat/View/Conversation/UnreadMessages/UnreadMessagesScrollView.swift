@@ -20,6 +20,11 @@ struct UnreadMessagesScrollView: View {
             
             if viewModel.messages.count > 0 {
                 
+                if IS_SMALL_PHONE {
+                    Color.init(white: 0, opacity: 0.5)
+                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                }
+                
                 ScrollView(.horizontal, showsIndicators: false) {
                     
                     ScrollViewReader { reader in
@@ -29,10 +34,11 @@ struct UnreadMessagesScrollView: View {
                             ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
                                 
                                 Button {
-                                    if viewModel.index == i {
+                                    if viewModel.index == i && selectedView == .Saylo {
                                         viewModel.toggleIsPlaying()
                                     } else {
                                         viewModel.showMessage(atIndex: i)
+                                        viewModel.selectedMessageIndexes.append(i)
                                     }
                                 } label: {
                                     
@@ -45,7 +51,6 @@ struct UnreadMessagesScrollView: View {
                                                 if i < viewModel.messages.count {
                                                     
                                                     if viewModel.isPlayable(index: i), let urlString = viewModel.messages[i].url, let url = URL(string: urlString) {
-                                                        
                                                         
                                                         if viewModel.messages[i].type == .Video {
                                                             
@@ -120,10 +125,32 @@ struct UnreadMessagesScrollView: View {
                                                     .scaledToFit()
                                                     .foregroundColor(.white)
                                                     .frame(width: 32, height: 32)
-                                                
-                                                
                                             }
                                         }
+                                        .overlay(
+                                            
+                                            ZStack {
+                                                
+                                                if let chat = viewModel.chat, i > chat.lastReadMessageIndex && !viewModel.selectedMessageIndexes.contains(i) && !viewModel.messages[i].isFromCurrentUser {
+                                                    
+                                                    Text("New")
+                                                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                                                        .foregroundColor(.white)
+                                                        .padding(.horizontal, 4)
+                                                        .padding(.vertical, 1)
+                                                        .background(Color.mainBlue)
+                                                    //                                                .border(Color.white, width: 2)
+                                                        .clipShape(Capsule())
+                                                        .overlay(
+                                                            RoundedRectangle(cornerRadius: 20)
+                                                                .stroke(Color.white, lineWidth: 1)
+                                                        )
+                                                        .padding(3)
+                                                }
+                                                
+                                            }
+                                            ,alignment: .topLeading
+                                        )
                                         .onAppear {
                                             reader.scrollTo(viewModel.messages[viewModel.messages.count - 1].id, anchor: .trailing)
                                         }
@@ -133,6 +160,7 @@ struct UnreadMessagesScrollView: View {
                         }
                     }
                 }
+                
             } else {
                                         
                     VStack(spacing: 0) {
@@ -145,11 +173,11 @@ struct UnreadMessagesScrollView: View {
                         Text("Saylo's dissappear after 24h")
                             .foregroundColor(.white)
                             .font(.system(size: 14, weight: .regular, design: .rounded))
-                            .padding(.bottom, 6)
+                            .padding(.bottom, IS_SMALL_PHONE ? 8 : 6)
                     }
-                    .frame(width: SCREEN_WIDTH - 12, height: MINI_MESSAGE_HEIGHT - 8)
-                    .background(Color(white: 0.1))
-                    .cornerRadius(8)
+                    .frame(width: IS_SMALL_PHONE ? SCREEN_WIDTH : SCREEN_WIDTH - 12, height: IS_SMALL_PHONE ? MINI_MESSAGE_HEIGHT : MINI_MESSAGE_HEIGHT - 8)
+                    .background(Color(white: 0.1, opacity: IS_SMALL_PHONE ? 0.6 : 1))
+                    .cornerRadius(8, corners: IS_SMALL_PHONE ? [.topLeft, .topRight] : .allCorners)
             }
         }
         .frame(width: SCREEN_WIDTH)

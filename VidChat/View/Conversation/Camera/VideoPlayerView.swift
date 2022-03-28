@@ -165,13 +165,13 @@ class PlayerUIView: UIView {
         // Setup the player
         playerLayer.player = player
 
-        playerLayer.frame = CGRect(x: 0, y: 0, width: CAMERA_WIDTH, height: CAMERA_WIDTH * 16/9)
+        playerLayer.frame = CGRect(x: 0, y: 0, width: CAMERA_WIDTH, height: MESSAGE_HEIGHT)
 
-        playerLayer.cornerRadius = 20
+//        playerLayer.cornerRadius = 20
         playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
 
-        self.layer.masksToBounds = true
-        self.layer.cornerRadius = 20
+//        self.layer.masksToBounds = true
+//        self.layer.cornerRadius = 20
 
         layer.addSublayer(playerLayer)
 
