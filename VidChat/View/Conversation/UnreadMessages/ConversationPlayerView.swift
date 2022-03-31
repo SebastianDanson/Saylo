@@ -13,7 +13,7 @@ import Kingfisher
 struct ConversationPlayerView: View {
     
     @ObservedObject var viewModel = ConversationViewModel.shared
-    @ObservedObject var cameraViewModel = MainViewModel.shared
+    @ObservedObject var mainViewModel = MainViewModel.shared
     
     @State var isFirstReplyOption = true
     @State var showReactions = false
@@ -42,15 +42,11 @@ struct ConversationPlayerView: View {
     var body: some View {
         
         VStack {
-                        
+           
             if viewModel.messages.count > viewModel.index && viewModel.index >= 0 {
                 
                 
-                let messageInfoView = MessageInfoView(date: viewModel.messages[viewModel.index].timestamp.dateValue(),
-                                                      profileImage: viewModel.messages[viewModel.index].userProfileImage,
-                                                      name: viewModel.messages[viewModel.index].username,
-                                                      showTwoTimeSpeed: viewModel.isPlayable())
-                
+                                
                 VStack(spacing: 6) {
                     
                     ZStack {
@@ -240,7 +236,10 @@ struct ConversationPlayerView: View {
                                     HStack {
                                         
                                         if !viewModel.messages[viewModel.index].isForTakingVideo {                                            
-                                            messageInfoView
+                                            MessageInfoView(date: viewModel.messages[viewModel.index].timestamp.dateValue(),
+                                                                                  profileImage: viewModel.messages[viewModel.index].userProfileImage,
+                                                                                  name: viewModel.messages[viewModel.index].username,
+                                                                                  showTwoTimeSpeed: viewModel.isPlayable())
                                                 .padding(.bottom, -8)
                                         }
                                         

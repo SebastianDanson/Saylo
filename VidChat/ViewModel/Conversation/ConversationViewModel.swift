@@ -39,11 +39,12 @@ class ConversationViewModel: ObservableObject {
     @Published var messages = [Message]() {
         didSet {
             if MainViewModel.shared.selectedView != .Saylo {
-                if messages.count > 0, let chat = chat  {
+                if messages.count > 0, let chat = chat {
                     
                     if chat.hasUnreadMessage {
-                        MainViewModel.shared.selectedView = .Saylo
-                        showMessage(atIndex: index)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            self.showMessage(atIndex: min(chat.lastReadMessageIndex + 1, chat.messages.count - 1))
+                        }
                     } else {
                         self.index = chat.lastReadMessageIndex
                     }
@@ -120,6 +121,7 @@ class ConversationViewModel: ObservableObject {
     
     
     func setChat(chat: Chat) {
+        
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
         self.chatId = chat.id
@@ -131,7 +133,7 @@ class ConversationViewModel: ObservableObject {
         self.index = max(0, chat.messages.count - 1)
         ConversationService.updateLastVisited(forChat: chat)
         chat.hasUnreadMessage = false
-        
+    
         //        self.setIsSameId(messages: chat.messages)
         //        self.seenLastPost = chat.seenLastPost
         //        self.chat?.hasUnreadMessage = false
@@ -484,13 +486,14 @@ class ConversationViewModel: ObservableObject {
                 if let data = snapshot?.data() {
                     
                     let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
-                    
+
                     self.messages.forEach { message in
                         if let image = message.image {
                             messages.first(where: {$0.id == message.id})?.image = image
                         }
                     }
                     
+
                     self.messages = messages
                     ConversationViewModel.shared.setIsSameId(messages: self.messages)
                     
@@ -617,6 +620,8 @@ class ConversationViewModel: ObservableObject {
     }
     
     func showMessage(atIndex i: Int) {
+        guard i >= 0 && i < messages.count else { return }
+        
         MainViewModel.shared.selectedView = .Saylo
         showPlaybackControls = false
         

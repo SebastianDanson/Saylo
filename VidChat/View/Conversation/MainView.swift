@@ -339,6 +339,7 @@ struct VoiceView: View {
     var body: some View {
         
         VStack {
+            
             VStack {
                 
                 Spacer()
@@ -679,7 +680,7 @@ struct ChatsView: View {
                     dragOffset.height = min(max(height, maxHeight), 0)
                 }
                 .onEnded { gesture in
-
+                    
                     withAnimation(.linear(duration: 0.2)) {
                         
                         if abs(dragOffset.height) > 200 {
@@ -697,9 +698,21 @@ struct ChatsView: View {
     
     func handleTapGesture(chat: Chat) {
         
-        conversationViewModel.setChat(chat: chat)
-        selectedView = .Video
-        MainViewModel.shared.reset()
+        let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
+        
+//        MainViewModel.shared.selectedView = .Video
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            conversationViewModel.setChat(chat: chat)
+            MainViewModel.shared.reset()
+        }
+        
+        
+        
+        //        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        //
+        //        }
+        
         
         withAnimation {
             dragOffset = .zero
