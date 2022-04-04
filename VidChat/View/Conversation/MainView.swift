@@ -87,18 +87,18 @@ struct MainView: View {
                         if viewModel.selectedView == .Photo {
                             Button {
                                 viewModel.handlePhotoButtonTapped()
-                                viewModel.selectedView = .Video
-                                viewModel.photo = nil
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
                             }
                         }
                         
                         
-                        //                        if viewModel.photo != nil {
-                        //                            //The Buttons on either of the photo button
-                        //                            TakenPhotoOptions()
-                        //                        } else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
+                        if viewModel.photo != nil {
+                            //The Buttons on either of the photo button
+                            TakenPhotoOptions()
+                        }
+                        
+//                        else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
                         //                            //The Buttons on either of the record button
                         //                            //                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
                         //                        }

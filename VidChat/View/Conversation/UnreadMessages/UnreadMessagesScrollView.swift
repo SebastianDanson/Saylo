@@ -34,7 +34,7 @@ struct UnreadMessagesScrollView: View {
                             ForEach(Array(viewModel.messages.enumerated()), id: \.1.id) { i, message in
                                 
                                 Button {
-                                    if viewModel.index == i && selectedView == .Saylo {
+                                    if ConversationViewModel.shared.index == i, MainViewModel.shared.selectedView == .Saylo {
                                         viewModel.toggleIsPlaying()
                                     } else {
                                         viewModel.showMessage(atIndex: i)
@@ -48,13 +48,18 @@ struct UnreadMessagesScrollView: View {
                                             
                                             ZStack {
                                                 
-                                                if i < viewModel.messages.count {
                                                     
-                                                    if viewModel.isPlayable(index: i), let urlString = viewModel.messages[i].url, let url = URL(string: urlString) {
+                                                if ConversationViewModel.shared.isPlayable(index: i), let urlString = message.url, let url = URL(string: urlString) {
                                                         
-                                                        if viewModel.messages[i].type == .Video {
+                                                        if message.type == .Video {
                                                             
-                                                            if let image = createVideoThumbnail(from: url) {
+                                                            if let image = ImageCache.getImageCache().get(forKey: urlString) {
+                                                                Image(uiImage: image)
+                                                                    .resizable()
+                                                                    .scaledToFill()
+                                                                    .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                                    .cornerRadius(6)
+                                                            } else if let image = createVideoThumbnail(from: url) {
                                                                 Image(uiImage: image)
                                                                     .resizable()
                                                                     .scaledToFill()
@@ -78,7 +83,7 @@ struct UnreadMessagesScrollView: View {
                                                         }
                                                         
                                                         
-                                                    } else if viewModel.messages[i].type == .Text, let text = viewModel.messages[i].text {
+                                                    } else if message.type == .Text, let text = message.text {
                                                         
                                                         ZStack {
                                                             
@@ -93,15 +98,15 @@ struct UnreadMessagesScrollView: View {
                                                         .cornerRadius(6)
                                                         
                                                         
-                                                    } else if viewModel.messages[i].type == .Photo {
+                                                    } else if message.type == .Photo {
                                                         
-                                                        if let url = viewModel.messages[i].url {
+                                                        if let url = message.url {
                                                             KFImage(URL(string: url))
                                                                 .resizable()
                                                                 .scaledToFill()
                                                                 .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                                 .cornerRadius(6)
-                                                        } else if let image = viewModel.messages[i].image {
+                                                        } else if let image = message.image {
                                                             Image(uiImage: image)
                                                                 .resizable()
                                                                 .scaledToFill()
@@ -109,10 +114,10 @@ struct UnreadMessagesScrollView: View {
                                                                 .cornerRadius(6)
                                                         }
                                                     }
-                                                }
+                                                
                                             }
                                             
-                                            if i == viewModel.index && selectedView == .Saylo {
+                                            if i == viewModel.index, selectedView == .Saylo {
                                                 
                                                 ZStack {
                                                     Color.init(white: 0, opacity: 0.5)
@@ -152,7 +157,7 @@ struct UnreadMessagesScrollView: View {
                                             ,alignment: .topLeading
                                         )
                                         .onAppear {
-                                            reader.scrollTo(viewModel.messages[viewModel.messages.count - 1].id, anchor: .trailing)
+                                            reader.scrollTo(ConversationViewModel.shared.messages[ConversationViewModel.shared.messages.count - 1].id, anchor: .trailing)
                                         }
                                     }
                                 }
@@ -185,20 +190,22 @@ struct UnreadMessagesScrollView: View {
     }
     
     private func createVideoThumbnail(from url: URL) -> UIImage? {
-        
         let asset = AVAsset(url: url)
         let assetImgGenerate = AVAssetImageGenerator(asset: asset)
         assetImgGenerate.appliesPreferredTrackTransform = true
         assetImgGenerate.maximumSize = CGSize(width: MINI_MESSAGE_WIDTH * 3, height: MINI_MESSAGE_HEIGHT * 3)
         
         let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 600)
+        
         do {
             let img = try assetImgGenerate.copyCGImage(at: time, actualTime: nil)
             let thumbnail = UIImage(cgImage: img)
+            ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
             return thumbnail
         }
         catch {
-            print(error.localizedDescription)
+            print("ERRROR: \(url)"  + error.localizedDescription)
+            ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "heart")!)
             return nil
         }
         
@@ -235,3 +242,21 @@ struct ReplyView: View {
     
 }
 
+class ImageCache {
+    var cache = NSCache<NSString, UIImage>()
+    
+    func get(forKey: String) -> UIImage? {
+        return cache.object(forKey: NSString(string: forKey))
+    }
+    
+    func set(forKey: String, image: UIImage) {
+        cache.setObject(image, forKey: NSString(string: forKey))
+    }
+}
+
+extension ImageCache {
+    private static var imageCache = ImageCache()
+    static func getImageCache() -> ImageCache {
+        return imageCache
+    }
+}
