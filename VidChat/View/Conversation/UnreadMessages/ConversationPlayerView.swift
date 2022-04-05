@@ -155,7 +155,10 @@ struct ConversationPlayerView: View {
                                             } else {
                                                 
                                                 Button {
-                                                    MainViewModel.shared.selectedMessage = ConversationViewModel.shared.messages[ConversationViewModel.shared.index]
+                                                    withAnimation {
+                                                        MainViewModel.shared.selectedMessage = ConversationViewModel.shared.messages[ConversationViewModel.shared.index]
+                                                    }
+                                                    ConversationViewModel.shared.toggleIsPlaying()
                                                 } label: {
                                                     
                                                     Image(systemName: "ellipsis")

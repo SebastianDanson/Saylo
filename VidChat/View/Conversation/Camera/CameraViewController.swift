@@ -37,7 +37,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     let captureSession = AVCaptureSession()
     let audioCaptureSession = AVCaptureSession()
     
-    var previewLayer: AVCaptureVideoPreviewLayer!
+    var previewLayer: AVCaptureVideoPreviewLayer?
     var activeInput: AVCaptureDeviceInput!
     
     
@@ -75,7 +75,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //        DispatchQueue.global().async {
             self.setupSession()
             self.captureSession.startRunning()
-            self.previewLayer.session = captureSession
+            self.previewLayer?.session = captureSession
 
 //        self.setupPreview()
 //        }
@@ -117,7 +117,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         captureSession.stopRunning()
         audioCaptureSession.stopRunning()
-        self.previewLayer.session = nil
+        self.previewLayer?.session = nil
     
     }
     
@@ -312,14 +312,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = CGRect(x: 0, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+        previewLayer!.frame = CGRect(x: 0, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
         
-        previewLayer.cornerRadius = 14
-        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        previewLayer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        previewLayer!.cornerRadius = 14
+        previewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         self.view.layer.masksToBounds = true
         self.view.layer.cornerRadius = 14
-        view.layer.addSublayer(previewLayer)
+        view.layer.addSublayer(previewLayer!)
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
         self.view.addGestureRecognizer(pinchRecognizer)
@@ -475,7 +475,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             if connection.isVideoMirroringSupported, isFrontFacing {
                 connection.isVideoMirrored = self.isFrontFacing
             }
-            
         }
         
         

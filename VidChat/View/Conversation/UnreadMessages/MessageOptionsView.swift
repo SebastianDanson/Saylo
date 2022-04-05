@@ -15,34 +15,14 @@ struct MessageOptionsView: View {
     let message: Message
     
     @State var reactionString = ""
-
-    @State var hasSaved = false
+    @State var hasSaved: Bool
     
     init(message: Message) {
         self.message = message
-        
-        if message.reactions.isEmpty {
-            reactionString = "No Reactions"
-        } else {
-            self.message.reactions.forEach { reaction in
-                switch reaction.reactionType {
-                case .Love:
-                    reactionString += "\(reaction.name) loved "
-                case .Like:
-                    reactionString += "\(reaction.name) liked "
-                case .Dislike:
-                    reactionString += "\(reaction.name) disliked "
-                case .Emphasize:
-                    reactionString += "\(reaction.name) emphasized "
-                case .Laugh:
-                    reactionString += "\(reaction.name) laughed "
-                }
-            }
-        }
+        self._hasSaved = State(initialValue: message.isSaved) 
     }
     
     var body: some View {
-        
         
         VStack(spacing: 20) {
             
@@ -67,63 +47,66 @@ struct MessageOptionsView: View {
                 Rectangle()
                     .frame(width: SCREEN_WIDTH, height: 1)
                     .foregroundColor(lineGray)
+                    .padding(.top, 4)
                 
-                HStack(spacing: 20) {
+                VStack(spacing: 3) {
                     
-                    ZStack {
+                    HStack(spacing: 20) {
                         
-                        Image(systemName: "clock")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.mainBlue)
-                            .frame(width: 22, height: 22)
+                        ZStack {
+                            
+                            Image(systemName: "clock")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.mainBlue)
+                                .frame(width: 22, height: 22)
+                            
+                        }
+                        .frame(width: 32, height: 32)
                         
-                    }
-                    .frame(width: 32, height: 32)
-                    
-                    Text("\(message.timestamp.dateValue().getFormattedDate())")
-                        .font(.system(size: 15, weight: .regular, design: .rounded))
-                    
-                    Spacer()
-                }
-                .padding(.top, 2)
-                
-                HStack(spacing: 20) {
-                    
-                    ZStack {
-                        Image(systemName: "person.2")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 23, height: 22)
-                            .foregroundColor(Color(.systemGreen))
-                    }
-                    .frame(width: 32, height: 32)
-                    
-                    Text(getSeenByText() ?? "")
-                        .font(.system(size: 15, weight: .regular, design: .rounded))
-                    
-                    
-                    Spacer()
-                }
-                
-                
-                HStack(spacing: 20) {
-                                        
-                    ZStack {
-                        Image(systemName: "face.smiling")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 22, height: 22)
-                            .foregroundColor(Color(.systemOrange))
-                    }
-                    .frame(width: 32, height: 32)
-                    
-                    Text(reactionString)
-                        .font(.system(size: 15, weight: .regular, design: .rounded))
+                        Text("\(message.timestamp.dateValue().getFormattedDate())")
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
                         
-                                      
-                    Spacer()
+                        Spacer()
+                    }
+                    
+                    HStack(spacing: 20) {
+                        
+                        ZStack {
+                            Image(systemName: "person.2")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 23, height: 22)
+                                .foregroundColor(Color(.systemGreen))
+                        }
+                        .frame(width: 32, height: 32)
+                        
+                        Text(getSeenByText() ?? "Not seen yet")
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
+                        
+                        Spacer()
+                    }
+                    .padding(.bottom, 4)
+                    
+                    HStack(spacing: 20) {
+                        
+                        ZStack {
+                            Image(systemName: "face.smiling")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 22, height: 22)
+                                .foregroundColor(Color(.systemOrange))
+                        }
+                        .frame(width: 32, height: 32)
+                        
+                        Text(reactionString)
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
+                        
+                        
+                        Spacer()
+                    }
                 }
+                .padding(.vertical, 4)
                 
                 Rectangle()
                     .frame(width: SCREEN_WIDTH, height: 1)
@@ -134,44 +117,98 @@ struct MessageOptionsView: View {
                     
                     if isFromCurrentUser {
                         
-                        VStack {
-                            Image(systemName: "trash")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 22, height: 22)
-                                .foregroundColor(Color(.systemRed))
+                        Button {
+                            ConversationViewModel.shared.deleteMessage(message: message)
                             
-                            Text("Delete")
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundColor(Color(.systemRed))
+                        } label: {
+                            
+                            VStack {
+                                
+                                Image(systemName: "trash")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 22, height: 22)
+                                    .foregroundColor(Color(.systemRed))
+                                
+                                Text("Delete")
+                                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                                    .foregroundColor(Color(.systemRed))
+                            }
                         }
+                        
                     }
                     
                     Spacer()
                     
-                    VStack {
+                    Button {
+                        if let index = ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}) {
+                            ConversationViewModel.shared.updateIsSaved(atIndex: index)
+                            self.hasSaved.toggle()
+                        }
+                    } label: {
                         
-                        Image(systemName: hasSaved ? "bookmark.fill" : "bookmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 22, height: 22)
-                            .foregroundColor(Color(.systemBlue))
-                        
-                        Text(hasSaved ? "Unsave" : "Save")
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundColor(Color(.systemBlue))
+                        VStack {
+                            
+                            Image(systemName: hasSaved ? "bookmark.fill" : "bookmark")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 22, height: 22)
+                                .foregroundColor(Color(.systemBlue))
+                            
+                            Text(hasSaved ? "Unsave" : "Save")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundColor(Color(.systemBlue))
+                        }
                     }
                 }
                 
             }
             .padding()
             .frame(width: SCREEN_WIDTH)
+            .padding(.bottom, BOTTOM_PADDING)
+            .ignoresSafeArea(edges: [.bottom])
             .background(Color.white)
             .cornerRadius(20, corners: [.topLeft, .topRight])
+            .transition(.move(edge: .bottom))
+            .onAppear {
+                setReactionString()
+            }
+            .onTapGesture {
+                
+            }
             
         }
-        .padding(.bottom, BOTTOM_PADDING)
-        .ignoresSafeArea(edges: [.bottom])
+        .background(Color(white: 0, opacity: 0.6))
+        .onTapGesture {
+            withAnimation {
+                MainViewModel.shared.selectedMessage = nil
+            }
+        }
+    }
+    
+    func setReactionString() {
+        
+        if message.reactions.isEmpty {
+            reactionString = "No Reactions"
+        } else {
+            message.reactions.forEach { reaction in
+                switch reaction.reactionType {
+                case .Love:
+                    reactionString += "• \(reaction.name) \"loved\" "
+                case .Like:
+                    reactionString += "• \(reaction.name) \"liked\" "
+                case .Dislike:
+                    reactionString += "• \(reaction.name) \"disliked\" "
+                case .Emphasize:
+                    reactionString += "• \(reaction.name) \"emphasized\" "
+                case .Laugh:
+                    reactionString += "• \(reaction.name) \"laughed "
+                }
+            }
+            
+            //remove the first '•'
+            reactionString.removeFirst(2)
+        }
     }
     
     func getSeenByText() -> String? {

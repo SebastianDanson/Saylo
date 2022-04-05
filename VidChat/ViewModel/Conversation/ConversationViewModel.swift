@@ -38,20 +38,7 @@ class ConversationViewModel: ObservableObject {
     
     @Published var messages = [Message]() {
         didSet {
-            if MainViewModel.shared.selectedView != .Saylo {
-                if messages.count > 0, let chat = chat {
-                    
-                    if chat.hasUnreadMessage {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            self.showMessage(atIndex: min(chat.lastReadMessageIndex + 1, chat.messages.count - 1))
-                        }
-                    } else {
-                        self.index = chat.lastReadMessageIndex
-                    }
-                } else {
-                    self.index = messages.count - 1
-                }
-            }
+            handleMessagesSet()
         }
     }
     @Published var savedMessages = [Message]()
@@ -133,7 +120,8 @@ class ConversationViewModel: ObservableObject {
         self.index = max(0, chat.messages.count - 1)
         ConversationService.updateLastVisited(forChat: chat)
         chat.hasUnreadMessage = false
-    
+        
+        print(chat.id, "IDIDI")
         //        self.setIsSameId(messages: chat.messages)
         //        self.seenLastPost = chat.seenLastPost
         //        self.chat?.hasUnreadMessage = false
@@ -152,9 +140,9 @@ class ConversationViewModel: ObservableObject {
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
         
-//        self.chat = nil
-//        self.chatId = ""
-//        self.messages = [Message]()
+        //        self.chat = nil
+        //        self.chatId = ""
+        //        self.messages = [Message]()
         self.removeListener()
     }
     
@@ -427,6 +415,25 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func handleMessagesSet() {
+        if MainViewModel.shared.selectedView != .Saylo {
+            if messages.count > 0, let chat = chat {
+                
+                if chat.hasUnreadMessage {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.showMessage(atIndex: min(chat.lastReadMessageIndex + 1, chat.messages.count - 1))
+                    }
+                } else {
+                    self.index = chat.lastReadMessageIndex
+                }
+            } else {
+                self.index = messages.count - 1
+            }
+        } else if messages.count == 0 {
+            MainViewModel.shared.selectedView = .Video
+        }
+    }
+    
     func updateLastSeenPost() {
         
         guard let chat = chat else {return}
@@ -476,6 +483,14 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func deleteMessage(message: Message) {
+        ConversationService.deleteMessage(toDocWithId: message.chatId, messageId: message.id)
+        withAnimation {
+            MainViewModel.shared.selectedMessage = nil
+        }
+        self.index -= 1
+    }
+    
     func addListener() {
         
         guard !chatId.isEmpty else {return}
@@ -486,14 +501,14 @@ class ConversationViewModel: ObservableObject {
                 if let data = snapshot?.data() {
                     
                     let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
-
+                    
                     self.messages.forEach { message in
                         if let image = message.image {
                             messages.first(where: {$0.id == message.id})?.image = image
                         }
                     }
                     
-
+                    
                     self.messages = messages
                     ConversationViewModel.shared.setIsSameId(messages: self.messages)
                     
@@ -581,45 +596,23 @@ class ConversationViewModel: ObservableObject {
     
     func updatePlayer(index: Int) {
         
-        
-        //        DispatchQueue.main.async {
-        //            self.isPlaying = true
-        //        }
-        
         self.currentPlayer?.pause()
         self.currentPlayer = self.players.first(where: {$0.messageId == self.messages[index].id})?.player
         self.currentPlayer?.playWithRate()
         self.isPlaying = true
-        //        }
-        //
-        //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-        //            if self.playerIndex == index {
-        
-        //            }
-        //        }
-        
     }
     
     func removeCurrentPlayer() {
-        //        DispatchQueue.main.async {
-        //            self.isPlaying = false
+        
         if currentPlayer != nil {
             self.currentPlayer?.pause()
             self.currentPlayer = nil
             self.isPlaying = false
-            
-            //            DispatchQueue.main.async {
-            //                self.isPlaying = false
-            //            }
-            
         }
-        
-        
-        //        }
-        
     }
     
     func showMessage(atIndex i: Int) {
+        
         guard i >= 0 && i < messages.count else { return }
         
         MainViewModel.shared.selectedView = .Saylo
@@ -664,8 +657,6 @@ class ConversationViewModel: ObservableObject {
             }
         }
     }
-    
-    
     
     
     func setVideoLength() {

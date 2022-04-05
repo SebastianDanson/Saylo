@@ -30,7 +30,7 @@ class MainViewModel: ObservableObject {
     @Published var isCalling: Bool = false
     @Published var chatsViewDragOffset: CGSize = .zero
     @Published var selectedMessage: Message?
-
+    
     var audioRecorder = AudioRecorder()
     
     var isCameraAlert = false
@@ -43,24 +43,24 @@ class MainViewModel: ObservableObject {
     static let shared = MainViewModel()
     
     private init() {
-    
+        
         //        cameraView.setupSession()
     }
     
     
     func playVideo() {
         
-//        guard let videoPlayerView = videoPlayerView else {
-//            return
-//        }
-//
-//        videoPlayerView.player.playWithRate()
-//
-//        if !videoPlayerView.player.isPlaying {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                self.playVideo()
-//            }
-//        }
+        //        guard let videoPlayerView = videoPlayerView else {
+        //            return
+        //        }
+        //
+        //        videoPlayerView.player.playWithRate()
+        //
+        //        if !videoPlayerView.player.isPlaying {
+        //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        //                self.playVideo()
+        //            }
+        //        }
     }
     
     func removeVideo() {
@@ -78,14 +78,14 @@ class MainViewModel: ObservableObject {
         isRecording = false
         photo = nil
     }
-
+    
     
     func startRecording(addDelay: Bool = false) {
-
-            self.cameraView.startRecording()
-            withAnimation {
-                self.isRecording = true
-            }
+        
+        self.cameraView.startRecording()
+        withAnimation {
+            self.isRecording = true
+        }
     }
     
     func stopRecording() {
@@ -98,7 +98,7 @@ class MainViewModel: ObservableObject {
     func cancelRecording() {
         self.cameraView.cancelRecording()
         self.isRecording = false
-    
+        
         timer?.invalidate()
     }
     
@@ -131,11 +131,10 @@ class MainViewModel: ObservableObject {
         } else {
             audioRecorder.startRecording()
             self.isRecording = true
-        }       
+        }
     }
     
     func handleTap() {
-        
         isRecording ? stopRecording() : startRecording()
     }
     
@@ -148,9 +147,9 @@ class MainViewModel: ObservableObject {
     }
     
     func setVideoPlayer() {
-//        if let videoUrl = videoUrl {
-//            videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
-//        }
+        //        if let videoUrl = videoUrl {
+        //            videoPlayerView = VideoPlayerView(url: videoUrl, showName: false)
+        //        }
     }
     
     func showCamera() -> Bool {
@@ -173,7 +172,7 @@ class MainViewModel: ObservableObject {
         if photo == nil {
             takePhoto()
         } else {
-           sendPhoto()
+            sendPhoto()
         }
     }
     
@@ -191,8 +190,8 @@ class MainViewModel: ObservableObject {
         guard let photo = photo else {
             return
         }
-
-       saveToPhotos(photo: photo)
+        
+        saveToPhotos(photo: photo)
     }
     
     func saveToPhotos(url: URL) {

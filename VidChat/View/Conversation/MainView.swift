@@ -140,9 +140,7 @@ struct MainView: View {
                                 
                             }
                             
-                            
-                            
-                            
+                                                        
                             
                             if viewModel.isRecording || viewModel.selectedView == .Photo {
                                 CancelRecordingButton(bottomPadding: bottomPadding)
@@ -195,6 +193,7 @@ struct MainView: View {
             
             if let message = viewModel.selectedMessage {
                 MessageOptionsView(message: message)
+                    .zIndex(6)
             }
             
         }
