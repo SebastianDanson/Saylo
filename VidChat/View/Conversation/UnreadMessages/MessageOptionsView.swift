@@ -11,6 +11,35 @@ import Kingfisher
 struct MessageOptionsView: View {
     
     let lineGray = Color(red: 220/255, green: 220/255, blue: 220/255)
+    let isFromCurrentUser = true
+    let message: Message
+    
+    @State var reactionString = ""
+
+    @State var hasSaved = false
+    
+    init(message: Message) {
+        self.message = message
+        
+        if message.reactions.isEmpty {
+            reactionString = "No Reactions"
+        } else {
+            self.message.reactions.forEach { reaction in
+                switch reaction.reactionType {
+                case .Love:
+                    reactionString += "\(reaction.name) loved "
+                case .Like:
+                    reactionString += "\(reaction.name) liked "
+                case .Dislike:
+                    reactionString += "\(reaction.name) disliked "
+                case .Emphasize:
+                    reactionString += "\(reaction.name) emphasized "
+                case .Laugh:
+                    reactionString += "\(reaction.name) laughed "
+                }
+            }
+        }
+    }
     
     var body: some View {
         
@@ -23,13 +52,13 @@ struct MessageOptionsView: View {
                 
                 HStack(spacing: 20) {
                     
-                    KFImage(URL(string: "https://firebasestorage.googleapis.com:443/v0/b/vidchat-12c32.appspot.com/o/profileImages%2F27684953-471A-480D-AAB4-4C2F1D7208B2?alt=media&token=ae19f4db-dc0e-419b-84d6-d8df45d569b3"))
+                    KFImage(URL(string: message.userProfileImage))
                         .resizable()
                         .scaledToFit()
                         .frame(width: 32, height: 32)
                         .clipShape(Circle())
                     
-                    Text("Age")
+                    Text(message.username)
                         .font(.system(size: 18, weight: .semibold, design: .rounded))
                     
                     Spacer()
@@ -42,19 +71,22 @@ struct MessageOptionsView: View {
                 HStack(spacing: 20) {
                     
                     ZStack {
+                        
                         Image(systemName: "clock")
                             .resizable()
                             .scaledToFit()
+                            .foregroundColor(.mainBlue)
                             .frame(width: 22, height: 22)
-                            .foregroundColor(.black)
+                        
                     }
                     .frame(width: 32, height: 32)
                     
-                    Text("7:52 PM")
+                    Text("\(message.timestamp.dateValue().getFormattedDate())")
                         .font(.system(size: 15, weight: .regular, design: .rounded))
                     
                     Spacer()
                 }
+                .padding(.top, 2)
                 
                 HStack(spacing: 20) {
                     
@@ -63,62 +95,69 @@ struct MessageOptionsView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 23, height: 22)
-                            .foregroundColor(.black)
+                            .foregroundColor(Color(.systemGreen))
                     }
                     .frame(width: 32, height: 32)
                     
-                    Text("Seen by Seb and Mom")
+                    Text(getSeenByText() ?? "")
                         .font(.system(size: 15, weight: .regular, design: .rounded))
+                    
                     
                     Spacer()
                 }
                 
                 
                 HStack(spacing: 20) {
-                    
+                                        
                     ZStack {
                         Image(systemName: "face.smiling")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 22, height: 22)
-                            .foregroundColor(.black)
+                            .foregroundColor(Color(.systemOrange))
                     }
                     .frame(width: 32, height: 32)
                     
-                    Text("No Reactions")
+                    Text(reactionString)
                         .font(.system(size: 15, weight: .regular, design: .rounded))
-                    
+                        
+                                      
                     Spacer()
                 }
                 
                 Rectangle()
                     .frame(width: SCREEN_WIDTH, height: 1)
                     .foregroundColor(lineGray)
+                    .padding(.bottom, 4)
                 
                 HStack {
                     
-                    VStack {
-                        Image(systemName: "trash")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 22, height: 22)
-                            .foregroundColor(Color(.systemRed))
+                    if isFromCurrentUser {
                         
-                        Text("Delete")
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundColor(Color(.systemRed))
+                        VStack {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 22, height: 22)
+                                .foregroundColor(Color(.systemRed))
+                            
+                            Text("Delete")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundColor(Color(.systemRed))
+                        }
                     }
                     
                     Spacer()
                     
                     VStack {
-                        Image(systemName: "bookmark")
+                        
+                        Image(systemName: hasSaved ? "bookmark.fill" : "bookmark")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 22, height: 22)
                             .foregroundColor(Color(.systemBlue))
                         
-                        Text("Save")
+                        Text(hasSaved ? "Unsave" : "Save")
                             .font(.system(size: 11, weight: .medium, design: .rounded))
                             .foregroundColor(Color(.systemBlue))
                     }
@@ -129,15 +168,46 @@ struct MessageOptionsView: View {
             .frame(width: SCREEN_WIDTH)
             .background(Color.white)
             .cornerRadius(20, corners: [.topLeft, .topRight])
-     
+            
         }
         .padding(.bottom, BOTTOM_PADDING)
         .ignoresSafeArea(edges: [.bottom])
     }
-}
-
-struct MessageOptionsView_Previews: PreviewProvider {
-    static var previews: some View {
-        MessageOptionsView()
+    
+    func getSeenByText() -> String? {
+        
+        guard let chat = ConversationViewModel.shared.chat else {
+            return nil
+        }
+        
+        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
+            return nil
+        }
+        
+        var seenText = "Seen by"
+        
+        var isFirst = true
+        
+        chat.seenLastPost.forEach { userId in
+            
+            if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
+                
+                if isFirst {
+                    seenText += " \(chatMember.firstName)"
+                } else {
+                    seenText += ", \(chatMember.firstName)"
+                }
+                
+                isFirst = false
+            }
+        }
+        
+        return seenText == "Seen by" ? nil : seenText
     }
 }
+
+//struct MessageOptionsView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MessageOptionsView()
+//    }
+//}

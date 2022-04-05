@@ -98,11 +98,6 @@ struct MainView: View {
                             TakenPhotoOptions()
                         }
                         
-//                        else if viewModel.showRecordButton() || viewModel.selectedView == .Photo {
-                        //                            //The Buttons on either of the record button
-                        //                            //                        PhotoLibraryAndSwitchCameraView(cameraView: cameraView)
-                        //                        }
-                        
                     }.padding(.bottom, bottomPadding)
                     
                     
@@ -150,35 +145,9 @@ struct MainView: View {
                             
                             
                             if viewModel.isRecording || viewModel.selectedView == .Photo {
-                                
-                                Button {
-                                    if viewModel.selectedView == .Voice {
-                                        viewModel.audioRecorder.cancelRecording()
-                                        viewModel.cancelRecording()
-                                        viewModel.selectedView = .Video
-                                    } else if viewModel.selectedView == .Photo {
-                                        viewModel.photo = nil
-                                        viewModel.selectedView = .Video
-                                    } else  {
-                                        viewModel.cancelRecording()
-                                    }
-                                } label: {
-                                    Image("x")
-                                        .resizable()
-                                        .renderingMode(.template)
-                                        .scaledToFit()
-                                        .foregroundColor(.white)
-                                        .frame(width: 28, height: 28)
-                                        .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
-                                }
-                                .frame(width: 36, height: 36)
-                                .padding(.bottom, bottomPadding)
+                                CancelRecordingButton(bottomPadding: bottomPadding)
                             }
                         }
-                        
-                        //                ZStack {
-                        
-                        //                }
                         
                         if IS_SMALL_PHONE {
                             UnreadMessagesScrollView(selectedView: $viewModel.selectedView).padding(.bottom, 5)
@@ -204,22 +173,28 @@ struct MainView: View {
             }
             .zIndex(3)
             
-            if viewModel.showAddFriends {
-                AddFriendsView()
-                    .zIndex(5)
-                    .transition(.move(edge: .bottom))
+            Group {
+                if viewModel.showAddFriends {
+                    AddFriendsView()
+                        .zIndex(5)
+                        .transition(.move(edge: .bottom))
+                }
+                
+                if viewModel.showFindFriends {
+                    ContactsView()
+                        .zIndex(5)
+                        .transition(.move(edge: .bottom))
+                }
+                
+                if viewModel.showNewChat {
+                    NewConversationView()
+                        .zIndex(5)
+                        .transition(.move(edge: .bottom))
+                }
             }
             
-            if viewModel.showFindFriends {
-                ContactsView()
-                    .zIndex(5)
-                    .transition(.move(edge: .bottom))
-            }
-            
-            if viewModel.showNewChat {
-                NewConversationView()
-                    .zIndex(5)
-                    .transition(.move(edge: .bottom))
+            if let message = viewModel.selectedMessage {
+                MessageOptionsView(message: message)
             }
             
         }
@@ -572,6 +547,38 @@ struct PhotoLibraryAndSwitchCameraView: View {
     }
 }
 
+struct CancelRecordingButton: View {
+    
+    let viewModel = MainViewModel.shared
+    let bottomPadding: CGFloat
+    
+    var body: some View {
+        
+        Button {
+            if viewModel.selectedView == .Voice {
+                viewModel.audioRecorder.cancelRecording()
+                viewModel.cancelRecording()
+                viewModel.selectedView = .Video
+            } else if viewModel.selectedView == .Photo {
+                viewModel.photo = nil
+                viewModel.selectedView = .Video
+            } else  {
+                viewModel.cancelRecording()
+            }
+        } label: {
+            Image("x")
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .foregroundColor(.white)
+                .frame(width: 28, height: 28)
+                .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+        }
+        .frame(width: 36, height: 36)
+        .padding(.bottom, bottomPadding)
+        
+    }
+}
 
 //Chats scroll view at bottom of screen
 struct ChatsView: View {
@@ -700,7 +707,7 @@ struct ChatsView: View {
         
         let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
         
-//        MainViewModel.shared.selectedView = .Video
+        //        MainViewModel.shared.selectedView = .Video
         
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             conversationViewModel.setChat(chat: chat)
@@ -746,3 +753,4 @@ struct RoundedCorner: Shape {
         return Path(path.cgPath)
     }
 }
+

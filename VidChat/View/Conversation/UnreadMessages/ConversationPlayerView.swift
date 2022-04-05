@@ -20,7 +20,7 @@ struct ConversationPlayerView: View {
     @State var isSaved = false
     @State var showAlert = false
     @State var sliderValue = 0.0
-    
+
 //    @State var showPlayerViewTutorial: Bool
     
 //    private var hasSeenPlayerViewTutorial: Bool
@@ -155,7 +155,7 @@ struct ConversationPlayerView: View {
                                             } else {
                                                 
                                                 Button {
-                                                    
+                                                    MainViewModel.shared.selectedMessage = ConversationViewModel.shared.messages[ConversationViewModel.shared.index]
                                                 } label: {
                                                     
                                                     Image(systemName: "ellipsis")
