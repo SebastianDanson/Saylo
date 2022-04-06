@@ -112,16 +112,13 @@ struct ChatSettingsView: View {
                         VStack(spacing: 0) {
                             
                             Button {
-                                if ConversationViewModel.shared.savedMessages.count == 0 {
-                                    ConversationViewModel.shared.fetchSavedMessages()
-                                }
                                 
                                 withAnimation {
                                     MainViewModel.shared.settingsChat = nil
                                 }
                                 
                                 withAnimation {
-                                    ConversationViewModel.shared.showSavedPosts = true
+                                    ConversationViewModel.shared.getSavedPosts()
                                 }
                                 
                             } label: {

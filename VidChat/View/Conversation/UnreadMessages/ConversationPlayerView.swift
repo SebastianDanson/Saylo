@@ -43,21 +43,24 @@ struct ConversationPlayerView: View {
         
         VStack {
             
-            if viewModel.messages.count > viewModel.index && viewModel.index >= 0 {
+            let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
+            let index = viewModel.index
+            
+            if messages.count > index && index >= 0 {
                 
                 VStack(spacing: 6) {
                     
                     ZStack {
                         
-                        if viewModel.isPlayable(), let urlString = viewModel.messages[viewModel.index].url, let url = URL(string: urlString) {
+                        if viewModel.isPlayable(), let urlString = messages[index].url, let url = URL(string: urlString) {
                             
                             if viewModel.hasChanged {
-                                UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
+                                UnreadMessagePlayerView(url: url, isVideo: messages[index].type == .Video)
                             } else {
-                                UnreadMessagePlayerView(url: url, isVideo: viewModel.messages[viewModel.index].type == .Video)
+                                UnreadMessagePlayerView(url: url, isVideo: messages[index].type == .Video)
                             }
                             
-                        } else if viewModel.messages[viewModel.index].type == .Text, let text = viewModel.messages[viewModel.index].text {
+                        } else if messages[index].type == .Text, let text = messages[index].text {
                             
                             ZStack {
                                 
@@ -72,9 +75,9 @@ struct ConversationPlayerView: View {
                             .cornerRadius(14, corners: [.topLeft, .topRight])
                             
                             
-                        } else if viewModel.messages[viewModel.index].type == .Photo {
+                        } else if messages[index].type == .Photo {
                             
-                            if let url = viewModel.messages[viewModel.index].url {
+                            if let url = messages[index].url {
                                 KFImage(URL(string: url))
                                     .resizable()
                                     .scaledToFill()
@@ -82,7 +85,7 @@ struct ConversationPlayerView: View {
                                     .cornerRadius(14, corners: [.topLeft, .topRight])
                                     .clipped()
                                     .background(Color.black)
-                            } else if let image = viewModel.messages[viewModel.index].image {
+                            } else if let image = messages[index].image {
                                 Image(uiImage: image)
                                     .resizable()
                                     .scaledToFill()
@@ -93,27 +96,7 @@ struct ConversationPlayerView: View {
                             }
                         }
                         
-                        VStack {
-                            
-                            HStack {
-                                
-                                Button {
-                                    MainViewModel.shared.selectedView = .Video
-                                } label: {
-                                    Image("x")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 28, height: 28)
-                                        .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
-                                        .padding(.leading)
-                                        .padding(.top, 20)
-                                }
-                                
-                                Spacer()
-                            }
-                            
-                            Spacer()
-                        }
+                        
                     }
                     .zIndex(3)
                     .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
@@ -139,10 +122,13 @@ struct ConversationPlayerView: View {
                                         
                                         Spacer()
                                         
-                                        AddedReactionsContainerView(reactions: $viewModel.messages[viewModel.index].reactions)
-                                            .padding(.leading, 16)
-                                            .padding(.bottom, viewModel.isPlayable() && !viewModel.showPlaybackControls ? 116 :
-                                                        viewModel.showPlaybackControls ? 32 : 76)
+                                        if !viewModel.showSavedPosts {
+                                            
+                                            AddedReactionsContainerView(reactions: $viewModel.messages[viewModel.index].reactions)
+                                                .padding(.leading, 16)
+                                                .padding(.bottom, viewModel.isPlayable() && !viewModel.showPlaybackControls ? 116 :
+                                                            viewModel.showPlaybackControls ? 32 : 76)
+                                        }
                                     }
                                     
                                     Spacer()
@@ -151,13 +137,18 @@ struct ConversationPlayerView: View {
                                         
                                         
                                         if showReactions {
-                                            ReactionView(messageId: viewModel.messages[viewModel.index].id, reactions: $viewModel.messages[viewModel.index].reactions, showReactions: $showReactions)
-                                                .transition(.scale)
+                                            if !viewModel.showSavedPosts {
+                                                
+                                                ReactionView(messageId: messages[index].id,
+                                                             reactions: $viewModel.messages[viewModel.index].reactions,
+                                                             showReactions: $showReactions)
+                                                    .transition(.scale)
+                                            }
                                         } else {
                                             
                                             Button {
                                                 withAnimation {
-                                                    MainViewModel.shared.selectedMessage = ConversationViewModel.shared.messages[ConversationViewModel.shared.index]
+                                                    MainViewModel.shared.selectedMessage = messages[index]
                                                 }
                                                 ConversationViewModel.shared.toggleIsPlaying()
                                             } label: {
@@ -172,58 +163,60 @@ struct ConversationPlayerView: View {
                                         }
                                         
                                         
-                                        Button {
-                                            withAnimation(.linear(duration: 0.2)) {
-                                                showReactions.toggle()
-                                                ConversationViewModel.shared.isShowingReactions.toggle()
-                                            }
-                                        } label: {
-                                            
-                                            ZStack {
-                                                
-                                                if showReactions {
-                                                    Circle()
-                                                        .frame(width: 46, height: 46)
-                                                        .foregroundColor(.point3AlphaSystemBlack)
-                                                }
-                                                
-                                                
-                                                Image(systemName: "face.smiling")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 32, height: 32)
-                                                    .foregroundColor(.white)
-                                                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                                            }
-                                        }
-                                        
-                                        if isSaved {
-                                            
+                                        if !viewModel.showSavedPosts {
                                             Button {
-                                                showAlert = true
+                                                withAnimation(.linear(duration: 0.2)) {
+                                                    showReactions.toggle()
+                                                    ConversationViewModel.shared.isShowingReactions.toggle()
+                                                }
                                             } label: {
                                                 
                                                 ZStack {
                                                     
-                                                    Circle()
-                                                        .frame(width: 36, height: 36)
-                                                        .foregroundColor(viewModel.messages[viewModel.index].savedByCurrentUser ? (viewModel.messages[viewModel.index].type == .Video ? .mainBlue : .white) : .lightGray)
+                                                    if showReactions {
+                                                        Circle()
+                                                            .frame(width: 46, height: 46)
+                                                            .foregroundColor(.point3AlphaSystemBlack)
+                                                    }
                                                     
-                                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
+                                                    
+                                                    Image(systemName: "face.smiling")
                                                         .resizable()
                                                         .scaledToFit()
-                                                        .foregroundColor(viewModel.messages[viewModel.index].type == .Video || !viewModel.messages[viewModel.index].savedByCurrentUser ? .white : .mainBlue)
-                                                        .frame(width: 18, height: 18)
+                                                        .frame(width: 32, height: 32)
+                                                        .foregroundColor(.white)
+                                                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                                 }
-                                                
-                                            }.alert(isPresented: $showAlert) {
-                                                savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == viewModel.messages[viewModel.index].id}), completion: { isSaved in
-                                                    withAnimation {
-                                                        self.isSaved = isSaved
-                                                    }
-                                                })
                                             }
                                         }
+                                        
+                                        //                                        if isSaved {
+                                        //
+                                        //                                            Button {
+                                        //                                                showAlert = true
+                                        //                                            } label: {
+                                        //
+                                        //                                                ZStack {
+                                        //
+                                        //                                                    Circle()
+                                        //                                                        .frame(width: 36, height: 36)
+                                        //                                                        .foregroundColor(messages[index].savedByCurrentUser ? (messages[index].type == .Video ? .mainBlue : .white) : .lightGray)
+                                        //
+                                        //                                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
+                                        //                                                        .resizable()
+                                        //                                                        .scaledToFit()
+                                        //                                                        .foregroundColor(viewModel.messages[viewModel.index].type == .Video || !viewModel.messages[viewModel.index].savedByCurrentUser ? .white : .mainBlue)
+                                        //                                                        .frame(width: 18, height: 18)
+                                        //                                                }
+                                        //
+                                        //                                            }.alert(isPresented: $showAlert) {
+                                        //                                                savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == viewModel.messages[viewModel.index].id}), completion: { isSaved in
+                                        //                                                    withAnimation {
+                                        //                                                        self.isSaved = isSaved
+                                        //                                                    }
+                                        //                                                })
+                                        //                                            }
+                                        //                                        }
                                     }
                                     .padding(.trailing, 18)
                                     .padding(.bottom, 36)
@@ -239,10 +232,10 @@ struct ConversationPlayerView: View {
                                 if !viewModel.showPlaybackControls {
                                     HStack {
                                         
-                                        if !viewModel.messages[viewModel.index].isForTakingVideo {
-                                            MessageInfoView(date: viewModel.messages[viewModel.index].timestamp.dateValue(),
-                                                            profileImage: viewModel.messages[viewModel.index].userProfileImage,
-                                                            name: viewModel.messages[viewModel.index].username,
+                                        if !messages[index].isForTakingVideo {
+                                            MessageInfoView(date: messages[index].timestamp.dateValue(),
+                                                            profileImage: messages[index].userProfileImage,
+                                                            name: messages[index].username,
                                                             showTwoTimeSpeed: viewModel.isPlayable())
                                                 .padding(.bottom, -8)
                                         }
@@ -282,6 +275,54 @@ struct ConversationPlayerView: View {
             
             Spacer()
         }
+        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        .overlay(
+            
+            ZStack {
+                if viewModel.showSavedPosts, viewModel.savedMessages.count == 0 {
+                    
+                    VStack(spacing: 0) {
+                        
+                        Text("No messages saved in this chat")
+                            .foregroundColor(.white)
+                            .font(.system(size: 24, weight: .semibold, design: .rounded))
+                            .padding(.bottom, 4)
+                        
+                        Text("Tap and hold on a message to save it!")
+                            .foregroundColor(.white)
+                            .font(.system(size: 18, weight: .regular, design: .rounded))
+                            .padding(.bottom, 10)
+                    }
+                    .frame(width: SCREEN_WIDTH - 12, height: 150)
+                    .background(Color.mainBlue)
+                    .cornerRadius(8)
+                }
+                
+                VStack {
+                    
+                    HStack {
+                        
+                        Button {
+                            MainViewModel.shared.selectedView = .Video
+                            ConversationViewModel.shared.showSavedPosts = false
+                            ConversationViewModel.shared.savedMessages.removeAll()
+                        } label: {
+                            Image("x")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 28, height: 28)
+                                .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+                                .padding(.leading, 12)
+                                .padding(.top, 12 + TOP_PADDING)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                }
+            }
+        )
         .background(Color.black)
         .onChange(of: viewModel.index, perform: { _ in
             print("")

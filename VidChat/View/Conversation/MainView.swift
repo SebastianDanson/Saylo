@@ -14,7 +14,7 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel.shared
     
     @State private var searchText = ""
-    @State private var noteText = ""    
+    @State private var noteText = ""
     @State var isTyping = false
     
     var cameraView = CameraView()
@@ -147,7 +147,7 @@ struct MainView: View {
                                     
                                     
                                     Button {
-                                        cameraView.switchCamera()
+                                        ConversationViewModel.shared.getSavedPosts()
                                     } label: {
                                         Image(systemName: "bookmark")
                                             .resizable()
@@ -609,44 +609,19 @@ struct ChatsView: View {
         
         ZStack {
             
-            backgroundColor.ignoresSafeArea()
-            
-            VStack {
+            if !conversationViewModel.showSavedPosts {
                 
-                if dragOffset == .zero {
+                backgroundColor.ignoresSafeArea()
+                
+                VStack {
                     
-                    LazyVGrid(columns: items, spacing: 0, content: {
+                    if dragOffset == .zero {
                         
-                        if gridviewModel.chats.count > 0 {
+                        LazyVGrid(columns: items, spacing: 0, content: {
                             
-                            ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count, 3)].enumerated()), id: \.1.id) { i, chat in
+                            if gridviewModel.chats.count > 0 {
                                 
-                                ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
-                                    .scaleEffect(x: -1, y: 1, anchor: .center)
-                                    .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
-                                    .onLongPressGesture {
-                                        if !chat.isTeamSaylo {
-                                            withAnimation {
-                                                MainViewModel.shared.settingsChat = chat
-                                            }
-                                        }
-                                    }
-                            }
-                        }
-                    })
-                        .padding(.horizontal, 8)
-                    
-                } else {
-                    
-                    ScrollView {
-                        
-                        
-                        VStack {
-                            
-                            LazyVGrid(columns: items, spacing: 16, content: {
-                                
-                                
-                                ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count, 3)].enumerated()), id: \.1.id) { i, chat in
                                     
                                     ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
                                         .scaleEffect(x: -1, y: 1, anchor: .center)
@@ -659,46 +634,73 @@ struct ChatsView: View {
                                             }
                                         }
                                 }
-                            })
-                                .padding(.horizontal, 8)
-                                .padding(.top, 8)
-                            
-                        }.background(GeometryReader {
-                            Color.clear.preference(key: ViewOffsetKey.self,
-                                                   value: -$0.frame(in: .named("scroll")).origin.y)
-                            
+                            }
                         })
-                            .onPreferenceChange(ViewOffsetKey.self) {
+                            .padding(.horizontal, 8)
+                        
+                    } else {
+                        
+                        ScrollView {
+                            
+                            
+                            VStack {
                                 
-                                if $0 < -10 {
+                                LazyVGrid(columns: items, spacing: 16, content: {
                                     
-                                    withAnimation {
-                                        dragOffset = .zero
+                                    
+                                    ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                        
+                                        ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+                                            .scaleEffect(x: -1, y: 1, anchor: .center)
+                                            .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
+                                            .onLongPressGesture {
+                                                if !chat.isTeamSaylo {
+                                                    withAnimation {
+                                                        MainViewModel.shared.settingsChat = chat
+                                                    }
+                                                }
+                                            }
+                                    }
+                                })
+                                    .padding(.horizontal, 8)
+                                    .padding(.top, 8)
+                                
+                            }.background(GeometryReader {
+                                Color.clear.preference(key: ViewOffsetKey.self,
+                                                       value: -$0.frame(in: .named("scroll")).origin.y)
+                                
+                            })
+                                .onPreferenceChange(ViewOffsetKey.self) {
+                                    
+                                    if $0 < -10 {
+                                        
+                                        withAnimation {
+                                            dragOffset = .zero
+                                        }
                                     }
                                 }
-                            }
+                        }
+                        .coordinateSpace(name: "scroll")
+                        
                     }
-                    .coordinateSpace(name: "scroll")
+                    
+                    Spacer()
                     
                 }
+                .scaleEffect(x: -1, y: 1, anchor: .center)
+                .padding(.top, 14)
                 
-                Spacer()
                 
-            }
-            .scaleEffect(x: -1, y: 1, anchor: .center)
-            .padding(.top, 14)
-            
-            
-            VStack {
-                Rectangle()
-                    .foregroundColor(Color(.systemGray))
-                    .frame(width: 48, height: 4)
-                    .clipShape(Capsule())
-                    .padding(.top, 6)
-                
-                Spacer()
-            }
-            
+                VStack {
+                    Rectangle()
+                        .foregroundColor(Color(.systemGray))
+                        .frame(width: 48, height: 4)
+                        .clipShape(Capsule())
+                        .padding(.top, 6)
+                    
+                    Spacer()
+                }
+            } 
         }
         .frame(width: SCREEN_WIDTH, height: CHATS_VIEW_HEIGHT * 3)
         .cornerRadius(IS_SMALL_PHONE ? 12 : 20)
@@ -724,6 +726,7 @@ struct ChatsView: View {
                 }
         )
         .ignoresSafeArea(edges: .bottom)
+        
         
         
     }

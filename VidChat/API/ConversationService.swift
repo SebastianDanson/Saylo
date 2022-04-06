@@ -71,7 +71,7 @@ struct ConversationService {
                     let id = message["id"] as? String ?? ""
                     messages.append(Message(dictionary: message, id: id, isSaved: true))
                 }
-                ConversationViewModel.shared.setIsSameId(messages: messages)
+//                ConversationViewModel.shared.setIsSameId(messages: messages)
             }
             
             completion(messages)

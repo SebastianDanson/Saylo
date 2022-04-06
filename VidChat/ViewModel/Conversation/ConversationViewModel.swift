@@ -128,6 +128,19 @@ class ConversationViewModel: ObservableObject {
         //        self.noMessages = false
     }
     
+    func getSavedPosts() {
+        
+        if ConversationViewModel.shared.savedMessages.count == 0 {
+            ConversationViewModel.shared.fetchSavedMessages()
+        }
+       
+        withAnimation {
+            MainViewModel.shared.settingsChat = nil
+            ConversationViewModel.shared.showSavedPosts = true
+            MainViewModel.shared.selectedView = .Saylo
+        }
+    }
+    
     func removeChat() {
         
         if let chat = chat {
@@ -220,11 +233,11 @@ class ConversationViewModel: ObservableObject {
                 
                 let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
                 message.image = image
-                
-                if let lastMessage = messages.last {
-                    message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
-                    lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
-                }
+//
+//                if let lastMessage = messages.last {
+//                    message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
+//                    lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
+//                }
                 
                 
                 DispatchQueue.main.async {
@@ -375,36 +388,6 @@ class ConversationViewModel: ObservableObject {
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
-    func setIsSameId(messages: [Message]) {
-        
-        guard messages.count > 1 else {return}
-        for i in 1..<messages.count  {
-            
-            messages[i].isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: messages[i - 1],
-                                                                      currentMessage: messages[i])
-            
-            if i == 1 {
-                messages[i].isSameIdAsNextMessage = isSameIdAsNextMessage(currentMessage: messages[i - 1],
-                                                                          nextMessage: messages[i])
-            } else {
-                messages[i-1].isSameIdAsNextMessage = messages[i].isSameIdAsPrevMessage
-            }
-        }
-    }
-    
-    func isSameIdAsPrevMessage(prevMessage: Message, currentMessage: Message) -> Bool {
-        return prevMessage.type == .Text && currentMessage.type == .Text && prevMessage.userId == currentMessage.userId && isWithin30min(message1: prevMessage,
-                                                                                                                                         message2: currentMessage)
-    }
-    
-    func isSameIdAsNextMessage(currentMessage: Message, nextMessage: Message) -> Bool {
-        return currentMessage.type == .Text && nextMessage.type == .Text && currentMessage.userId == nextMessage.userId && isWithin30min(message1: currentMessage,
-                                                                                                                                         message2: nextMessage)
-    }
-    
-    func isWithin30min(message1: Message, message2: Message) -> Bool {
-        abs(message1.timestamp.dateValue().timeIntervalSince1970 - message2.timestamp.dateValue().timeIntervalSince1970) < 1800
-    }
     
     func updateIsSaved(atIndex i: Int) {
         self.messages[i].isSaved.toggle()
@@ -412,11 +395,14 @@ class ConversationViewModel: ObservableObject {
         ConversationService.updateIsSaved(forMessage: self.messages[i], chatId: self.chatId)
     }
     
-    func fetchSavedMessages() {
+    fileprivate func fetchSavedMessages() {
         
-        ConversationService.fetchSavedMessages(forDocWithId: self.chatId) { messages in
-            self.setIsSameId(messages: messages)
+        guard let chat = chat else { return }
+        
+        ConversationService.fetchSavedMessages(forDocWithId: chat.id) { messages in
+//            self.setIsSameId(messages: messages)
             self.savedMessages = messages
+            self.index = messages.count - 1
             self.noSavedMessages = messages.count == 0
         }
     }
@@ -485,7 +471,9 @@ class ConversationViewModel: ObservableObject {
     }
     
     func removeReactionFromMessage(withId id: String, reaction: Reaction, completion: @escaping(() -> Void)) {
-        if let message = self.messages.first(where: {$0.id == id}) {
+        let messages = showSavedPosts ? savedMessages : messages
+
+        if let message = messages.first(where: {$0.id == id}) {
             message.reactions.removeAll(where: {$0.userId == reaction.userId})
             ConversationService.removeReaction(reaction: reaction, chatId: self.chatId) {
                 completion()
@@ -520,7 +508,7 @@ class ConversationViewModel: ObservableObject {
                     
                     
                     self.messages = messages
-                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
+//                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
                     
                     self.noMessages = messages.count == 0
                     
@@ -623,6 +611,7 @@ class ConversationViewModel: ObservableObject {
     
     func showMessage(atIndex i: Int) {
         
+        let messages = showSavedPosts ? savedMessages : messages
         guard i >= 0 && i < messages.count else { return }
         
         MainViewModel.shared.selectedView = .Saylo
@@ -650,6 +639,8 @@ class ConversationViewModel: ObservableObject {
     
     func showNextMessage() {
         
+        let messages = showSavedPosts ? savedMessages : messages
+        
         showPlaybackControls = false
         
         if index == messages.count - 1 {
@@ -671,6 +662,8 @@ class ConversationViewModel: ObservableObject {
     
     func setVideoLength() {
         
+        let messages = showSavedPosts ? savedMessages : messages
+
         guard index >= 0 && index < messages.count else { return }
         
         let message = messages[index]
@@ -711,6 +704,7 @@ class ConversationViewModel: ObservableObject {
     
     func isPlayable(index: Int? = nil) -> Bool {
         let index = index ?? self.index
+        let messages = showSavedPosts ? savedMessages : messages
         guard index < messages.count && index >= 0 else { return false }
         return messages[index].type == .Video || messages[index].type == .Audio
     }

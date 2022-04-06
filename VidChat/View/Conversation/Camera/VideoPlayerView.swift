@@ -169,7 +169,6 @@ class PlayerUIView: UIView {
 
 //        playerLayer.cornerRadius = 20
         
-        print(ConversationViewModel.shared.messages[ConversationViewModel.shared.index].isFromPhotoLibrary, "OKOK")
         if ConversationViewModel.shared.messages[ConversationViewModel.shared.index].isFromPhotoLibrary {
             playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
         } else {
