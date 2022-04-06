@@ -30,7 +30,8 @@ class MainViewModel: ObservableObject {
     @Published var isCalling: Bool = false
     @Published var chatsViewDragOffset: CGSize = .zero
     @Published var selectedMessage: Message?
-    
+    @Published var settingsChat: Chat?
+
     var audioRecorder = AudioRecorder()
     
     var isCameraAlert = false
@@ -38,7 +39,6 @@ class MainViewModel: ObservableObject {
     var timer: Timer?
     
     var cameraView = MainView()
-    
     
     static let shared = MainViewModel()
     

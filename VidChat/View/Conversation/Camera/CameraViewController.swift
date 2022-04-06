@@ -45,7 +45,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     //    let audioOutput = AVCaptureMovieFileOutput()
     
     let photoOutput = AVCapturePhotoOutput()
-    var hasFlash = false
     var hasSwitchedCamera = false
     var isVideo: Bool!
     let audioRecorder = AudioRecorder()
@@ -62,65 +61,28 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     var sessionAtSourceTime: CMTime!
     var audioSessionAtSourceTime: CMTime!
     
-    var isFrontFacing = true
     var canRun = true
     var outputURL: URL!
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.setupSession()
+        self.captureSession.startRunning()
         
-//        DispatchQueue.global().async {
-            self.setupSession()
-            self.captureSession.startRunning()
-            self.previewLayer?.session = captureSession
-
-//        self.setupPreview()
-//        }
+        if previewLayer == nil {
+            setupPreview()
+        }
         
-//        if !CameraViewModel.shared.getHasCameraAccess() {
-//            showAlert(isCameraAlert: true)
-//        }
-//
-//        if AuthViewModel.shared.isSignedIn {
-//
-//            if ConversationGridViewModel.shared.hasUnreadMessages {
-////                setPreviewLayerSmallFrame()
-//                view.backgroundColor = .clear
-//            } else {
-////                setPreviewLayerFullFrame()
-//                view.backgroundColor = .black
-//            }
-//
-//
-//            if !CameraViewModel.shared.getHasMicAccess() {
-//                showAlert(isCameraAlert: false)
-//            }
-//        }
-//
-//        if !canRun {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                if !self.captureSession.isRunning {
-//                    self.captureSession.startRunning()
-//                }
-//            }
-//        }
-        
+        self.previewLayer?.session = captureSession
         
     }
-    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         captureSession.stopRunning()
         audioCaptureSession.stopRunning()
         self.previewLayer?.session = nil
-    
     }
-    
     
     func getTempUrl() -> URL? {
         let directory = NSTemporaryDirectory() as NSString
@@ -131,18 +93,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         return nil
     }
     
-    
-    func stopSession() {
-        
-        //        videoWriterInput.markAsFinished()
-        //        audioWriterInput.markAsFinished()
-        //
-        //        videoWriter.finishWriting {}
-        //
-        //        captureSession.stopRunning()
-        //        audioCaptureSession.stopRunning()
-        
-    }
     
     func startRunning() {
         
@@ -195,7 +145,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func setupSession(addAudio: Bool = true) {
         
         guard MainViewModel.shared.getHasCameraAccess() else { return }
-
+        
         DispatchQueue.main.async {
             
             self.setUpWriter()
@@ -248,7 +198,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             if addAudio {
                 self.setupAudio()
             }
-//            }
+            //            }
         }
     }
     
@@ -271,8 +221,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             guard let device = self.camera(for: position) else {
                 return
             }
-                        
-            self.isFrontFacing.toggle()
+            
+            MainViewModel.shared.isFrontFacing.toggle()
             
             self.captureSession.beginConfiguration()
             
@@ -283,7 +233,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     self.captureSession.removeInput(input)
                 }
             }
-            
             
             do {
                 
@@ -307,9 +256,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupPreview() {
         
-//        let width = MainViewModel.shared.getCameraWidth()
-//        let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
-//        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
+        //        let width = MainViewModel.shared.getCameraWidth()
+        //        let x = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : (SCREEN_WIDTH - width)/2
+        //        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer!.frame = CGRect(x: 0, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
@@ -332,27 +281,25 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func startSession() {
         
         
-//        DispatchQueue.main.async {
-            self.captureSession.startRunning()
-//            self.canRun = false
-//
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                self.captureSession.stopRunning()
-//
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                    self.canRun = true
-//                }
-//            }
-//        }
+        //        DispatchQueue.main.async {
+        self.captureSession.startRunning()
+        //            self.canRun = false
+        //
+        //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        //                self.captureSession.stopRunning()
+        //
+        //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        //                    self.canRun = true
+        //                }
+        //            }
+        //        }
         
     }
     
     
-    public func captureMovie(withFlash hasFlash: Bool) {
-        
+    public func captureMovie() {
         guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
-
-        self.hasFlash = hasFlash
+        
         
         let device = activeInput.device
         
@@ -364,7 +311,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
             
             
-            if hasFlash && device.position == .back {
+            if MainViewModel.shared.hasFlash && device.position == .back {
                 try device.setTorchModeOn(level:1.0)
                 device.torchMode = .on
             }
@@ -423,7 +370,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
             audioWriterInput.expectsMediaDataInRealTime = true
-        
+            
             if videoWriter.canAdd(audioWriterInput!) {
                 videoWriter.add(audioWriterInput!)
             }
@@ -472,8 +419,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         if !MainViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
             
             connection.videoOrientation = .portrait
-            if connection.isVideoMirroringSupported, isFrontFacing {
-                connection.isVideoMirrored = self.isFrontFacing
+            if connection.isVideoMirroringSupported, MainViewModel.shared.isFrontFacing {
+                connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
             }
         }
         
@@ -529,7 +476,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         let title = "Enable \(isCameraAlert ? "Camera" : "Microphone") Access"
         let messsage = "You must enable \(isCameraAlert ? "camera" : "microphone") access to send Saylo's"
-
+        
         let alert = UIAlertController(title: title, message: messsage, preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
@@ -541,7 +488,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         alert.addAction(UIAlertAction(title: "Enable", style: .default, handler: { _ in
             PhotosViewModel.shared.openSettings()
         }))
-        
         
         present(alert, animated: true, completion: nil)
     }
@@ -560,7 +506,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 
                 if showVideo {
                     MainViewModel.shared.videoUrl = self.outputURL
-//                    MainViewModel.shared.setVideoPlayer()
+                    //                    MainViewModel.shared.setVideoPlayer()
                     MainViewModel.shared.handleSend()
                 } else {
                     MainViewModel.shared.videoUrl = nil
@@ -573,6 +519,19 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         MainViewModel.shared.timer?.invalidate()
         audioCaptureSession.stopRunning()
+        
+        let device = activeInput.device
+        
+        if device.torchMode == .on {
+            do {
+                try device.lockForConfiguration()
+                device.torchMode = .off
+                device.unlockForConfiguration()
+                
+            } catch {
+                print("error captureMovie: \(error)")
+            }
+        }
         
     }
     
@@ -611,7 +570,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-//        MainViewModel.shared.isTakingPhoto = false
+        //        MainViewModel.shared.isTakingPhoto = false
         if let imageData = photo.fileDataRepresentation() {
             if let uiImage = UIImage(data: imageData){
                 MainViewModel.shared.photo = uiImage

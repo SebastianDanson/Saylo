@@ -12,7 +12,7 @@ import Combine
 struct NewConversationView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
-    @StateObject var gridViewModel = ConversationGridViewModel.shared
+    @StateObject var mainViewModel = MainViewModel.shared
 
     @State var searchText: String = ""
     @State var chatName: String = ""
@@ -36,7 +36,7 @@ struct NewConversationView: View {
                                 }
                             } else {
                                 withAnimation {
-                                    gridViewModel.showNewChat = false
+                                    mainViewModel.showNewChat = false
                                 }
                                 
                                 viewModel.addedChats.removeAll()

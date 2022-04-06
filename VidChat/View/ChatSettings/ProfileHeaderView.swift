@@ -18,7 +18,6 @@ struct ProfileHeaderView: View {
     @Binding var name: String
     
     @Binding var image: UIImage?
-    @Binding var showSettings: Bool
     @Environment(\.presentationMode) var mode
 
     var body: some View {
@@ -28,10 +27,11 @@ struct ProfileHeaderView: View {
             HStack {
                 
                 Button {
-                    self.showSettings = false
+                    MainViewModel.shared.showSettingsView = false
+                    MainViewModel.shared.settingsChat = nil
                     mode.wrappedValue.dismiss()
                 } label: {
-                    Image(systemName: "chevron.backward")
+                    Image(systemName: "chevron.down")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)

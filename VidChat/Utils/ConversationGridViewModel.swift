@@ -27,9 +27,9 @@ class ConversationGridViewModel: ObservableObject {
     @Published var isCalling = false
     @Published var temp = false
     @Published var hasUnreadMessages = false
-
+    
     var allChats = [Chat]()
-        
+    
     static let shared = ConversationGridViewModel()
     
     private init() {
@@ -40,7 +40,7 @@ class ConversationGridViewModel: ObservableObject {
     func sharedDirectoryURL() -> URL {
         let fileManager = FileManager.default
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.SebastianDanson.saylo")!
-       
+        
     }
     
     func removeSelectedChat(withId id: String) {
@@ -67,11 +67,14 @@ class ConversationGridViewModel: ObservableObject {
         
         chat.isSending = isSending
         
-        if let index = sendingChats.firstIndex(where: {$0.id == chat.id}) {
-            sendingChats.remove(at: index)
-        } else {
-            sendingChats.append(chat)
+        DispatchQueue.main.async {
+            if let index = self.sendingChats.firstIndex(where: {$0.id == chat.id}) {
+                self.sendingChats.remove(at: index)
+            } else {
+                self.sendingChats.append(chat)
+            }
         }
+        
     }
     
     func hasSentChat(chat: Chat, hasSent: Bool) {
@@ -84,10 +87,13 @@ class ConversationGridViewModel: ObservableObject {
             chat.hasSent = hasSent
             chat.isSending = false
             
-            if let index = sendingChats.firstIndex(where: {$0.id == chat.id}) {
-                sendingChats.remove(at: index)
-            } else {
-                sendingChats.append(chat)
+            DispatchQueue.main.async {
+                
+                if let index = self.sendingChats.firstIndex(where: {$0.id == chat.id}) {
+                    self.sendingChats.remove(at: index)
+                } else {
+                    self.sendingChats.append(chat)
+                }
             }
             
         }
@@ -173,15 +179,15 @@ class ConversationGridViewModel: ObservableObject {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
         var count = 0
-
+        
         user.chats.forEach { chat in
-
+            
             addConversation(withId: chat.id) {
-
+                
                 count += 1
-
+                
                 if count == user.chats.count {
-
+                    
                     let chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
                     self.allChats = chats
                     
@@ -192,7 +198,7 @@ class ConversationGridViewModel: ObservableObject {
                     withAnimation {
                         self.chats = chats
                     }
-
+                    
                     self.setChatCache()
                     
                     self.chats.forEach { chat in
@@ -242,23 +248,23 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     
-//    func updateLastRead() {
-//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//
-//        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
-//
-//        notificationArray?.forEach({ chatId in
-//            if let index = chats.firstIndex(where: { return $0.id == chatId }) {
-//                DispatchQueue.main.async {
-//                    withAnimation {
-//                        let chat = self.chats.remove(at: index)
-//                        chat.hasUnreadMessage = true
-//                        self.chats.append(chat)
-//                    }
-//                }
-//            }
-//        })
-//    }
+    //    func updateLastRead() {
+    //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+    //
+    //        let notificationArray = defaults?.object(forKey: "notifications") as? [String]
+    //
+    //        notificationArray?.forEach({ chatId in
+    //            if let index = chats.firstIndex(where: { return $0.id == chatId }) {
+    //                DispatchQueue.main.async {
+    //                    withAnimation {
+    //                        let chat = self.chats.remove(at: index)
+    //                        chat.hasUnreadMessage = true
+    //                        self.chats.append(chat)
+    //                    }
+    //                }
+    //            }
+    //        })
+    //    }
     
     func showCachedChats() {
         
@@ -279,7 +285,7 @@ class ConversationGridViewModel: ObservableObject {
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         let chatDic = defaults?.object(forKey: "chats") as? [[String:Any]]
         let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
-
+        
         
         var chats = [Chat]()
         chatDic?.forEach({
@@ -300,25 +306,25 @@ class ConversationGridViewModel: ObservableObject {
                 chats[i].hasUnreadMessage = true
             }
             
-//            ConversationPlayerViewModel.shared.addMessage(message)
+            //            ConversationPlayerViewModel.shared.addMessage(message)
         }
-                
+        
         if newMessagesArray.count > 0 {
             self.hasUnreadMessages = true
         }
-
-
+        
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             defaults?.set([[String:Any]](), forKey: "messages")
         }
-       
+        
         return chats
     }
     
     func setChatCache() {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
-
+        
         var chatDictionary = [[String:Any]]()
         
         self.chats.forEach { chat in
@@ -329,7 +335,7 @@ class ConversationGridViewModel: ObservableObject {
                 self.allChats = chats
             }
         }
-       
+        
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chatDictionary, forKey: "chats")
     }

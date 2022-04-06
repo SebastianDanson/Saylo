@@ -14,9 +14,7 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel.shared
     
     @State private var searchText = ""
-    @State private var noteText = ""
-    
-    @State var isFrontFacing = true
+    @State private var noteText = ""    
     @State var isTyping = false
     
     var cameraView = CameraView()
@@ -63,8 +61,31 @@ struct MainView: View {
             }
             
             ZStack {
+                
+                ZStack {
+                    if !IS_SMALL_PHONE {
+                        VStack {
+                            Spacer()
+                            
+                            UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
+                        }
+                    }
+                    
+                    VStack {
+                        Spacer()
+                        ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
+                    }
+                }
+                
+                //Camera Flash View
+                if viewModel.isRecording && viewModel.isFrontFacing && viewModel.hasFlash {
+                    FlashView()
+                }
+                
                 //Overlay Buttons
                 VStack(spacing: 6) {
+                    
                     
                     Spacer()
                     
@@ -80,6 +101,7 @@ struct MainView: View {
                                 }
                             } label: {
                                 RecordButton()
+                                    .zIndex(4)
                             }
                         }
                         
@@ -89,6 +111,7 @@ struct MainView: View {
                                 viewModel.handlePhotoButtonTapped()
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
+                                    .zIndex(4)
                             }
                         }
                         
@@ -105,7 +128,6 @@ struct MainView: View {
                         
                         ZStack {
                             if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo {
-                                //The 5 buttons that toggle the message types
                                 
                                 HStack {
                                     
@@ -123,27 +145,32 @@ struct MainView: View {
                                     
                                     Spacer()
                                     
+                                    
                                     Button {
                                         cameraView.switchCamera()
                                     } label: {
-                                        Image(systemName: "arrow.triangle.2.circlepath")
+                                        Image(systemName: "bookmark")
                                             .resizable()
                                             .font(Font.title.weight(.semibold))
                                             .scaledToFit()
-                                            .frame(width: 35, height: 35)
+                                            .frame(width: 26, height: 26)
                                             .foregroundColor(.white)
                                             .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                            .padding(.leading, 8)
                                     }
+                                    .frame(width: 36, height: 35)
+                                    
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.bottom, bottomPadding)
                                 
                             }
                             
-                                                        
+                            
                             
                             if viewModel.isRecording || viewModel.selectedView == .Photo {
                                 CancelRecordingButton(bottomPadding: bottomPadding)
+                                    .zIndex(4)
                             }
                         }
                         
@@ -155,21 +182,9 @@ struct MainView: View {
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
                 
                 
-                if !IS_SMALL_PHONE {
-                    VStack {
-                        Spacer()
-                        
-                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
-                    }
-                }
-                
-                VStack {
-                    Spacer()
-                    ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
-                }
             }
-            .zIndex(3)
+            
+            
             
             Group {
                 if viewModel.showAddFriends {
@@ -189,6 +204,12 @@ struct MainView: View {
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
                 }
+                
+                if let chat = viewModel.settingsChat {
+                    ChatSettingsView(chat: chat)
+                        .zIndex(5)
+                        .transition(.move(edge: .bottom))
+                }
             }
             
             if let message = viewModel.selectedMessage {
@@ -196,13 +217,14 @@ struct MainView: View {
                     .zIndex(6)
             }
             
+            
         }
         .overlay(
             ZStack {
                 
                 
                 //NavView
-                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends {
+                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
                     
                     VStack {
                         NavView(searchText: $searchText)
@@ -217,10 +239,6 @@ struct MainView: View {
                     }
                 }
                 
-                //Camera Flash View
-                if viewModel.isRecording && isFrontFacing && viewModel.hasFlash {
-                    FlashView().zIndex(4)
-                }
             }
         )
         .navigationBarHidden(true)
@@ -373,9 +391,7 @@ struct PhotosView: View {
                     , alignment: .bottomTrailing
                 )
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
-            
         }
-        
     }
 }
 
@@ -401,9 +417,6 @@ struct NoteView: View {
                 
                 MultilineTextField(text: $noteText, height: MESSAGE_HEIGHT)
                     .frame(width: SCREEN_WIDTH - 40)
-                //                    .onTapGesture {
-                //                        isTyping = true
-                //                    }
                 
                 
                 VStack {
@@ -611,7 +624,13 @@ struct ChatsView: View {
                                 ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
                                     .scaleEffect(x: -1, y: 1, anchor: .center)
                                     .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
-                                
+                                    .onLongPressGesture {
+                                        if !chat.isTeamSaylo {
+                                            withAnimation {
+                                                MainViewModel.shared.settingsChat = chat
+                                            }
+                                        }
+                                    }
                             }
                         }
                     })
@@ -632,6 +651,13 @@ struct ChatsView: View {
                                     ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
                                         .scaleEffect(x: -1, y: 1, anchor: .center)
                                         .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
+                                        .onLongPressGesture {
+                                            if !chat.isTeamSaylo {
+                                                withAnimation {
+                                                    MainViewModel.shared.settingsChat = chat
+                                                }
+                                            }
+                                        }
                                 }
                             })
                                 .padding(.horizontal, 8)
@@ -706,25 +732,15 @@ struct ChatsView: View {
         
         let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
         
-        //        MainViewModel.shared.selectedView = .Video
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             conversationViewModel.setChat(chat: chat)
             MainViewModel.shared.reset()
         }
         
-        
-        
-        //        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        //
-        //        }
-        
-        
         withAnimation {
             dragOffset = .zero
         }
     }
-    
 }
 
 

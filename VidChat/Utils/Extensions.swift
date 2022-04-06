@@ -45,6 +45,7 @@ extension Color {
     static let alternateMainBlue = Color(UIColor.alternateMainBlue)
     static let fadedBlack = Color(UIColor.fadedBlack)
     static let darkBackground = Color(red: 80/255, green: 79/255, blue: 75/255)
+    static let lineGray = Color(UIColor.lineGray)
 
 }
 
@@ -87,7 +88,7 @@ extension UIImage {
 
 extension UIColor {
     
-    static let fadedBlack = UIColor(white: 0, alpha: 0.4)
+    static let fadedBlack = UIColor(white: 0, alpha: 0.3)
     static let alternateMainBlue = UIColor(red: 76/255, green: 165/255, blue: 239/255, alpha: 1)
 
     static let systemWhite = UIColor { (trait: UITraitCollection) -> UIColor in
@@ -189,6 +190,10 @@ extension UIColor {
         UIColor(red: 50/255, green: 173/255, blue: 230/255, alpha: 1)
     }
     
+    static let lineGray = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor.systemGray5 :
+        UIColor(red: 220/255, green: 220/255, blue: 220/255, alpha: 1)
+    }
     
     static let textBackground = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ?

@@ -168,8 +168,15 @@ class PlayerUIView: UIView {
         playerLayer.frame = CGRect(x: 0, y: 0, width: CAMERA_WIDTH, height: MESSAGE_HEIGHT)
 
 //        playerLayer.cornerRadius = 20
-        playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        
+        print(ConversationViewModel.shared.messages[ConversationViewModel.shared.index].isFromPhotoLibrary, "OKOK")
+        if ConversationViewModel.shared.messages[ConversationViewModel.shared.index].isFromPhotoLibrary {
+            playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+        } else {
+            playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        }
 
+        backgroundColor = .black
 //        self.layer.masksToBounds = true
 //        self.layer.cornerRadius = 20
 

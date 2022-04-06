@@ -159,7 +159,7 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
+    func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = false,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
         
         
         if let chat = ConversationViewModel.shared.chat {
@@ -194,18 +194,19 @@ class ConversationViewModel: ObservableObject {
             }
         }
         
+        
         if type == .Photo {
             
             dictionary["type"] = "photo"
-            
-            if !isFromPhotoLibrary {
-                dictionary["isFromPhotoLibrary"] = false
-            }
         }
         
         if let text = text {
             dictionary["text"] = text
             dictionary["type"] = "text"
+        }
+        
+        if isFromPhotoLibrary {
+            dictionary["isFromPhotoLibrary"] = true
         }
         
         let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
@@ -226,13 +227,17 @@ class ConversationViewModel: ObservableObject {
                 }
                 
                 
-                self.messages.append(message)
+                DispatchQueue.main.async {
+                    self.messages.append(message)
+                }
                 
             }
             
             for i in 0..<ConversationGridViewModel.shared.chats.count {
                 if ConversationGridViewModel.shared.chats[i].id == chatId {
-                    ConversationGridViewModel.shared.chats[i].messages.append(message)
+                    DispatchQueue.main.async {
+                        ConversationGridViewModel.shared.chats[i].messages.append(message)
+                    }
                 }
             }
             
@@ -291,9 +296,10 @@ class ConversationViewModel: ObservableObject {
     
     func mediaFinishedUploading(chatId: String, messageId: String, newUrl: String) {
         
-        let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
-        self.uploadQueue[index!]["url"] = newUrl
-        self.atomicallyUploadMessage(toDocWithId: chatId, messageId: messageId, hasNotification: true)
+        if let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId}) {
+            self.uploadQueue[index]["url"] = newUrl
+            self.atomicallyUploadMessage(toDocWithId: chatId, messageId: messageId, hasNotification: true)
+        }
     }
     
     func uploadMessage(toDocWithId docId: String, hasNotification: Bool) {
@@ -424,10 +430,14 @@ class ConversationViewModel: ObservableObject {
                         self.showMessage(atIndex: min(chat.lastReadMessageIndex + 1, chat.messages.count - 1))
                     }
                 } else {
-                    self.index = chat.lastReadMessageIndex
+                    DispatchQueue.main.async {
+                        self.index = chat.lastReadMessageIndex
+                    }
                 }
             } else {
-                self.index = messages.count - 1
+                DispatchQueue.main.async {
+                    self.index = self.messages.count - 1
+                }
             }
         } else if messages.count == 0 {
             MainViewModel.shared.selectedView = .Video
@@ -528,7 +538,7 @@ class ConversationViewModel: ObservableObject {
         self.isPlaying = false
     }
     
-    func sendMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = true,shouldExport: Bool = true) {
+    func sendMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = false,shouldExport: Bool = true) {
         
         //        if self.chatId.isEmpty {
         

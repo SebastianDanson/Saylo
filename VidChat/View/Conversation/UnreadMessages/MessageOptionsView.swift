@@ -10,7 +10,6 @@ import Kingfisher
 
 struct MessageOptionsView: View {
     
-    let lineGray = Color(red: 220/255, green: 220/255, blue: 220/255)
     let isFromCurrentUser = true
     let message: Message
     
@@ -46,7 +45,7 @@ struct MessageOptionsView: View {
                 
                 Rectangle()
                     .frame(width: SCREEN_WIDTH, height: 1)
-                    .foregroundColor(lineGray)
+                    .foregroundColor(.lineGray)
                     .padding(.top, 4)
                 
                 VStack(spacing: 3) {
@@ -110,7 +109,7 @@ struct MessageOptionsView: View {
                 
                 Rectangle()
                     .frame(width: SCREEN_WIDTH, height: 1)
-                    .foregroundColor(lineGray)
+                    .foregroundColor(.lineGray)
                     .padding(.bottom, 4)
                 
                 HStack {
@@ -167,7 +166,7 @@ struct MessageOptionsView: View {
             .frame(width: SCREEN_WIDTH)
             .padding(.bottom, BOTTOM_PADDING)
             .ignoresSafeArea(edges: [.bottom])
-            .background(Color.white)
+            .background(Color.popUpSystemWhite)
             .cornerRadius(20, corners: [.topLeft, .topRight])
             .transition(.move(edge: .bottom))
             .onAppear {

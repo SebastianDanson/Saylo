@@ -111,17 +111,17 @@ class PhotosCollectionView: UIView {
         sendButton.centerX(inView: self)
         sendButton.addTarget(self, action: #selector(sendImages), for: .touchUpInside)
         
-//        let pan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
-//        pan.delegate = self
-//        self.collectionView.addGestureRecognizer(pan)
+        //        let pan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+        //        pan.delegate = self
+        //        self.collectionView.addGestureRecognizer(pan)
         
         addSubview(dragView)
         dragView.anchor(bottom: collectionView.topAnchor)
         dragView.centerX(inView: self)
         
-//        let dragPan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
-//        dragPan.delegate = self
-//        self.dragView.addGestureRecognizer(dragPan)
+        //        let dragPan = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+        //        dragPan.delegate = self
+        //        self.dragView.addGestureRecognizer(dragPan)
     }
     
     required init?(coder: NSCoder) {
@@ -135,42 +135,52 @@ class PhotosCollectionView: UIView {
             
             if viewModel.selectedChats.count > 0 && ConversationViewModel.shared.hasSelectedAssets {
                 sendButton.isEnabled = true
-//                sendButton.alpha = 1
+                //                sendButton.alpha = 1
             } else {
                 sendButton.isEnabled = false
-//                sendButton.alpha = 0.5
+                //                sendButton.alpha = 0.5
             }
             
         } else {
             sendButton.isEnabled = selectedIndexes.isEmpty ? false : true
-//            sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
+            //            sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
         }
     }
     
     //MARK: - Selectors
     
     @objc func sendImages() {
+        
+        var i = 0.0
+        
         for asset in selectedAssets {
             
-            if asset.mediaType == .image {
-                imageManager.requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: requestOptions) { (image, metadata) in
-                    let type: MessageType = asset.mediaType == .image ? .Photo : .Video
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        ConversationViewModel.shared.sendMessage(image: image, type: type)
-                        MainViewModel.shared.showPhotos = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + i * 0.1) {
+                if asset.mediaType == .image {
+                    self.imageManager.requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: self.requestOptions) { (image, metadata) in
+                        let type: MessageType = asset.mediaType == .image ? .Photo : .Video
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            ConversationViewModel.shared.sendMessage(image: image, type: type, isFromPhotoLibrary: true)
+                            DispatchQueue.main.async {
+                                MainViewModel.shared.showPhotos = false
+                            }
+                        }
                     }
+                } else {
                     
-                }
-            } else {
-                
-                imageManager.requestAVAsset(forVideo: asset, options: nil) { asset, mix, _  in
-                    guard let asset = asset as? AVURLAsset else { return }
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        ConversationViewModel.shared.sendMessage(url: asset.url, type: .Video)
-                        MainViewModel.shared.showPhotos = false
+                    self.imageManager.requestAVAsset(forVideo: asset, options: nil) { asset, mix, _  in
+                        guard let asset = asset as? AVURLAsset else { return }
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            ConversationViewModel.shared.sendMessage(url: asset.url, type: .Video, isFromPhotoLibrary: true)
+                            DispatchQueue.main.async {
+                                MainViewModel.shared.showPhotos = false
+                            }
+                        }
                     }
                 }
             }
+            
+            i += 1
         }
         
         delegate?.hidePhotoPicker()
@@ -229,7 +239,7 @@ class PhotosCollectionView: UIView {
         }
     }
     
-
+    
 }
 
 // MARK: - UICollectionViewDelegate
@@ -249,7 +259,7 @@ extension PhotosCollectionView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let asset = currentAssetAtIndex(indexPath.item)
-  
+        
         selectedAssets.append(asset)
         
         if let view = collectionView.cellForItem(at: indexPath) as? AssetCell{

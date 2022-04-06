@@ -40,6 +40,7 @@ struct LastPhotoView: View {
                 self.selectedImage = image
             }
         }
+        .frame(width: 35, height: 35)
     }
     
     func queryLastPhoto(resizeTo size: CGSize?, queryCallback: @escaping ((UIImage?) -> Void)) {

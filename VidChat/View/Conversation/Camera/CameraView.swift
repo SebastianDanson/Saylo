@@ -12,11 +12,11 @@ import AVFoundation
 struct CameraView: UIViewControllerRepresentable {
     
     typealias UIViewControllerType = CameraViewController
-        
+    
     var cameraViewController = CameraViewController()
     
     func makeUIViewController(context: Context) -> CameraViewController {
-      //  cameraViewController.delegate = context.coordinator
+        //  cameraViewController.delegate = context.coordinator
         cameraViewController.isVideo = MainViewModel.shared.isRecording
         return cameraViewController
     }
@@ -28,8 +28,8 @@ struct CameraView: UIViewControllerRepresentable {
         cameraViewController.switchCamera()
     }
     
-    public func startRecording(withFlash hasFlash: Bool = false) {
-        cameraViewController.captureMovie(withFlash: hasFlash)
+    public func startRecording() {
+        cameraViewController.captureMovie()
     }
     
     public func stopRecording() {
@@ -46,15 +46,13 @@ struct CameraView: UIViewControllerRepresentable {
     
     public func addAudio() {
         cameraViewController.setUpWriter()
-//         cameraViewController.addAudio()
+        //         cameraViewController.addAudio()
     }
     
     public func setupSession() {
-        cameraViewController.setupSession()
-        cameraViewController.setupPreview()
-        cameraViewController.startSession()
-        
-//        cameraViewController.setupAudio()
+            cameraViewController.setupPreview()
+            cameraViewController.startSession()
+        //        cameraViewController.setupAudio()
     }
     
     public func setupProfileImageCamera() {
@@ -70,10 +68,10 @@ struct CameraView: UIViewControllerRepresentable {
     public func stopRunning() {
         cameraViewController.stopRunning()
     }
-
+    
     
     public func stopSession() {
-        cameraViewController.stopSession()
+//        cameraViewController.stopSession()
     }
     
     public func setupWriter() {

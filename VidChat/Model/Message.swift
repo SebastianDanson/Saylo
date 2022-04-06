@@ -118,7 +118,7 @@ class Message: ObservableObject {
         
         self.isTeamSayloMessage = dictionary["isTeamSayloMessage"] as? Bool ?? false
 
-        self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? true
+        self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? false
         
         self.isSaved = isSaved
         self.savedByCurrentUser = savedByUid == Auth.auth().currentUser?.uid

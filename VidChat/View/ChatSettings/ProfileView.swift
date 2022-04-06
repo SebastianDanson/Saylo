@@ -32,7 +32,7 @@ struct ProfileView: View {
                     
                     ProfileHeaderView(currentImage: currentUser?.profileImage ?? "", userName: currentUser?.username ?? "",
                                       name: .constant((currentUser?.firstName ?? "") + " " + (currentUser?.lastName ?? "")),
-                                      image: $profileImage, showSettings: $showSettings)
+                                      image: $profileImage)
                     
 
                     SettingsView(profileImage: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker)
