@@ -17,7 +17,6 @@ struct ConversationPlayerView: View {
     
     @State var isFirstReplyOption = true
     @State var showReactions = false
-    @State var isSaved = false
     @State var showAlert = false
     @State var sliderValue = 0.0
     
@@ -103,6 +102,9 @@ struct ConversationPlayerView: View {
                     .onTapGesture(perform: {
                         withAnimation {
                             viewModel.toggleIsPlaying()
+                            if showReactions {
+                                showReactions = false
+                            }
                         }
                     })
                     .overlay(
@@ -133,7 +135,7 @@ struct ConversationPlayerView: View {
                                     
                                     Spacer()
                                     
-                                    VStack(spacing: 8) {
+                                    VStack(spacing: 0) {
                                         
                                         
                                         if showReactions {
@@ -143,23 +145,53 @@ struct ConversationPlayerView: View {
                                                              reactions: $viewModel.messages[viewModel.index].reactions,
                                                              showReactions: $showReactions)
                                                     .transition(.scale)
+                                                    .padding(.bottom, 8)
                                             }
                                         } else {
                                             
+                                            
                                             Button {
-                                                withAnimation {
-                                                    MainViewModel.shared.selectedMessage = messages[index]
-                                                }
-                                                ConversationViewModel.shared.toggleIsPlaying()
+                                                removeView()
                                             } label: {
                                                 
-                                                Image(systemName: "ellipsis")
+                                                Image(systemName: "arrowshape.turn.up.left")
                                                     .resizable()
                                                     .scaledToFit()
-                                                    .frame(width: 30, height: 30)
+                                                    .frame(width: 28, height: 28)
                                                     .foregroundColor(.white)
                                                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                                    .padding(.bottom, 27)
                                             }
+                                            .alert(isPresented: $showAlert) {
+                                                savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[viewModel.index].id}), completion: { isSaved in
+                                                    
+                                                })
+                                            }
+                                            
+                                            Button {
+                                                if messages[index].isSaved {
+                                                    showAlert = true
+                                                } else {
+                                                    ConversationViewModel.shared.updateIsSaved(atIndex: index)
+                                                }
+                                            } label: {
+                                                
+                                                Image(systemName: messages[index].isSaved ? "bookmark.fill" : "bookmark")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 20, height: 28)
+                                                    .foregroundColor(.white)
+                                                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                                    .padding(.bottom, 27)
+                                            }
+                                            .alert(isPresented: $showAlert) {
+                                                savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[viewModel.index].id}), completion: { isSaved in
+                                                    
+                                                })
+                                            }
+                                            
+                                            
+                                            
                                         }
                                         
                                         
@@ -175,7 +207,7 @@ struct ConversationPlayerView: View {
                                                     
                                                     if showReactions {
                                                         Circle()
-                                                            .frame(width: 46, height: 46)
+                                                            .frame(width: 38, height: 38)
                                                             .foregroundColor(.point3AlphaSystemBlack)
                                                     }
                                                     
@@ -183,43 +215,35 @@ struct ConversationPlayerView: View {
                                                     Image(systemName: "face.smiling")
                                                         .resizable()
                                                         .scaledToFit()
-                                                        .frame(width: 32, height: 32)
+                                                        .frame(width: 26, height: 28)
                                                         .foregroundColor(.white)
                                                         .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                                 }
+                                                .padding(.bottom, 16)
                                             }
                                         }
                                         
-                                        //                                        if isSaved {
-                                        //
-                                        //                                            Button {
-                                        //                                                showAlert = true
-                                        //                                            } label: {
-                                        //
-                                        //                                                ZStack {
-                                        //
-                                        //                                                    Circle()
-                                        //                                                        .frame(width: 36, height: 36)
-                                        //                                                        .foregroundColor(messages[index].savedByCurrentUser ? (messages[index].type == .Video ? .mainBlue : .white) : .lightGray)
-                                        //
-                                        //                                                    Image(systemName: ConversationViewModel.shared.showSavedPosts ? "trash.fill" : "bookmark.fill")
-                                        //                                                        .resizable()
-                                        //                                                        .scaledToFit()
-                                        //                                                        .foregroundColor(viewModel.messages[viewModel.index].type == .Video || !viewModel.messages[viewModel.index].savedByCurrentUser ? .white : .mainBlue)
-                                        //                                                        .frame(width: 18, height: 18)
-                                        //                                                }
-                                        //
-                                        //                                            }.alert(isPresented: $showAlert) {
-                                        //                                                savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == viewModel.messages[viewModel.index].id}), completion: { isSaved in
-                                        //                                                    withAnimation {
-                                        //                                                        self.isSaved = isSaved
-                                        //                                                    }
-                                        //                                                })
-                                        //                                            }
-                                        //                                        }
+                                        if !showReactions {
+                                            
+                                            Button {
+                                                withAnimation {
+                                                    MainViewModel.shared.selectedMessage = messages[index]
+                                                }
+                                                ConversationViewModel.shared.toggleIsPlaying()
+                                            } label: {
+                                                
+                                                Image(systemName: "ellipsis")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 19, height: 28)
+                                                    .foregroundColor(.white)
+                                                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                            }
+                                        }
+                               
                                     }
                                     .padding(.trailing, 18)
-                                    .padding(.bottom, 36)
+                                    .padding(.bottom, 34)
                                 }
                             }
                             .padding(.bottom, viewModel.showPlaybackControls ? 60 : 0)
@@ -259,7 +283,7 @@ struct ConversationPlayerView: View {
                         
                         
                     )
-                    .padding(.top, TOP_PADDING)
+                    .padding(.top, TOP_PADDING )
                     
                     
                     //
@@ -303,9 +327,7 @@ struct ConversationPlayerView: View {
                     HStack {
                         
                         Button {
-                            MainViewModel.shared.selectedView = .Video
-                            ConversationViewModel.shared.showSavedPosts = false
-                            ConversationViewModel.shared.savedMessages.removeAll()
+                            removeView()
                         } label: {
                             Image("x")
                                 .resizable()
@@ -329,6 +351,12 @@ struct ConversationPlayerView: View {
             sliderValue = 0
         })
         
+    }
+    
+    func removeView() {
+        MainViewModel.shared.selectedView = .Video
+        ConversationViewModel.shared.showSavedPosts = false
+        ConversationViewModel.shared.savedMessages.removeAll()
     }
 }
 

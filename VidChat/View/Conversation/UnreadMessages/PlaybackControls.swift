@@ -26,7 +26,7 @@ struct PlaybackControls: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 36, height: 36)
             }
             
             
@@ -41,7 +41,7 @@ struct PlaybackControls: View {
                     .scaledToFit()
                     .foregroundColor(.white)
                     .font(Font.title.weight(.ultraLight))
-                    .frame(width: 32, height: 32)
+                    .frame(width: 28, height: 28)
             }
             
             Spacer()
@@ -54,8 +54,8 @@ struct PlaybackControls: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
-                    .font(Font.title.weight(.ultraLight))
-                    .frame(width: 48, height: 48)
+                    .font(Font.title.weight(.regular))
+                    .frame(width: 42, height: 42)
             }
             
             Spacer()
@@ -69,7 +69,7 @@ struct PlaybackControls: View {
                     .scaledToFit()
                     .foregroundColor(.white)
                     .font(Font.title.weight(.ultraLight))
-                    .frame(width: 32, height: 32)
+                    .frame(width: 28, height: 28)
             }
             
             Spacer()
@@ -81,7 +81,7 @@ struct PlaybackControls: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 36, height: 36)
                 
             }
             

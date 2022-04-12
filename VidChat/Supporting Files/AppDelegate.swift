@@ -230,11 +230,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             }
         }
     
-        if chatId != ConversationViewModel.shared.chatId && !fromCurrentUser {
+        if !fromCurrentUser {
             
             if let chatId = chatId, !chatId.isEmpty {
-                ConversationGridViewModel.shared.fetchConversation(withId: chatId)
-                ConversationGridViewModel.shared.sortChats()
+                
+                ConversationGridViewModel.shared.fetchConversation(withId: chatId) {
+                    
+                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording {
+                        
+                        if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId}) {
+                            chat.hasUnreadMessage = true
+                            ConversationViewModel.shared.setChat(chat: chat)
+                        }
+                    }
+                }   
             }
             
             completionHandler([.badge, .banner])

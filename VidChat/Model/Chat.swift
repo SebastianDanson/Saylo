@@ -41,7 +41,7 @@ class Chat: ObservableObject {
     @Published var hasSent = false
     @Published var hasUnreadMessage = false
 
-    var lastReadMessageIndex = 0
+    var lastReadMessageIndex = 0 
     
 
     init(dictionary: [String:Any], id: String, shouldRemoveOldMessages: Bool = true) {
@@ -171,15 +171,13 @@ class Chat: ObservableObject {
     }
     
     func getLastReadMessageIndex() -> Int {
-        
         guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}) else {return messages.count - 1}
 
         let lastVisited = chat.lastVisited
-                
         if messages.count > 1 {
             for i in 0..<messages.count - 1 {
                 if messages[i].timestamp.dateValue() > lastVisited.dateValue() {
-                    return i + 1
+                    return i
                 }
             }
         }

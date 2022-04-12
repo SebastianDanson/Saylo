@@ -29,7 +29,7 @@ struct UnreadMessagePlayerView: View {
         
         
         PlayerView(player: $player, shouldLoop: false)
-            .frame(width: isMiniDisplay ? MINI_MESSAGE_WIDTH : CAMERA_WIDTH, height: isMiniDisplay ? MINI_MESSAGE_HEIGHT : CAMERA_HEIGHT)
+            .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
             .onAppear {
                 
                 if !isMiniDisplay {
@@ -48,7 +48,7 @@ struct UnreadMessagePlayerView: View {
                 }
             }
             .background(isVideo ? Color.systemBlack :  Color.alternateMainBlue)
-            .cornerRadius(isMiniDisplay ? 6 : 14, corners: isMiniDisplay ? [.allCorners] : [.topLeft, .topRight])
+            .cornerRadius(14, corners: [.topLeft, .topRight])
             .overlay(
                 ZStack {
                     if !isVideo {

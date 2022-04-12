@@ -138,18 +138,21 @@ class MediaUploader {
         let ref = UploadType.video.getFilePath(messageId: messageId)
 
         if isFromPhotoLibrary {
+            
             let videoData = try! Data(contentsOf: url)
             
             let metadata = StorageMetadata()
             metadata.contentType = "video/quicktime"
             
             let uploadTask = ref.putData(videoData, metadata: metadata) { _, error in
+                
                 if let error = error {
                     print("DEBUG: Failed to upload video \(error.localizedDescription)")
                     return
                 }
                 
                 ref.downloadURL { url, error in
+
                     if let error = error {
                         print("DEBUG: Failed to download video URL \(error.localizedDescription)")
                         return
@@ -164,6 +167,7 @@ class MediaUploader {
                 
                 if let progress = snapshot.progress {
                 
+
                     withAnimation {
                         ConversationViewModel.shared.uploadProgress = progress.fractionCompleted
                     }
@@ -177,6 +181,7 @@ class MediaUploader {
             
            let uploadTask = ref.putFile(from: url, metadata: nil) { _, error in
                 
+
                 if let error = error {
                     print("DEBUG: Failed to upload video \(error.localizedDescription)")
                     return

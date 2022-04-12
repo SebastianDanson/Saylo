@@ -120,12 +120,7 @@ class ConversationViewModel: ObservableObject {
         self.index = max(0, chat.messages.count - 1)
         ConversationService.updateLastVisited(forChat: chat)
         chat.hasUnreadMessage = false
-        
-        print(chat.id, "IDIDI")
-        //        self.setIsSameId(messages: chat.messages)
-        //        self.seenLastPost = chat.seenLastPost
-        //        self.chat?.hasUnreadMessage = false
-        //        self.noMessages = false
+    
     }
     
     func getSavedPosts() {
@@ -316,6 +311,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func uploadMessage(toDocWithId docId: String, hasNotification: Bool) {
+
         if !isUploadingMessage {
             self.isUploadingMessage = true
             let data = uploadQueue[0]
@@ -354,6 +350,15 @@ class ConversationViewModel: ObservableObject {
         
         if let chat = ConversationViewModel.shared.chat {
             chat.isSending = true
+            
+            self.uploadQueue.forEach { data in
+                if data["chatId"] as? String == chat.id {
+                    if let id = data["id"] as? String {
+                        self.messages.removeAll(where: {$0.id == id})
+                    }
+                }
+            }
+            
             self.uploadQueue.removeAll(where: {$0["chatId"] as? String == chat.id})
             ConversationGridViewModel.shared.hasSentChat(chat: chat, hasSent: false)
         }
@@ -408,12 +413,13 @@ class ConversationViewModel: ObservableObject {
     }
     
     func handleMessagesSet() {
+
         if MainViewModel.shared.selectedView != .Saylo {
             if messages.count > 0, let chat = chat {
                 
                 if chat.hasUnreadMessage {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.showMessage(atIndex: min(chat.lastReadMessageIndex + 1, chat.messages.count - 1))
+                        self.showMessage(atIndex: min(chat.lastReadMessageIndex, chat.messages.count - 1))
                     }
                 } else {
                     DispatchQueue.main.async {
@@ -427,6 +433,8 @@ class ConversationViewModel: ObservableObject {
             }
         } else if messages.count == 0 {
             MainViewModel.shared.selectedView = .Video
+        } else {
+            
         }
     }
     
@@ -650,6 +658,7 @@ class ConversationViewModel: ObservableObject {
             if index < messages.count - 1 {
                 
                 index += 1
+                selectedMessageIndexes.append(index)
                 self.isPlaying = true
                 
                 if !isPlayable(index: index) {

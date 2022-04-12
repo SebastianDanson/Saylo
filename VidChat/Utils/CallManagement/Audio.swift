@@ -8,12 +8,12 @@
 import AVFoundation
 
 func configureAudioSession() {
-  let session = AVAudioSession.sharedInstance()
-  do {
-      try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth, .allowAirPlay])
-  } catch (let error) {
-    print("Error while configuring audio session: \(error)")
-  }
+//  let session = AVAudioSession.sharedInstance()
+//  do {
+//      try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth, .allowAirPlay])
+//  } catch (let error) {
+//    print("Error while configuring audio session: \(error)")
+//  }
 }
 
 func startAudio() {

@@ -329,7 +329,6 @@ class AuthViewModel: ObservableObject {
                         self.currentUser?.fcmToken = fcmToken
                         self.updateChatsFcmToken()
                         
-                       
                     }
                 }
                 
@@ -346,6 +345,7 @@ class AuthViewModel: ObservableObject {
         guard let currentUser = currentUser else {
             return
         }
+        
         
         currentUser.chats.forEach { chat in
             

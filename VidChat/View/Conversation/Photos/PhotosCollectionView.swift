@@ -220,7 +220,6 @@ class PhotosCollectionView: UIView {
                 self.fetchCollections()
             default:
                 print("NO ACCESS")
-                
             }
         }
     }

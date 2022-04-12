@@ -81,7 +81,7 @@ class ConversationGridViewModel: ObservableObject {
         
         
         
-        withAnimation {
+//        withAnimation {
             
             
             chat.hasSent = hasSent
@@ -96,7 +96,7 @@ class ConversationGridViewModel: ObservableObject {
                 }
             }
             
-        }
+//        }
         
         if hasSent {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -147,6 +147,13 @@ class ConversationGridViewModel: ObservableObject {
                     self.chats[index] = chat
                 } else {
                     self.chats.append(chat)
+                }
+                
+                if chat.isDm, let user = chat.chatMembers.first(where: {$0.id == AuthViewModel.shared.getUserId() }) {
+                    if let currentUser = AuthViewModel.shared.currentUser, user.fcmToken != currentUser.fcmToken {
+                        print("WORKING")
+                        AuthViewModel.shared.updateChatsFcmToken()
+                    }
                 }
             }
             
@@ -236,10 +243,11 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func fetchConversation(withId chatId: String) {
+    func fetchConversation(withId chatId: String, completion: @escaping(() -> Void)) {
         
         self.setConversation(withId: chatId) { data in
             ConversationGridViewModel.shared.sortChats()
+            completion()
         }
     }
     

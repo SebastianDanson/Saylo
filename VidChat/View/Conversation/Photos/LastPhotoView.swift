@@ -31,13 +31,15 @@ struct LastPhotoView: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
-                    .frame(width: 34, height: 34)
+                    .frame(width: 32, height: 32)
                     .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
                 
             }
         }.onAppear {
-            queryLastPhoto(resizeTo: nil) { image in
-                self.selectedImage = image
+            if PhotosViewModel.shared.getHasAccessToPhotos() {
+                queryLastPhoto(resizeTo: nil) { image in
+                    self.selectedImage = image
+                }
             }
         }
         .frame(width: 35, height: 35)

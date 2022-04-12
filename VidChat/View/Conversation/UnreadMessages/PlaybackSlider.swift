@@ -22,7 +22,6 @@ struct PlaybackSlider: View {
     
     var body: some View {
         
-        
         SwiftUISlider(thumbColor: showPlaybackControls ? .white : .clear, minTrackColor: .white, maxTrackColor: .systemGray,
                       value: $sliderValue, showPlaybackControls: $showPlaybackControls)
             .onChange(of: sliderValue) { newValue in

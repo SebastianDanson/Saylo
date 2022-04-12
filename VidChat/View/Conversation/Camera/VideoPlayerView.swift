@@ -38,7 +38,7 @@ struct VideoPlayerView: View {
         ZStack {
             
             PlayerView(player: $player, shouldLoop: true)
-                .frame(width: CAMERA_WIDTH, height: getHeight())
+                .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
                 .overlay(
                     HStack {
                         if showName && !(message?.isTeamSayloMessage ?? false) {
@@ -85,10 +85,6 @@ struct VideoPlayerView: View {
                 ConversationViewModel.shared.currentPlayer = self.player
             }
         }
-    }
-    
-    func getHeight() -> CGFloat {
-        CAMERA_HEIGHT
     }
     
 }
@@ -165,17 +161,20 @@ class PlayerUIView: UIView {
         // Setup the player
         playerLayer.player = player
 
-        playerLayer.frame = CGRect(x: 0, y: 0, width: CAMERA_WIDTH, height: MESSAGE_HEIGHT)
+        playerLayer.frame = CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
 
 //        playerLayer.cornerRadius = 20
         
-        if ConversationViewModel.shared.messages[ConversationViewModel.shared.index].isFromPhotoLibrary {
+        let vm = ConversationViewModel.shared
+        let messages = vm.showSavedPosts ? vm.savedMessages : vm.messages
+        
+        if messages[ConversationViewModel.shared.index].isFromPhotoLibrary {
             playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
         } else {
             playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         }
 
-        backgroundColor = .black
+        backgroundColor = .clear
 //        self.layer.masksToBounds = true
 //        self.layer.cornerRadius = 20
 
@@ -210,11 +209,11 @@ class PlayerUIView: UIView {
             items = player.items()
         }
         
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, options: .mixWithOthers)
-        } catch(let error) {
-            print(error.localizedDescription)
-        }
+//        do {
+//            try AVAudioSession.sharedInstance().setCategory(.playback, options: .mixWithOthers)
+//        } catch(let error) {
+//            print(error.localizedDescription)
+//        }
         
         
         if !shouldLoop || ConversationViewModel.shared.showCamera {

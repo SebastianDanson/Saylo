@@ -108,7 +108,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupAudio() {
         
-        guard MainViewModel.shared.getHasMicAccess() else { return }
+        guard MainViewModel.shared.getHasMicAccess() else {
+            showAlert(isCameraAlert: false)
+            return
+        }
         
         DispatchQueue.main.async {
             
@@ -144,7 +147,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setupSession(addAudio: Bool = true) {
         
-        guard MainViewModel.shared.getHasCameraAccess() else { return }
+        guard MainViewModel.shared.getHasCameraAccess() else {
+            showAlert(isCameraAlert: true)
+            return
+        }
         
         DispatchQueue.main.async {
             

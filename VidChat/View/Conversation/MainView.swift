@@ -16,6 +16,9 @@ struct MainView: View {
     @State private var searchText = ""
     @State private var noteText = ""
     @State var isTyping = false
+    @State var showAllowPhotoAccessAlert = false
+    @State var showAllowAudioAlert = false
+    @State var showAllowCameraAccessAlert = false
     
     var cameraView = CameraView()
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
@@ -74,13 +77,18 @@ struct MainView: View {
                     
                     VStack {
                         Spacer()
-                        ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
+                        
+                        if !(IS_SMALL_PHONE && viewModel.selectedView == .Saylo) {
+                            ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
+                                .background(Color.init(white: 0, opacity: IS_SMALL_PHONE ? 0.5 : 0.0))
+                        }
                     }
                 }
+                .zIndex(viewModel.chatsViewDragOffset != .zero ? 4 : 1)
                 
                 //Camera Flash View
                 if viewModel.isRecording && viewModel.isFrontFacing && viewModel.hasFlash {
-                    FlashView()
+                    FlashView().zIndex(2)
                 }
                 
                 //Overlay Buttons
@@ -101,7 +109,6 @@ struct MainView: View {
                                 }
                             } label: {
                                 RecordButton()
-                                    .zIndex(4)
                             }
                         }
                         
@@ -111,7 +118,6 @@ struct MainView: View {
                                 viewModel.handlePhotoButtonTapped()
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
-                                    .zIndex(4)
                             }
                         }
                         
@@ -132,10 +138,15 @@ struct MainView: View {
                                 HStack {
                                     
                                     Button {
-                                        viewModel.showPhotos = true
+                                        if PhotosViewModel.shared.getHasAccessToPhotos() {
+                                            viewModel.showPhotos = true
+                                        } else {
+                                            showAllowPhotoAccessAlert = true
+                                        }
                                     } label: {
                                         LastPhotoView()
                                     }
+                                    .alert(isPresented: $showAllowPhotoAccessAlert) { allowPhotosAlert() }
                                     
                                     Spacer()
                                     
@@ -144,7 +155,6 @@ struct MainView: View {
                                     }
                                     
                                     Spacer()
-                                    
                                     
                                     Button {
                                         ConversationViewModel.shared.getSavedPosts()
@@ -162,7 +172,7 @@ struct MainView: View {
                                     
                                 }
                                 .padding(.horizontal, 20)
-                                .padding(.bottom, bottomPadding)
+                                .padding(.bottom, bottomPadding + (IS_SMALL_PHONE ? 2 : 0))
                                 
                             }
                             
@@ -175,15 +185,20 @@ struct MainView: View {
                         }
                         
                         if IS_SMALL_PHONE {
-                            UnreadMessagesScrollView(selectedView: $viewModel.selectedView).padding(.bottom, 5)
+                            if !viewModel.isRecording && !viewModel.showPhotos {
+                                let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
+                                UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                                    .padding(.bottom, viewModel.selectedView == .Saylo ? normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING : normalPadding)
+                            }
                         }
                     }
                 }
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
+                .zIndex(3)
                 
                 
             }
-            
+            .zIndex(3)
             
             
             Group {
@@ -432,7 +447,7 @@ struct NoteView: View {
                                 .scaledToFit()
                                 .frame(width: 28, height: 28)
                                 .padding(.leading)
-                                .padding(.top, TOP_PADDING + 40)
+                                .padding(.top, TOP_PADDING + 40 + (IS_SMALL_PHONE ? 50 : 0))
                         }
                         
                         Spacer()
@@ -587,7 +602,7 @@ struct CancelRecordingButton: View {
                 .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
         }
         .frame(width: 36, height: 36)
-        .padding(.bottom, bottomPadding)
+        .padding(.bottom, bottomPadding + (IS_SMALL_PHONE && viewModel.isRecording ? 24 : 0))
         
     }
 }
@@ -700,7 +715,7 @@ struct ChatsView: View {
                     
                     Spacer()
                 }
-            } 
+            }
         }
         .frame(width: SCREEN_WIDTH, height: CHATS_VIEW_HEIGHT * 3)
         .cornerRadius(IS_SMALL_PHONE ? 12 : 20)

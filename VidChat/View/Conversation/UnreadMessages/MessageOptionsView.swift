@@ -44,7 +44,7 @@ struct MessageOptionsView: View {
                 }
                 
                 Rectangle()
-                    .frame(width: SCREEN_WIDTH, height: 1)
+                    .frame(height: 1)
                     .foregroundColor(.lineGray)
                     .padding(.top, 4)
                 
@@ -108,7 +108,7 @@ struct MessageOptionsView: View {
                 .padding(.vertical, 4)
                 
                 Rectangle()
-                    .frame(width: SCREEN_WIDTH, height: 1)
+                    .frame(height: 1)
                     .foregroundColor(.lineGray)
                     .padding(.bottom, 4)
                 
@@ -224,7 +224,7 @@ struct MessageOptionsView: View {
         
         var isFirst = true
         
-        chat.seenLastPost.forEach { userId in
+        ConversationViewModel.shared.seenLastPost.forEach { userId in
             
             if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
                 
