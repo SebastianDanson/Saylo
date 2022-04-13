@@ -23,8 +23,8 @@ struct MainView: View {
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
     
     var body: some View {
-        VStack {
-            Spacer()
+        
+        
         
         ZStack(alignment: .center) {
             
@@ -224,7 +224,7 @@ struct MainView: View {
                     NewConversationView()
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                        .frame(width: SCREEN_WIDTH)
                         .cornerRadius(14)
                 }
                 
@@ -233,6 +233,14 @@ struct MainView: View {
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
                         .frame(width: SCREEN_WIDTH)
+                        .cornerRadius(14)
+                }
+                
+                if viewModel.isCalling {
+                    MakeCallView()
+                        .zIndex(5)
+                        .transition(.move(edge: .bottom))
+                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
                         .cornerRadius(14)
                 }
             }
@@ -267,14 +275,10 @@ struct MainView: View {
             }
         )
         .navigationBarHidden(true)
-//        .ignoresSafeArea(edges: .bottom)
+        .ignoresSafeArea(edges: .bottom)
         .onAppear {
             cameraView.startRunning()
         }
-            Spacer()
-        }
-        .ignoresSafeArea(.keyboard)
-
         
     }
     
@@ -443,7 +447,7 @@ struct PhotosView: View {
                 )
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
                 .alert(isPresented: $viewModel.showAllowPhotoAccessAlert) { allowPhotosAlert() }
-
+            
         }
     }
 }
@@ -467,6 +471,7 @@ struct NoteView: View {
                         .font(.system(size: 28, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                 }
+                
                 
                 MultilineTextField(text: $noteText, height: MESSAGE_HEIGHT)
                     .frame(width: SCREEN_WIDTH - 40)
@@ -671,7 +676,7 @@ struct ChatsView: View {
             if !conversationViewModel.showSavedPosts {
                 
                 backgroundColor.ignoresSafeArea()
-                   
+                
                 
                 VStack {
                     
@@ -694,7 +699,7 @@ struct ChatsView: View {
                                             }
                                         }
                                 }
-                               
+                                
                             }
                         })
                             .padding(.horizontal, 8)
@@ -789,13 +794,13 @@ struct ChatsView: View {
         .ignoresSafeArea(edges: .bottom)
         
         
-        
     }
     
     func handleTapGesture(chat: Chat) {
         
         let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
         
+        self.conversationViewModel.index = -1
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             conversationViewModel.setChat(chat: chat)
             MainViewModel.shared.reset()

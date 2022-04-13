@@ -21,16 +21,17 @@ class NotificationService: UNNotificationServiceExtension {
         var notificationArray = defaults?.object(forKey: "notifications") as? [String] ?? [String]()
         var newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
         
-        if let messageId = bestAttemptContent?.userInfo["userId"] as? String {
-            let userId = defaults?.object(forKey: "userId") as? String ?? ""
+        let data = bestAttemptContent?.userInfo["data"] as? [String:Any]
 
+    
+        if let messageId = data?["userId"] as? String {
+            let userId = defaults?.object(forKey: "userId") as? String ?? ""
             if messageId == userId {
                 contentHandler(UNNotificationContent())
                 return
             }
         }
         
-        let data = bestAttemptContent?.userInfo["data"] as? [String:Any]
         
         if let messageData = data?["messageData"] as? [String:Any] {
             

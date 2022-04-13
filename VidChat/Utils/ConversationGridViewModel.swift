@@ -195,16 +195,23 @@ class ConversationGridViewModel: ObservableObject {
                 
                 if count == user.chats.count {
                     
-                    let chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
-                    self.allChats = chats
+                   
+                    self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
                     
-                    if chats.count > 0 {
-                        ConversationViewModel.shared.setChat(chat: chats[0])
+                    if let index = self.chats.firstIndex(where: {$0.isTeamSaylo}) {
+                        self.chats.append(self.chats.remove(at: index))
                     }
                     
-                    withAnimation {
-                        self.chats = chats
+                    self.allChats = self.chats
+                    
+                    
+                    if self.chats.count > 0 {
+                        ConversationViewModel.shared.setChat(chat: self.chats[0])
                     }
+                    
+//                    withAnimation {
+//                        self.chats = chats
+//                    }
                     
                     self.setChatCache()
                     
@@ -253,6 +260,10 @@ class ConversationGridViewModel: ObservableObject {
     
     func sortChats(withAnimation: Bool = false) {
         self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+        
+        if let index = self.chats.firstIndex(where: {$0.isTeamSaylo}) {
+            self.chats.append(self.chats.remove(at: index))
+        }
     }
     
     

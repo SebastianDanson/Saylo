@@ -8,8 +8,6 @@
 		<string>com.apple.usernotifications.service</string>
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
-		<key>com.apple.developer.usernotifications.filtering</key>
-		<true/>
 	</dict>
 </dict>
 </plist>

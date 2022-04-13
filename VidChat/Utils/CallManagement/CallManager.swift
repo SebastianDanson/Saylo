@@ -33,7 +33,7 @@ final class CallManager: NSObject, ObservableObject {
     
     static var shared = CallManager()
     
-    private override init() {}
+    private override init() { }
     
     @Published var remoteUserIDs: [UInt] = [] {
         didSet {
@@ -242,6 +242,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
         remoteUserIDs.append(uid)
+        print("JOINED")
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
@@ -257,12 +258,13 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     func joinChannel() {
         if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
-
+            
             getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
                 self?.inCall = true
                 self?.callID = uid
                 self?.channelName = currentCall.uuid.uuidString
             }
+            
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
                 if self.remoteUserIDs.count == 0 {

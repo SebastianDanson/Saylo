@@ -15,7 +15,7 @@ struct ConversationGridCell: View {
     let width = SCREEN_WIDTH/5.5
     let textColor: Color
     
-    init(chat: Binding<Chat>, selectedChatId: Binding<String>, textColor: Color = Color(red: 96/255, green: 97/255, blue: 100/255)) {
+    init(chat: Binding<Chat>, selectedChatId: Binding<String>, textColor: Color = .white) {
         self._chat = chat
         self._selectedChatId = selectedChatId
         self.textColor = textColor
@@ -142,7 +142,7 @@ struct ConversationGridCell: View {
                 Text(chat.name)
                     .font(.system(size: IS_SMALL_PHONE ? 12 : 13, weight: .regular))
                     .lineLimit(1)
-                    .foregroundColor(.white)
+                    .foregroundColor(textColor)
                     .overlay(
                         ZStack {
                             if chat.hasUnreadMessage {

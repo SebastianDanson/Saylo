@@ -18,6 +18,7 @@ struct UnreadMessagesScrollView: View {
         
         ZStack(alignment: .top) {
             
+            
             let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
             let messageHeight = IS_SMALL_PHONE && selectedView == .Saylo ? SMALL_PHONE_SAYLO_HEIGHT : MINI_MESSAGE_HEIGHT
             

@@ -43,7 +43,7 @@ struct MakeCallView: View {
                                 ForEach(Array(conversationGridViewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                     
                                     if !chat.isTeamSaylo {
-                                        ConversationGridCell(chat: $conversationGridViewModel.chats[i], selectedChatId: .constant(""))
+                                        ConversationGridCell(chat: $conversationGridViewModel.chats[i], selectedChatId: .constant(""), textColor: .systemBlack)
                                             .flippedUpsideDown()
                                             .scaleEffect(x: -1, y: 1, anchor: .center)
                                             .onTapGesture {
@@ -68,7 +68,9 @@ struct MakeCallView: View {
                 
             }
             
-        }.ignoresSafeArea()
+        }
+        .background(Color.systemWhite)
+        .ignoresSafeArea()
     }
 }
 
@@ -77,8 +79,8 @@ struct CallNavView: View {
     
     var body: some View {
         
-        HStack {
-            
+        VStack {
+            Spacer()
             ZStack {
                 
                 Text("Select Chat To Call")
@@ -88,6 +90,7 @@ struct CallNavView: View {
                     
                     Button {
                         ConversationGridViewModel.shared.isCalling = false
+                        MainViewModel.shared.isCalling = false
                     } label: {
                         Image(systemName: "chevron.backward")
                             .resizable()
@@ -102,10 +105,12 @@ struct CallNavView: View {
                 }
                 
             }
+            .padding(.top, 20)
+            Spacer()
             
         }
         .padding(.top, TOP_PADDING)
-        .frame(width: SCREEN_WIDTH, height: TOP_PADDING + 40)
+        .frame(width: SCREEN_WIDTH, height: 44)
         .ignoresSafeArea()
         
     }

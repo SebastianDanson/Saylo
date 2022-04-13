@@ -138,6 +138,7 @@ extension ProviderDelegate: CXProviderDelegate {
     }
     
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
+        
         self.callManager.addCall(pendingCall)
         self.callManager.currentCall = pendingCall
         ConversationViewModel.shared.showCall = true

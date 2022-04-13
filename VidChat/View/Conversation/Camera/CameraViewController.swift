@@ -478,8 +478,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         photoSettings.previewPhotoFormat = previewFormat
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
-        connection.isVideoMirrored = activeInput.device.position == .front
-        
+        connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     

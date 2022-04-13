@@ -476,7 +476,7 @@ struct ChatOptions: View {
                 if viewModel.chat?.chatMembers.count ?? 1 > 1 {
                     Button {
                         guard let chat = viewModel.chat else { return }
-                        MakeCallViewModel.shared.createNewOutgoingCall(toChat: chat)
+//                        MakeCallViewModel.shared.createNewOutgoingCall(toChat: chat)
                     } label: {
                         
                         ZStack {

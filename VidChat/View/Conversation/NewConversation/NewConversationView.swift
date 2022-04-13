@@ -79,9 +79,14 @@ struct NewConversationView: View {
                 .background(Color.backgroundGray)
                 .padding(.top, TOP_PADDING)
                 
+                VStack{
+                    Spacer()
                 SearchBar(text: $searchText, isEditing: $viewModel.isSearching, isFirstResponder: false, placeHolder: "Search", showSearchReturnKey: false)
                     .padding(.horizontal, 20)
                     .padding(.bottom)
+                    Spacer()
+                }
+                .frame(height: 48)
                 
                 
                 ScrollView() {
