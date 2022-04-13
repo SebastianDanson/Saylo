@@ -457,7 +457,21 @@ class ConversationViewModel: ObservableObject {
         if message.userId != user.id {
             var data = [String:Any]()
             
-            let messageType = message.type == .Video ? "video" : "audio"
+            var messageType = ""
+            
+            switch message.type {
+            case .Video:
+                messageType = "video"
+            case .Audio:
+                messageType = "audio"
+            case .Text:
+                messageType = "text"
+            case .Photo:
+                messageType = "photo"
+            case .NewChat:
+                break
+            }
+            
             
             if chat.isDm {
                 

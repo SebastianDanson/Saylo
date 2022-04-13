@@ -21,6 +21,9 @@ struct NewConversationView: View {
     var body: some View {
         
         ZStack {
+            
+            Color.backgroundGray.ignoresSafeArea()
+            
             VStack(alignment: .leading) {
                 
                 ZStack {
@@ -115,14 +118,12 @@ struct NewConversationView: View {
                             .cornerRadius(12)
                             .padding(.horizontal, 20)
                             .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
-                        
                     }
                     
                 }
                 
                 Spacer()
             }
-            .background(Color.backgroundGray)
             .ignoresSafeArea()
             
             VStack {

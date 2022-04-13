@@ -16,7 +16,6 @@ struct MainView: View {
     @State private var searchText = ""
     @State private var noteText = ""
     @State var isTyping = false
-    @State var showAllowPhotoAccessAlert = false
     @State var showAllowAudioAlert = false
     @State var showAllowCameraAccessAlert = false
     
@@ -24,14 +23,12 @@ struct MainView: View {
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
     
     var body: some View {
+        VStack {
+            Spacer()
         
         ZStack(alignment: .center) {
             
-            //            if let chat = viewModel.chat {
-            //                NavigationLink(destination: ChatSettingsView(chat: chat, showSettings: $showSettings)
-            //                                .navigationBarHidden(true)
-            //                               , isActive: $showSettings) { EmptyView() }
-            //            }
+            Color.black.ignoresSafeArea()
             
             //The photo that was just taken
             if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
@@ -51,7 +48,6 @@ struct MainView: View {
             //Note View
             if viewModel.selectedView == .Note {
                 NoteView(noteText: $noteText)
-                
             }
             
             //Saylo View
@@ -110,6 +106,13 @@ struct MainView: View {
                             } label: {
                                 RecordButton()
                             }
+                            .overlay(
+                                ZStack {
+                                    if viewModel.isRecording && viewModel.selectedView != .Voice  {
+                                        SwitchCameraView()
+                                    }
+                                }
+                            )
                         }
                         
                         //Taking Photo
@@ -119,6 +122,7 @@ struct MainView: View {
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
                             }
+                            .overlay(SwitchCameraView())
                         }
                         
                         
@@ -138,15 +142,10 @@ struct MainView: View {
                                 HStack {
                                     
                                     Button {
-                                        if PhotosViewModel.shared.getHasAccessToPhotos() {
-                                            viewModel.showPhotos = true
-                                        } else {
-                                            showAllowPhotoAccessAlert = true
-                                        }
+                                        viewModel.showPhotos = true
                                     } label: {
                                         LastPhotoView()
                                     }
-                                    .alert(isPresented: $showAllowPhotoAccessAlert) { allowPhotosAlert() }
                                     
                                     Spacer()
                                     
@@ -163,15 +162,16 @@ struct MainView: View {
                                             .resizable()
                                             .font(Font.title.weight(.semibold))
                                             .scaledToFit()
-                                            .frame(width: 26, height: 26)
+                                            .frame(width: IS_SMALL_WIDTH ? 22 : 26, height: IS_SMALL_WIDTH ? 22 : 26)
                                             .foregroundColor(.white)
                                             .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                             .padding(.leading, 8)
                                     }
-                                    .frame(width: 36, height: 35)
+                                    .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 35)
                                     
                                 }
-                                .padding(.horizontal, 20)
+                                .padding(.horizontal, IS_SMALL_WIDTH ? 12 : 20)
+                                .frame(width: SCREEN_WIDTH)
                                 .padding(.bottom, bottomPadding + (IS_SMALL_PHONE ? 2 : 0))
                                 
                             }
@@ -180,7 +180,8 @@ struct MainView: View {
                             
                             if viewModel.isRecording || viewModel.selectedView == .Photo {
                                 CancelRecordingButton(bottomPadding: bottomPadding)
-                                    .zIndex(4)
+                                    .zIndex(6)
+                                
                             }
                         }
                         
@@ -188,7 +189,8 @@ struct MainView: View {
                             if !viewModel.isRecording && !viewModel.showPhotos {
                                 let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
                                 UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                                    .padding(.bottom, viewModel.selectedView == .Saylo ? normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING : normalPadding)
+                                    .padding(.bottom, viewModel.selectedView == .Saylo ?
+                                             normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING - (SCREEN_WIDTH < 350 ? 20 : 0) : normalPadding)
                             }
                         }
                     }
@@ -206,24 +208,32 @@ struct MainView: View {
                     AddFriendsView()
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
+                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                        .cornerRadius(14)
                 }
                 
                 if viewModel.showFindFriends {
                     ContactsView()
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
+                        .frame(width: SCREEN_WIDTH)
+                        .cornerRadius(14)
                 }
                 
                 if viewModel.showNewChat {
                     NewConversationView()
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
+                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                        .cornerRadius(14)
                 }
                 
                 if let chat = viewModel.settingsChat {
                     ChatSettingsView(chat: chat)
                         .zIndex(5)
                         .transition(.move(edge: .bottom))
+                        .frame(width: SCREEN_WIDTH)
+                        .cornerRadius(14)
                 }
             }
             
@@ -257,11 +267,14 @@ struct MainView: View {
             }
         )
         .navigationBarHidden(true)
-        .background(Color.black)
-        .ignoresSafeArea(edges: .bottom)
+//        .ignoresSafeArea(edges: .bottom)
         .onAppear {
             cameraView.startRunning()
         }
+            Spacer()
+        }
+        .ignoresSafeArea(.keyboard)
+
         
     }
     
@@ -317,6 +330,29 @@ struct FlashView: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .foregroundColor(Color(.init(white: 1, alpha: 0.7)))
             .edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct SwitchCameraView: View {
+    
+    var body: some View {
+        HStack {
+            Spacer()
+            
+            Button {
+                MainViewModel.shared.cameraView.switchCamera()
+            } label: {
+                Image(systemName: "arrow.triangle.2.circlepath")
+                    .resizable()
+                    .font(Font.title.weight(.semibold))
+                    .scaledToFit()
+                    .frame(width: 36, height: 36)
+                    .foregroundColor(.white)
+                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                    .padding(.trailing, 16)
+            }
+        }
+        .frame(width: SCREEN_WIDTH)
     }
 }
 
@@ -406,6 +442,8 @@ struct PhotosView: View {
                     , alignment: .bottomTrailing
                 )
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
+                .alert(isPresented: $viewModel.showAllowPhotoAccessAlert) { allowPhotosAlert() }
+
         }
     }
 }
@@ -598,11 +636,17 @@ struct CancelRecordingButton: View {
                 .renderingMode(.template)
                 .scaledToFit()
                 .foregroundColor(.white)
-                .frame(width: 28, height: 28)
+                .frame(width: IS_SMALL_WIDTH ? 24 : 28, height: IS_SMALL_WIDTH ? 24 : 28)
                 .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
         }
         .frame(width: 36, height: 36)
-        .padding(.bottom, bottomPadding + (IS_SMALL_PHONE && viewModel.isRecording ? 24 : 0))
+        .padding(.bottom, bottomPadding + (IS_SMALL_PHONE && viewModel.isRecording ? (SCREEN_WIDTH < 350 ? 36 : 24) : 0))
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
         
     }
 }
@@ -627,6 +671,7 @@ struct ChatsView: View {
             if !conversationViewModel.showSavedPosts {
                 
                 backgroundColor.ignoresSafeArea()
+                   
                 
                 VStack {
                     
@@ -636,7 +681,7 @@ struct ChatsView: View {
                             
                             if gridviewModel.chats.count > 0 {
                                 
-                                ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count, 3)].enumerated()), id: \.1.id) { i, chat in
+                                ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count - 1, 3)].enumerated()), id: \.1.id) { i, chat in
                                     
                                     ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
                                         .scaleEffect(x: -1, y: 1, anchor: .center)
@@ -649,6 +694,7 @@ struct ChatsView: View {
                                             }
                                         }
                                 }
+                               
                             }
                         })
                             .padding(.horizontal, 8)
@@ -709,7 +755,7 @@ struct ChatsView: View {
                 VStack {
                     Rectangle()
                         .foregroundColor(Color(.systemGray))
-                        .frame(width: 48, height: 4)
+                        .frame(width: IS_SMALL_WIDTH ? 38 : 48, height: 4)
                         .clipShape(Capsule())
                         .padding(.top, 6)
                     

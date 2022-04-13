@@ -74,7 +74,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         
         self.previewLayer?.session = captureSession
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -267,11 +266,17 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        let y = ConversationGridViewModel.shared.hasUnreadMessages ? 0 : TOP_PADDING - 12
         
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer!.frame = CGRect(x: 0, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            previewLayer!.frame = CGRect(x: (UIScreen.main.bounds.width - SCREEN_WIDTH) / 2, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+        } else {
+            previewLayer!.frame = CGRect(x: 0, y: TOP_PADDING_OFFSET, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+        }
         
         previewLayer!.cornerRadius = 14
         previewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
         previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        
         self.view.layer.masksToBounds = true
         self.view.layer.cornerRadius = 14
         view.layer.addSublayer(previewLayer!)

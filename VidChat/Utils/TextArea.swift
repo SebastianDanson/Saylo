@@ -121,7 +121,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             guard let stringRange = Range(range, in: currentText) else { return false }
             let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
 
-            if updatedText.count > 300 {
+            if updatedText.count > (IS_SMALL_WIDTH ? 240 : 300) {
                 return false
             }
             

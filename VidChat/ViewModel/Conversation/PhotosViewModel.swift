@@ -10,7 +10,6 @@ import PhotosUI
 
 class PhotosViewModel: ObservableObject {
         
-    @Published var showNoAccessToPhotosAlert = false
     
     static let shared = PhotosViewModel()
     
@@ -22,11 +21,12 @@ class PhotosViewModel: ObservableObject {
         let status = PHPhotoLibrary.authorizationStatus()
         
         if status == .denied {
-            showNoAccessToPhotosAlert = true
+            MainViewModel.shared.showAllowPhotoAccessAlert = true
         }
-        
+                
         return status == .authorized
     }
+    
     
     func openSettings() {
         if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {

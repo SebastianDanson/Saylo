@@ -10,6 +10,7 @@ import PushKit
 import Firebase
 import AVFoundation
 import FlurryAnalytics
+import gRPC_Core
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

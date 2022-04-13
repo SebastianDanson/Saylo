@@ -110,7 +110,7 @@ struct AllowNotificationsView: View {
             }
             
         }
-        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        .frame(width: UIScreen.main.bounds.width, height: SCREEN_HEIGHT)
         
     }
     

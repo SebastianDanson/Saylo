@@ -177,13 +177,13 @@ struct UnreadMessagesScrollView: View {
                         
                         Text("Record a Saylo for \(viewModel.chat?.name ?? "")")
                             .foregroundColor(.white)
-                            .font(.system(size: 19, weight: .semibold, design: .rounded))
+                            .font(.system(size: IS_SMALL_PHONE ? 16 : 19, weight: .semibold, design: .rounded))
                             .padding(.bottom, 2)
                         
                         Text("Saylo's dissappear after 24h")
                             .foregroundColor(.white)
-                            .font(.system(size: 14, weight: .regular, design: .rounded))
-                            .padding(.bottom, IS_SMALL_PHONE ? 8 : 6)
+                            .font(.system(size: IS_SMALL_PHONE ? 12 : 14, weight: .regular, design: .rounded))
+                            .padding(.bottom, IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 2 : 8) : 6)
                     }
                     
                     .frame(width: IS_SMALL_PHONE ? SCREEN_WIDTH : SCREEN_WIDTH - 12, height: IS_SMALL_PHONE ? MINI_MESSAGE_HEIGHT : MINI_MESSAGE_HEIGHT - 8)

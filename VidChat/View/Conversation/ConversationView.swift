@@ -398,7 +398,7 @@ struct VisualEffectView: UIViewRepresentable {
 struct RecordButton: View {
     
     @StateObject var viewModel = MainViewModel.shared
-    let mainDimension: CGFloat = IS_SMALL_PHONE ? 56 : 62
+    let mainDimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 48 : 56) : 62
     
     var body: some View {
         
@@ -411,8 +411,8 @@ struct RecordButton: View {
                     
                     if viewModel.isRecording {
                         RoundedRectangle(cornerRadius: 6)
-                            .frame(width: IS_SMALL_PHONE ? 27 : 30,
-                                   height: IS_SMALL_PHONE ? 27 : 30)
+                            .frame(width: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 23 : 27) : 30,
+                                   height: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 23 : 27) : 30)
                             .foregroundColor(Color(.systemRed))
                             .transition(.scale)
                     } else if !IS_SMALL_PHONE {

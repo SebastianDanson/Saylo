@@ -160,7 +160,7 @@ struct ConversationPlayerView: View {
                                                     .frame(width: 28, height: 28)
                                                     .foregroundColor(.white)
                                                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                                                    .padding(.bottom, 27)
+                                                    .padding(.bottom, IS_SMALL_WIDTH ? 22 : 27)
                                             }
                                             .alert(isPresented: $showAlert) {
                                                 savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[viewModel.index].id}), completion: { isSaved in
@@ -182,7 +182,7 @@ struct ConversationPlayerView: View {
                                                     .frame(width: 20, height: 28)
                                                     .foregroundColor(.white)
                                                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                                                    .padding(.bottom, 27)
+                                                    .padding(.bottom, IS_SMALL_WIDTH ? 22 : 27)
                                             }
                                             .alert(isPresented: $showAlert) {
                                                 savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[viewModel.index].id}), completion: { isSaved in
@@ -219,7 +219,7 @@ struct ConversationPlayerView: View {
                                                         .foregroundColor(.white)
                                                         .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                                 }
-                                                .padding(.bottom, 16)
+                                                .padding(.bottom, IS_SMALL_WIDTH ? 12 : 16)
                                             }
                                         }
                                         
@@ -243,7 +243,7 @@ struct ConversationPlayerView: View {
                                
                                     }
                                     .padding(.trailing, 18)
-                                    .padding(.bottom, 34)
+                                    .padding(.bottom, IS_SMALL_WIDTH ? 28 : 34)
                                 }
                             }
                             .padding(.bottom, viewModel.showPlaybackControls ? 60 : 0)
@@ -309,12 +309,12 @@ struct ConversationPlayerView: View {
                         
                         Text("No messages saved in this chat")
                             .foregroundColor(.white)
-                            .font(.system(size: 24, weight: .semibold, design: .rounded))
+                            .font(.system(size: IS_SMALL_PHONE ? 21 : 24, weight: .semibold, design: .rounded))
                             .padding(.bottom, 4)
                         
                         Text("Tap and hold on a message to save it!")
                             .foregroundColor(.white)
-                            .font(.system(size: 18, weight: .regular, design: .rounded))
+                            .font(.system(size: IS_SMALL_PHONE ? 16 : 18, weight: .regular, design: .rounded))
                             .padding(.bottom, 10)
                     }
                     .frame(width: SCREEN_WIDTH - 12, height: 150)
@@ -332,7 +332,7 @@ struct ConversationPlayerView: View {
                             Image("x")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 28, height: 28)
+                                .frame(width: IS_SMALL_WIDTH ? 24 : 28, height: IS_SMALL_WIDTH ? 24 : 28)
                                 .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
                                 .padding(.leading, 12)
                                 .padding(.top, 12 + TOP_PADDING)
@@ -350,6 +350,12 @@ struct ConversationPlayerView: View {
             print("")
             sliderValue = 0
         })
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
         
     }
     

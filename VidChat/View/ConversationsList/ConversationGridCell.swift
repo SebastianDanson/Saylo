@@ -140,7 +140,7 @@ struct ConversationGridCell: View {
                 
                 
                 Text(chat.name)
-                    .font(.system(size: 13, weight: .regular))
+                    .font(.system(size: IS_SMALL_PHONE ? 12 : 13, weight: .regular))
                     .lineLimit(1)
                     .foregroundColor(.white)
                     .overlay(

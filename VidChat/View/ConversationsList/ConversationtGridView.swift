@@ -43,7 +43,6 @@ struct ConversationGridView: View {
                 NavigationLink(destination: ConversationView().environment(\.colorScheme, .dark)
                                 .navigationBarHidden(true), isActive: $viewModel.showConversation) { EmptyView() }
                 
-                
                 NavigationLink(destination: MakeCallView()
                                 .navigationBarHidden(true), isActive: $viewModel.isCalling) { EmptyView() }
                 
@@ -193,9 +192,9 @@ struct ConversationGridView: View {
                 }
                 
             })
-            .alert(isPresented: $photosViewModel.showNoAccessToPhotosAlert) {
-                allowPhotosAlert()
-            }
+//            .alert(isPresented: $photosViewModel.showNoAccessToPhotosAlert) {
+//                allowPhotosAlert()
+//            }
             .navigationBarHidden(true)
             .zIndex(1)
             .edgesIgnoringSafeArea(conversationViewModel.showKeyboard || viewModel.showSearchBar ? .top : .all)
@@ -299,7 +298,7 @@ struct NavView: View {
     
     @Binding var searchText: String
     
-    private let toolBarWidth: CGFloat = 38
+    private let toolBarWidth: CGFloat = IS_SMALL_WIDTH ? 32 : 38
     
     var body: some View {
         
@@ -307,11 +306,9 @@ struct NavView: View {
             
             VStack {
                 
-                
                 HStack(alignment: .top) {
                     
-                    
-                    HStack(spacing: 12) {
+                    HStack(spacing: IS_SMALL_WIDTH ? 8 : 12) {
                         
                         Button {
                             viewModel.showSettingsView = true
@@ -340,7 +337,7 @@ struct NavView: View {
                                         .resizable()
                                         .renderingMode(.template)
                                         .scaledToFit()
-                                        .frame(height: toolBarWidth - 20)
+                                        .frame(height: toolBarWidth - (IS_SMALL_WIDTH ? 15 : 20))
                                         .foregroundColor(.white)
                                         .padding(.leading, 1)
                                 )
@@ -360,14 +357,14 @@ struct NavView: View {
                         } label: {
                             Text(chat.name)
                                 .foregroundColor(.white)
-                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                .font(.system(size: IS_SMALL_PHONE ? 18 : 22, weight: .semibold, design: .rounded))
                                 .padding(.top, 4)
                         }
                     }
                     
                     Spacer()
                     
-                    HStack(alignment: .top, spacing: 6 ) {
+                    HStack(alignment: .top, spacing: IS_SMALL_WIDTH ? 2 : 6) {
                         
                         Button {
                             
@@ -389,7 +386,7 @@ struct NavView: View {
                                             .resizable()
                                             .renderingMode(.template)
                                             .scaledToFit()
-                                            .frame(height: toolBarWidth - 20)
+                                            .frame(height: toolBarWidth - (IS_SMALL_WIDTH ? 16 : 20))
                                             .foregroundColor(.white)
                                             .padding(.leading, -1)
                                         
@@ -428,7 +425,7 @@ struct NavView: View {
                                     .resizable()
                                     .renderingMode(.template)
                                     .scaledToFit()
-                                    .frame(height: toolBarWidth - 19)
+                                    .frame(height: toolBarWidth - (IS_SMALL_WIDTH ? 14 : 19))
                                     .foregroundColor(.white)
                                     .padding(.top, 0)
                                 
@@ -469,19 +466,14 @@ struct NavView: View {
                 }
                 .padding(.horizontal, 6)
                 .padding(.top, TOP_PADDING)
-                //                } else {
-                //                    SearchBar(text: $searchText, isEditing: $viewModel.showSearchBar, isFirstResponder: true, placeHolder: "Search", showSearchReturnKey: false)
-                //                        .padding(.horizontal)
-                //                        .padding(.top, TOP_PADDING)
-                //
-                //                }
+                
                 Spacer()
             }
         }
         .sheet(isPresented: $viewModel.showSettingsView) {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
-        
+
         .frame(width: SCREEN_WIDTH)
         .padding(.top, 8)
         

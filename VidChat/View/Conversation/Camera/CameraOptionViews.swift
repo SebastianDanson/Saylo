@@ -11,18 +11,18 @@ struct MessageOptions: View {
     @Binding var type: MainViewType
     @Binding var isRecording: Bool
     
-    let dimension: CGFloat = IS_SMALL_PHONE ? 32 : 34
+    let dimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 26 : 32) : 34
+    let spacing: CGFloat = IS_SMALL_WIDTH ? 24 : 32
     
     var body: some View {
         
-        HStack(spacing: 32) {
+        HStack(spacing: spacing) {
             
             if !isRecording {
                 
                 Button {
                     setMessageType(type: .Photo)
                 } label: {
-                    
                     Image(systemName: "camera")
                         .resizable()
                         .scaledToFit()
@@ -41,11 +41,9 @@ struct MessageOptions: View {
                         .frame(width: dimension, height: dimension)
                         .foregroundColor(.white)
                         .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                    
                 }
             }
-            
-            
+                        
             Button {
                 setMessageType(type: .Note)
             } label: {
@@ -56,19 +54,6 @@ struct MessageOptions: View {
                     .foregroundColor(.white)
                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
             }
-            
-            //
-            //                Button {
-            //                    setMessageType(type: .Saylo)
-            //                    ConversationViewModel.shared.updateLastVisitedForChat(withId: ConversationViewModel.shared.chatId)
-            //                } label: {
-            //                    Text("Saylos")
-            //                        .foregroundColor(type == .Saylo ? .white : Color(.systemGray5))
-            //                        .font(.system(size: type == .Saylo ? 17 : 16, weight: type == .Saylo ? .bold : .semibold, design: .rounded))
-            //                        .frame(width: 70)
-            //                }
-            
-            //            }
         }
     }
     
@@ -106,7 +91,7 @@ struct SaveButton: View {
                     viewModel.savePhoto()
                     hasSaved = true
                 } else {
-                    PhotosViewModel.shared.showNoAccessToPhotosAlert = true
+                    MainViewModel.shared.showAllowPhotoAccessAlert = true
                 }
             }
             

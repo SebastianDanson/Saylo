@@ -35,7 +35,9 @@ struct ContentView: View {
                         MainViewModel.shared.cameraView
                             .ignoresSafeArea()
                             .navigationBarHidden(true)
+                            .navigationViewStyle(StackNavigationViewStyle())
                     }
+                    .navigationViewStyle(StackNavigationViewStyle())
                 }
             }
             

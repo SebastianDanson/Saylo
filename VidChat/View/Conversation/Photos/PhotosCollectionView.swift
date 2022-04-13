@@ -34,7 +34,7 @@ class PhotosCollectionView: UIView {
     private var cachedIndexes: [IndexPath] = []
     private var lastCacheFrameCenter: CGFloat = 0
     private var cacheQueue = DispatchQueue(label: "cache_queue")
-    private let width = (UIScreen.main.bounds.width - 3) / 4
+    private let width = (SCREEN_WIDTH - 3) / 4
     private var initialCenter:CGPoint!
     private var collectionView: UICollectionView!
     
@@ -66,7 +66,7 @@ class PhotosCollectionView: UIView {
     private let dragView: UIView = {
         
         let view = UIView()
-        view.setDimensions(height: 16, width: UIScreen.main.bounds.width)
+        view.setDimensions(height: 16, width: SCREEN_WIDTH)
         view.backgroundColor = .systemGray6
         
         view.layer.cornerRadius = 8

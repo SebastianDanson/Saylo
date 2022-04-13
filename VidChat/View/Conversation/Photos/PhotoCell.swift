@@ -10,7 +10,7 @@ import SwiftUI
 struct PhotoCell: View {
     
     let image: Image
-    let width =  UIScreen.main.bounds.width / 4
+    let width =  SCREEN_WIDTH / 4
     var body: some View {
         image
             .resizable()

@@ -31,7 +31,8 @@ class MainViewModel: ObservableObject {
     @Published var chatsViewDragOffset: CGSize = .zero
     @Published var selectedMessage: Message?
     @Published var settingsChat: Chat?
-
+    @Published var showAllowPhotoAccessAlert = false
+    
     var audioRecorder = AudioRecorder()
     
     var isCameraAlert = false

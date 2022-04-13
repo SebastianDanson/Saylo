@@ -11,6 +11,7 @@ import PhotosUI
 struct LastPhotoView: View {
     
     @State var selectedImage: UIImage?
+    let dimension: CGFloat = IS_SMALL_WIDTH ? 30 : 35
     
     var body: some View {
         
@@ -20,7 +21,7 @@ struct LastPhotoView: View {
                 Image(uiImage: selectedImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 35, height: 35)
+                    .frame(width: dimension, height: dimension)
                     .cornerRadius(8)
                     .padding(1) // Width of the border
                     .background(Color.white) // Color of the border
@@ -31,7 +32,7 @@ struct LastPhotoView: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
-                    .frame(width: 32, height: 32)
+                    .frame(width: dimension - 3, height: dimension - 3)
                     .shadow(color: Color(white: 0, opacity: 0.4), radius: 4, x: 0, y: 4)
                 
             }
@@ -42,7 +43,7 @@ struct LastPhotoView: View {
                 }
             }
         }
-        .frame(width: 35, height: 35)
+        .frame(width: dimension, height: dimension)
     }
     
     func queryLastPhoto(resizeTo size: CGSize?, queryCallback: @escaping ((UIImage?) -> Void)) {
@@ -51,6 +52,7 @@ struct LastPhotoView: View {
         
         let requestOptions = PHImageRequestOptions()
         requestOptions.isSynchronous = true
+        
         
         let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
         if let asset = fetchResult.firstObject {
@@ -66,7 +68,6 @@ struct LastPhotoView: View {
                 queryCallback(image)
             })
         }
-        
     }
 }
 
