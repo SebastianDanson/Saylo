@@ -67,7 +67,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-      
+        self.startRunning()
 //        self.setupSession()
         
 //        DispatchQueue.global().async {
@@ -77,19 +77,17 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //        if previewLayer == nil {
 //        }
         
+        self.previewLayer?.session = captureSession
+       
+        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
 //        setupPreview()
         
-        self.previewLayer?.session = captureSession
-        let connection = self.videoDataOutput.connection(with: AVMediaType.video)
-        if let connection = connection, connection.isVideoOrientationSupported {
-            connection.videoOrientation = AVCaptureVideoOrientation.portrait
-            connection.isVideoMirrored = true
-        }
-    }
+       
+//    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -204,6 +202,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             if self.captureSession.canAddOutput(self.videoDataOutput) {
                 self.captureSession.addOutput(self.videoDataOutput)
+                
+                let connection = self.videoDataOutput.connection(with: AVMediaType.video)
+                if let connection = connection, connection.isVideoOrientationSupported {
+                    connection.videoOrientation = AVCaptureVideoOrientation.portrait
+                    connection.isVideoMirrored = true
+                }
             }
             
             if self.captureSession.canAddOutput(self.photoOutput) {
