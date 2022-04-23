@@ -21,7 +21,11 @@ class MakeCallViewModel: ObservableObject {
         guard let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id}) else {return}
         
         CallManager.shared.currentChat = chat
-         
-        CallManager.shared.startOutgoingCall(of: currentUser.firstName + " " + currentUser.lastName, pushKitToken: chatMember.pushKitToken)
+        COLLECTION_USERS.document(chatMember.id).getDocument { snapshot, _ in
+            if let data = snapshot?.data() {
+                let user = User(dictionary: data, id: chatMember.id)
+                CallManager.shared.startOutgoingCall(of: currentUser.firstName + " " + currentUser.lastName, pushKitToken: user.pushKitToken)
+            }
+        }
     }
 }

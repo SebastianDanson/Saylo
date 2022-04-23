@@ -12,14 +12,14 @@ struct FindFriendsView: View {
         
     var body: some View {
         
-        VStack(spacing: 20) {
+        VStack(spacing: 14) {
             
             VStack(spacing: 4) {
                 
                 Text("Welcome to Saylo")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.systemBlack)
-                    .padding(.top, 15)
+                    .padding(.top, 14)
                 
                 Text("Add friends and family to chat")
                     .font(.system(size: 15, weight: .medium))
@@ -38,18 +38,17 @@ struct FindFriendsView: View {
                 Text("Find Friends")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.systemWhite)
-                    .padding(.vertical, 11)
-                    .padding(.horizontal, 28)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 24)
                     .background(Color.mainBlue)
                     .clipShape(Capsule())
                 
-            }.padding(.bottom, 15)
+            }.padding(.bottom, 12)
             
         }
-        .frame(width: SCREEN_WIDTH - 40, height: 150)
+        .frame(width: SCREEN_WIDTH - 40, height: 120)
         .background(Color.popUpSystemWhite)
         .cornerRadius(12)
-        .padding(.vertical, 28)
         
     }
 }

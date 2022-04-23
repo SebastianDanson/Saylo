@@ -67,6 +67,7 @@ class Message: ObservableObject {
     //Content
     let type: MessageType
     var url: String?
+    var firebaseUrl: String?
     var asset: AVURLAsset?
     let text: String?
     var image: UIImage?
@@ -111,6 +112,8 @@ class Message: ObservableObject {
         
         //content
         self.url = dictionary["url"] as? String
+        self.firebaseUrl = dictionary["url"] as? String
+        
         self.type = MessageType.getType(forString: dictionary["type"] as? String ?? "")
         
         self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date(timeIntervalSince1970: TimeInterval(dictionary["timestamp"] as? Int ?? 0)))
@@ -141,8 +144,9 @@ class Message: ObservableObject {
             "timestamp": Int(timestamp.dateValue().timeIntervalSince1970)
         ] as [String: Any]
         
-        if let url = url {
-            dictionary["url"] = url
+        if let firebaseUrl = firebaseUrl, let url = url {
+            
+            dictionary["url"] = firebaseUrl
             
             if type == .Video {
                 dictionary["userStoredUrl"] = url

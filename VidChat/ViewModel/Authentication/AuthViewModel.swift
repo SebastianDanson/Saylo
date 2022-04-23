@@ -105,6 +105,9 @@ class AuthViewModel: ObservableObject {
             
             COLLECTION_USERS.document(user.uid).setData(data) { _ in }
             
+            Flurry.logEvent("AccountCreated")
+
+            
             completion(error)
         }
     }

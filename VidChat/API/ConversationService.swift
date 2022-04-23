@@ -204,15 +204,20 @@ struct ConversationService {
             let id = messageDic["id"] as? String ?? ""
             let message = Message(dictionary: messageDic, id: id)
             
+            let isSaved = savedMessagesDic.contains(where: {$0["messageId"] as? String == id})
+            message.isSaved = isSaved
+            
             if let timeStamp = messageDic["timestamp"] as? Timestamp {
                 
                 if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 || message.isTeamSayloMessage {
                     updatedMessageDic.append(messageDic)
                 } else {
+                    
+                    let isSaved = savedMessagesDic.contains(where: {$0["messageId"] as? String == id})
                     reactionsDic.removeAll(where: {$0["messageId"] as? String == id})
                     savedMessagesDic.removeAll(where: {$0["messageId"] as? String == id})
                     
-                    if message.type != .Text && !message.isSaved {
+                    if message.type != .Text && !isSaved {
                         if message.type == .Video {
                             let storageRef = UploadType.video.getFilePath(messageId: id)
                             

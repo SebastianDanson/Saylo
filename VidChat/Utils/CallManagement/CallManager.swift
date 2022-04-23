@@ -260,6 +260,7 @@ extension CallManager: AgoraRtcEngineDelegate {
         if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
             
             getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
+                print("WORKED")
                 self?.inCall = true
                 self?.callID = uid
                 self?.channelName = currentCall.uuid.uuidString

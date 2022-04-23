@@ -42,7 +42,7 @@ struct MakeCallView: View {
                                 
                                 ForEach(Array(conversationGridViewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                     
-                                    if !chat.isTeamSaylo {
+                                    if !chat.isTeamSaylo && chat.isDm {
                                         ConversationGridCell(chat: $conversationGridViewModel.chats[i], selectedChatId: .constant(""), textColor: .systemBlack)
                                             .flippedUpsideDown()
                                             .scaleEffect(x: -1, y: 1, anchor: .center)

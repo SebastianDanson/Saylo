@@ -47,6 +47,8 @@
 		0687E9F72794B1E1004E1187 /* ChatMembersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F62794B1E1004E1187 /* ChatMembersView.swift */; };
 		0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F82794B38A004E1187 /* ChatMemberCell.swift */; };
 		0687E9FB2794B9A0004E1187 /* ChatMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9FA2794B9A0004E1187 /* ChatMember.swift */; };
+		06883E642808BE0B00708E42 /* Flurry in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E632808BE0B00708E42 /* Flurry */; };
+		06883E672808BE7100708E42 /* AgoraRtcKit in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E662808BE7100708E42 /* AgoraRtcKit */; };
 		0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29427E38D13007E5A54 /* PlaybackControls.swift */; };
 		0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29627E41406007E5A54 /* RecordTimerView.swift */; };
 		069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11DE2797573F00988829 /* EnableContactsView.swift */; };
@@ -83,7 +85,6 @@
 		06F1A32C277D522300A0F992 /* SetProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A32B277D522300A0F992 /* SetProfileImageView.swift */; };
 		06F1A32E277E7A9E00A0F992 /* SetUsernameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A32D277E7A9E00A0F992 /* SetUsernameView.swift */; };
 		06F1A330277E811800A0F992 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A32F277E811800A0F992 /* LandingPageView.swift */; };
-		06F63F5327B61C670081A22D /* FlurryAnalyticsSPM in Frameworks */ = {isa = PBXBuildFile; productRef = 06F63F5227B61C670081A22D /* FlurryAnalyticsSPM */; };
 		3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F26E2700F768009E0029 /* ConversationGridCell.swift */; };
 		3F08F27227017A36009E0029 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27127017A36009E0029 /* CameraView.swift */; };
 		3F08F27427017A3D009E0029 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F08F27327017A3D009E0029 /* CameraViewController.swift */; };
@@ -92,7 +93,6 @@
 		3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B6B271FBA5600BA2A73 /* ImageCell.swift */; };
 		3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B7027206E3800BA2A73 /* VideoCallViewController.swift */; };
 		3F112B732720716300BA2A73 /* VideoCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B722720716300BA2A73 /* VideoCallView.swift */; };
-		3F112B762720720900BA2A73 /* AgoraRtcKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3F112B752720720900BA2A73 /* AgoraRtcKit */; };
 		3F112B7C2720736400BA2A73 /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B7B2720736400BA2A73 /* CallView.swift */; };
 		3F112B7E27207AFE00BA2A73 /* VideoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B7D27207AFE00BA2A73 /* VideoCollectionViewCell.swift */; };
 		3F112B802720B1C200BA2A73 /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F112B7F2720B1C200BA2A73 /* ProviderDelegate.swift */; };
@@ -354,6 +354,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06883E672808BE7100708E42 /* AgoraRtcKit in Frameworks */,
+				06883E642808BE0B00708E42 /* Flurry in Frameworks */,
 				3F1768122713ED550049ADBA /* FirebaseCrashlytics in Frameworks */,
 				3F17680E2713ED550049ADBA /* FirebaseAnalytics in Frameworks */,
 				062D28DA277AD21E00B25637 /* CropViewController in Frameworks */,
@@ -362,9 +364,7 @@
 				3F1768102713ED550049ADBA /* FirebaseAuth in Frameworks */,
 				3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */,
 				3F1768182713ED550049ADBA /* FirebaseFunctions in Frameworks */,
-				3F112B762720720900BA2A73 /* AgoraRtcKit in Frameworks */,
 				3F17681C2713ED550049ADBA /* FirebaseStorage in Frameworks */,
-				06F63F5327B61C670081A22D /* FlurryAnalyticsSPM in Frameworks */,
 				3F1768162713ED550049ADBA /* FirebaseFirestore in Frameworks */,
 				3F1768142713ED550049ADBA /* FirebaseDynamicLinks in Frameworks */,
 				3FDEE7B72721C1EE00DF43C6 /* AgoraRtmKit in Frameworks */,
@@ -878,10 +878,10 @@
 				3F1768192713ED550049ADBA /* FirebaseMessaging */,
 				3F17681B2713ED550049ADBA /* FirebaseStorage */,
 				3F17681E2713ED960049ADBA /* Kingfisher */,
-				3F112B752720720900BA2A73 /* AgoraRtcKit */,
 				3FDEE7B62721C1EE00DF43C6 /* AgoraRtmKit */,
 				062D28D9277AD21E00B25637 /* CropViewController */,
-				06F63F5227B61C670081A22D /* FlurryAnalyticsSPM */,
+				06883E632808BE0B00708E42 /* Flurry */,
+				06883E662808BE7100708E42 /* AgoraRtcKit */,
 			);
 			productName = VideoMessengerApp;
 			productReference = 3F485D7726FD453B0071532B /* Saylo.app */;
@@ -917,10 +917,10 @@
 			packageReferences = (
 				3F17680C2713ED550049ADBA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				3F17681D2713ED960049ADBA /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				3F112B742720720900BA2A73 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */,
 				3FDEE7B52721C1EE00DF43C6 /* XCRemoteSwiftPackageReference "AgoraRtm_iOS" */,
 				062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
-				06F63F5127B61C670081A22D /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
+				06883E622808BE0B00708E42 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
+				06883E652808BE7100708E42 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */,
 			);
 			productRefGroup = 3F485D7826FD453B0071532B /* Products */;
 			projectDirPath = "";
@@ -1135,7 +1135,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.21;
+				MARKETING_VERSION = 1.25;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1163,7 +1163,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.21;
+				MARKETING_VERSION = 1.25;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1309,7 +1309,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.21;
+				MARKETING_VERSION = 1.25;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1336,7 +1336,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.21;
+				MARKETING_VERSION = 1.25;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1385,7 +1385,7 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		06F63F5127B61C670081A22D /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
+		06883E622808BE0B00708E42 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/flurry/FlurrySwiftPackage/";
 			requirement = {
@@ -1393,12 +1393,12 @@
 				minimumVersion = 11.0.0;
 			};
 		};
-		3F112B742720720900BA2A73 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */ = {
+		06883E652808BE7100708E42 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AgoraIO/AgoraRtcEngine_iOS";
+			repositoryURL = "https://github.com/AgoraIO/AgoraRtcEngine_iOS.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMinorVersion;
+				minimumVersion = 3.4.5;
 			};
 		};
 		3F17680C2713ED550049ADBA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -1433,14 +1433,14 @@
 			package = 062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
 		};
-		06F63F5227B61C670081A22D /* FlurryAnalyticsSPM */ = {
+		06883E632808BE0B00708E42 /* Flurry */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 06F63F5127B61C670081A22D /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
-			productName = FlurryAnalyticsSPM;
+			package = 06883E622808BE0B00708E42 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
+			productName = Flurry;
 		};
-		3F112B752720720900BA2A73 /* AgoraRtcKit */ = {
+		06883E662808BE7100708E42 /* AgoraRtcKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3F112B742720720900BA2A73 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */;
+			package = 06883E652808BE7100708E42 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */;
 			productName = AgoraRtcKit;
 		};
 		3F17680D2713ED550049ADBA /* FirebaseAnalytics */ = {

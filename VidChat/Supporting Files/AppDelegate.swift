@@ -9,7 +9,7 @@ import UIKit
 import PushKit
 import Firebase
 import AVFoundation
-import FlurryAnalytics
+//import FlurryAnalytics
 import gRPC_Core
 
 @UIApplicationMain

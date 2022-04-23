@@ -22,7 +22,6 @@ struct CallView: View {
             ZStack(alignment: .bottom) {
                 VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, showCallOptions: $showCallOptions)
                     .onAppear {
-                        self.showVideo = true
                         self.isFrontFacing.toggle()
                         self.isFrontFacing.toggle()
                     }
