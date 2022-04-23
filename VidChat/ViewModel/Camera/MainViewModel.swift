@@ -136,6 +136,13 @@ class MainViewModel: ObservableObject {
     }
     
     func handleTap() {
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playAndRecord)
+        } catch(let error) {
+            print(error.localizedDescription)
+        }
+        
         isRecording ? stopRecording() : startRecording()
     }
     

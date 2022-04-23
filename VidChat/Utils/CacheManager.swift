@@ -122,7 +122,7 @@ class CacheManager {
                 let fullUrl = tempDir + fileURL
                 let date = (try? FileManager.default.attributesOfItem(atPath: fullUrl))?[.creationDate] as? Date
                 
-                if let date = date, date.timeIntervalSince1970 < Date().timeIntervalSince1970 - 86400  {
+                if let date = date, date.timeIntervalSince1970 < Date().timeIntervalSince1970 - (86400 * 2)  {
                     try FileManager.default.removeItem(at: URL(fileURLWithPath: fullUrl))
                 }
             }

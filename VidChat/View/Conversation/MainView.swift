@@ -61,26 +61,26 @@ struct MainView: View {
             
             ZStack {
                 
-                ZStack {
-                    if !IS_SMALL_PHONE {
-                        VStack {
-                            Spacer()
-                            
-                            UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 2)
-                        }
-                    }
+                //                ZStack {
+                //                    if !IS_SMALL_PHONE {
+                VStack {
+                    Spacer()
                     
-                    VStack {
-                        Spacer()
-                        
-                        if !(IS_SMALL_PHONE && viewModel.selectedView == .Saylo) {
-                            ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
-                                .background(Color.init(white: 0, opacity: IS_SMALL_PHONE ? 0.5 : 0.0))
-                        }
-                    }
+                    UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - 4)
                 }
-                .zIndex(viewModel.chatsViewDragOffset != .zero ? 4 : 1)
+                //                    }
+                //
+                //                    VStack {
+                //                        Spacer()
+                //
+                //                        if !(IS_SMALL_PHONE && viewModel.selectedView == .Saylo) {
+                //                            ChatsView(selectedView: $viewModel.selectedView, dragOffset: $viewModel.chatsViewDragOffset)
+                //                                .background(Color.init(white: 0, opacity: IS_SMALL_PHONE ? 0.5 : 0.0))
+                //                        }
+                //                    }
+                //                }
+                //                .zIndex(viewModel.chatsViewDragOffset != .zero ? 4 : 1)
                 
                 //Camera Flash View
                 if viewModel.isRecording && viewModel.isFrontFacing && viewModel.hasFlash {
@@ -185,20 +185,42 @@ struct MainView: View {
                             }
                         }
                         
-                        if IS_SMALL_PHONE {
-                            if !viewModel.isRecording && !viewModel.showPhotos {
-                                let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
-                                UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                                    .padding(.bottom, viewModel.selectedView == .Saylo ?
-                                             normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING - (SCREEN_WIDTH < 350 ? 20 : 0) : normalPadding)
-                            }
-                        }
+                        //                        if IS_SMALL_PHONE {
+                        //                            if !viewModel.isRecording && !viewModel.showPhotos {
+                        //                                let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
+                        //                                UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                        //                                    .padding(.bottom, viewModel.selectedView == .Saylo ?
+                        //                                             normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING - (SCREEN_WIDTH < 350 ? 20 : 0) : normalPadding)
+                        //                            }
+                        //                        }
                     }
                 }
                 .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
                 .zIndex(3)
                 
-                
+                VStack {
+                    
+                    HStack {
+                        
+                        if viewModel.selectedView != .Saylo {
+                        Button {
+                            ConversationGridViewModel.shared.showConversation = false
+                        } label: {
+                            Image("x")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: IS_SMALL_WIDTH ? 24 : 28, height: IS_SMALL_WIDTH ? 24 : 28)
+                                .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+                                .padding(.leading, 12)
+                                .padding(.top, 12 + TOP_PADDING)
+                        }
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                }
             }
             .zIndex(3)
             
@@ -246,25 +268,23 @@ struct MainView: View {
             }
             
             if let message = viewModel.selectedMessage {
-                MessageOptionsView(message: message)
-                    .zIndex(6)
+                MessageOptionsView(message: message).zIndex(6)
             }
-            
-            
         }
         .overlay(
             ZStack {
                 
                 
                 //NavView
-                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
-                    
-                    VStack {
-                        NavView(searchText: $searchText)
-                        Spacer()
-                    }
-                    
-                } else if viewModel.isRecording {
+                //                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
+                //
+                //                    VStack {
+                //                        NavView(searchText: $searchText)
+                //                        Spacer()
+                //                    }
+                //
+                //                } else
+                if viewModel.isRecording {
                     VStack {
                         RecordTimerView()
                             .padding(.top, TOP_PADDING_OFFSET + 8)
@@ -276,9 +296,9 @@ struct MainView: View {
         )
         .navigationBarHidden(true)
         .ignoresSafeArea(edges: .bottom)
-        .onAppear {
-            cameraView.startRunning()
-        }
+//        .onAppear {
+//            cameraView.startRunning()
+//        }
         
     }
     
@@ -702,7 +722,7 @@ struct ChatsView: View {
                                 
                             }
                         })
-                            .padding(.horizontal, 8)
+                        .padding(.horizontal, 8)
                         
                     } else {
                         
@@ -728,23 +748,23 @@ struct ChatsView: View {
                                             }
                                     }
                                 })
-                                    .padding(.horizontal, 8)
-                                    .padding(.top, 8)
+                                .padding(.horizontal, 8)
+                                .padding(.top, 8)
                                 
                             }.background(GeometryReader {
                                 Color.clear.preference(key: ViewOffsetKey.self,
                                                        value: -$0.frame(in: .named("scroll")).origin.y)
                                 
                             })
-                                .onPreferenceChange(ViewOffsetKey.self) {
+                            .onPreferenceChange(ViewOffsetKey.self) {
+                                
+                                if $0 < -10 {
                                     
-                                    if $0 < -10 {
-                                        
-                                        withAnimation {
-                                            dragOffset = .zero
-                                        }
+                                    withAnimation {
+                                        dragOffset = .zero
                                     }
                                 }
+                            }
                         }
                         .coordinateSpace(name: "scroll")
                         

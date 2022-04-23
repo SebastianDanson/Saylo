@@ -18,30 +18,34 @@ struct ContentView: View {
             
             //if not logged in -> show landing page
             // else show main interface
-//            if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
-//
-//                NavigationView {
-//                    LandingPageView()
-//                        .navigationViewStyle(StackNavigationViewStyle())
-//                }.navigationViewStyle(StackNavigationViewStyle())
-//
-//
-//            } else {
-//
-//                if conversationViewModel.showCall {
-//                    CallView().ignoresSafeArea()
-//                } else {
+            if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
+
+                NavigationView {
+                    LandingPageView()
+                        .navigationViewStyle(StackNavigationViewStyle())
+                }.navigationViewStyle(StackNavigationViewStyle())
+
+
+            } else {
+
+                if conversationViewModel.showCall {
+                    CallView().ignoresSafeArea()
+                } else {
 //                    NavigationView {
 //                        MainViewModel.shared.cameraView
 //                            .ignoresSafeArea()
 //                            .navigationBarHidden(true)
 //                            .navigationViewStyle(StackNavigationViewStyle())
+                        ConversationGridView()
+//                            .ignoresSafeArea()
+//                            .navigationBarHidden(true)
+//                            .navigationViewStyle(StackNavigationViewStyle())
 //                    }
 //                    .navigationViewStyle(StackNavigationViewStyle())
-//                }
-//            }
+                }
+            }
             
-            ConversationGridView()
+//            ConversationGridView()
             
 //            MainViewModel.shared.cameraView
 //                .ignoresSafeArea()

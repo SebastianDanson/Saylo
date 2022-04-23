@@ -164,6 +164,8 @@ extension AppDelegate: PKPushRegistryDelegate {
         providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: completion)
        
     }
+    
+
 }
 
 
@@ -241,7 +243,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                 
                 ConversationGridViewModel.shared.fetchConversation(withId: chatId) {
                     
-                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording {
+                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording, ConversationGridViewModel.shared.showConversation {
                         
                         if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId}) {
                             chat.hasUnreadMessage = true

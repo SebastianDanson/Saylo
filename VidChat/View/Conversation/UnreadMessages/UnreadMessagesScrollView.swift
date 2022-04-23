@@ -18,9 +18,7 @@ struct UnreadMessagesScrollView: View {
         
         ZStack(alignment: .top) {
             
-            
             let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
-            let messageHeight = IS_SMALL_PHONE && selectedView == .Saylo ? SMALL_PHONE_SAYLO_HEIGHT : MINI_MESSAGE_HEIGHT
             
             if messages.count > 0 {
                 
@@ -33,7 +31,7 @@ struct UnreadMessagesScrollView: View {
                     
                     ScrollViewReader { reader in
                         
-                        HStack(spacing: 3) {
+                        HStack(spacing: 4) {
                             
                             ForEach(Array(messages.enumerated()), id: \.1.id) { i, message in
                                 
@@ -52,7 +50,6 @@ struct UnreadMessagesScrollView: View {
                                             
                                             ZStack {
                                                 
-                                                
                                                 if ConversationViewModel.shared.isPlayable(index: i), let urlString = message.url, let url = URL(string: urlString) {
                                                     
                                                     if message.type == .Video {
@@ -61,13 +58,13 @@ struct UnreadMessagesScrollView: View {
                                                             Image(uiImage: image)
                                                                 .resizable()
                                                                 .scaledToFill()
-                                                                .frame(width: messageHeight, height: messageHeight)
+                                                                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                                 .cornerRadius(6)
                                                         } else if let image = createVideoThumbnail(from: url) {
                                                             Image(uiImage: image)
                                                                 .resizable()
                                                                 .scaledToFill()
-                                                                .frame(width: messageHeight, height: messageHeight)
+                                                                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                                 .cornerRadius(6)
                                                         }
                                                     } else {
@@ -81,7 +78,7 @@ struct UnreadMessagesScrollView: View {
                                                                 .foregroundColor(.white)
                                                             Spacer()
                                                         }
-                                                        .frame(width: messageHeight, height: messageHeight)
+                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                         .background(Color.alternateMainBlue)
                                                         .cornerRadius(6)
                                                     }
@@ -97,7 +94,7 @@ struct UnreadMessagesScrollView: View {
                                                             .padding()
                                                         
                                                     }
-                                                    .frame(width: messageHeight, height: messageHeight)
+                                                    .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                     .background(Color.alternateMainBlue)
                                                     .cornerRadius(6)
                                                     
@@ -108,13 +105,13 @@ struct UnreadMessagesScrollView: View {
                                                         KFImage(URL(string: url))
                                                             .resizable()
                                                             .scaledToFill()
-                                                            .frame(width: messageHeight, height: messageHeight)
+                                                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                             .cornerRadius(6)
                                                     } else if let image = message.image {
                                                         Image(uiImage: image)
                                                             .resizable()
                                                             .scaledToFill()
-                                                            .frame(width: messageHeight, height: messageHeight)
+                                                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                             .cornerRadius(6)
                                                     }
                                                 }
@@ -125,7 +122,7 @@ struct UnreadMessagesScrollView: View {
                                                 ZStack {
                                                     Color.init(white: 0, opacity: 0.5)
                                                 }
-                                                .frame(width: messageHeight, height: messageHeight)
+                                                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                 .cornerRadius(6)
                                                 
                                                 Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
@@ -147,7 +144,6 @@ struct UnreadMessagesScrollView: View {
                                                         .padding(.horizontal, 4)
                                                         .padding(.vertical, 1)
                                                         .background(Color.mainBlue)
-                                                    //                                                .border(Color.white, width: 2)
                                                         .clipShape(Capsule())
                                                         .overlay(
                                                             RoundedRectangle(cornerRadius: 20)
@@ -173,23 +169,23 @@ struct UnreadMessagesScrollView: View {
                 
                 if !viewModel.showSavedPosts {
                     
-                    VStack(spacing: 0) {
-                        
+                    VStack(spacing: 2) {
                         
                         Text("Record a Saylo for \(viewModel.chat?.name ?? "")")
                             .foregroundColor(.white)
-                            .font(.system(size: IS_SMALL_PHONE ? 16 : 19, weight: .semibold, design: .rounded))
+                            .font(.system(size: 22, weight: .semibold, design: .rounded))
                             .padding(.bottom, 2)
                         
-                        Text("Saylo's dissappear after 24h")
+                        Text("Saylo's dissappear after 48h")
                             .foregroundColor(.white)
-                            .font(.system(size: IS_SMALL_PHONE ? 12 : 14, weight: .regular, design: .rounded))
+                            .font(.system(size: 16, weight: .regular, design: .rounded))
                             .padding(.bottom, IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 2 : 8) : 6)
+                        
                     }
+                    .frame(width: SCREEN_WIDTH - 12, height: MINI_MESSAGE_HEIGHT - 8)
+                    .background(Color(white: 0.1, opacity: 1))
+                    .cornerRadius(8, corners: .allCorners)
                     
-                    .frame(width: IS_SMALL_PHONE ? SCREEN_WIDTH : SCREEN_WIDTH - 12, height: IS_SMALL_PHONE ? MINI_MESSAGE_HEIGHT : MINI_MESSAGE_HEIGHT - 8)
-                    .background(Color(white: 0.1, opacity: IS_SMALL_PHONE ? 0.6 : 1))
-                    .cornerRadius(8, corners: IS_SMALL_PHONE ? [.topLeft, .topRight] : .allCorners)
                 }
             }
             

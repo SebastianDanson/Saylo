@@ -66,14 +66,29 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.setupSession()
-        self.captureSession.startRunning()
+
+      
+//        self.setupSession()
         
-        if previewLayer == nil {
-            setupPreview()
-        }
+//        DispatchQueue.global().async {
+//            self.captureSession.startRunning()
+//        }
+        
+//        if previewLayer == nil {
+//        }
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        setupPreview()
         
         self.previewLayer?.session = captureSession
+        let connection = self.videoDataOutput.connection(with: AVMediaType.video)
+        if let connection = connection, connection.isVideoOrientationSupported {
+            connection.videoOrientation = AVCaptureVideoOrientation.portrait
+            connection.isVideoMirrored = true
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -195,6 +210,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 self.captureSession.addOutput(self.photoOutput)
             }
             
+//            let connection = self.videoDataOutput.connection(with: AVMediaType.video)
+//            if let connection = connection, connection.isVideoOrientationSupported {
+//                connection.videoOrientation = AVCaptureVideoOrientation.portrait
+//            }
+            
+            
             self.captureSession.commitConfiguration()
             
             
@@ -254,6 +275,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 print("COULD NOT ADD INPUT")
             }
             
+            self.captureSession.outputs.forEach { output in
+                output.connections.forEach({
+                    $0.videoOrientation = .portrait
+                    if $0.isVideoMirroringSupported {
+                        $0.isVideoMirrored = MainViewModel.shared.isFrontFacing
+                    }
+                })
+            }
+            
             self.captureSession.commitConfiguration()
         }
         
@@ -275,7 +305,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         previewLayer!.cornerRadius = 14
         previewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+//        previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         
         self.view.layer.masksToBounds = true
         self.view.layer.cornerRadius = 14
@@ -418,32 +448,33 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         
-        let writable = canWrite()
+//        DispatchQueue.global().async {
+        let writable = self.canWrite()
         
-        
-        if writable, sessionAtSourceTime == nil {
+        if writable, self.sessionAtSourceTime == nil {
             // start writing
-            sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            videoWriter.startSession(atSourceTime: sessionAtSourceTime!)
+            self.sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            self.videoWriter.startSession(atSourceTime: self.sessionAtSourceTime!)
         }
         
-        if !MainViewModel.shared.isShowingPhotoCamera, output == videoDataOutput {
+        if !MainViewModel.shared.isShowingPhotoCamera, output == self.videoDataOutput {
+
+//            connection.videoOrientation = .portrait
+//            if connection.isVideoMirroringSupported, MainViewModel.shared.isFrontFacing {
+//                connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
+//            }
+        }
+//
+        
+        if writable, output == self.videoDataOutput,
+           (self.videoWriterInput.isReadyForMoreMediaData) {
             
-            connection.videoOrientation = .portrait
-            if connection.isVideoMirroringSupported, MainViewModel.shared.isFrontFacing {
-                connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
-            }
+            self.videoWriterInput.append(sampleBuffer)
+        } else if writable, output == self.audioDataOutput,
+                  (self.audioWriterInput.isReadyForMoreMediaData) {
+            self.audioWriterInput.append(sampleBuffer)
         }
-        
-        
-        if writable, output == videoDataOutput,
-           (videoWriterInput.isReadyForMoreMediaData) {
-            
-            videoWriterInput.append(sampleBuffer)
-        } else if writable, output == audioDataOutput,
-                  (audioWriterInput.isReadyForMoreMediaData) {
-            audioWriterInput.append(sampleBuffer)
-        }
+   //        }
         
         
     }

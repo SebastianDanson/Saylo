@@ -97,7 +97,7 @@ struct ConversationService {
             
             let message = Message(dictionary: message, id: id, isSaved: isSaved, savedByUid: savedByUid)
             
-            if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 || message.isTeamSayloMessage {
+            if Int(message.timestamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - (86400 * 2) || message.isTeamSayloMessage {
                 messages.append(message)
             } else if shouldRemoveMessages {
                 removeMessages = true
@@ -209,7 +209,7 @@ struct ConversationService {
             
             if let timeStamp = messageDic["timestamp"] as? Timestamp {
                 
-                if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - 86400 || message.isTeamSayloMessage {
+                if Int(timeStamp.dateValue().timeIntervalSince1970) > Int(Date().timeIntervalSince1970) - (86400 * 2) || message.isTeamSayloMessage {
                     updatedMessageDic.append(messageDic)
                 } else {
                     

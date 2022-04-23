@@ -237,6 +237,12 @@ extension VideoCallViewController: CallManagerDelegate {
 extension AVAudioPlayer {
     
     func playWithRate() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+        } catch(let error) {
+            print(error.localizedDescription)
+        }
+        
         self.play()
         self.rate = ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
     }

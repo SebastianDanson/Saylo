@@ -66,7 +66,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //        MainViewModel.shared.cameraView.setupSession()
         
         ConversationGridViewModel.shared.showCachedChats()
-        MainViewModel.shared.cameraView.cameraView.setupWriter()
+        MainViewModel.shared.cameraView.cameraView.setupSession()
 
     }
     

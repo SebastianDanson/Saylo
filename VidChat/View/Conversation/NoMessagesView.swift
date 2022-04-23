@@ -28,7 +28,7 @@ struct NoMessagesView: View {
                 .padding(.top, 1)
                 .padding(.bottom, 0.5)
                        
-            Text("Unsaved Saylos disappear after 24h")
+            Text("Unsaved Saylos disappear after 48h")
                 .font(.system(size: 20, weight: .medium, design: .rounded))
                 .foregroundColor(.white)
                 .padding(.bottom, 40)

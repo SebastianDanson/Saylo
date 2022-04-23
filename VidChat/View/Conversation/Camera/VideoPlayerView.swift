@@ -334,6 +334,12 @@ extension AVPlayer {
     
     func playWithRate() {
         
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+        } catch(let error) {
+            print("ERROR With .playback " + error.localizedDescription)
+        }
+        
         self.play()
         self.rate = !ConversationViewModel.shared.showCamera && ConversationViewModel.shared.isTwoTimesSpeed ? 2 : 1
     }

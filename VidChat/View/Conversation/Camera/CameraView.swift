@@ -17,7 +17,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> CameraViewController {
         //  cameraViewController.delegate = context.coordinator
-        cameraViewController.isVideo = MainViewModel.shared.isRecording
+//        cameraViewController.isVideo = MainViewModel.shared.isRecording
         return cameraViewController
     }
     
@@ -51,8 +51,9 @@ struct CameraView: UIViewControllerRepresentable {
     
     
     public func setupSession() {
-            cameraViewController.setupPreview()
-            cameraViewController.startSession()
+        cameraViewController.setupSession()
+        cameraViewController.setupPreview()
+//        cameraViewController.startSession()
         //        cameraViewController.setupAudio()
     }
     
