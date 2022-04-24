@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Firebase
+import Photos
 
 class ConversationGridViewModel: ObservableObject {
     
@@ -27,6 +28,7 @@ class ConversationGridViewModel: ObservableObject {
     @Published var isCalling = false
     @Published var temp = false
     @Published var hasUnreadMessages = false
+    @Published var showAllFriends = false
     
     var allChats = [Chat]()
     
@@ -81,22 +83,22 @@ class ConversationGridViewModel: ObservableObject {
         
         
         
-//        withAnimation {
+        //        withAnimation {
+        
+        
+        chat.hasSent = hasSent
+        chat.isSending = false
+        
+        DispatchQueue.main.async {
             
-            
-            chat.hasSent = hasSent
-            chat.isSending = false
-            
-            DispatchQueue.main.async {
-                
-                if let index = self.sendingChats.firstIndex(where: {$0.id == chat.id}) {
-                    self.sendingChats.remove(at: index)
-                } else {
-                    self.sendingChats.append(chat)
-                }
+            if let index = self.sendingChats.firstIndex(where: {$0.id == chat.id}) {
+                self.sendingChats.remove(at: index)
+            } else {
+                self.sendingChats.append(chat)
             }
-            
-//        }
+        }
+        
+        //        }
         
         if hasSent {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -143,6 +145,11 @@ class ConversationGridViewModel: ObservableObject {
             if let data = snapshot?.data() {
                 let chat = Chat(dictionary: data, id: id)
                 
+                chat.messages.forEach { message in
+                    if let urlString = message.url, let url = URL(string: urlString) {
+                        self.createVideoThumbnail(from: url)
+                    }
+                }
                 if let index = self.chats.firstIndex(where: {$0.id == chat.id}) {
                     self.chats[index] = chat
                 } else {
@@ -157,6 +164,28 @@ class ConversationGridViewModel: ObservableObject {
             }
             
             completion()
+        }
+    }
+    
+    private func createVideoThumbnail(from url: URL) {
+        
+        let asset = AVAsset(url: url)
+        let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+        assetImgGenerate.appliesPreferredTrackTransform = true
+        assetImgGenerate.maximumSize = CGSize(width: MINI_MESSAGE_WIDTH * 3, height: MINI_MESSAGE_HEIGHT * 3)
+        
+        let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 600)
+        DispatchQueue.global().async {
+            do {
+                let img = try assetImgGenerate.copyCGImage(at: time, actualTime: nil)
+                let thumbnail = UIImage(cgImage: img)
+                ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
+                
+            }
+            catch {
+                print("ERRROR: \(url)"  + error.localizedDescription)
+                ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
+            }
         }
     }
     
@@ -194,7 +223,7 @@ class ConversationGridViewModel: ObservableObject {
                 
                 if count == user.chats.count {
                     
-                   
+                    
                     self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
                     
                     if let index = self.chats.firstIndex(where: {$0.isTeamSaylo}) {
@@ -208,9 +237,9 @@ class ConversationGridViewModel: ObservableObject {
                         ConversationViewModel.shared.setChat(chat: self.chats[0])
                     }
                     
-//                    withAnimation {
-//                        self.chats = chats
-//                    }
+                    //                    withAnimation {
+                    //                        self.chats = chats
+                    //                    }
                     
                     self.setChatCache()
                     
@@ -295,6 +324,17 @@ class ConversationGridViewModel: ObservableObject {
             ConversationViewModel.shared.setChat(chat: chat)
         } else if chats.count > 0 {
             ConversationViewModel.shared.setChat(chat: chats [0])
+        }
+    }
+    
+    func showChat(chat: Chat) {
+        DispatchQueue.global().async {
+            MainViewModel.shared.startRunning()
+        }
+        ConversationViewModel.shared.setChat(chat: chat)
+        
+        withAnimation {
+            self.showConversation = true
         }
     }
     

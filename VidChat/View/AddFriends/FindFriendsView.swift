@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct FindFriendsView: View {
-        
+    
     var body: some View {
         
         VStack(spacing: 14) {
@@ -31,6 +31,7 @@ struct FindFriendsView: View {
                 
                 withAnimation {
                     ConversationGridViewModel.shared.showFindFriends = true
+                    ConversationGridViewModel.shared.showAllFriends = false
                 }
                 
             } label: {
@@ -46,7 +47,7 @@ struct FindFriendsView: View {
             }.padding(.bottom, 12)
             
         }
-        .frame(width: SCREEN_WIDTH - 40, height: 120)
+        .frame(width: SCREEN_WIDTH - 40, height: 128)
         .background(Color.popUpSystemWhite)
         .cornerRadius(12)
         
@@ -58,7 +59,7 @@ struct TipView: View {
     let header: String
     let subText: String
     let imageName: String
-        
+    
     var body: some View {
         
         VStack(spacing: 20) {

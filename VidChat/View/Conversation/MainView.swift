@@ -140,7 +140,7 @@ struct MainView: View {
                             if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo {
                                 
                                 HStack {
-                                    
+//                                    
                                     Button {
                                         viewModel.showPhotos = true
                                     } label: {
@@ -225,47 +225,47 @@ struct MainView: View {
             .zIndex(3)
             
             
-            Group {
-                if viewModel.showAddFriends {
-                    AddFriendsView()
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                        .cornerRadius(14)
-                }
-                
-                if viewModel.showFindFriends {
-                    ContactsView()
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH)
-                        .cornerRadius(14)
-                }
-                
-                if viewModel.showNewChat {
-                    NewConversationView()
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH)
-                        .cornerRadius(14)
-                }
-                
-                if let chat = viewModel.settingsChat {
-                    ChatSettingsView(chat: chat)
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH)
-                        .cornerRadius(14)
-                }
-                
-                if viewModel.isCalling {
-                    MakeCallView()
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                        .cornerRadius(14)
-                }
-            }
+//            Group {
+//                if viewModel.showAddFriends {
+//                    AddFriendsView()
+//                        .zIndex(5)
+//                        .transition(.move(edge: .bottom))
+//                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+//                        .cornerRadius(14)
+//                }
+//
+//                if viewModel.showFindFriends {
+//                    ContactsView()
+//                        .zIndex(5)
+//                        .transition(.move(edge: .bottom))
+//                        .frame(width: SCREEN_WIDTH)
+//                        .cornerRadius(14)
+//                }
+//
+//                if viewModel.showNewChat {
+//                    NewConversationView()
+//                        .zIndex(5)
+//                        .transition(.move(edge: .bottom))
+//                        .frame(width: SCREEN_WIDTH)
+//                        .cornerRadius(14)
+//                }
+//
+//                if let chat = viewModel.settingsChat {
+//                    ChatSettingsView(chat: chat)
+//                        .zIndex(5)
+//                        .transition(.move(edge: .bottom))
+//                        .frame(width: SCREEN_WIDTH)
+//                        .cornerRadius(14)
+//                }
+//
+//                if viewModel.isCalling {
+//                    MakeCallView()
+//                        .zIndex(5)
+//                        .transition(.move(edge: .bottom))
+//                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+//                        .cornerRadius(14)
+//                }
+//            }
             
             if let message = viewModel.selectedMessage {
                 MessageOptionsView(message: message).zIndex(6)

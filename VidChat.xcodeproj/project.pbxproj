@@ -80,6 +80,8 @@
 		06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */; };
 		06E387C927EFFE6500D28714 /* LastPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E387C827EFFE6500D28714 /* LastPhotoView.swift */; };
 		06ECD9042815041000870A51 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06ECD9032815041000870A51 /* FriendsView.swift */; };
+		06ECD9062815BD5800870A51 /* AllFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06ECD9052815BD5800870A51 /* AllFriendsView.swift */; };
+		06ECD9082815BFE500870A51 /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06ECD9072815BFE500870A51 /* FriendCell.swift */; };
 		06F1A326277CEAE400A0F992 /* SetNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A325277CEAE400A0F992 /* SetNameView.swift */; };
 		06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */; };
 		06F1A32A277D334F00A0F992 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */; };
@@ -264,6 +266,8 @@
 		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/Utils/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
 		06E387C827EFFE6500D28714 /* LastPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastPhotoView.swift; sourceTree = "<group>"; };
 		06ECD9032815041000870A51 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
+		06ECD9052815BD5800870A51 /* AllFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllFriendsView.swift; sourceTree = "<group>"; };
+		06ECD9072815BFE500870A51 /* FriendCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
 		06F1A325277CEAE400A0F992 /* SetNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetNameView.swift; sourceTree = "<group>"; };
 		06F1A327277D053600A0F992 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		06F1A329277D334F00A0F992 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
@@ -511,6 +515,8 @@
 				0640D63227990FF500D7A244 /* SuggestedChatsView.swift */,
 				065D2DF42788A8D6002F3816 /* ChatImageCircle.swift */,
 				06ECD9032815041000870A51 /* FriendsView.swift */,
+				06ECD9052815BD5800870A51 /* AllFriendsView.swift */,
+				06ECD9072815BFE500870A51 /* FriendCell.swift */,
 			);
 			path = ConversationsList;
 			sourceTree = "<group>";
@@ -1007,6 +1013,7 @@
 				0616EC0D27928AD9006565FE /* ChatSettingsViewModel.swift in Sources */,
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
 				3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */,
+				06ECD9062815BD5800870A51 /* AllFriendsView.swift in Sources */,
 				063CAAB3277B9D0200C84318 /* AddFriendsView.swift in Sources */,
 				3F8B029926FF7DC200841565 /* EditProfileView.swift in Sources */,
 				063CAAB7277BA0C300C84318 /* SettingsView.swift in Sources */,
@@ -1073,6 +1080,7 @@
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,
+				06ECD9082815BFE500870A51 /* FriendCell.swift in Sources */,
 				063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */,
 				3F112C592721B4DF00BA2A73 /* NSUserActivity+StartCallConvertible.swift in Sources */,
 				069D11EB279892E000988829 /* Countries.json in Sources */,

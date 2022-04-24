@@ -130,10 +130,13 @@ class Message: ObservableObject {
         
         //checkCache
         if type == .Video || type == .Audio, exportVideo, let urlString = url, let url = URL(string: urlString) {
+            
             let storedUrl = dictionary["userStoredUrl"] as? String ?? ""
             self.url = CacheManager.getCachedUrl(url, userStoredURL: URL(string: storedUrl), isVideo: type == .Video).absoluteString
         }
     }
+    
+    
     
     func getDictionary() -> [String:Any] {
                 

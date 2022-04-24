@@ -13,6 +13,7 @@ struct UnreadMessagesScrollView: View {
     
     @ObservedObject var viewModel = ConversationViewModel.shared
     @Binding var selectedView: MainViewType
+    @State var thumbnails = [String:UIImage?]()
     
     var body: some View {
         
@@ -21,11 +22,11 @@ struct UnreadMessagesScrollView: View {
             let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
             
             if messages.count > 0 {
-                
-                if IS_SMALL_PHONE {
-                    Color.init(white: 0, opacity: 0.5)
-                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                }
+//
+//                if IS_SMALL_PHONE {
+//                    Color.init(white: 0, opacity: 0.5)
+//                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+//                }
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     
@@ -60,7 +61,8 @@ struct UnreadMessagesScrollView: View {
                                                                 .scaledToFill()
                                                                 .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                                 .cornerRadius(6)
-                                                        } else if let image = createVideoThumbnail(from: url) {
+                                                        }
+                                                        else if let image = createVideoThumbnail(from: url) {
                                                             Image(uiImage: image)
                                                                 .resizable()
                                                                 .scaledToFill()
@@ -164,7 +166,7 @@ struct UnreadMessagesScrollView: View {
                         }
                     }
                 }
-                
+              
             } else {
                 
                 if !viewModel.showSavedPosts {
@@ -193,9 +195,13 @@ struct UnreadMessagesScrollView: View {
         }
         .frame(width: SCREEN_WIDTH)
         
+        
     }
     
+    
     private func createVideoThumbnail(from url: URL) -> UIImage? {
+        
+        
         let asset = AVAsset(url: url)
         let assetImgGenerate = AVAssetImageGenerator(asset: asset)
         assetImgGenerate.appliesPreferredTrackTransform = true

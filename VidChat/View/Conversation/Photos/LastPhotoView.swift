@@ -38,9 +38,11 @@ struct LastPhotoView: View {
             }
         }.onAppear {
             if PhotosViewModel.shared.getHasAccessToPhotos() {
-                queryLastPhoto(resizeTo: nil) { image in
-                    self.selectedImage = image
-                }
+//                DispatchQueue.global().async {
+                    self.queryLastPhoto(resizeTo: nil) { image in
+                        self.selectedImage = image
+                    }
+//                }
             }
         }
         .frame(width: dimension, height: dimension)

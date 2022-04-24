@@ -23,8 +23,8 @@ struct AddFriendsView: View {
                     Button {
                         
                         withAnimation {
-                            MainViewModel.shared.showAddFriends = false
-                            MainViewModel.shared.showFindFriends = false
+                            ConversationGridViewModel.shared.showAddFriends = false
+                            ConversationGridViewModel.shared.showFindFriends = false
                         }
                         
                         AddFriendsViewModel.shared.reset()

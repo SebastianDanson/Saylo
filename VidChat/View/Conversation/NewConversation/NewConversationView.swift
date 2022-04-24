@@ -12,7 +12,6 @@ import Combine
 struct NewConversationView: View {
     
     @StateObject var viewModel = NewConversationViewModel.shared
-    @StateObject var mainViewModel = MainViewModel.shared
 
     @State var searchText: String = ""
     @State var chatName: String = ""
@@ -39,7 +38,7 @@ struct NewConversationView: View {
                                 }
                             } else {
                                 withAnimation {
-                                    mainViewModel.showNewChat = false
+                                    ConversationGridViewModel.shared.showNewChat = false
                                 }
                                 
                                 viewModel.addedChats.removeAll()
@@ -70,9 +69,10 @@ struct NewConversationView: View {
                     }
                     
                     
-                    Text("New Chat")
-                        .foregroundColor(.systemBlack)
-                        .fontWeight(.semibold)
+                 
+                        Text("New Chat")
+                            .foregroundColor(.systemBlack)
+                            .fontWeight(.semibold)
                     
                 }
                 .frame(height: 44)

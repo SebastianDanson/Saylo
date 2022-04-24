@@ -31,7 +31,7 @@ struct SettingsView: View {
                 Text("Logout"),
                 action: {
                     ConversationGridViewModel.shared.showSettingsView = false
-                    MainViewModel.shared.showSettingsView = false
+//                    MainViewModel.shared.showSettingsView = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         AuthViewModel.shared.logout()
                     }
