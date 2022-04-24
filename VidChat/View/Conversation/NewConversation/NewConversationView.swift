@@ -32,11 +32,14 @@ struct NewConversationView: View {
                         Button {
                             
                             if viewModel.isCreatingNewChat {
+                                
                                 withAnimation {
                                     viewModel.isCreatingNewChat = false
                                     viewModel.isTypingName = false
                                 }
+                                
                             } else {
+                                
                                 withAnimation {
                                     ConversationGridViewModel.shared.showNewChat = false
                                 }

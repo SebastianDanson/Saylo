@@ -9,11 +9,11 @@ import SwiftUI
 
 struct EditChatNameView: View {
     
-    @State var chatName: String
+    @Binding var chatName: String
     @Binding var showEditName: Bool
     
-    init(chatName: String, showEditName: Binding<Bool>) {
-        self._chatName = State(initialValue: chatName)
+    init(chatName: Binding<String>, showEditName: Binding<Bool>) {
+        self._chatName = chatName
         self._showEditName = showEditName
     }
     

@@ -97,7 +97,15 @@ class ChatSettingsViewModel: ObservableObject {
     
     func updateChatName(name: String) {
         
-        guard let chat = ConversationViewModel.shared.chat else { return }
+        var chat: Chat?
+        
+        if ConversationGridViewModel.shared.showConversation {
+            chat = ConversationViewModel.shared.chat
+        } else if let settingsChat = ConversationGridViewModel.shared.selectedSettingsChat {
+            chat = settingsChat
+        }
+        
+        guard let chat = chat else { return }
         
         let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
         
@@ -117,8 +125,9 @@ class ChatSettingsViewModel: ObservableObject {
             ConversationViewModel.shared.addMessage(text: "Changed the group name to \(name)", type: .Text, chatId: chat.id)
         }
         
-        ConversationViewModel.shared.chat?.name = name
-        
+    
+        ConversationGridViewModel.shared.selectedSettingsChat?.fullName = name
+        ConversationGridViewModel.shared.chats.first(where: {$0.id == chat.id})?.fullName = name
     }
     
     func updateProfileImage(image: UIImage) {

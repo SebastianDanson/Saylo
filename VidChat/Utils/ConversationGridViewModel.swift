@@ -29,7 +29,8 @@ class ConversationGridViewModel: ObservableObject {
     @Published var temp = false
     @Published var hasUnreadMessages = false
     @Published var showAllFriends = false
-    
+    @Published var selectedSettingsChat: Chat?
+
     var allChats = [Chat]()
     
     static let shared = ConversationGridViewModel()
@@ -333,9 +334,9 @@ class ConversationGridViewModel: ObservableObject {
         }
         ConversationViewModel.shared.setChat(chat: chat)
         
-        withAnimation {
+//        withAnimation {
             self.showConversation = true
-        }
+//        }
     }
     
     func getCachedChats() -> [Chat] {

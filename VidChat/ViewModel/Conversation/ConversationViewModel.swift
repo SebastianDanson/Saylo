@@ -120,7 +120,7 @@ class ConversationViewModel: ObservableObject {
         self.index = max(0, chat.messages.count - 1)
         ConversationService.updateLastVisited(forChat: chat)
         chat.hasUnreadMessage = false
-    
+        print(chat.id, "IDID")
     }
     
     func getSavedPosts() {

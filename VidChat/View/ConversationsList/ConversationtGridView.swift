@@ -163,6 +163,10 @@ struct ConversationGridView: View {
                             .zIndex(3)
                             .transition(.move(edge: .bottom))
                     }
+                    
+                    if let chat = viewModel.selectedSettingsChat {
+                        ChatSettingsView(chat: chat)
+                    }
                 }
                 
                 if viewModel.showConversation {

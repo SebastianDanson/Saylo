@@ -27,8 +27,14 @@ struct ProfileHeaderView: View {
             HStack {
                 
                 Button {
-                    MainViewModel.shared.showSettingsView = false
-                    MainViewModel.shared.settingsChat = nil
+                 
+                    
+                    withAnimation {
+                        MainViewModel.shared.showSettingsView = false
+                        MainViewModel.shared.settingsChat = nil
+                        ConversationGridViewModel.shared.selectedSettingsChat = nil
+                    }
+                    
                     mode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "chevron.down")

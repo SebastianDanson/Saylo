@@ -72,6 +72,7 @@ struct ChatSettingsView: View {
         )
         
         NavigationView {
+            
             ZStack {
                 
                 ScrollView {
@@ -114,7 +115,14 @@ struct ChatSettingsView: View {
                             Button {
                                 
                                 withAnimation {
+                                    
+                                    if !ConversationGridViewModel.shared.showConversation, let chat = ConversationGridViewModel.shared.selectedSettingsChat {
+                                        ConversationGridViewModel.shared.showChat(chat: chat)
+                                    }
+                                    
+                                    ConversationGridViewModel.shared.selectedSettingsChat = nil
                                     MainViewModel.shared.settingsChat = nil
+                                    ConversationViewModel.shared.getSavedPosts()
                                 }
                                 
                                 withAnimation {
@@ -198,7 +206,7 @@ struct ChatSettingsView: View {
                 }
                 
                 if isEditingName {
-                    EditChatNameView(chatName: chat.name, showEditName: $isEditingName)
+                    EditChatNameView(chatName: $name, showEditName: $isEditingName)
                 }
                 
             }

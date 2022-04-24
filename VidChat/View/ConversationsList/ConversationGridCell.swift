@@ -79,11 +79,20 @@ struct ConversationGridCell: View {
                         
                         Spacer()
 
-                        Image("ChatOptions")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
-                            .frame(width: 5, height: 20)
+                        Button {
+                            
+                            withAnimation {
+                                ConversationGridViewModel.shared.selectedSettingsChat = chat
+                            }
+                           
+                        } label: {
+                            Image("ChatOptions")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
+                                .frame(width: 5, height: 20)
+                        }
+                       
                         
                         Spacer()
                     }

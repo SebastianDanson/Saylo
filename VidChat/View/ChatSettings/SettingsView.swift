@@ -68,9 +68,7 @@ struct SettingsView: View {
                 SettingsCell(image: Image("logout"), imageColor: Color(.systemGray), title: "Logout", leadingPadding: 2, imageDimension: 17)
             }.alert(isPresented: $showLogoutAlert) {
                 logoutAlert
-            }
-
-            
+            }            
         }
         .frame(width: getWidth())
         .background(Color.popUpSystemWhite)

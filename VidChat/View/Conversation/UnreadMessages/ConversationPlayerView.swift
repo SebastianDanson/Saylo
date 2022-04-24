@@ -144,8 +144,8 @@ struct ConversationPlayerView: View {
                                                 ReactionView(messageId: messages[index].id,
                                                              reactions: $viewModel.messages[viewModel.index].reactions,
                                                              showReactions: $showReactions)
-                                                    .transition(.scale)
-                                                    .padding(.bottom, 8)
+                                                .transition(.scale)
+                                                .padding(.bottom, 8)
                                             }
                                         } else {
                                             
@@ -240,7 +240,7 @@ struct ConversationPlayerView: View {
                                                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                             }
                                         }
-                               
+                                        
                                     }
                                     .padding(.trailing, 18)
                                     .padding(.bottom, IS_SMALL_WIDTH ? 28 : 34)
@@ -261,7 +261,7 @@ struct ConversationPlayerView: View {
                                                             profileImage: messages[index].userProfileImage,
                                                             name: messages[index].username,
                                                             showTwoTimeSpeed: viewModel.isPlayable())
-                                                .padding(.bottom, -8)
+                                            .padding(.bottom, -8)
                                         }
                                         
                                         Spacer()
@@ -339,6 +339,8 @@ struct ConversationPlayerView: View {
                         }
                         
                         Spacer()
+                        
+                        
                     }
                     
                     Spacer()
