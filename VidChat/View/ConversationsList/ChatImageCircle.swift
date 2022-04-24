@@ -9,92 +9,95 @@ import SwiftUI
 import Kingfisher
 
 
-//struct ChatImage: View {
-//    
-//    let profileImage1: String
-//    let profileImage2: String?
-//    let width: CGFloat
-//    let addedWidth: CGFloat
-//    
-//    init(chat: Chat, width: CGFloat) {
-//        
-//        let currentUserId = AuthViewModel.shared.getUserId()
-//        
-//        if chat.isDm || chat.profileImage != "" {
-//            self.profileImage1 = chat.profileImage
-//            self.profileImage2 = nil
-//        } else {
-//            var chatMembers = chat.chatMembers
-//            
-//            chatMembers.removeAll(where: {$0.id == currentUserId})
-//            
-//            self.profileImage1 = chatMembers[0].profileImage
-//            
-//            if chatMembers.count > 1{
-//                self.profileImage2 = chatMembers[1].profileImage
-//            } else {
-//                self.profileImage2 = nil
-//            }
-//        }
-//        
-//        self.width = width
-//        self.addedWidth = width/25 + 1
-//        
-//    }
-//    
-//    var body: some View {
-//        
-//        if let profileImage2 = profileImage2 {
-//            
-//            ZStack {
-//                
-//                ZStack {
-//                    
-//
-//                    Circle()
-//                        .stroke(Color.lighterGray, lineWidth: addedWidth)
-//                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth))
-//
-//                    KFImage(URL(string: profileImage1))
-//                        .resizable()
-//                        .scaledToFill()
-//                        .frame(width: width/1.8 + addedWidth, height:  (width/1.8 + addedWidth))
-//                        .cornerRadius(9)
-//                    
-//                }
-//                .padding(.top, width/2.3)
-//                .padding(.trailing, width/3.2)
-//                .zIndex(2)
-//                      
-//                KFImage(URL(string: profileImage2))
-//                    .resizable()
-//                    .scaledToFill()
-//                    .frame(width: width/1.8 + addedWidth, height: (width/1.8 + addedWidth))
-//                    .cornerRadius(10)
-//                    .padding(.bottom, width/2.3)
-//                    .padding(.leading, width/3.1)
-//                
-//            }
-//            .frame(width: width, height: width)
-//            .background(Color.lighterGray)
-//            .cornerRadius(width/2)
+struct ChatImage: View {
+    
+    let profileImage1: String
+    let profileImage2: String?
+    let width: CGFloat
+    let addedWidth: CGFloat
+    let ratio = 1.3
+    
+    init(chat: Chat, width: CGFloat) {
+        
+        let currentUserId = AuthViewModel.shared.getUserId()
+        
+        if chat.isDm || chat.profileImage != "" {
+            self.profileImage1 = chat.profileImage
+            self.profileImage2 = nil
+        } else {
+            var chatMembers = chat.chatMembers
+            
+            chatMembers.removeAll(where: {$0.id == currentUserId})
+            
+            self.profileImage1 = chatMembers[0].profileImage
+            
+            if chatMembers.count > 1{
+                self.profileImage2 = chatMembers[1].profileImage
+            } else {
+                self.profileImage2 = nil
+            }
+        }
+        
+        self.width = width
+        self.addedWidth = width/25 + 1
+        
+    }
+    
+    var body: some View {
+        
+        if let profileImage2 = profileImage2 {
+            
+            let smallerWidth = width/1.8 + addedWidth
+
+            ZStack {
+                
+                ZStack {
+                    
+
+                    Circle()
+                        .stroke(Color.lighterGray, lineWidth: addedWidth)
+                        .frame(width: smallerWidth, height:  smallerWidth * ratio)
+
+                    KFImage(URL(string: profileImage1))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: smallerWidth, height:  smallerWidth * ratio)
+                        .cornerRadius(9)
+                    
+                }
+                .padding(.top, width/2.3)
+                .padding(.trailing, width/3.2)
+                .zIndex(2)
+                      
+                KFImage(URL(string: profileImage2))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: smallerWidth, height: smallerWidth * ratio)
+                    .cornerRadius(10)
+                    .padding(.bottom, width/2.3)
+                    .padding(.leading, width/3.1)
+                
+            }
+            .frame(width: width, height: width * 1.4)
+            .background(Color.lighterGray)
+            .cornerRadius(width/10)
 //            .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 10, x: 0, y: 2)
-//
-//            
-//        } else {
-//            
-//            KFImage(URL(string: profileImage1))
-//                .resizable()
-//                .scaledToFill()
-//                .background(Color(.systemGray))
-//                .frame(width: width, height: width)
-//                .cornerRadius(width/2)
+
+            
+        } else {
+            
+            KFImage(URL(string: profileImage1))
+                .resizable()
+                .scaledToFill()
+                .background(Color(.systemGray))
+                .frame(width: width, height: width * ratio)
+                .cornerRadius(width/10)
 //                .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 6)
-////                .clipShape(Circle())
-//        }
-//        
-//    }
-//}
+//                .clipShape(Circle())
+        }
+        
+    }
+}
 
 
 

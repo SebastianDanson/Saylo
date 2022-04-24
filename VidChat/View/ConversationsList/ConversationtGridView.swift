@@ -39,7 +39,7 @@ struct ConversationGridView: View {
             
             ZStack(alignment: .top) {
                 
-                Color.mainBackgroundGray.ignoresSafeArea()
+                Color.mainBackgroundBlue.ignoresSafeArea()
                 
 //                NavigationLink(destination: MainViewModel.shared.cameraView, isActive: $viewModel.showConversation) { EmptyView() }
                 
@@ -51,7 +51,7 @@ struct ConversationGridView: View {
                 
                 VStack {
                     
-                    NavView(searchText: $searchText).zIndex(5).padding(.top, 16)
+                    NavView(searchText: $searchText).zIndex(5).padding(.top, 8)
                     
                     Spacer()
                     
@@ -61,6 +61,9 @@ struct ConversationGridView: View {
                     //                            .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
                     //                            .padding(.top, TOP_PADDING + 56)
                     //                    }
+         
+                    FriendsView()
+                        .padding(.top, 16)
                     
                     
                     ZStack(alignment: .top) {
@@ -69,19 +72,35 @@ struct ConversationGridView: View {
                             
                             HStack {
                                 
-                                Text("Chats")
-                                    .font(Font.system(size: 26, weight: .bold))
+                                Text("Recent Chats")
+                                    .font(Font.system(size: 24, weight: .medium))
                                 
                                 Spacer()
                                 
-                                Image(systemName: "plus")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundColor(.black)
-                                    .frame(width: 25, height: 25)
+                                Button {
+                                    
+                                } label: {
+                                    HStack {
+                                        
+                                        Image(systemName: "plus")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(.white)
+                                            .frame(width: 14, height: 14)
+                                        
+                                        Text("New chat")
+                                            .foregroundColor(.white)
+                                            .font(Font.system(size: 14, weight: .medium))
+                                    }
+                                    .frame(width: 100, height: 32)
+                                    .background(Color.lightBlue)
+                                    .clipShape(Capsule())
+                                    
+                                }
+
                             }
                             .padding(.horizontal, 22)
-                            .padding(.top, 20)
+                            .padding(.top, 36)
                             
                             
                             Spacer()
@@ -107,15 +126,15 @@ struct ConversationGridView: View {
                                 
                             }
                         }
-                        .padding(.top, 68)
+                        .padding(.top, 85)
                     }
                     .background(Color.systemWhite)
                     .frame(width: SCREEN_WIDTH)
-                    .cornerRadius(34)
+                    .cornerRadius(48, corners: [.topLeft, .topRight])
                     .ignoresSafeArea(edges: .bottom)
                     .zIndex(2)
                     .transition(.move(edge: .bottom))
-                    .padding(.top, 14)
+                    .padding(.top, 24)
                 }
                 
                 
@@ -270,19 +289,19 @@ struct NavView: View {
                     
                     HStack(spacing: IS_SMALL_WIDTH ? 8 : 10) {
                         
-                        Button {
-                            viewModel.showSettingsView = true
-                        } label: {
-                            KFImage(URL(string: authViewModel.profileImage ?? ""))
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: toolBarWidth, height: toolBarWidth)
-                                .clipShape(Circle())
-                                .padding(1) // Width of the border
-                                .background(Color.white) // Color of the border
-                                .clipShape(Circle())
-                            //                                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
-                        }
+//                        Button {
+//                            viewModel.showSettingsView = true
+//                        } label: {
+//                            KFImage(URL(string: authViewModel.profileImage ?? ""))
+//                                .resizable()
+//                                .scaledToFill()
+//                                .frame(width: toolBarWidth, height: toolBarWidth)
+//                                .clipShape(Circle())
+//                                .padding(1) // Width of the border
+//                                .background(Color.white) // Color of the border
+//                                .clipShape(Circle())
+//                            //                                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
+//                        }
                         
                         //                        Button {
                         //                            withAnimation {
@@ -312,7 +331,12 @@ struct NavView: View {
                         //                            .frame(width: toolBarWidth, height: toolBarWidth)
                         
                         
-                    }
+//                    }
+                    
+                    Text("Saylo")
+                        .foregroundColor(.white)
+                        .font(.system(size: 30, weight: .medium, design: .rounded))
+                        .padding(.top, 7)
                     
                     Spacer()
                     
@@ -330,63 +354,68 @@ struct NavView: View {
                     //                                .padding(.top, 4)
                     //                        }
                     //                    }
-                    Text("Saylo")
-                        .foregroundColor(.white)
-                        .font(.system(size: 22, weight: .semibold, design: .rounded))
-                        .padding(.top, 7)
+                  
                     
                     Spacer()
                     
-                    HStack(alignment: .top, spacing: IS_SMALL_WIDTH ? 2 : 6) {
-                        
-                        Button {
-                            
-                            withAnimation {
-                                viewModel.showAddFriends = true
-                            }
-                            
-                            AuthViewModel.shared.hasUnseenFriendRequest = false
-                            
-                        } label: {
-                            ZStack {
-                                
-                                Circle()
-                                    .frame(width: toolBarWidth, height: toolBarWidth)
-                                    .foregroundColor(.white)
-                                    .overlay(
-                                        
-                                        Image("plusPerson")
-                                            .resizable()
-                                            .renderingMode(.template)
-                                            .scaledToFit()
-                                            .frame(height: toolBarWidth - (IS_SMALL_WIDTH ? 16 : 20))
-                                            .foregroundColor(.black)
-                                            .padding(.leading, -1)
-                                        
-                                    )
-                                //                                    .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
-                                    .padding(.top, -3)
-                                    .padding(.trailing, -6)
-                                
-                                
-                                if authViewModel.hasUnseenFriendRequest {
-                                    
-                                    VStack {
-                                        HStack {
-                                            Spacer()
-                                            
-                                            Circle()
-                                                .foregroundColor(Color(.systemRed))
-                                                .frame(width: 16, height: 16)
-                                            
-                                        }
-                                        Spacer()
-                                    }
-                                }
-                                
-                            }.frame(width: toolBarWidth + 6, height: toolBarWidth + 6)
-                        }
-                        
+                
+                    Image(systemName: "person.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+                        .foregroundColor(.white)
+//                }
+                    
+//                    HStack(alignment: .top, spacing: IS_SMALL_WIDTH ? 2 : 6) {
+//
+//                        Button {
+//
+//                            withAnimation {
+//                                viewModel.showAddFriends = true
+//                            }
+//
+//                            AuthViewModel.shared.hasUnseenFriendRequest = false
+//
+//                        } label: {
+//                            ZStack {
+//
+//                                Circle()
+//                                    .frame(width: toolBarWidth, height: toolBarWidth)
+//                                    .foregroundColor(.white)
+//                                    .overlay(
+//
+//                                        Image("plusPerson")
+//                                            .resizable()
+//                                            .renderingMode(.template)
+//                                            .scaledToFit()
+//                                            .frame(height: toolBarWidth - (IS_SMALL_WIDTH ? 16 : 20))
+//                                            .foregroundColor(.black)
+//                                            .padding(.leading, -1)
+//
+//                                    )
+//                                //                                    .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
+//                                    .padding(.top, -3)
+//                                    .padding(.trailing, -6)
+//
+//
+//                                if authViewModel.hasUnseenFriendRequest {
+//
+//                                    VStack {
+//                                        HStack {
+//                                            Spacer()
+//
+//                                            Circle()
+//                                                .foregroundColor(Color(.systemRed))
+//                                                .frame(width: 16, height: 16)
+//
+//                                        }
+//                                        Spacer()
+//                                    }
+//                                }
+//
+//                            }.frame(width: toolBarWidth + 6, height: toolBarWidth + 6)
+//                        }
+//
                         
                         //                        VStack(spacing: 14) {
                         //

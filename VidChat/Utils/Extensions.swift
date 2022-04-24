@@ -28,7 +28,8 @@ extension Color {
     static let toolBarIconDarkGray = Color(UIColor.toolBarIconDarkGray)
     static let videoPlayerGray = Color(UIColor.videoPlayerGray)
     static let backgroundGray = Color(UIColor.backgroundGray)
-    static let mainBackgroundGray = Color(UIColor.mainBackgroundGray)
+    static let mainBackgroundBlue = Color(UIColor.mainBackgroundBlue)
+    static let lightBlue = Color(UIColor.lightBlue)
     static let chevronGray = Color(UIColor.chevronGray)
     static let dividerGray = Color(UIColor.dividerGray)
     static let textGray = Color(UIColor.textGray)
@@ -149,8 +150,12 @@ extension UIColor {
         return trait.userInterfaceStyle == .dark ? .black : UIColor(red: 246/255, green: 246/255, blue: 247/255, alpha: 1)
     }
     
-    static let mainBackgroundGray = UIColor { (trait: UITraitCollection) -> UIColor in
+    static let lightBlue = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? .black : UIColor(red: 99/255, green: 163/255, blue: 233/255, alpha: 1)
+    }
+    
+    static let mainBackgroundBlue = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .black : UIColor(red: 80/255, green: 140/255, blue: 200/255, alpha: 1)
     }
     
     static let chevronGray = UIColor { (trait: UITraitCollection) -> UIColor in

@@ -14,7 +14,7 @@ struct ConversationGridCell: View {
     
     let width = SCREEN_WIDTH/5.5
     let textColor: Color
-    let diameter: CGFloat = 60
+    let diameter: CGFloat = 58
     
     init(chat: Binding<Chat>, selectedChatId: Binding<String>, textColor: Color = .white) {
         self._chat = chat
@@ -27,57 +27,71 @@ struct ConversationGridCell: View {
         ZStack {
             
             Color.systemWhite.ignoresSafeArea()
-            
+
             HStack(alignment:.top, spacing: 14) {
-                
-                ChatImageCircle(chat: chat, diameter: diameter)
-                    .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)
-                    .overlay(
-                        ZStack {
-                            
-                            if chat.chatMembers.count == 1 {
-                                VStack {
-                                    
-                                    HStack {
+                    
+                    ChatImageCircle(chat: chat, diameter: diameter)
+                        .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)
+                        .overlay(
+                            ZStack {
+                                
+                                if chat.chatMembers.count == 1 {
+                                    VStack {
                                         
-                                        Image(systemName: "hourglass")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 20, height: 20)
-                                            .padding(.leading, 4)
-                                            .padding(.top, 8)
-                                            .foregroundColor(.systemBlack)
+                                        HStack {
+                                            
+                                            Image(systemName: "hourglass")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 20, height: 20)
+                                                .padding(.leading, 4)
+                                                .padding(.top, 8)
+                                                .foregroundColor(.systemBlack)
+                                            
+                                            Spacer()
+                                            
+                                        }
                                         
                                         Spacer()
-                                        
                                     }
-                                    
-                                    Spacer()
                                 }
-                            }
-                        })
-                
-                VStack(alignment: .leading, spacing: 3) {
+                            })
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        
+                        Spacer()
+                        
+                        Text(chat.fullName)
+                            .foregroundColor(.black)
+                            .font(.system(size: 16, weight: .medium))
+                        
+                        Text("Sent 5 min ago")
+                            .foregroundColor(Color(.systemGray))
+                            .font(.system(size: 14, weight: .regular))
+                        
+                        Spacer()
+                        
+                    }
                     
                     Spacer()
                     
-                    Text(chat.fullName)
-                        .foregroundColor(.black)
-                        .font(.system(size: 18, weight: .medium))
-                    
-                    Text("Sent 5 min ago")
-                        .foregroundColor(Color(.systemGray))
-                        .font(.system(size: 15, weight: .regular))
-                    
-                    Spacer()
-                    
+                    VStack {
+                        
+                        Spacer()
+
+                        Image("ChatOptions")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
+                            .frame(width: 5, height: 20)
+                        
+                        Spacer()
+                    }
                 }
                 
-                Spacer()
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 8)
         }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 6)
         .frame(width: SCREEN_WIDTH)
         
         //            VStack(alignment: .center, spacing: 4) {
