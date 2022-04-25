@@ -14,32 +14,25 @@ struct PlaybackSlider: View {
     @Binding var sliderValue: Double
     @Binding var isPlaying: Bool
     @Binding var showPlaybackControls: Bool
-    
+    @State var showSlider = false
     @State var timer: Timer?
     
-    @State var prevValue = 0.0
     let viewModel = ConversationViewModel.shared
     
     var body: some View {
         
         SwiftUISlider(thumbColor: showPlaybackControls ? .white : .clear, minTrackColor: .white, maxTrackColor: .systemGray,
-                      value: $sliderValue, showPlaybackControls: $showPlaybackControls)
-            .onChange(of: sliderValue) { newValue in
-                
-                if abs(newValue - prevValue) > 2 * ( 0.1 / viewModel.videoLength) {
-                    handleSliderChanged()
-                }
-                
-                if newValue >= 1 {
-                    ConversationViewModel.shared.showNextMessage()
-                    DispatchQueue.main.async {
-                        prevValue = 0
-                        sliderValue = 0
-                    }
-                }
-                
-                prevValue = newValue
-            }
+                      value: $sliderValue, showPlaybackControls: $showPlaybackControls, showSlider: $showSlider)
+//            .onChange(of: sliderValue) { newValue in
+//
+//                if newValue >= 1 {
+//                    ConversationViewModel.shared.showNextMessage()
+//                    DispatchQueue.main.async {
+//                        sliderValue = 0
+//                    }
+//                }
+//
+//            }
             .onAppear {
                 start()
             }
@@ -81,16 +74,39 @@ struct SwiftUISlider: UIViewRepresentable {
         // The class property value is a binding: It’s a reference to the SwiftUISlider
         // value, which receives a reference to a @State variable value in ContentView.
         var value: Binding<Double>
+        @Binding var showSlider: Bool
         
         // Create the binding when you initialize the Coordinator
-        init(value: Binding<Double>) {
+        init(value: Binding<Double>, showSlider: Binding<Bool>) {
             self.value = value
+            self._showSlider = showSlider
         }
         
         // Create a valueChanged(_:) action
-        @objc func valueChanged(_ sender: UISlider) {
-            self.value.wrappedValue = Double(sender.value)
+        @objc func valueChanged(_ sender: UISlider, event: UIEvent) {
+            
+            
+            if let touchEvent = event.allTouches?.first {
+                    switch touchEvent.phase {
+                    case .began:
+                        ConversationViewModel.shared.pause()
+                        showSlider = true
+                    case .ended:
+                        ConversationViewModel.shared.play()
+                        self.value.wrappedValue = Double(sender.value)
+                        showSlider = false
+                        
+                        let seconds = sender.value
+                        let duration = ConversationViewModel.shared.currentPlayer?.currentItem?.asset.duration ?? .zero
+                        
+                        let targetTime:CMTime = CMTime(seconds: duration.seconds * Double(seconds), preferredTimescale: 1)
+                        ConversationViewModel.shared.currentPlayer?.seek(to: targetTime)
+                    default:
+                        break
+                    }
+                }
         }
+        
     }
     
     var thumbColor: UIColor = .white
@@ -99,7 +115,8 @@ struct SwiftUISlider: UIViewRepresentable {
     
     @Binding var value: Double
     @Binding var showPlaybackControls: Bool
-    
+    @Binding var showSlider: Bool
+
     func makeUIView(context: Context) -> UISlider {
         let slider = UISlider(frame: .zero)
         
@@ -107,12 +124,14 @@ struct SwiftUISlider: UIViewRepresentable {
         slider.minimumTrackTintColor = minTrackColor
         slider.maximumTrackTintColor = maxTrackColor
         slider.value = Float(value)
+        slider.isContinuous = true
         
         slider.addTarget(
             context.coordinator,
-            action: #selector(Coordinator.valueChanged(_:)),
+            action: #selector(Coordinator.valueChanged(_:event:)),
             for: .valueChanged
         )
+    
         
         return slider
     }
@@ -120,12 +139,12 @@ struct SwiftUISlider: UIViewRepresentable {
     func updateUIView(_ uiView: UISlider, context: Context) {
         // Coordinating data between UIView and SwiftUI view
         uiView.value = Float(self.value)
-        uiView.thumbTintColor = showPlaybackControls ? .white : .clear
+        uiView.thumbTintColor = showPlaybackControls || showSlider ? .white : .clear
     }
     
     
     func makeCoordinator() -> SwiftUISlider.Coordinator {
-        Coordinator(value: $value)
+        Coordinator(value: $value, showSlider: $showSlider)
     }
 }
 

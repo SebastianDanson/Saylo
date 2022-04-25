@@ -52,7 +52,7 @@ struct TextCell: View {
                     .scaledToFill()
                     .frame(width: 30, height: 30)
                     .clipShape(Circle())
-                    .opacity(message.isSameIdAsNextMessage ? 0 : 1)
+//                    .opacity(message.isSameIdAsNextMessage ? 0 : 1)
                 
                 HStack(alignment: .center, spacing: 10) {
                     
@@ -60,7 +60,7 @@ struct TextCell: View {
                         
                         VStack(alignment: .leading, spacing: 8) {
                             
-                            if !message.isSameIdAsPrevMessage {
+//                            if !message.isSameIdAsPrevMessage {
                                 
                                 Text(message.username)
                                     .font(.system(size: 14, weight: .semibold))
@@ -70,7 +70,7 @@ struct TextCell: View {
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(message.isFromCurrentUser ? .white : .mainGray)
                                 
-                            }
+//                            }
                             
                             
                             Text(message.text ?? "")
@@ -157,8 +157,8 @@ struct TextCell: View {
 //            
 //            ,alignment: .bottomTrailing)
         .padding(.leading, 12)
-        .padding(.top, message.isSameIdAsPrevMessage ? 2 : 6)
-        .padding(.bottom, message.isSameIdAsNextMessage ? 2 : 6)
+//        .padding(.top, message.isSameIdAsPrevMessage ? 2 : 6)
+//        .padding(.bottom, message.isSameIdAsNextMessage ? 2 : 6)
         .onTapGesture {}
         .gesture(gesture)
         .frame(width: SCREEN_WIDTH)

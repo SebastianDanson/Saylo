@@ -87,6 +87,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set([[String:Any]](), forKey: "messages")
+        
+        
+        ConversationGridViewModel.shared.showConversation = false
+
     }
     
     

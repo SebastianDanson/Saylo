@@ -32,13 +32,13 @@ class Chat: ObservableObject {
     var nameDictionary: [String:Any]?
     
     @Published var isSelected = false
-    @Published var isSending = false {
-        didSet {
-            print("")
-        }
-    }
+//    @Published var isSending = false {
+//        didSet {
+//            print("")
+//        }
+//    }
 //    @Published var uploadProgress: Double = 0.0 
-    @Published var hasSent = false
+//    @Published var hasSent = false
     @Published var hasUnreadMessage = false
 
     var lastReadMessageIndex = 0 
@@ -113,6 +113,7 @@ class Chat: ObservableObject {
         }
         
         self.hasUnreadMessage = getHasUnreadMessage()
+        
         self.lastReadMessageIndex = getLastReadMessageIndex()
 
         
@@ -130,7 +131,7 @@ class Chat: ObservableObject {
             
             ConversationPlayerViewModel.shared.addReplyMessages()
             
-        }
+        }        
     }
     
     func getDictionary() -> [String:Any] {

@@ -202,50 +202,78 @@ struct MainView: View {
                     
                     HStack {
                         
-                        if viewModel.selectedView != .Saylo {
-                            Button {
-                                ConversationGridViewModel.shared.showConversation = false
-                            } label: {
-                                Image("x")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: IS_SMALL_WIDTH ? 24 : 28, height: IS_SMALL_WIDTH ? 24 : 28)
-                                    .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
-                                
-                            }
-                            .frame(width: IS_SMALL_WIDTH ? 30 : 34, height: IS_SMALL_WIDTH ? 30 : 34)
+                        if !viewModel.isRecording {
                             
-                            
-                            Spacer()
-                            
-                            
-                            if let chat = ConversationViewModel.shared.chat {
-                                
-                                Text(chat.name)
-                                    .font(Font.system(size: 22, weight: .semibold, design: .rounded))
-                                    .foregroundColor(.white)
-                                    .shadow(color: Color(white: 0, opacity: 0.1), radius: 4, x: 0, y: 4)
+                            if viewModel.selectedView != .Saylo {
+                                Button {
+                                    ConversationGridViewModel.shared.showConversation = false
+                                } label: {
+                                    ZStack {
+                                        
+                                        Circle()
+                                            .foregroundColor(.fadedBlack)
+                                            .frame(width: IS_SMALL_WIDTH ? 35 : 39, height: IS_SMALL_WIDTH ? 35 : 39)
+                                        
+                                        Image("x")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: IS_SMALL_WIDTH ? 18 : 20, height: IS_SMALL_WIDTH ? 18 : 20)
+                                        
+                                    }
+                                }
+//                                .frame(width: IS_SMALL_WIDTH ? 30 : 34, height: IS_SMALL_WIDTH ? 30 : 34)
                                 
                                 
                                 Spacer()
                                 
-                            
-                                Button {
-                                    withAnimation {
-                                        MainViewModel.shared.settingsChat = chat
-                                    }
-                                } label: {
-                                    KFImage(URL(string: chat.profileImage))
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: IS_SMALL_WIDTH ? 30 : 34, height: IS_SMALL_WIDTH ? 30 : 34)
-                                        .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
-                                        .clipShape(Circle())
-                                        .padding(1) // Width of the border
-                                        .background(Color.white) // Color of the border
-                                        .clipShape(Circle())
-                                }
                                 
+                                if let chat = ConversationViewModel.shared.chat {
+                                    
+                                    Text(chat.name)
+                                        .font(Font.system(size: 22, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .shadow(color: Color(white: 0, opacity: 0.15), radius: 4, x: 0, y: 4)
+                                    
+                                    
+                                    Spacer()
+                                    
+                                    
+                                    Button {
+                                        withAnimation {
+                                            MainViewModel.shared.settingsChat = chat
+                                        }
+                                    } label: {
+                                        
+                                        ZStack {
+                                            
+                                            Circle()
+                                                .foregroundColor(.fadedBlack)
+                                                .frame(width: IS_SMALL_WIDTH ? 35 : 39, height: IS_SMALL_WIDTH ? 35 : 39)
+
+                                            Image("ChatOptions")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .scaledToFit()
+                                                .frame(width: IS_SMALL_WIDTH ? 24 : 26, height: IS_SMALL_WIDTH ? 24 : 26)
+                                                .foregroundColor(.white)
+                                                .rotationEffect(.degrees(90))
+                                            
+                                        }
+                                       
+//                                        KFImage(URL(string: chat.profileImage))
+//                                            .resizable()
+//                                            .scaledToFit()
+//                                            .frame(width: IS_SMALL_WIDTH ? 30 : 34, height: IS_SMALL_WIDTH ? 30 : 34)
+//                                            .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+//                                            .clipShape(Circle())
+//                                            .padding(1) // Width of the border
+//                                            .background(Color.white) // Color of the border
+//                                            .clipShape(Circle())
+                                        
+                                        
+                                    }
+                                    
+                                }
                             }
                         }
                     }
@@ -283,13 +311,16 @@ struct MainView: View {
             //                        .cornerRadius(14)
             //                }
             //
-                            if let chat = viewModel.settingsChat {
-                                ChatSettingsView(chat: chat)
-                                    .zIndex(5)
-                                    .transition(.move(edge: .bottom))
-                                    .frame(width: SCREEN_WIDTH)
-                                    .cornerRadius(14)
-                            }
+            
+            
+            if let chat = viewModel.settingsChat {
+                ChatSettingsView(chat: chat)
+                    .zIndex(5)
+                    .navigationBarHidden(true)
+                    .transition(.move(edge: .bottom))
+                    .cornerRadius(14)
+                  
+            }
             //
             //                if viewModel.isCalling {
             //                    MakeCallView()
@@ -329,6 +360,7 @@ struct MainView: View {
         )
         .navigationBarHidden(true)
         .ignoresSafeArea(edges: .bottom)
+        
         //        .onAppear {
         //            cameraView.startRunning()
         //        }
@@ -710,160 +742,160 @@ struct CancelRecordingButton: View {
 }
 
 //Chats scroll view at bottom of screen
-struct ChatsView: View {
-    
-    private let items = [GridItem(), GridItem(), GridItem(), GridItem()]
-    
-    @StateObject var conversationViewModel = ConversationViewModel.shared
-    @StateObject private var gridviewModel = ConversationGridViewModel.shared
-    @Binding var selectedView: MainViewType
-    @Binding var dragOffset: CGSize
-    
-    let maxHeight = -CHATS_VIEW_HEIGHT * 2 - 4
-    let backgroundColor = Color(red: 48/255, green: 54/255, blue: 64/255)
-    
-    var body: some View {
-        
-        ZStack {
-            
-            if !conversationViewModel.showSavedPosts {
-                
-                backgroundColor.ignoresSafeArea()
-                
-                
-                VStack {
-                    
-                    if dragOffset == .zero {
-                        
-                        LazyVGrid(columns: items, spacing: 0, content: {
-                            
-                            if gridviewModel.chats.count > 0 {
-                                
-                                ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count - 1, 3)].enumerated()), id: \.1.id) { i, chat in
-                                    
-                                    ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
-                                        .scaleEffect(x: -1, y: 1, anchor: .center)
-                                        .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
-                                        .onLongPressGesture {
-                                            if !chat.isTeamSaylo {
-                                                withAnimation {
-                                                    MainViewModel.shared.settingsChat = chat
-                                                }
-                                            }
-                                        }
-                                }
-                                
-                            }
-                        })
-                        .padding(.horizontal, 8)
-                        
-                    } else {
-                        
-                        ScrollView {
-                            
-                            
-                            VStack {
-                                
-                                LazyVGrid(columns: items, spacing: 16, content: {
-                                    
-                                    
-                                    ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
-                                        
-                                        ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
-                                            .scaleEffect(x: -1, y: 1, anchor: .center)
-                                            .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
-                                            .onLongPressGesture {
-                                                if !chat.isTeamSaylo {
-                                                    withAnimation {
-                                                        MainViewModel.shared.settingsChat = chat
-                                                    }
-                                                }
-                                            }
-                                    }
-                                })
-                                .padding(.horizontal, 8)
-                                .padding(.top, 8)
-                                
-                            }.background(GeometryReader {
-                                Color.clear.preference(key: ViewOffsetKey.self,
-                                                       value: -$0.frame(in: .named("scroll")).origin.y)
-                                
-                            })
-                            .onPreferenceChange(ViewOffsetKey.self) {
-                                
-                                if $0 < -10 {
-                                    
-                                    withAnimation {
-                                        dragOffset = .zero
-                                    }
-                                }
-                            }
-                        }
-                        .coordinateSpace(name: "scroll")
-                        
-                    }
-                    
-                    Spacer()
-                    
-                }
-                .scaleEffect(x: -1, y: 1, anchor: .center)
-                .padding(.top, 14)
-                
-                
-                VStack {
-                    Rectangle()
-                        .foregroundColor(Color(.systemGray))
-                        .frame(width: IS_SMALL_WIDTH ? 38 : 48, height: 4)
-                        .clipShape(Capsule())
-                        .padding(.top, 6)
-                    
-                    Spacer()
-                }
-            }
-        }
-        .frame(width: SCREEN_WIDTH, height: CHATS_VIEW_HEIGHT * 3)
-        .cornerRadius(IS_SMALL_PHONE ? 12 : 20)
-        .offset(dragOffset)
-        .padding(.bottom, -CHATS_VIEW_HEIGHT*2)
-        .gesture(
-            
-            DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                .onChanged { gesture in
-                    let height = dragOffset.height + (gesture.translation.height - dragOffset.height)
-                    dragOffset.height = min(max(height, maxHeight), 0)
-                }
-                .onEnded { gesture in
-                    
-                    withAnimation(.linear(duration: 0.2)) {
-                        
-                        if abs(dragOffset.height) > 200 {
-                            dragOffset.height = maxHeight
-                        } else {
-                            dragOffset = .zero
-                        }
-                    }
-                }
-        )
-        .ignoresSafeArea(edges: .bottom)
-        
-        
-    }
-    
-    func handleTapGesture(chat: Chat) {
-        
-        let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
-        
-        self.conversationViewModel.index = -1
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            conversationViewModel.setChat(chat: chat)
-            MainViewModel.shared.reset()
-        }
-        
-        withAnimation {
-            dragOffset = .zero
-        }
-    }
-}
+//struct ChatsView: View {
+//
+//    private let items = [GridItem(), GridItem(), GridItem(), GridItem()]
+//
+//    @StateObject var conversationViewModel = ConversationViewModel.shared
+//    @StateObject private var gridviewModel = ConversationGridViewModel.shared
+//    @Binding var selectedView: MainViewType
+//    @Binding var dragOffset: CGSize
+//
+//    let maxHeight = -CHATS_VIEW_HEIGHT * 2 - 4
+//    let backgroundColor = Color(red: 48/255, green: 54/255, blue: 64/255)
+//
+//    var body: some View {
+//
+//        ZStack {
+//
+//            if !conversationViewModel.showSavedPosts {
+//
+//                backgroundColor.ignoresSafeArea()
+//
+//
+//                VStack {
+//
+//                    if dragOffset == .zero {
+//
+//                        LazyVGrid(columns: items, spacing: 0, content: {
+//
+//                            if gridviewModel.chats.count > 0 {
+//
+//                                ForEach(Array(gridviewModel.chats[0...min(gridviewModel.chats.count - 1, 3)].enumerated()), id: \.1.id) { i, chat in
+//
+//                                    ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+//                                        .scaleEffect(x: -1, y: 1, anchor: .center)
+//                                        .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
+//                                        .onLongPressGesture {
+//                                            if !chat.isTeamSaylo {
+//                                                withAnimation {
+//                                                    MainViewModel.shared.settingsChat = chat
+//                                                }
+//                                            }
+//                                        }
+//                                }
+//
+//                            }
+//                        })
+//                        .padding(.horizontal, 8)
+//
+//                    } else {
+//
+//                        ScrollView {
+//
+//
+//                            VStack {
+//
+//                                LazyVGrid(columns: items, spacing: 16, content: {
+//
+//
+//                                    ForEach(Array(gridviewModel.chats.enumerated()), id: \.1.id) { i, chat in
+//
+//                                        ConversationGridCell(chat: $gridviewModel.chats[i], selectedChatId: $conversationViewModel.chatId)
+//                                            .scaleEffect(x: -1, y: 1, anchor: .center)
+//                                            .onTapGesture(count: 1, perform: { handleTapGesture(chat: chat)})
+//                                            .onLongPressGesture {
+//                                                if !chat.isTeamSaylo {
+//                                                    withAnimation {
+//                                                        MainViewModel.shared.settingsChat = chat
+//                                                    }
+//                                                }
+//                                            }
+//                                    }
+//                                })
+//                                .padding(.horizontal, 8)
+//                                .padding(.top, 8)
+//
+//                            }.background(GeometryReader {
+//                                Color.clear.preference(key: ViewOffsetKey.self,
+//                                                       value: -$0.frame(in: .named("scroll")).origin.y)
+//
+//                            })
+//                            .onPreferenceChange(ViewOffsetKey.self) {
+//
+//                                if $0 < -10 {
+//
+//                                    withAnimation {
+//                                        dragOffset = .zero
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        .coordinateSpace(name: "scroll")
+//
+//                    }
+//
+//                    Spacer()
+//
+//                }
+//                .scaleEffect(x: -1, y: 1, anchor: .center)
+//                .padding(.top, 14)
+//
+//
+//                VStack {
+//                    Rectangle()
+//                        .foregroundColor(Color(.systemGray))
+//                        .frame(width: IS_SMALL_WIDTH ? 38 : 48, height: 4)
+//                        .clipShape(Capsule())
+//                        .padding(.top, 6)
+//
+//                    Spacer()
+//                }
+//            }
+//        }
+//        .frame(width: SCREEN_WIDTH, height: CHATS_VIEW_HEIGHT * 3)
+//        .cornerRadius(IS_SMALL_PHONE ? 12 : 20)
+//        .offset(dragOffset)
+//        .padding(.bottom, -CHATS_VIEW_HEIGHT*2)
+//        .gesture(
+//
+//            DragGesture(minimumDistance: 0, coordinateSpace: .global)
+//                .onChanged { gesture in
+//                    let height = dragOffset.height + (gesture.translation.height - dragOffset.height)
+//                    dragOffset.height = min(max(height, maxHeight), 0)
+//                }
+//                .onEnded { gesture in
+//
+//                    withAnimation(.linear(duration: 0.2)) {
+//
+//                        if abs(dragOffset.height) > 200 {
+//                            dragOffset.height = maxHeight
+//                        } else {
+//                            dragOffset = .zero
+//                        }
+//                    }
+//                }
+//        )
+//        .ignoresSafeArea(edges: .bottom)
+//
+//
+//    }
+
+//    func handleTapGesture(chat: Chat) {
+//        
+//        let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
+//        
+//        self.conversationViewModel.index = -1
+//        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+//            conversationViewModel.setChat(chat: chat)
+//            MainViewModel.shared.reset()
+//        }
+//        
+//        withAnimation {
+//            dragOffset = .zero
+//        }
+//    }
+//}
 
 
 struct ViewOffsetKey: PreferenceKey {

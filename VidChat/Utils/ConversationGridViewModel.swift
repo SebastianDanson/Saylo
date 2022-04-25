@@ -68,7 +68,7 @@ class ConversationGridViewModel: ObservableObject {
     
     func isSendingChat(chat: Chat, isSending: Bool) {
         
-        chat.isSending = isSending
+        ConversationViewModel.shared.isSending = isSending
         
         DispatchQueue.main.async {
             if let index = self.sendingChats.firstIndex(where: {$0.id == chat.id}) {
@@ -87,8 +87,10 @@ class ConversationGridViewModel: ObservableObject {
         //        withAnimation {
         
         
-        chat.hasSent = hasSent
-        chat.isSending = false
+        withAnimation {
+            ConversationViewModel.shared.hasSent = hasSent
+            ConversationViewModel.shared.isSending = false
+        }
         
         DispatchQueue.main.async {
             
@@ -111,7 +113,7 @@ class ConversationGridViewModel: ObservableObject {
     
     func toggleHasSentChat(chatId: String) {
         
-        selectedChats.first(where: {$0.id == chatId})?.hasSent.toggle()
+        ConversationViewModel.shared.hasSent.toggle()
         temp.toggle()
     }
     
@@ -234,9 +236,9 @@ class ConversationGridViewModel: ObservableObject {
                     self.allChats = self.chats
                     
                     
-                    if self.chats.count > 0 {
-                        ConversationViewModel.shared.setChat(chat: self.chats[0])
-                    }
+//                    if self.chats.count > 0 {
+//                        ConversationViewModel.shared.setChat(chat: self.chats[0])
+//                    }
                     
                     //                    withAnimation {
                     //                        self.chats = chats
@@ -318,14 +320,14 @@ class ConversationGridViewModel: ObservableObject {
         
         self.chats = getCachedChats()
         
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        let selectedChatId = defaults?.string(forKey: "selectedChatId")
+//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+//        let selectedChatId = defaults?.string(forKey: "selectedChatId")
         
-        if let selectedChatId = selectedChatId, let chat = self.chats.first(where: {$0.id == selectedChatId}) {
-            ConversationViewModel.shared.setChat(chat: chat)
-        } else if chats.count > 0 {
-            ConversationViewModel.shared.setChat(chat: chats [0])
-        }
+//        if let selectedChatId = selectedChatId, let chat = self.chats.first(where: {$0.id == selectedChatId}) {
+//            ConversationViewModel.shared.setChat(chat: chat)
+//        } else if chats.count > 0 {
+//            ConversationViewModel.shared.setChat(chat: chats [0])
+//        }
     }
     
     func showChat(chat: Chat) {

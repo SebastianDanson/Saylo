@@ -315,10 +315,12 @@ class PlayerUIView: UIView {
     func playerItemDidReachEnd(notification: Notification) {
                 
 //        if shouldLoop {
-//            playerLayer.player?.seek(to: CMTime.zero)
+           
+        ConversationViewModel.shared.showNextMessage()
+            
+
 //            
 //            if !ConversationViewModel.shared.showCamera {
-//                playerLayer.player?.pause()
 //            }
 //        } else {
 //            ConversationViewModel.shared.showNextMessage()

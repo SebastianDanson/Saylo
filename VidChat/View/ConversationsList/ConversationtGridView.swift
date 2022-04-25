@@ -380,9 +380,9 @@ struct NavView: View {
                             Image(systemName: "person.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 22, height: 22)
+                                .frame(width: 21, height: 21)
                                 .foregroundColor(.white)
-                                .padding(.trailing, 6)
+                                .padding(.trailing, 7)
                         }
                         
                         //                }

@@ -28,7 +28,7 @@ struct ProfileHeaderView: View {
                 
                 Button {
                  
-                    
+
                     withAnimation {
                         MainViewModel.shared.showSettingsView = false
                         MainViewModel.shared.settingsChat = nil
@@ -43,7 +43,8 @@ struct ProfileHeaderView: View {
                         .frame(width: 20, height: 20)
                         .foregroundColor(Color(.systemBlue))
                         .padding(.leading, 16)
-                }
+                }                
+              
                 
                 Spacer()
             }.frame(height: 44)

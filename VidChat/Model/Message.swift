@@ -77,8 +77,8 @@ class Message: ObservableObject {
 
     //data
     @Published var isSaved: Bool
-    @Published var isSameIdAsPrevMessage = false
-    @Published var isSameIdAsNextMessage = false
+//    @Published var isSameIdAsPrevMessage = false
+//    @Published var isSameIdAsNextMessage = false
     
     var isFromCurrentUser: Bool
     var savedByCurrentUser: Bool

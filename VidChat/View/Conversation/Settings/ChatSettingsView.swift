@@ -71,7 +71,7 @@ struct ChatSettingsView: View {
             )
         )
         
-        NavigationView {
+//        NavigationView {
             
             ZStack {
                 
@@ -214,9 +214,8 @@ struct ChatSettingsView: View {
                 removeGroupAlert
             }
             .background(Color.backgroundGray)
-            .ignoresSafeArea()
-            .navigationBarHidden(true)
-        }
+//            .ignoresSafeArea()
+//        }
         
     }
     

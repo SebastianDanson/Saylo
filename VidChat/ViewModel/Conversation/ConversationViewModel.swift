@@ -67,6 +67,8 @@ class ConversationViewModel: ObservableObject {
     @Published var selectedUrl: String?
     @Published var selectedImage: UIImage?
     @Published var showPlaybackControls = false
+    @Published var isSending = false
+    @Published var hasSent = false
     
     //Texting
     @Published var showKeyboard = false
@@ -171,7 +173,7 @@ class ConversationViewModel: ObservableObject {
         
         
         if let chat = ConversationViewModel.shared.chat {
-            chat.isSending = true
+            ConversationViewModel.shared.isSending = true
         }
         
         let id = NSUUID().uuidString
@@ -349,7 +351,7 @@ class ConversationViewModel: ObservableObject {
     func cancelUpload() {
         
         if let chat = ConversationViewModel.shared.chat {
-            chat.isSending = true
+            ConversationViewModel.shared.isSending = true
             
             self.uploadQueue.forEach { data in
                 if data["chatId"] as? String == chat.id {
@@ -659,6 +661,17 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func pause() {
+        isPlaying = false
+        self.currentPlayer?.pause()
+
+    }
+    
+    func play() {
+        isPlaying = true
+        self.currentPlayer?.playWithRate()
+    }
+    
     func showNextMessage() {
         
         let messages = showSavedPosts ? savedMessages : messages
@@ -667,6 +680,7 @@ class ConversationViewModel: ObservableObject {
         
         if index == messages.count - 1 {
             self.isPlaying = false
+            MainViewModel.shared.selectedView = .Video
         } else {
             
             if index < messages.count - 1 {

@@ -36,6 +36,7 @@ struct ConversationGridCell: View {
                             ZStack {
                                 
                                 if chat.chatMembers.count == 1 {
+                                    
                                     VStack {
                                         
                                         HStack {
@@ -63,11 +64,11 @@ struct ConversationGridCell: View {
                         
                         Text(chat.fullName)
                             .foregroundColor(.black)
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 18, weight: .medium))
                         
-                        Text("Sent 5 min ago")
+                        Text(getChatText())
                             .foregroundColor(Color(.systemGray))
-                            .font(.system(size: 14, weight: .regular))
+                            .font(.system(size: 15, weight: .regular))
                         
                         Spacer()
                         
@@ -75,10 +76,21 @@ struct ConversationGridCell: View {
                     
                     Spacer()
                     
+                
+                
                     VStack {
                         
                         Spacer()
 
+                        HStack(spacing: 12) {
+                            
+                            if chat.hasUnreadMessage {
+                                
+                                Circle()
+                                    .frame(width: 13, height: 13)
+                                    .foregroundColor(.mainBackgroundBlue)
+                            }
+                            
                         Button {
                             
                             withAnimation {
@@ -91,6 +103,8 @@ struct ConversationGridCell: View {
                                 .scaledToFit()
                                 .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
                                 .frame(width: 5, height: 20)
+                        }
+                            
                         }
                        
                         
@@ -250,6 +264,31 @@ struct ConversationGridCell: View {
         //                , alignment: .topLeading
         //
         //            )
+    }
+    
+    func getChatText() -> String {
+        
+        if chat.messages.count == 0 {
+            return "Tap to send \(chat.name) a Saylo"
+        }
+        
+        let lastMessage = chat.messages.last!
+        
+        let timeAgo = Date().timeIntervalSince1970 - lastMessage.timestamp.dateValue().timeIntervalSince1970
+        let fromText = lastMessage.isFromCurrentUser ? "Sent " : "Received "
+        
+        if timeAgo < 60 {
+            return fromText + "just now"
+        }
+        
+        if timeAgo < 3600 {
+            return fromText + String(Int(floor(timeAgo/60))) + " min ago"
+        }
+        
+        let numHours = Int(floor(timeAgo/3600))
+        
+        return fromText + String(numHours) + " \(numHours == 1 ? "hour" : "hours") ago"
+        
     }
 }
 
