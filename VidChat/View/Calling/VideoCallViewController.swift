@@ -13,17 +13,17 @@ import AVFoundation
 
 class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    var callManger: CallManager!
+    var callManger = CallManager.shared
     
-    private var player: AVAudioPlayer?
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
-    private let localView = UIView()
+    let localView = UIView()
     var localViewWidthAnchor: NSLayoutConstraint!
     var localViewHeightAnchor: NSLayoutConstraint!
     var localViewRightAnchor: NSLayoutConstraint!
     var localViewTopAnchor: NSLayoutConstraint!
-    
+    var player: AVAudioPlayer?
+
     var isFrontFacing = true
     var isShowingOptions = true
     
@@ -61,23 +61,27 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         
         localView.layer.cornerRadius = 8
         localView.clipsToBounds = true
-        
+                
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = callManger.callID
         videoCanvas.view = localView
         callManger.getAgoraEngine().setupLocalVideo(videoCanvas)
+        
+        localView.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         callManger.joinChannel()
+        
         if callManger.remoteUserIDs.count == 0 {
             playRingTone()
         }
     }
     
     func playRingTone() {
+        
         let path = Bundle.main.path(forResource: "ringtone.wav", ofType:nil)!
         let url = URL(fileURLWithPath: path)
         do {
@@ -174,7 +178,6 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
             videoCanvas.view = videoCell.videoView
             
             callManger.getAgoraEngine().setupRemoteVideo(videoCanvas)
-            
         }
         
         if callManger.remoteUserIDs.count > 2 {
@@ -220,16 +223,20 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
 }
 
 extension VideoCallViewController: CallManagerDelegate {
+   
     func remoteUserToggledVideo() {
         
     }
     
     func remoteUserIDsUpdated() {
-        self.collectionView.reloadData()
-        self.shrinkLocalView()
+        collectionView.reloadData()
+        shrinkLocalView()
         
-        if callManger.remoteUserIDs.count > 0 {
-            self.player?.pause()
+        print(collectionView, "COC 2")
+
+        localView.isHidden = true
+        if CallManager.shared.remoteUserIDs.count > 0 {
+            player?.stop()
         }
     }
 }

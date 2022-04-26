@@ -395,6 +395,20 @@ class ConversationViewModel: ObservableObject {
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
+    func sendMissedCallNotification(token: String) {
+        
+        guard let currentUser = AuthViewModel.shared.currentUser else { return }
+        
+        let userFullName = currentUser.firstName + " " + currentUser.lastName
+        var data = [String:Any]()
+        data["title"] = "Missed Call"
+        data["token"] = token
+        data["body"] = "from \(userFullName)"
+        data["metaData"] = ["isCallNofitication": true]
+        
+        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
+    }
+    
     
     func updateIsSaved(atIndex i: Int) {
         self.messages[i].isSaved.toggle()
@@ -677,7 +691,7 @@ class ConversationViewModel: ObservableObject {
         let messages = showSavedPosts ? savedMessages : messages
         
         showPlaybackControls = false
-        
+                
         if index == messages.count - 1 {
             self.isPlaying = false
             MainViewModel.shared.selectedView = .Video

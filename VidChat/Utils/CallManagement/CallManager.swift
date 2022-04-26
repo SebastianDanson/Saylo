@@ -27,9 +27,10 @@ final class CallManager: NSObject, ObservableObject {
     let tempToken: String? = nil //If you have a token, put it here.
     var callID: UInt = 0 //This tells Agora to generate an id for you. We have user IDs from Firebase, but they aren't Ints, and therefore won't work with Agora.
     var channelName: String?
-    weak var delegate: CallManagerDelegate?
+    var delegate: CallManagerDelegate?
     var currentCall: Call?
     var currentChat: Chat?
+    var didJoin = false
     
     static var shared = CallManager()
     
@@ -57,6 +58,17 @@ final class CallManager: NSObject, ObservableObject {
     }
     
     func endCalling() {
+        print("WWWW NOOO")
+
+        if let chat = currentChat, !didJoin {
+            if let token = chat.chatMembers.first(where: {$0.id != AuthViewModel.shared.getUserId()})?.fcmToken {
+                print("WWWW")
+                ConversationViewModel.shared.sendMissedCallNotification(token: token)
+            }
+            currentChat = nil
+        }
+        
+        didJoin = false
         endCurrentCall()
         removeCurrentCall()
         leaveChannel()
@@ -112,6 +124,7 @@ final class CallManager: NSObject, ObservableObject {
             
             let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "token": pushKitToken] as [String : Any]
             
+            print(pushKitToken, "TOKEN")
             Firebase.Functions.functions().httpsCallable("makeCall").call(data) { result, error in
                 print(error?.localizedDescription, "FUNCTION ERROR")
             }
@@ -121,11 +134,13 @@ final class CallManager: NSObject, ObservableObject {
     /// Ends the specified call.
     /// - Parameter call: The call to end.
     func end(call: Call) {
+        
         let endCallAction = CXEndCallAction(call: call.uuid)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
         
-        requestTransaction(transaction)
+        requestTransaction(transaction, call: call)
+
     }
     
     /// Sets the specified call's on hold status.
@@ -142,7 +157,7 @@ final class CallManager: NSObject, ObservableObject {
     
     /// Requests that the actions in the specified transaction be asynchronously performed by the telephony provider.
     /// - Parameter transaction: A transaction that contains actions to be performed.
-    private func requestTransaction(_ transaction: CXTransaction) {
+    private func requestTransaction(_ transaction: CXTransaction, call: Call? = nil) {
         callController.request(transaction) { error in
             if let error = error {
                 print("Error requesting transaction:", error.localizedDescription)
@@ -236,13 +251,14 @@ extension CallManager {
 }
 
 extension CallManager: AgoraRtcEngineDelegate {
+    
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
         callID = uid
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
         remoteUserIDs.append(uid)
-        print("JOINED")
+        didJoin = true
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
@@ -257,10 +273,10 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     
     func joinChannel() {
+        
         if getAgoraEngine().getCallId() == nil, let currentCall = currentCall {
             
             getAgoraEngine().joinChannel(byToken: tempToken, channelId: currentCall.uuid.uuidString, info: nil, uid: callID) { [weak self] (sid, uid, elapsed) in
-                print("WORKED")
                 self?.inCall = true
                 self?.callID = uid
                 self?.channelName = currentCall.uuid.uuidString

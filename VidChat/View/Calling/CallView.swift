@@ -21,10 +21,6 @@ struct CallView: View {
         ZStack(alignment: .top) {
             ZStack(alignment: .bottom) {
                 VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, showCallOptions: $showCallOptions)
-                    .onAppear {
-                        self.isFrontFacing.toggle()
-                        self.isFrontFacing.toggle()
-                    }
                 if showCallOptions {
                     CallOptionsView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo)
                 }
@@ -90,7 +86,8 @@ struct CallOptionsView: View {
                 )
                 .onTapGesture {
                     callsController.endCalling()
-                   
+                    
+                    
                     withAnimation {
                         ConversationViewModel.shared.showCall = false
                     }

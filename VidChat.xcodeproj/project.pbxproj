@@ -70,6 +70,7 @@
 		06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */; };
 		06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDA277F80480030357B /* ContactUsViewModel.swift */; };
 		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
+		06B6764C2817870400ABBF91 /* UserCallCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B6764B2817870400ABBF91 /* UserCallCell.swift */; };
 		06C8E6AD27CD38CE005CF9BD /* ConversationPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */; };
 		06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */; };
 		06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */; };
@@ -256,6 +257,7 @@
 		06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackableScrollView.swift; sourceTree = "<group>"; };
 		06A7FEDA277F80480030357B /* ContactUsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewModel.swift; sourceTree = "<group>"; };
 		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
+		06B6764B2817870400ABBF91 /* UserCallCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCallCell.swift; sourceTree = "<group>"; };
 		06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPlayerView.swift; sourceTree = "<group>"; };
 		06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSavedMessagesView.swift; sourceTree = "<group>"; };
 		06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoMessagesView.swift; sourceTree = "<group>"; };
@@ -766,6 +768,7 @@
 			children = (
 				3F112B7B2720736400BA2A73 /* CallView.swift */,
 				3F112BA72721B04600BA2A73 /* MakeCallView.swift */,
+				06B6764B2817870400ABBF91 /* UserCallCell.swift */,
 				3F112B722720716300BA2A73 /* VideoCallView.swift */,
 				3F112B7027206E3800BA2A73 /* VideoCallViewController.swift */,
 				3F112B7D27207AFE00BA2A73 /* VideoCollectionViewCell.swift */,
@@ -1094,6 +1097,7 @@
 				06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
+				06B6764C2817870400ABBF91 /* UserCallCell.swift in Sources */,
 				066FE60F27B62344001B1DC6 /* AllowNotificationsView.swift in Sources */,
 				3F485DBE26FE23AB0071532B /* ImagePicker.swift in Sources */,
 				3F485DC626FE28860071532B /* LoginView.swift in Sources */,

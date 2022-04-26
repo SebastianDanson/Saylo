@@ -198,10 +198,10 @@ class PlayerUIView: UIView {
 //            playbackSlider.isHidden = true
 //        }
 //
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(playerItemDidReachEnd(notification:)),
-                                               name: .AVPlayerItemDidPlayToEndTime,
-                                               object: nil)
+//        NotificationCenter.default.addObserver(self,
+//                                               selector: #selector(playerItemDidReachEnd(notification:)),
+//                                               name: .AVPlayerItemDidPlayToEndTime,
+//                                               object: nil)
         
         self.shouldLoop = shouldLoop
         
@@ -316,7 +316,7 @@ class PlayerUIView: UIView {
                 
 //        if shouldLoop {
            
-        ConversationViewModel.shared.showNextMessage()
+//        ConversationViewModel.shared.showNextMessage()
             
 
 //            

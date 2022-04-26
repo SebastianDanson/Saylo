@@ -48,7 +48,7 @@ struct UnreadMessagePlayerView: View {
                 }
             }
             .background(isVideo ? Color.systemBlack :  Color.alternateMainBlue)
-            .cornerRadius(14, corners: [.topLeft, .topRight])
+            .cornerRadius(14)
             .overlay(
                 ZStack {
                     if !isVideo {

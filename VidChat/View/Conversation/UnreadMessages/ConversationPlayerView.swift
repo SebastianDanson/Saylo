@@ -71,7 +71,7 @@ struct ConversationPlayerView: View {
                             }
                             .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
                             .background(Color.alternateMainBlue)
-                            .cornerRadius(14, corners: [.topLeft, .topRight])
+                            .cornerRadius(14)
                             
                             
                         } else if messages[index].type == .Photo {
@@ -81,7 +81,7 @@ struct ConversationPlayerView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-                                    .cornerRadius(14, corners: [.topLeft, .topRight])
+                                    .cornerRadius(14)
                                     .clipped()
                                     .background(Color.black)
                             } else if let image = messages[index].image {
@@ -89,7 +89,7 @@ struct ConversationPlayerView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .frame(minWidth: SCREEN_WIDTH, maxWidth: SCREEN_WIDTH, minHeight: 0, maxHeight: MESSAGE_HEIGHT)
-                                    .cornerRadius(14, corners: [.topLeft, .topRight])
+                                    .cornerRadius(14)
                                     .clipped()
                                     .background(Color.black)
                             }
@@ -299,7 +299,7 @@ struct ConversationPlayerView: View {
             
             Spacer()
         }
-        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        .ignoresSafeArea()
         .overlay(
             
             ZStack {

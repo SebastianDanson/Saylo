@@ -22,7 +22,6 @@ struct VideoCallView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> VideoCallViewController {
         let agoraViewController = VideoCallViewController()
-        agoraViewController.callManger = callsController
         return agoraViewController
     }
     

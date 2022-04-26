@@ -12,15 +12,16 @@ struct FriendsView: View {
     
     @State var chats = [Chat]()
 
+    let dimension: CGFloat = IS_SMALL_PHONE ? 60 : 66
     
     var body: some View {
                 
-        VStack(spacing: 24) {
+        VStack(spacing: IS_SMALL_PHONE ? 12 : 24) {
             
             HStack {
                 
                 Text("Friends")
-                    .font(Font.system(size: 22, weight: .medium, design: .rounded))
+                    .font(Font.system(size: IS_SMALL_PHONE ? 20 : 22, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                 
                 Spacer()
@@ -50,18 +51,18 @@ struct FriendsView: View {
                                 ConversationGridViewModel.shared.showAddFriends = true
                             }
                         } label: {
-                            VStack(spacing: 7) {
+                            VStack(spacing: 5) {
                                 
                                 ZStack {
                                     
                                     Circle()
                                         .strokeBorder(Color.white, lineWidth: 4)
-                                        .frame(width: 66, height: 66)
+                                        .frame(width: dimension, height: dimension)
                                     
                                     Image(systemName: "plus")
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(width: 34, height: 34)
+                                        .frame(width: IS_SMALL_PHONE ? 31 : 34, height: IS_SMALL_PHONE ? 31 : 34)
                                         .foregroundColor(.white)
                                 }
                                 
@@ -82,12 +83,12 @@ struct FriendsView: View {
                                     ConversationGridViewModel.shared.showChat(chat: chat)
                                 } label: {
                                     
-                                    VStack(spacing: 7) {
+                                    VStack(spacing: 5) {
                                         
                                         KFImage(imageUrl)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(width: 66, height: 66)
+                                            .frame(width: dimension, height: dimension)
                                             .clipShape(Circle())
                                         
                                         Text(chat.name)

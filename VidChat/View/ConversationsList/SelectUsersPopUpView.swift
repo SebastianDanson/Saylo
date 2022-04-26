@@ -19,7 +19,7 @@ struct SelectUsersPopUpView: View {
             VStack {
                 LazyVGrid(columns: items, spacing: 14, content: {
                     ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
-                        ConversationGridCell(chat: $viewModel.chats[i], selectedChatId: .constant(""), textColor: .systemWhite)
+                        ConversationGridCell(chat: $viewModel.chats[i], textColor: .systemWhite)
                             .onTapGesture {
                                 withAnimation(.linear(duration: 0.15)) {
                                     viewModel.toggleSelectedChat(chat: chat)

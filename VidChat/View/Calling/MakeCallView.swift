@@ -19,7 +19,6 @@ struct MakeCallView: View {
     
     @StateObject var conversationGridViewModel = ConversationGridViewModel.shared
     
-    private let items = [GridItem(), GridItem(), GridItem()]
     
     // @State var localNumber: String?
     
@@ -28,7 +27,7 @@ struct MakeCallView: View {
         VStack {
             
             
-            if callsController.calls.isEmpty {
+//            if callsController.calls.isEmpty {
                 
                 CallNavView()
                 
@@ -38,39 +37,33 @@ struct MakeCallView: View {
                         
                         VStack {
                             
-                            LazyVGrid(columns: items, spacing: 14, content: {
+                            
+                            ForEach(Array(conversationGridViewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                 
-                                ForEach(Array(conversationGridViewModel.chats.enumerated()), id: \.1.id) { i, chat in
+                                if !chat.isTeamSaylo && chat.isDm && chat.chatMembers.count > 1 {
                                     
-                                    if !chat.isTeamSaylo && chat.isDm {
-                                        ConversationGridCell(chat: $conversationGridViewModel.chats[i], selectedChatId: .constant(""), textColor: .systemBlack)
-                                            .flippedUpsideDown()
-                                            .scaleEffect(x: -1, y: 1, anchor: .center)
-                                            .onTapGesture {
-                                                viewModel.createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
-                                            }
+                                    Button {
+                                        viewModel.createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
+                                    } label: {
+                                        UserCallCell(chat: $conversationGridViewModel.chats[i])
                                     }
                                 }
-                            })
-                                .padding(.horizontal, 12)
+                            }
+                            .padding(.horizontal, 12)
                             
                         }
                     }
                     .background(Color.systemWhite)
-                    .padding(.vertical, BOTTOM_PADDING + 20)
-                    .flippedUpsideDown()
-                    .scaleEffect(x: -1, y: 1, anchor: .center)
                     .transition(.move(edge: .bottom))
                 }
-            } else {
-                CallView()
-                    .edgesIgnoringSafeArea(.top)
-                
-            }
+//            }
+//            else {
+//                CallView()
+//                    .edgesIgnoringSafeArea(.top)
+//            }
             
         }
         .background(Color.systemWhite)
-        .ignoresSafeArea()
     }
 }
 
@@ -79,39 +72,36 @@ struct CallNavView: View {
     
     var body: some View {
         
-        VStack {
-            Spacer()
-            ZStack {
+        ZStack {
+            
+            Text("Tap a Chat to Call")
+                .font(.headline)
+            
+            HStack {
                 
-                Text("Select Chat To Call")
-                    .font(.headline)
-                
-                HStack {
+                Button {
                     
-                    Button {
+                    withAnimation {
                         ConversationGridViewModel.shared.isCalling = false
                         MainViewModel.shared.isCalling = false
-                    } label: {
-                        Image(systemName: "chevron.backward")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(.systemBlack)
-                            .padding(.leading, 16)
-                            .padding(.top, -3)
                     }
                     
-                    Spacer()
+                } label: {
+                    
+                    Image(systemName: "chevron.backward")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.systemBlack)
+                        .padding(.leading, 16)
+                        .padding(.top, -3)
                 }
                 
+                Spacer()
             }
-            .padding(.top, 20)
-            Spacer()
             
         }
-        .padding(.top, TOP_PADDING)
         .frame(width: SCREEN_WIDTH, height: 44)
-        .ignoresSafeArea()
-        
+//        .padding(.top, TOP_PADDING + 20)
     }
 }

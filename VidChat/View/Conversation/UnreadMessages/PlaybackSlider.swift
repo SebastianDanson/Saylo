@@ -62,7 +62,14 @@ struct PlaybackSlider: View {
                 withAnimation(.linear(duration: 0.01)) {
                     self.sliderValue += 0.01 / viewModel.videoLength
                 }
+                
+                if sliderValue >= 1 {
+                    ConversationViewModel.shared.showNextMessage()
+                }
             }
+            
+        
+            
             
         }
     }

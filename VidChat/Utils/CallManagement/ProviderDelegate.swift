@@ -137,6 +137,8 @@ extension ProviderDelegate: CXProviderDelegate {
         }
     }
     
+    
+    
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         
         self.callManager.addCall(pendingCall)
@@ -169,6 +171,9 @@ extension ProviderDelegate: CXProviderDelegate {
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        defaults?.set(true, forKey: "didRejectCall")
+        
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()
@@ -189,6 +194,8 @@ extension ProviderDelegate: CXProviderDelegate {
         callManager.removeCall(call)
         callManager.leaveChannel()
         callManager.endCalling()
+        
+//        COLLECTION_USERS.document(AuthViewModel.shared.getUserId())
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {

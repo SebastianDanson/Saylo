@@ -51,7 +51,7 @@ struct ConversationGridView: View {
                 
                 VStack {
                     
-                    NavView(searchText: $searchText).zIndex(5).padding(.top, 8)
+                    NavView(searchText: $searchText).zIndex(5).padding(.top, IS_SMALL_PHONE ? 0 : 8)
                     
                     Spacer()
                     
@@ -63,7 +63,7 @@ struct ConversationGridView: View {
                     //                    }
                     
                     FriendsView()
-                        .padding(.top, 16)
+                        .padding(.top, IS_SMALL_PHONE ? 0 : 16)
                     
                     
                     ZStack(alignment: .top) {
@@ -73,7 +73,7 @@ struct ConversationGridView: View {
                             HStack {
                                 
                                 Text("Recent Chats")
-                                    .font(Font.system(size: 24, weight: .medium))
+                                    .font(Font.system(size: IS_SMALL_PHONE ? 22 : 24, weight: .medium))
                                 
                                 Spacer()
                                 
@@ -107,7 +107,7 @@ struct ConversationGridView: View {
                                 
                             }
                             .padding(.horizontal, 22)
-                            .padding(.top, 36)
+                            .padding(.top, IS_SMALL_PHONE ? 20 : 36)
                             
                             
                             Spacer()
@@ -122,24 +122,25 @@ struct ConversationGridView: View {
                                     Button {
                                         viewModel.showChat(chat: chat)
                                     } label: {
-                                        ConversationGridCell(chat: $viewModel.chats[i], selectedChatId: .constant(""))
+                                        ConversationGridCell(chat: $viewModel.chats[i])
                                     }
                                 }
                             }
                         }
-                        .padding(.top, 85)
+                        .padding(.top, IS_SMALL_PHONE ? 68 : 85)
                     }
                     .background(Color.systemWhite)
                     .frame(width: SCREEN_WIDTH)
-                    .cornerRadius(48, corners: [.topLeft, .topRight])
+                    .cornerRadius(IS_SMALL_PHONE ? 36 : 44, corners: [.topLeft, .topRight])
                     .ignoresSafeArea(edges: .bottom)
                     .zIndex(2)
                     .transition(.move(edge: .bottom))
-                    .padding(.top, 24)
+                    .padding(.top, IS_SMALL_PHONE ? 8 : 24)
                 }
                 
                 
                 Group {
+                    
                     if viewModel.showAddFriends {
                         AddFriendsView()
                             .zIndex(3)
@@ -348,8 +349,8 @@ struct NavView: View {
                         
                         Text("Saylo")
                             .foregroundColor(.white)
-                            .font(.system(size: 30, weight: .medium, design: .rounded))
-                            .padding(.top, 7)
+                            .font(.system(size: IS_SMALL_PHONE ? 28 : 30, weight: .medium, design: .rounded))
+                            .padding(.top, IS_SMALL_PHONE ? 2 : 7)
                         
                         Spacer()
                         
@@ -382,7 +383,7 @@ struct NavView: View {
                                 .scaledToFit()
                                 .frame(width: 21, height: 21)
                                 .foregroundColor(.white)
-                                .padding(.trailing, 7)
+                                .padding(.trailing, 3)
                         }
                         
                         //                }
@@ -489,7 +490,8 @@ struct NavView: View {
                     }
                     
                 }
-                .padding(.horizontal, 16)
+                .padding(.trailing, 20)
+                .padding(.leading, 20)
                 //                .padding(.top, TOP_PADDING)
                 
                 Spacer()

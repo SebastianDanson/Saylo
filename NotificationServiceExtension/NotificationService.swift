@@ -33,6 +33,22 @@ class NotificationService: UNNotificationServiceExtension {
         }
         
         
+        if data?["isCallNofitication"] as? Bool == true {
+            
+            let didRejectCall = defaults?.bool(forKey: "didRejectCall") ?? false
+
+            if didRejectCall {
+                contentHandler(UNNotificationContent())
+            } else {
+                contentHandler(bestAttemptContent ?? UNNotificationContent())
+            }
+            
+            defaults?.set(false, forKey: "didRejectCall")
+            return
+        }
+        
+        
+        
         if let messageData = data?["messageData"] as? [String:Any] {
             
             let messageUid = data?["userId"] as? String
