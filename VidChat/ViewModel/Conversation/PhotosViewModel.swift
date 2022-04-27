@@ -21,7 +21,7 @@ class PhotosViewModel: ObservableObject {
         let status = PHPhotoLibrary.authorizationStatus()
         
         if status == .denied {
-            MainViewModel.shared.showAllowPhotoAccessAlert = true
+            MainViewModel.shared.showPhotosAlert = true
         }
                 
         return status == .authorized

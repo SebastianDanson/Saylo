@@ -35,7 +35,7 @@ struct UserCallCell: View {
                         Spacer()
                         
                         Text(chat.fullName)
-                            .foregroundColor(.black)
+                            .foregroundColor(.systemBlack)
                             .font(.system(size: 16, weight: .medium))
                         
                         Spacer()
@@ -47,7 +47,7 @@ struct UserCallCell: View {
                 
                 Rectangle()
                     .frame(width: SCREEN_WIDTH - 40, height: 1)
-                    .foregroundColor(Color(red: 232/255, green: 232/255, blue: 232/255))
+                    .foregroundColor(Color(.systemGray5))
                     .padding(.top, 10)
                 
             }

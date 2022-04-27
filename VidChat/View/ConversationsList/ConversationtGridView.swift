@@ -73,7 +73,7 @@ struct ConversationGridView: View {
                             HStack {
                                 
                                 Text("Recent Chats")
-                                    .font(Font.system(size: IS_SMALL_PHONE ? 22 : 24, weight: .medium))
+                                    .font(Font.system(size: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 20 : 22) : 24, weight: .medium))
                                 
                                 Spacer()
                                 
@@ -92,13 +92,13 @@ struct ConversationGridView: View {
                                                 .resizable()
                                                 .scaledToFit()
                                                 .foregroundColor(.white)
-                                                .frame(width: 14, height: 14)
+                                                .frame(width: IS_SMALL_WIDTH ? 13 : 14, height: IS_SMALL_WIDTH ? 13 : 14)
                                             
                                             Text("New chat")
                                                 .foregroundColor(.white)
-                                                .font(Font.system(size: 14, weight: .medium))
+                                                .font(Font.system(size: IS_SMALL_WIDTH ? 13 : 14, weight: .medium))
                                         }
-                                        .frame(width: 100, height: 32)
+                                        .frame(width: IS_SMALL_WIDTH ? 96 : 100, height: 32)
                                         .background(Color.lightBlue)
                                         .clipShape(Capsule())
                                     }
@@ -108,7 +108,6 @@ struct ConversationGridView: View {
                             }
                             .padding(.horizontal, 22)
                             .padding(.top, IS_SMALL_PHONE ? 20 : 36)
-                            
                             
                             Spacer()
                         }
@@ -125,11 +124,21 @@ struct ConversationGridView: View {
                                         ConversationGridCell(chat: $viewModel.chats[i])
                                     }
                                 }
+                                
+                                Button {
+                                    withAnimation {
+                                        viewModel.showNewChat = true
+                                    }
+                                } label: {
+                                    CreateChatCell()
+                                }
+                                .padding(.bottom, 28)
+                                
                             }
                         }
                         .padding(.top, IS_SMALL_PHONE ? 68 : 85)
                     }
-                    .background(Color.systemWhite)
+                    .background(Color.backgroundWhite)
                     .frame(width: SCREEN_WIDTH)
                     .cornerRadius(IS_SMALL_PHONE ? 36 : 44, corners: [.topLeft, .topRight])
                     .ignoresSafeArea(edges: .bottom)
@@ -165,8 +174,16 @@ struct ConversationGridView: View {
                             .transition(.move(edge: .bottom))
                     }
                     
+                    if viewModel.isCalling {
+                        MakeCallView()
+                            .zIndex(3)
+                            .transition(.move(edge: .bottom))
+                    }
+                    
                     if let chat = viewModel.selectedSettingsChat {
                         ChatSettingsView(chat: chat)
+                            .zIndex(3)
+                            .transition(.move(edge: .bottom))
                     }
                 }
                 
@@ -190,7 +207,6 @@ struct ConversationGridView: View {
             })
             .navigationBarHidden(true)
             .zIndex(1)
-            
             
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -296,7 +312,7 @@ struct NavView: View {
     var body: some View {
         
         ZStack(alignment: .center) {
-            
+                        
             VStack {
                 
                 HStack(alignment: .top) {
@@ -375,6 +391,19 @@ struct NavView: View {
                         
                         Button {
                             withAnimation {
+                                ConversationGridViewModel.shared.isCalling = true
+                            }
+                        } label: {
+                            Image(systemName: "phone.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 21, height: 21)
+                                .foregroundColor(.white)
+                                .padding(.trailing, 12)
+                        }
+                        
+                        Button {
+                            withAnimation {
                                 ConversationGridViewModel.shared.showSettingsView = true
                             }
                         } label: {
@@ -385,6 +414,8 @@ struct NavView: View {
                                 .foregroundColor(.white)
                                 .padding(.trailing, 3)
                         }
+                        
+                        
                         
                         //                }
                         
@@ -500,8 +531,8 @@ struct NavView: View {
         .sheet(isPresented: $viewModel.showSettingsView) {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
-        
         .frame(width: SCREEN_WIDTH, height: 44)
+//        .padding(TOP_PADDING)
         //        .padding(.top, 8)
         
     }

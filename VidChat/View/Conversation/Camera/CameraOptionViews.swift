@@ -11,7 +11,7 @@ struct MessageOptions: View {
     @Binding var type: MainViewType
     @Binding var isRecording: Bool
     
-    let dimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 26 : 32) : 34
+    let dimension: CGFloat = IS_SMALL_WIDTH ? 30 : (IS_SMALL_PHONE ? 32 : 34)
     let spacing: CGFloat = IS_SMALL_WIDTH ? 24 : 32
     
     var body: some View {
@@ -91,7 +91,7 @@ struct SaveButton: View {
                     viewModel.savePhoto()
                     hasSaved = true
                 } else {
-                    MainViewModel.shared.showAllowPhotoAccessAlert = true
+                    MainViewModel.shared.showPhotosAlert = true
                 }
             }
             

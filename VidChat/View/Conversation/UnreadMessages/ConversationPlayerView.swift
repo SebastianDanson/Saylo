@@ -254,6 +254,7 @@ struct ConversationPlayerView: View {
                                 Spacer()
                                 
                                 if !viewModel.showPlaybackControls {
+                                    
                                     HStack {
                                         
                                         if !messages[index].isForTakingVideo {
@@ -271,7 +272,23 @@ struct ConversationPlayerView: View {
                                 
                                 
                                 if viewModel.showPlaybackControls {
-                                    PlaybackControls(showPlaybackControls: $viewModel.showPlaybackControls, sliderValue: $sliderValue)
+                                    
+                                    VStack {
+                                        
+                                        HStack {
+                                            Spacer()
+                                            Text("\(getWatchedVideoLength())/\(getTotalVideoLength())")
+                                                .foregroundColor(.white)
+                                                .font(Font.system(size: 14, weight: .medium, design: .rounded))
+                                                .frame(width: 84, height: 28)
+                                                .background(Color.fadedBlack)
+                                                .clipShape(Capsule())
+                                                .padding(.bottom, 10)
+                                            Spacer()
+                                        }
+                                        
+                                        PlaybackControls(showPlaybackControls: $viewModel.showPlaybackControls, sliderValue: $sliderValue)
+                                    }
                                 }
                                 
                                 PlaybackSlider(sliderValue: $sliderValue, isPlaying: $viewModel.isPlaying, showPlaybackControls: $viewModel.showPlaybackControls)
@@ -359,6 +376,14 @@ struct ConversationPlayerView: View {
             UIApplication.shared.isIdleTimerDisabled = false
         }
         
+    }
+    
+    func getTotalVideoLength() -> String {
+        return viewModel.videoLength.minuteSecond
+    }
+    
+    func getWatchedVideoLength() -> String {
+        return (sliderValue * viewModel.videoLength).minuteSecond
     }
     
     func removeView() {

@@ -32,147 +32,147 @@ struct UnreadMessagesScrollView: View {
                     
                     ScrollViewReader { reader in
                         
-                        HStack(spacing: 4) {
+                        HStack(spacing: IS_SMALL_WIDTH ? 3 : 4) {
                             
                             ForEach(Array(messages.enumerated()), id: \.1.id) { i, message in
                                 
-                                
-                                Button {
-                                    if ConversationViewModel.shared.index == i, MainViewModel.shared.selectedView == .Saylo {
-                                        viewModel.toggleIsPlaying()
-                                    } else {
-                                        viewModel.showMessage(atIndex: i)
-                                        viewModel.selectedMessageIndexes.append(i)
-                                    }
-                                } label: {
+                                ZStack {
                                     
                                     ZStack {
                                         
                                         ZStack {
                                             
-                                            ZStack {
+                                            if ConversationViewModel.shared.isPlayable(index: i), let urlString = message.url, let url = URL(string: urlString) {
                                                 
-                                                if ConversationViewModel.shared.isPlayable(index: i), let urlString = message.url, let url = URL(string: urlString) {
+                                                if message.type == .Video {
                                                     
-                                                    if message.type == .Video {
-                                                        
-                                                        if let image = ImageCache.getImageCache().get(forKey: urlString) {
-                                                            Image(uiImage: image)
-                                                                .resizable()
-                                                                .scaledToFill()
-                                                                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                                                                .cornerRadius(6)
-                                                        }
-                                                        else if let image = createVideoThumbnail(from: url) {
-                                                            Image(uiImage: image)
-                                                                .resizable()
-                                                                .scaledToFill()
-                                                                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                                                                .cornerRadius(6)
-                                                        }
-                                                    } else {
-                                                        
-                                                        VStack {
-                                                            Spacer()
-                                                            Image(systemName: "mic.fill")
-                                                                .resizable()
-                                                                .scaledToFit()
-                                                                .frame(width: 32, height: 32)
-                                                                .foregroundColor(.white)
-                                                            Spacer()
-                                                        }
-                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                                                        .background(Color.alternateMainBlue)
-                                                        .cornerRadius(6)
-                                                    }
-                                                    
-                                                    
-                                                } else if message.type == .Text, let text = message.text {
-                                                    
-                                                    ZStack {
-                                                        
-                                                        Text(text)
-                                                            .foregroundColor(.white)
-                                                            .font(.system(size: 10, weight: .bold))
-                                                            .padding()
-                                                        
-                                                    }
-                                                    .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                                                    .background(Color.alternateMainBlue)
-                                                    .cornerRadius(6)
-                                                    
-                                                    
-                                                } else if message.type == .Photo {
-                                                    
-                                                    if let url = message.url {
-                                                        KFImage(URL(string: url))
-                                                            .resizable()
-                                                            .scaledToFill()
-                                                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                                                            .cornerRadius(6)
-                                                    } else if let image = message.image {
+                                                    if let image = ImageCache.getImageCache().get(forKey: urlString) {
                                                         Image(uiImage: image)
                                                             .resizable()
                                                             .scaledToFill()
                                                             .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                             .cornerRadius(6)
                                                     }
+                                                    else if let image = createVideoThumbnail(from: url) {
+                                                        Image(uiImage: image)
+                                                            .resizable()
+                                                            .scaledToFill()
+                                                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                            .cornerRadius(6)
+                                                    }
+                                                } else {
+                                                    
+                                                    VStack {
+                                                        Spacer()
+                                                        Image(systemName: "mic.fill")
+                                                            .resizable()
+                                                            .scaledToFit()
+                                                            .frame(width: 32, height: 32)
+                                                            .foregroundColor(.white)
+                                                        Spacer()
+                                                    }
+                                                    .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                    .background(Color.alternateMainBlue)
+                                                    .cornerRadius(6)
                                                 }
-                                            }
-                                            
-                                            if i == viewModel.index, selectedView == .Saylo {
+                                                
+                                                
+                                            } else if message.type == .Text, let text = message.text {
                                                 
                                                 ZStack {
-                                                    Color.init(white: 0, opacity: 0.5)
+                                                    
+                                                    Text(text)
+                                                        .foregroundColor(.white)
+                                                        .font(.system(size: 11, weight: .bold))
+                                                        .padding()
+                                                    
                                                 }
                                                 .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                .background(Color.alternateMainBlue)
                                                 .cornerRadius(6)
                                                 
-                                                Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .foregroundColor(.white)
-                                                    .frame(width: 32, height: 32)
+                                                
+                                            } else if message.type == .Photo {
+                                                
+                                                if let url = message.url {
+                                                    KFImage(URL(string: url))
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                        .cornerRadius(6)
+                                                } else if let image = message.image {
+                                                    Image(uiImage: image)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                                        .cornerRadius(6)
+                                                }
                                             }
                                         }
-                                        .overlay(
+                                        
+                                        if i == viewModel.index, selectedView == .Saylo {
                                             
                                             ZStack {
-                                                
-                                                if let chat = viewModel.chat, i > chat.lastReadMessageIndex && !viewModel.selectedMessageIndexes.contains(i) && !messages[i].isFromCurrentUser && !viewModel.showSavedPosts {
-                                                    
-                                                    Text("New")
-                                                        .font(.system(size: 9, weight: .medium, design: .rounded))
-                                                        .foregroundColor(.white)
-                                                        .padding(.horizontal, 4)
-                                                        .padding(.vertical, 1)
-                                                        .background(Color.mainBlue)
-                                                        .clipShape(Capsule())
-                                                        .overlay(
-                                                            RoundedRectangle(cornerRadius: 20)
-                                                                .stroke(Color.white, lineWidth: 1)
-                                                        )
-                                                        .padding(3)
-                                                }
-                                                
+                                                Color.init(white: 0, opacity: 0.5)
                                             }
-                                            ,alignment: .topLeading
-                                        )
-                                        .onAppear {
-                                            reader.scrollTo(messages[messages.count - 1].id, anchor: .trailing)
+                                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                            .cornerRadius(6)
+                                            
+                                            Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .foregroundColor(.white)
+                                                .frame(width: 32, height: 32)
                                         }
                                     }
                                     .overlay(
                                         
                                         ZStack {
-                                            if i == messages.count - 1 {
-                                                MessageSendingView(isSending: $viewModel.isSending, hasSent: $viewModel.hasSent)
+                                            
+                                            if let chat = viewModel.chat, i > chat.lastReadMessageIndex && !viewModel.selectedMessageIndexes.contains(i) && !messages[i].isFromCurrentUser && !viewModel.showSavedPosts {
+                                                
+                                                Text("New")
+                                                    .font(.system(size: 9, weight: .medium, design: .rounded))
+                                                    .foregroundColor(.white)
+                                                    .padding(.horizontal, 4)
+                                                    .padding(.vertical, 1)
+                                                    .background(Color.mainBlue)
+                                                    .clipShape(Capsule())
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 20)
+                                                            .stroke(Color.white, lineWidth: 1)
+                                                    )
+                                                    .padding(3)
                                             }
+                                            
                                         }
-                                        
+                                        ,alignment: .topLeading
                                     )
+                                    .onAppear {
+                                        reader.scrollTo(messages[messages.count - 1].id, anchor: .trailing)
+                                    }
                                 }
-                                
+                                .overlay(
+                                    
+                                    ZStack {
+                                        if i == messages.count - 1 {
+                                            MessageSendingView(isSending: $viewModel.isSending, hasSent: $viewModel.hasSent)
+                                        }
+                                    }
+                                    
+                                )
+                                .onTapGesture {
+                                    
+                                    if ConversationViewModel.shared.index == i, MainViewModel.shared.selectedView == .Saylo {
+                                        viewModel.toggleIsPlaying()
+                                    } else {
+                                        viewModel.showMessage(atIndex: i)
+                                        viewModel.selectedMessageIndexes.append(i)
+                                    }
+                                }
+                                .onLongPressGesture {
+                                    MainViewModel.shared.selectedMessage = message
+                                }
                             }
                         }
                     }
@@ -186,12 +186,13 @@ struct UnreadMessagesScrollView: View {
                         
                         Text("Record a Saylo for \(viewModel.chat?.name ?? "")")
                             .foregroundColor(.white)
-                            .font(.system(size: 22, weight: .semibold, design: .rounded))
+                            .font(.system(size: IS_SE ? 18 : (IS_SMALL_WIDTH ? 20 : 22), weight: .semibold, design: .rounded))
                             .padding(.bottom, 2)
                         
-                        Text("Saylo's dissappear after 48h")
+                        
+                        Text("Unsaved Saylo's dissappear after 48h")
                             .foregroundColor(.white)
-                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                            .font(.system(size: IS_SE ? 14 : (IS_SMALL_WIDTH ? 15 : 16), weight: .regular, design: .rounded))
                             .padding(.bottom, IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 2 : 8) : 6)
                         
                     }
@@ -278,7 +279,7 @@ struct MessageSendingView: View {
                     
                     ZStack {
                         
-                      
+                        
                         Button {
                             MediaUploader.uploadTask?.cancel()
                             ConversationViewModel.shared.cancelUpload()

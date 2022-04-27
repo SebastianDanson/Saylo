@@ -18,7 +18,7 @@ protocol PhotosCollectioViewDelegate: AnyObject {
 
 class PhotosCollectionView: UIView {
     
-    weak var delegate: PhotosCollectioViewDelegate?
+    var delegate: PhotosCollectioViewDelegate?
     
     private let AssetCollectionViewCellReuseIdentifier = "AssetCell"
     
@@ -129,21 +129,19 @@ class PhotosCollectionView: UIView {
     }
     
     func setIsSendEnabled() {
+        
         let viewModel = ConversationGridViewModel.shared
         
         if viewModel.isSelectingChats {
             
             if viewModel.selectedChats.count > 0 && ConversationViewModel.shared.hasSelectedAssets {
                 sendButton.isEnabled = true
-                //                sendButton.alpha = 1
             } else {
                 sendButton.isEnabled = false
-                //                sendButton.alpha = 0.5
             }
             
         } else {
             sendButton.isEnabled = selectedIndexes.isEmpty ? false : true
-            //            sendButton.alpha = selectedIndexes.isEmpty ? 0.5 : 1
         }
     }
     

@@ -75,6 +75,8 @@ struct ChatSettingsView: View {
             
             ZStack {
                 
+                Color.backgroundGray.ignoresSafeArea()
+                
                 ScrollView {
                     
                     VStack(spacing: 0) {
@@ -213,8 +215,7 @@ struct ChatSettingsView: View {
             .alert(isPresented: $showRemoveGroupAlert) {
                 removeGroupAlert
             }
-            .background(Color.backgroundGray)
-//            .ignoresSafeArea()
+            .ignoresSafeArea()
 //        }
         
     }

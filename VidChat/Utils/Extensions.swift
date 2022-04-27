@@ -48,7 +48,9 @@ extension Color {
     static let fadedBlack = Color(UIColor.fadedBlack)
     static let darkBackground = Color(red: 80/255, green: 79/255, blue: 75/255)
     static let lineGray = Color(UIColor.lineGray)
-
+    static let backgroundWhite = Color(UIColor.backgroundWhite)
+    static let createGroupBlue = Color(UIColor.createGroupBlue)
+    static let createGroupText = Color(UIColor.createGroupText)
 }
 
 extension UIImage {
@@ -99,6 +101,10 @@ extension UIColor {
     
     static let systemBlack = UIColor { (trait: UITraitCollection) -> UIColor in
         return trait.userInterfaceStyle == .dark ? .white : .black
+    }
+    
+    static let backgroundWhite = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? UIColor(red: 32/255, green: 32/255, blue: 34/255, alpha: 1) : .white
     }
     
     static let mainBlue = UIColor(red: 15/255, green: 168/255, blue: 246/255, alpha: 1)
@@ -211,7 +217,13 @@ extension UIColor {
         UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
     }
     
+    static let createGroupBlue = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .systemBlue : .mainBlue
+    }
     
+    static let createGroupText = UIColor { (trait: UITraitCollection) -> UIColor in
+        return trait.userInterfaceStyle == .dark ? .white : .mainBlue
+    }
     
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0

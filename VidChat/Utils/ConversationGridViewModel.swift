@@ -265,22 +265,6 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func refetchCurrentUser() {
-        
-        guard let currentUser = AuthViewModel.shared.currentUser else {return}
-        
-        let numChats = currentUser.chats.count
-        
-        AuthViewModel.shared.fetchUser {
-            
-            if let updatedCurrentUser = AuthViewModel.shared.currentUser {
-                if updatedCurrentUser.chats.count != numChats {
-                    self.fetchConversations()
-                }
-            }
-        }
-    }
-    
     func fetchConversation(withId chatId: String, completion: @escaping(() -> Void)) {
         
         self.setConversation(withId: chatId) { data in

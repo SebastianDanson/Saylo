@@ -31,38 +31,14 @@ class MainViewModel: ObservableObject {
     @Published var chatsViewDragOffset: CGSize = .zero
     @Published var selectedMessage: Message?
     @Published var settingsChat: Chat?
-    @Published var showAllowPhotoAccessAlert = false
-    
+    @Published var showPhotosAlert = false 
+
     var audioRecorder = AudioRecorder()
-    
     var isCameraAlert = false
-    
     var timer: Timer?
-    
     var cameraView = MainView()
     
     static let shared = MainViewModel()
-    
-    private init() {
-        
-        //        cameraView.setupSession()
-    }
-    
-    
-    func playVideo() {
-        
-        //        guard let videoPlayerView = videoPlayerView else {
-        //            return
-        //        }
-        //
-        //        videoPlayerView.player.playWithRate()
-        //
-        //        if !videoPlayerView.player.isPlaying {
-        //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        //                self.playVideo()
-        //            }
-        //        }
-    }
     
     func removeVideo() {
         videoUrl = nil

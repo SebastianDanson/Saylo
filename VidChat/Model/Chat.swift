@@ -189,11 +189,12 @@ class Chat: ObservableObject {
     
     func getDefaultChatName() -> String {
         
-        guard let currentUserId = AuthViewModel.shared.currentUser?.id ?? Auth.auth().currentUser?.uid else {return ""}
-
+        let currentUserId = AuthViewModel.shared.getUserId()
+        
         var name = ""
         
         self.chatMembers.forEach { chatMember in
+            
             
             if chatMember.id != currentUserId {
                 
@@ -202,9 +203,7 @@ class Chat: ObservableObject {
                 } else {
                     name += ", \(chatMember.firstName)"
                 }
-                
             }
-            
         }
         
         return name

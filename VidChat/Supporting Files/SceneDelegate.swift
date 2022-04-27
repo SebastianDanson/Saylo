@@ -47,8 +47,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func sceneDidBecomeActive(_ scene: UIScene) {
         
-        //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        //        let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
         
         
         if ConversationPlayerViewModel.shared.messages.isEmpty {
@@ -59,14 +59,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             ConversationGridViewModel.shared.fetchConversations()
         }
         
-        //        if AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
-        //            MainViewModel.shared.cameraView.setupSession()
-        //        }
+        if AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
+            MainViewModel.shared.cameraView.setupSession()
+        }
         
         //        MainViewModel.shared.cameraView.setupSession()
         
         ConversationGridViewModel.shared.showCachedChats()
-        MainViewModel.shared.cameraView.cameraView.setupSession()
+//        MainViewModel.shared.cameraView.cameraView.setupSession()
 
     }
     

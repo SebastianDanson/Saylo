@@ -398,7 +398,7 @@ struct VisualEffectView: UIViewRepresentable {
 struct RecordButton: View {
     
     @StateObject var viewModel = MainViewModel.shared
-    let mainDimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 48 : 56) : 62
+    let mainDimension: CGFloat = IS_SMALL_WIDTH ? 52 : (IS_SMALL_PHONE ? 56 : 62)
     
     var body: some View {
         

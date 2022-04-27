@@ -32,18 +32,14 @@ struct PhotoPickerView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
-//    func setIsSendEnabled() {
-//        photosCollectionView.setIsSendEnabled()
-//    }
 
     class Coordinator: NSObject, UINavigationControllerDelegate, PhotosCollectioViewDelegate {
       
         func showAlert() {
             self.parent.showVideoLengthAlert = true
+            MainViewModel.shared.showPhotosAlert = true
         }
-        
-        
+                
         func resetHeight() {
             withAnimation(.linear(duration: 0.2)) {
                 self.parent.height = self.parent.baseHeight
@@ -51,6 +47,7 @@ struct PhotoPickerView: UIViewRepresentable {
         }
         
         func hidePhotoPicker() {
+            
             withAnimation(.linear(duration: 0.1)) {
                 ConversationViewModel.shared.showPhotos = false
             }
@@ -70,7 +67,6 @@ struct PhotoPickerView: UIViewRepresentable {
         init(_ parent: PhotoPickerView) {
             self.parent = parent
         }
-        
     }
 }
 

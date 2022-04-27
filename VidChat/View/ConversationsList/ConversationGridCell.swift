@@ -13,7 +13,7 @@ struct ConversationGridCell: View {
     
     let width = SCREEN_WIDTH/5.5
     let textColor: Color
-    let diameter: CGFloat = 58
+    let diameter: CGFloat = IS_SE ? 52 : 58
     
     init(chat: Binding<Chat>, textColor: Color = .white) {
         self._chat = chat
@@ -24,16 +24,16 @@ struct ConversationGridCell: View {
         
         ZStack {
             
-            Color.systemWhite.ignoresSafeArea()
+            Color.backgroundWhite.ignoresSafeArea()
             
             HStack(alignment:.top, spacing: 14) {
                 
                 ChatImageCircle(chat: chat, diameter: diameter)
-                    .opacity(chat.chatMembers.count == 1 ? 0.3 : 1)
+                    .opacity(chat.chatMembers.count == 1 && !chat.isTeamSaylo ? 0.3 : 1)
                     .overlay(
                         ZStack {
                             
-                            if chat.chatMembers.count == 1 {
+                            if chat.chatMembers.count == 1 && !chat.isTeamSaylo {
                                 
                                 VStack {
                                     
@@ -60,8 +60,9 @@ struct ConversationGridCell: View {
                     
                     Spacer()
                     
-                    Text(chat.fullName)
-                        .foregroundColor(.black)
+                    Text(chat.isDm ? chat.fullName : chat.name)
+                        .foregroundColor(.systemBlack)
+                        .lineLimit(1)
                         .font(.system(size: IS_SMALL_PHONE ? 17 : 18, weight: .medium))
                     
                     Text(getChatText())
@@ -110,18 +111,17 @@ struct ConversationGridCell: View {
             }
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, IS_SMALL_PHONE ? 2 : 6)
+        .padding(.vertical, IS_SE ? 0 : (IS_SMALL_PHONE ? 2 : 6))
         .frame(width: SCREEN_WIDTH)
     }
     
     func getChatText() -> String {
         
         if chat.messages.count == 0 {
-            return "Tap to send \(chat.name) a Saylo"
+            return "Tap to send a Saylo"
         }
         
         let lastMessage = chat.messages.last!
-        
         let timeAgo = Date().timeIntervalSince1970 - lastMessage.timestamp.dateValue().timeIntervalSince1970
         let fromText = lastMessage.isFromCurrentUser ? "Sent " : "Received "
         

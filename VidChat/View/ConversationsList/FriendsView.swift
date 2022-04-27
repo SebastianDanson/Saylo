@@ -12,8 +12,9 @@ struct FriendsView: View {
     
     @State var chats = [Chat]()
 
-    let dimension: CGFloat = IS_SMALL_PHONE ? 60 : 66
-    
+    let dimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 60 : 54) : 66
+    let plusDimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 31 : 28) : 34
+
     var body: some View {
                 
         VStack(spacing: IS_SMALL_PHONE ? 12 : 24) {
@@ -51,6 +52,7 @@ struct FriendsView: View {
                                 ConversationGridViewModel.shared.showAddFriends = true
                             }
                         } label: {
+                            
                             VStack(spacing: 5) {
                                 
                                 ZStack {
@@ -62,7 +64,7 @@ struct FriendsView: View {
                                     Image(systemName: "plus")
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(width: IS_SMALL_PHONE ? 31 : 34, height: IS_SMALL_PHONE ? 31 : 34)
+                                        .frame(width: plusDimension, height: plusDimension)
                                         .foregroundColor(.white)
                                 }
                                 
@@ -106,6 +108,7 @@ struct FriendsView: View {
         }.onAppear {
             self.chats = ConversationGridViewModel.shared.chats.shuffled()
         }
+        .frame(width: SCREEN_WIDTH)
     }
 }
 

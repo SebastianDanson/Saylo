@@ -18,13 +18,24 @@ class MakeCallViewModel: ObservableObject {
     func createNewOutgoingCall(toChat chat: Chat) {
         
         guard let currentUser = AuthViewModel.shared.currentUser else {return}
-        guard let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id}) else {return}
+        let chatMembers = chat.chatMembers.filter({$0.id != currentUser.id})
         
-        CallManager.shared.currentChat = chat
-        COLLECTION_USERS.document(chatMember.id).getDocument { snapshot, _ in
-            if let data = snapshot?.data() {
-                let user = User(dictionary: data, id: chatMember.id)
-                CallManager.shared.startOutgoingCall(of: currentUser.firstName + " " + currentUser.lastName, pushKitToken: user.pushKitToken)
+        var count = 0
+        var tokens = [String]()
+        for chatMember in chatMembers {
+            
+            COLLECTION_USERS.document(chatMember.id).getDocument { snapshot, _ in
+                
+                count += 1
+                
+                if let data = snapshot?.data() {
+                    let user = User(dictionary: data, id: chatMember.id)
+                    tokens.append(user.pushKitToken)
+                    
+                    if count == chatMembers.count {
+                        CallManager.shared.startOutgoingCall(of: currentUser.firstName + " " + currentUser.lastName, pushKitTokens: tokens)
+                    }
+                }
             }
         }
     }

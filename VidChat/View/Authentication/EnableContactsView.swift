@@ -13,7 +13,7 @@ struct EnableContactsView: View {
     
     let viewModel = ContactsViewModel.shared
     
-    @State private var canProceed = false
+    @State var canProceed = false
     
     var body: some View {
         
@@ -45,6 +45,7 @@ struct EnableContactsView: View {
             
             Button {
                 viewModel.requestAccessToContacts { access in
+                    LandingPageViewModel.shared.isInContactsView = true
                     canProceed = true
                 }
             } label: {
@@ -62,7 +63,8 @@ struct EnableContactsView: View {
                 .foregroundColor(Color.black)
                 .padding(.bottom, BOTTOM_PADDING)
                 .padding(.top, 8)
-            
+                .padding(.bottom, 8)
+
             
         }
 

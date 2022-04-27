@@ -16,12 +16,14 @@ class LandingPageViewModel: ObservableObject {
 
     static let shared = LandingPageViewModel()
     
+    var isInContactsView = false
+    
     private init() { }
     
     func setAuthView() {
         
-        guard let currentUser = AuthViewModel.shared.currentUser else { return }
-        
+        guard let currentUser = AuthViewModel.shared.currentUser, !isInContactsView else { return }
+
         if currentUser.firstName.isEmpty || currentUser.lastName.isEmpty {
             showSetNameView = true
         } else if currentUser.username.isEmpty {

@@ -24,10 +24,14 @@ struct MakeCallView: View {
     
     var body: some View {
         
-        VStack {
+        ZStack {
             
+            Color.systemWhite.ignoresSafeArea()
             
-//            if callsController.calls.isEmpty {
+            VStack {
+                
+                
+                //            if callsController.calls.isEmpty {
                 
                 CallNavView()
                 
@@ -37,10 +41,9 @@ struct MakeCallView: View {
                         
                         VStack {
                             
-                            
                             ForEach(Array(conversationGridViewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                 
-                                if !chat.isTeamSaylo && chat.isDm && chat.chatMembers.count > 1 {
+                                if !chat.isTeamSaylo && chat.chatMembers.count > 1 {
                                     
                                     Button {
                                         viewModel.createNewOutgoingCall(toChat: conversationGridViewModel.chats[i])
@@ -56,14 +59,15 @@ struct MakeCallView: View {
                     .background(Color.systemWhite)
                     .transition(.move(edge: .bottom))
                 }
-//            }
-//            else {
-//                CallView()
-//                    .edgesIgnoringSafeArea(.top)
-//            }
-            
+                //            }
+                //            else {
+                //                CallView()
+                //                    .edgesIgnoringSafeArea(.top)
+                //            }
+                
+            }
         }
-        .background(Color.systemWhite)
+        .ignoresSafeArea()
     }
 }
 
@@ -102,6 +106,6 @@ struct CallNavView: View {
             
         }
         .frame(width: SCREEN_WIDTH, height: 44)
-//        .padding(.top, TOP_PADDING + 20)
+        .padding(.top, TOP_PADDING)
     }
 }

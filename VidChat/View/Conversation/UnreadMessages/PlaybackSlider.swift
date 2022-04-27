@@ -23,22 +23,22 @@ struct PlaybackSlider: View {
         
         SwiftUISlider(thumbColor: showPlaybackControls ? .white : .clear, minTrackColor: .white, maxTrackColor: .systemGray,
                       value: $sliderValue, showPlaybackControls: $showPlaybackControls, showSlider: $showSlider)
-//            .onChange(of: sliderValue) { newValue in
-//
-//                if newValue >= 1 {
-//                    ConversationViewModel.shared.showNextMessage()
-//                    DispatchQueue.main.async {
-//                        sliderValue = 0
-//                    }
-//                }
-//
-//            }
-            .onAppear {
-                start()
-            }
-            .onDisappear {
-                timer?.invalidate()
-            }
+        //            .onChange(of: sliderValue) { newValue in
+        //
+        //                if newValue >= 1 {
+        //                    ConversationViewModel.shared.showNextMessage()
+        //                    DispatchQueue.main.async {
+        //                        sliderValue = 0
+        //                    }
+        //                }
+        //
+        //            }
+        .onAppear {
+            start()
+        }
+        .onDisappear {
+            timer?.invalidate()
+        }
     }
     
     func handleSliderChanged() {
@@ -53,12 +53,14 @@ struct PlaybackSlider: View {
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) {
             timer in
+            
             if let curentPlayer = viewModel.currentPlayer, curentPlayer.isPlaying, curentPlayer.currentTime() != .zero {
                 let value = curentPlayer.currentTime().seconds / (curentPlayer.currentItem?.duration.seconds ?? 0)
                 withAnimation(.linear(duration: 0.01)) {
                     self.sliderValue = value
                 }
             } else if isPlaying {
+                
                 withAnimation(.linear(duration: 0.01)) {
                     self.sliderValue += 0.01 / viewModel.videoLength
                 }
@@ -67,10 +69,6 @@ struct PlaybackSlider: View {
                     ConversationViewModel.shared.showNextMessage()
                 }
             }
-            
-        
-            
-            
         }
     }
 }
@@ -94,26 +92,28 @@ struct SwiftUISlider: UIViewRepresentable {
             
             
             if let touchEvent = event.allTouches?.first {
-                    switch touchEvent.phase {
-                    case .began:
-                        ConversationViewModel.shared.pause()
-                        showSlider = true
-                    case .ended:
-                        ConversationViewModel.shared.play()
-                        self.value.wrappedValue = Double(sender.value)
-                        showSlider = false
-                        
-                        let seconds = sender.value
-                        let duration = ConversationViewModel.shared.currentPlayer?.currentItem?.asset.duration ?? .zero
-                        
-                        let targetTime:CMTime = CMTime(seconds: duration.seconds * Double(seconds), preferredTimescale: 1)
-                        ConversationViewModel.shared.currentPlayer?.seek(to: targetTime)
-                    default:
-                        break
-                    }
+                switch touchEvent.phase {
+                case .began:
+                    ConversationViewModel.shared.pause()
+                    showSlider = true
+                    
+                case .moved:
+                    self.value.wrappedValue = Double(sender.value)
+                case .ended:
+                    ConversationViewModel.shared.play()
+                    self.value.wrappedValue = Double(sender.value)
+                    showSlider = false
+                    
+                    let seconds = sender.value
+                    let duration = ConversationViewModel.shared.currentPlayer?.currentItem?.asset.duration ?? .zero
+                    
+                    let targetTime:CMTime = CMTime(seconds: duration.seconds * Double(seconds), preferredTimescale: 1)
+                    ConversationViewModel.shared.currentPlayer?.seek(to: targetTime)
+                default:
+                    break
                 }
+            }
         }
-        
     }
     
     var thumbColor: UIColor = .white
@@ -123,7 +123,7 @@ struct SwiftUISlider: UIViewRepresentable {
     @Binding var value: Double
     @Binding var showPlaybackControls: Bool
     @Binding var showSlider: Bool
-
+    
     func makeUIView(context: Context) -> UISlider {
         let slider = UISlider(frame: .zero)
         
@@ -138,7 +138,7 @@ struct SwiftUISlider: UIViewRepresentable {
             action: #selector(Coordinator.valueChanged(_:event:)),
             for: .valueChanged
         )
-    
+        
         
         return slider
     }

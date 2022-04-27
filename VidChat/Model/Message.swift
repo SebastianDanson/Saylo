@@ -144,6 +144,7 @@ class Message: ObservableObject {
             "id":id,
             "userProfileImage":userProfileImage,
             "username": username,
+            "userId":userId,
             "timestamp": Int(timestamp.dateValue().timeIntervalSince1970)
         ] as [String: Any]
         

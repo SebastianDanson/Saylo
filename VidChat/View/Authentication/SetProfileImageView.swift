@@ -175,7 +175,6 @@ struct SetProfileImageView: View {
             
             
         }
-        
         .navigationBarBackButtonHidden(true)
     }
     

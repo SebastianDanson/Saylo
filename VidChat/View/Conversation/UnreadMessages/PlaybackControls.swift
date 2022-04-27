@@ -29,7 +29,6 @@ struct PlaybackControls: View {
                     .frame(width: 36, height: 36)
             }
             
-            
             Spacer()
             
             Button {

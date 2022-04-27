@@ -58,11 +58,9 @@ final class CallManager: NSObject, ObservableObject {
     }
     
     func endCalling() {
-        print("WWWW NOOO")
 
         if let chat = currentChat, !didJoin {
             if let token = chat.chatMembers.first(where: {$0.id != AuthViewModel.shared.getUserId()})?.fcmToken {
-                print("WWWW")
                 ConversationViewModel.shared.sendMissedCallNotification(token: token)
             }
             currentChat = nil
@@ -103,7 +101,7 @@ final class CallManager: NSObject, ObservableObject {
         requestTransaction(transaction)
     }
     
-    func startOutgoingCall(of session: String, pushKitToken: String) {
+    func startOutgoingCall(of session: String, pushKitTokens: [String]) {
         let handle = CXHandle(type: .phoneNumber, value: session)
         let uuid = pairedUUID(of: session)
         let startCallAction = CXStartCallAction(call: uuid, handle: handle)
@@ -111,6 +109,7 @@ final class CallManager: NSObject, ObservableObject {
         
         let transaction = CXTransaction(action: startCallAction)
         callController.request(transaction) { (error) in
+            
             if let error = error {
                 print("startOutgoingSession failed: \(error.localizedDescription)")
                 return
@@ -122,9 +121,8 @@ final class CallManager: NSObject, ObservableObject {
             //            let uuid = UUID(uuidString: uuidString)
             
             
-            let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "token": pushKitToken] as [String : Any]
-            
-            print(pushKitToken, "TOKEN")
+            let data = ["UUID":uuid.uuidString, "handle":session, "hasVideo": true, "tokens": pushKitTokens] as [String : Any]
+            print(pushKitTokens, "TOKENS")
             Firebase.Functions.functions().httpsCallable("makeCall").call(data) { result, error in
                 print(error?.localizedDescription, "FUNCTION ERROR")
             }

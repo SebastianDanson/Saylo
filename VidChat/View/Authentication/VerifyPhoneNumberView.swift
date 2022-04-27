@@ -72,10 +72,18 @@ struct VerifyPhoneNumberView: View {
                         .padding(.top, TOP_PADDING + 8)
                     
                     
-                    Text("Enter the code we sent to \(dialCode)\n\(phoneNumber)")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.mainGray)
-                        .multilineTextAlignment(.center)
+                    VStack(spacing: 0) {
+                        
+                        Text("Enter the code we sent to \(dialCode)")
+                            .font(.system(size: 16, weight: .regular))
+                            .foregroundColor(.mainGray)
+                        
+                        Text(phoneNumber)
+                            .font(.system(size: 16, weight: .regular))
+                            .foregroundColor(.mainGray)
+                    }
+                   
+                        
                     
                     
                     Button {
@@ -109,6 +117,7 @@ struct VerifyPhoneNumberView: View {
                     viewModel.verifyPhone(verificationCode: verificationCode) { error in
                         self.isLoading = false
                         if error != nil {
+                            print(error?.localizedDescription, "ERROR with code")
                             self.showInvalidCode = true
                             self.showError = true
                         } else {
@@ -229,26 +238,37 @@ struct PinCodeTextField: UIViewRepresentable {
             let currentText = textField.text ?? ""
             guard let stringRange = Range(range, in: currentText) else { return false }
             let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+//
+//            let noSpaceText = updatedText.replacingOccurrences(of: " ", with: "")
+//
+//            if updatedText.count < self.text.count {
+//                self.text.removeLast(min(2, self.text.count))
+//                self.text.append(" ")
+//                textField.text = text
+//            } else if noSpaceText.count <= 6 {
+//
+//                self.text = noSpaceText
+//
+//                if noSpaceText.count < 6 {
+//                    self.text.append(" ")
+//                }
+//
+//                textField.text = text
+//            }
+//
+//
+//            return false
             
-            let noSpaceText = updatedText.replacingOccurrences(of: " ", with: "")
-            
-            if updatedText.count < self.text.count {
-                self.text.removeLast(min(2, self.text.count))
-                self.text.append(" ")
-                textField.text = text
-            } else if noSpaceText.count <= 6 {
-                
-                self.text = noSpaceText
-                
-                if noSpaceText.count < 6 {
-                    self.text.append(" ")
+            if updatedText.count > 6{
+                return false
+            } else if updatedText.count == 6 {
+                let arbitraryValue: Int = 4
+                if let newPosition = textField.position(from: textField.beginningOfDocument, offset: arbitraryValue) {
+                    textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
                 }
-                
-                textField.text = text
             }
             
-            
-            return false
+            return true
         }
     }
     
