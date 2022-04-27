@@ -12,44 +12,72 @@ struct FindFriendsView: View {
     
     var body: some View {
         
-        VStack(spacing: 14) {
+        ZStack {
             
-            VStack(spacing: 4) {
-                
-                Text("Welcome to Saylo")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.systemBlack)
-                    .padding(.top, 14)
-                
-                Text("Add friends and family to chat")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.textGray)
-                
-            }
+            Color.systemWhite
             
-            Button {
+            VStack(spacing: 8) {
                 
-                withAnimation {
-                    ConversationGridViewModel.shared.showFindFriends = true
-                    ConversationGridViewModel.shared.showAllFriends = false
+                
+                ZStack {
+                    
+                    Color.alternateMainBlue
+                    
+                    VStack {
+                        
+                        Spacer()
+                        
+                        Text("Welcome to Saylo")
+                            .font(.system(size: 24, weight: .medium, design: .rounded))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                    }
+                    
+                }
+                .frame(width: SCREEN_WIDTH - 40, height: 60)
+                
+                
+                VStack {
+                    
+                    Spacer()
+                    
+                    Text("Add friends and family to chat")
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .foregroundColor(.textGray)
+                    
+                    
+                    Button {
+                        
+                        withAnimation {
+                            ConversationGridViewModel.shared.showFindFriends = true
+                            ConversationGridViewModel.shared.showAllFriends = false
+                        }
+                        
+                    } label: {
+                        
+                        Text("Find Friends")
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
+                            .foregroundColor(.systemWhite)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 24)
+                            .background(Color.alternateMainBlue)
+                            .clipShape(Capsule())
+                            .padding(.top, 4)
+                        
+                    }
+                    
+                    Spacer()
                 }
                 
-            } label: {
+                Spacer()
                 
-                Text("Find Friends")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.systemWhite)
-                    .padding(.vertical, 6)
-                    .padding(.horizontal, 24)
-                    .background(Color.mainBlue)
-                    .clipShape(Capsule())
-                
-            }.padding(.bottom, 12)
-            
+            }
         }
-        .frame(width: SCREEN_WIDTH - 40, height: 128)
-        .background(Color.popUpSystemWhite)
+        .frame(width: SCREEN_WIDTH - 40, height: 168)
         .cornerRadius(12)
+        .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
         
     }
 }

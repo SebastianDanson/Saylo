@@ -22,7 +22,7 @@ struct FriendsView: View {
             HStack {
                 
                 Text("Friends")
-                    .font(Font.system(size: IS_SMALL_PHONE ? 20 : 22, weight: .medium, design: .rounded))
+                    .font(Font.system(size: IS_SMALL_PHONE ? 22 : 24, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                 
                 Spacer()

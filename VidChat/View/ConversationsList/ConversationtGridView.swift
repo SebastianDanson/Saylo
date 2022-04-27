@@ -51,7 +51,7 @@ struct ConversationGridView: View {
                 
                 VStack {
                     
-                    NavView(searchText: $searchText).zIndex(5).padding(.top, IS_SMALL_PHONE ? 0 : 8)
+                    NavView(searchText: $searchText).zIndex(5).padding(.top, 8)
                     
                     Spacer()
                     
@@ -63,7 +63,7 @@ struct ConversationGridView: View {
                     //                    }
                     
                     FriendsView()
-                        .padding(.top, IS_SMALL_PHONE ? 0 : 16)
+                        .padding(.top, IS_SMALL_PHONE ? -4 : 0)
                     
                     
                     ZStack(alignment: .top) {
@@ -133,10 +133,43 @@ struct ConversationGridView: View {
                                     CreateChatCell()
                                 }
                                 .padding(.bottom, 28)
+                                                              
+
+//                                FindFriendsView()
                                 
                             }
                         }
                         .padding(.top, IS_SMALL_PHONE ? 68 : 85)
+                        
+                        //if no friends i.e only has team Saylo chat
+                        if viewModel.chats.count == 1 {
+                            
+                        VStack {
+                            
+                            Spacer()
+                            
+                            Button {
+                                
+                                withAnimation {
+                                    ConversationGridViewModel.shared.showFindFriends = true
+                                    ConversationGridViewModel.shared.showAllFriends = false
+                                }
+                                
+                            } label: {
+                                
+                                Text("Find Friends")
+                                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.systemWhite)
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 24)
+                                    .background(Color.alternateMainBlue)
+                                    .clipShape(Capsule())
+                                    .padding(.bottom, BOTTOM_PADDING + 28)
+                                    
+                                
+                            }
+                        }
+                        }
                     }
                     .background(Color.backgroundWhite)
                     .frame(width: SCREEN_WIDTH)
@@ -303,7 +336,7 @@ struct NavView: View {
     @StateObject private var viewModel = ConversationGridViewModel.shared
     //    @StateObject private var conversationViewModel = ConversationViewModel.shared
     //    @StateObject private var cameraViewModel = MainViewModel.shared
-    //    @StateObject private var authViewModel = AuthViewModel.shared
+        @StateObject private var authViewModel = AuthViewModel.shared
     
     @Binding var searchText: String
     
@@ -363,10 +396,25 @@ struct NavView: View {
                         
                         //                    }
                         
-                        Text("Saylo")
-                            .foregroundColor(.white)
-                            .font(.system(size: IS_SMALL_PHONE ? 28 : 30, weight: .medium, design: .rounded))
-                            .padding(.top, IS_SMALL_PHONE ? 2 : 7)
+                        
+                        Button {
+                            withAnimation {
+                                ConversationGridViewModel.shared.showSettingsView = true
+                            }
+                        } label: {
+                            
+                            Image(systemName: "person.crop.circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 28, height: 28)
+                                .foregroundColor(.white)
+//                                .padding(.trailing, 3)
+                        }
+                        
+//                        Text("Saylo")
+//                            .foregroundColor(.white)
+//                            .font(.system(size: IS_SMALL_PHONE ? 28 : 30, weight: .medium, design: .rounded))
+//                            .padding(.top, IS_SMALL_PHONE ? 2 : 7)
                         
                         Spacer()
                         
@@ -407,12 +455,36 @@ struct NavView: View {
                                 ConversationGridViewModel.shared.showSettingsView = true
                             }
                         } label: {
-                            Image(systemName: "person.fill")
+                            
+                            ZStack {
+                            Image("plusPerson")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 21, height: 21)
+                                .frame(width: 25, height: 25)
                                 .foregroundColor(.white)
                                 .padding(.trailing, 3)
+                             
+                                if authViewModel.hasUnseenFriendRequest {
+                                
+                                    VStack {
+                                        
+                                        HStack {
+                                            
+                                            Spacer()
+                                            
+                                            Circle()
+                                                .foregroundColor(Color(.systemRed))
+                                                .frame(width: 15, height: 15)
+                                                .padding(.top, -6)
+                                                .padding(.trailing, -6)
+                                            
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                }
+                            }
+                            .frame(width: 25, height: 25)
                         }
                         
                         
@@ -539,160 +611,160 @@ struct NavView: View {
 }
 
 
-struct SelectedChatsView: View {
-    
-    @StateObject private var viewModel = ConversationGridViewModel.shared
-    @StateObject private var conversationViewModel = ConversationViewModel.shared
-    
-    var body: some View {
-        
-        ZStack {
-            
-            if viewModel.selectedChats.count > 0 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(Array(viewModel.selectedChats.enumerated()), id: \.1.id) { i, chat in
-                            
-                            SelectedChatView(chat: chat)
-                                .padding(.leading, i == 0 ? 20 : 5)
-                                .padding(.trailing, i == viewModel.selectedChats.count - 1 ? 80 : 5)
-                                .transition(.scale)
-                            
-                        }
-                    }.padding(.bottom, getBottomPadding())
-                }.frame(width: SCREEN_WIDTH, height: getBottomPadding() + 60)
-            } else {
-                
-                ZStack {
-                    
-                    Text("Select Chats")
-                        .font(.system(size: 18, weight: .medium))
-                        .padding(.bottom, getBottomPadding())
-                    
-                    if conversationViewModel.showPhotos {
-                        HStack {
-                            
-                            Button {
-                                
-                                withAnimation {
-                                    conversationViewModel.showPhotos = false
-                                    viewModel.isSelectingChats = false
-                                }
-                                
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 24, height: 24)
-                                    .foregroundColor(Color.systemBlack)
-                                    .padding(.leading, 12)
-                            }
-                            
-                            
-                            Spacer()
-                            
-                        }
-                    }
-                }
-                
-            }
-            
-            HStack {
-                Spacer()
-                
-                if conversationViewModel.showCamera {
-                    Button {
-                        withAnimation {
-                            
-                            viewModel.selectedChats.forEach { chat in
-                                conversationViewModel.sendCameraMessage(chatId: chat.id, chat: chat)
-                                ConversationService.updateLastVisited(forChat: chat)
-                                
-                            }
-                            
-                            //                            MainViewModel.shared.reset(hideCamera: true)
-                            viewModel.cameraViewZIndex = 3
-                            viewModel.stopSelectingChats()
-                            
-                        }
-                    } label: {
-                        
-                        ZStack {
-                            
-                            Circle().frame(width: 48, height: 48)
-                                .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
-                            
-                            Image(systemName: "location.north.fill")
-                                .resizable()
-                                .rotationEffect(Angle(degrees: 90))
-                                .foregroundColor(.systemWhite)
-                                .padding(.leading, 4)
-                                .frame(width: 30, height: 30)
-                                .scaledToFit()
-                                .padding(.horizontal)
-                            
-                        }
-                        
-                    }.disabled(viewModel.selectedChats.count == 0)
-                    
-                }
-            }.padding(.bottom, getBottomPadding())
-            
-        }.transition(.identity)
-        
-    }
-    
-    func getBottomPadding() -> CGFloat {
-        
-        if conversationViewModel.showKeyboard || conversationViewModel.showPhotos{
-            return 2
-        } else if conversationViewModel.isRecordingAudio {
-            return BOTTOM_PADDING + 80
-        }
-        
-        return BOTTOM_PADDING + 6
-    }
-}
-
-struct SelectedChatView: View {
-    
-    let chat: Chat
-    
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            VStack(alignment: .center, spacing: 4) {
-                
-                ChatImageCircle(chat: chat, diameter: 44)
-                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
-                
-                
-                Text(chat.name)
-                    .font(.system(size: 11, weight: .regular))
-                    .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
-                    .frame(maxWidth: 48)
-            }
-            
-            Button {
-                ConversationGridViewModel.shared.removeSelectedChat(withId: chat.id)
-            } label: {
-                
-                ZStack {
-                    
-                    Circle()
-                        .foregroundColor(.toolBarIconGray)
-                        .frame(width: 20, height: 20)
-                    
-                    Image("x")
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(Color(white: 0.4, opacity: 1))
-                        .scaledToFit()
-                        .frame(width: 10, height: 10)
-                    
-                }
-                .padding(.top, 4)
-                .padding(.trailing, -6)
-            }
-        }
-    }
-}
+//struct SelectedChatsView: View {
+//
+//    @StateObject private var viewModel = ConversationGridViewModel.shared
+//    @StateObject private var conversationViewModel = ConversationViewModel.shared
+//
+//    var body: some View {
+//
+//        ZStack {
+//
+//            if viewModel.selectedChats.count > 0 {
+//                ScrollView(.horizontal, showsIndicators: false) {
+//                    HStack {
+//                        ForEach(Array(viewModel.selectedChats.enumerated()), id: \.1.id) { i, chat in
+//
+//                            SelectedChatView(chat: chat)
+//                                .padding(.leading, i == 0 ? 20 : 5)
+//                                .padding(.trailing, i == viewModel.selectedChats.count - 1 ? 80 : 5)
+//                                .transition(.scale)
+//
+//                        }
+//                    }.padding(.bottom, getBottomPadding())
+//                }.frame(width: SCREEN_WIDTH, height: getBottomPadding() + 60)
+//            } else {
+//
+//                ZStack {
+//
+//                    Text("Select Chats")
+//                        .font(.system(size: 18, weight: .medium))
+//                        .padding(.bottom, getBottomPadding())
+//
+//                    if conversationViewModel.showPhotos {
+//                        HStack {
+//
+//                            Button {
+//
+//                                withAnimation {
+//                                    conversationViewModel.showPhotos = false
+//                                    viewModel.isSelectingChats = false
+//                                }
+//
+//                            } label: {
+//                                Image(systemName: "chevron.down")
+//                                    .resizable()
+//                                    .scaledToFit()
+//                                    .frame(width: 24, height: 24)
+//                                    .foregroundColor(Color.systemBlack)
+//                                    .padding(.leading, 12)
+//                            }
+//
+//
+//                            Spacer()
+//
+//                        }
+//                    }
+//                }
+//
+//            }
+//
+//            HStack {
+//                Spacer()
+//
+//                if conversationViewModel.showCamera {
+//                    Button {
+//                        withAnimation {
+//
+//                            viewModel.selectedChats.forEach { chat in
+//                                conversationViewModel.sendCameraMessage(chatId: chat.id, chat: chat)
+//                                ConversationService.updateLastVisited(forChat: chat)
+//
+//                            }
+//
+//                            //                            MainViewModel.shared.reset(hideCamera: true)
+//                            viewModel.cameraViewZIndex = 3
+//                            viewModel.stopSelectingChats()
+//
+//                        }
+//                    } label: {
+//
+//                        ZStack {
+//
+//                            Circle().frame(width: 48, height: 48)
+//                                .foregroundColor(viewModel.selectedChats.count > 0 ? .mainBlue : .lightGray)
+//
+//                            Image(systemName: "location.north.fill")
+//                                .resizable()
+//                                .rotationEffect(Angle(degrees: 90))
+//                                .foregroundColor(.systemWhite)
+//                                .padding(.leading, 4)
+//                                .frame(width: 30, height: 30)
+//                                .scaledToFit()
+//                                .padding(.horizontal)
+//
+//                        }
+//
+//                    }.disabled(viewModel.selectedChats.count == 0)
+//
+//                }
+//            }.padding(.bottom, getBottomPadding())
+//
+//        }.transition(.identity)
+//
+//    }
+//
+//    func getBottomPadding() -> CGFloat {
+//
+//        if conversationViewModel.showKeyboard || conversationViewModel.showPhotos{
+//            return 2
+//        } else if conversationViewModel.isRecordingAudio {
+//            return BOTTOM_PADDING + 80
+//        }
+//
+//        return BOTTOM_PADDING + 6
+//    }
+//}
+//
+//struct SelectedChatView: View {
+//
+//    let chat: Chat
+//
+//    var body: some View {
+//        ZStack(alignment: .topTrailing) {
+//            VStack(alignment: .center, spacing: 4) {
+//
+//                ChatImageCircle(chat: chat, diameter: 44)
+//                    .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 16, x: 0, y: 20)
+//
+//
+//                Text(chat.name)
+//                    .font(.system(size: 11, weight: .regular))
+//                    .foregroundColor(Color(red: 136/255, green: 137/255, blue: 141/255))
+//                    .frame(maxWidth: 48)
+//            }
+//
+//            Button {
+//                ConversationGridViewModel.shared.removeSelectedChat(withId: chat.id)
+//            } label: {
+//
+//                ZStack {
+//
+//                    Circle()
+//                        .foregroundColor(.toolBarIconGray)
+//                        .frame(width: 20, height: 20)
+//
+//                    Image("x")
+//                        .resizable()
+//                        .renderingMode(.template)
+//                        .foregroundColor(Color(white: 0.4, opacity: 1))
+//                        .scaledToFit()
+//                        .frame(width: 10, height: 10)
+//
+//                }
+//                .padding(.top, 4)
+//                .padding(.trailing, -6)
+//            }
+//        }
+//    }
+//}
