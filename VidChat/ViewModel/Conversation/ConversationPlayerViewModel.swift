@@ -19,11 +19,11 @@ class ConversationPlayerViewModel: ObservableObject {
     static let shared = ConversationPlayerViewModel()
     
     private init() {
-       setMessages()
+//       setMessages()
     }
     
-    func setMessages() {
-        
+//    func setMessages() {
+//
 //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
 //
 //        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
@@ -36,11 +36,11 @@ class ConversationPlayerViewModel: ObservableObject {
 //        }
 //
 //        addReplyMessages()
-        
-        guard let chat = ConversationViewModel.shared.chat else { return }
-        
-        
-    }
+//
+//        guard let chat = ConversationViewModel.shared.chat else { return }
+//
+//
+//    }
    
     func addMessage(_ message: Message) {
         

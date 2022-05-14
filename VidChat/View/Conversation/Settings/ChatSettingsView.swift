@@ -65,8 +65,12 @@ struct ChatSettingsView: View {
                         viewModel.leaveGroup(chat: chat)
                     }
                     
-                    MainViewModel.shared.settingsChat = nil
-                    ConversationViewModel.shared.hideChat = true
+                    withAnimation {
+                        MainViewModel.shared.settingsChat = nil
+                        ConversationViewModel.shared.hideChat = true
+                        ConversationGridViewModel.shared.showConversation = false
+                        ConversationGridViewModel.shared.selectedSettingsChat = nil
+                    }
                 }
             )
         )
@@ -156,7 +160,7 @@ struct ChatSettingsView: View {
                                     SettingsCell(image: Image(systemName: "photo.fill"), imageColor: Color(.systemOrange), title: "Edit group image",
                                                  leadingPadding: 0, imageDimension: 17)
                                 }.sheet(isPresented: $showImagePicker, content: {
-                                    ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
+                                    ImagePicker(image: $profileImage, showImageCropper: $showImageCropper, showPhotoLibrary: true)
                                 })
                                 
                                 
@@ -197,7 +201,7 @@ struct ChatSettingsView: View {
                 //            .padding(.top)
                 
                 if showImageCropper {
-                    ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker, onDone: {
+                    ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker, showCamera: .constant(false), onDone: {
                         if let profileImage = profileImage {
                             viewModel.updateProfileImage(image: profileImage)
                         }

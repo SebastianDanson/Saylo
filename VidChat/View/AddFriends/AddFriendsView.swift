@@ -143,6 +143,7 @@ struct AddFriendsView: View {
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
                     
                     if let contacts = viewModel.contacts {
+                        
                         Text("Contacts")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
@@ -152,13 +153,9 @@ struct AddFriendsView: View {
                         
                         LazyVStack(spacing: 0) {
                             
-                            
                             ForEach(Array(contacts.enumerated()), id: \.1.id) { i, contact in
-                                
                                 ContactCell(contact: contact, index: i)
-                                
                             }
-                            
                             
                         }.frame(width: SCREEN_WIDTH - 40)
                             .background(Color.popUpSystemWhite)

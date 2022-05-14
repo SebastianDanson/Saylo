@@ -72,6 +72,7 @@ struct AllFriendsView: View {
                         .cornerRadius(12)
                         .padding(.horizontal, 20)
                         .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+                        
                     } else {
                         
                         HStack {
@@ -89,7 +90,7 @@ struct AllFriendsView: View {
                         Text("Contacts")
                             .foregroundColor(.systemBlack)
                             .font(.system(size: 18, weight: .semibold))
-                            .padding(.top, 28)
+                            .padding(.top, chats.count == 0 ? 0 : 28)
                             .padding(.leading, 20)
                         
                         

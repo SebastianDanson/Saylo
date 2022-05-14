@@ -89,7 +89,6 @@ class CacheManager {
         
         let fileOutputUrl = sharedDirectoryURL().appendingPathComponent(pathComp)
         
-        
         if FileManager.default.fileExists(atPath: fileOutputUrl.path) {
             do {
                 try FileManager.default.moveItem(atPath: fileOutputUrl.path, toPath: outputURL)

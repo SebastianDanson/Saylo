@@ -14,7 +14,7 @@ struct FindFriendsView: View {
         
         ZStack {
             
-            Color.systemWhite
+            Color.backgroundWhite
             
             VStack(spacing: 8) {
                 
@@ -43,14 +43,22 @@ struct FindFriendsView: View {
                     
                     Spacer()
                     
-                    Text("Add friends and family to chat")
-                        .font(.system(size: 18, weight: .medium, design: .rounded))
-                        .foregroundColor(.textGray)
+                    if ConversationGridViewModel.shared.isCalling {
+                        Text("Add friends and family make a call")
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
+                            .foregroundColor(.textGray)
+                    } else {
+                        Text("Add friends and family to create a chat")
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
+                            .foregroundColor(.textGray)
+                    }
                     
                     
                     Button {
                         
                         withAnimation {
+                            ConversationGridViewModel.shared.showNewChat = false
+                            ConversationGridViewModel.shared.isCalling = false
                             ConversationGridViewModel.shared.showFindFriends = true
                             ConversationGridViewModel.shared.showAllFriends = false
                         }
@@ -64,7 +72,7 @@ struct FindFriendsView: View {
                             .padding(.horizontal, 24)
                             .background(Color.alternateMainBlue)
                             .clipShape(Capsule())
-                            .padding(.top, 4)
+                            .padding(.top, 8)
                         
                     }
                     
@@ -75,7 +83,7 @@ struct FindFriendsView: View {
                 
             }
         }
-        .frame(width: SCREEN_WIDTH - 40, height: 168)
+        .frame(width: SCREEN_WIDTH - 40, height: 180)
         .cornerRadius(12)
         .shadow(color: Color(.init(white: 0, alpha: 0.1)), radius: 16, x: 0, y: 4)
         

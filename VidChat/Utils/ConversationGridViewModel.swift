@@ -30,13 +30,14 @@ class ConversationGridViewModel: ObservableObject {
     @Published var hasUnreadMessages = false
     @Published var showAllFriends = false
     @Published var selectedSettingsChat: Chat?
-
+    @Published var friendsChats = [Chat]()
+    
     var allChats = [Chat]()
     
     static let shared = ConversationGridViewModel()
     
     private init() {
-        showCachedChats()
+        //        showCachedChats()
     }
     
     
@@ -148,11 +149,6 @@ class ConversationGridViewModel: ObservableObject {
             if let data = snapshot?.data() {
                 let chat = Chat(dictionary: data, id: id)
                 
-                chat.messages.forEach { message in
-                    if let urlString = message.url, let url = URL(string: urlString) {
-                        self.createVideoThumbnail(from: url)
-                    }
-                }
                 if let index = self.chats.firstIndex(where: {$0.id == chat.id}) {
                     self.chats[index] = chat
                 } else {
@@ -170,27 +166,44 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    private func createVideoThumbnail(from url: URL) {
+    //    private func createVideoThumbnail(from url: URL) {
+    //
+    //        let asset = AVAsset(url: url)
+    //        let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+    //        assetImgGenerate.appliesPreferredTrackTransform = true
+    //        assetImgGenerate.maximumSize = CGSize(width: MINI_MESSAGE_WIDTH * 3, height: MINI_MESSAGE_HEIGHT * 3)
+    //
+    //        let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 600)
+    //        DispatchQueue.global().async {
+    //            do {
+    //                let img = try assetImgGenerate.copyCGImage(at: time, actualTime: nil)
+    //                let thumbnail = UIImage(cgImage: img)
+    //                ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
+    //            }
+    //            catch {
+    //                print("ERRROR: \(url)"  + error.localizedDescription)
+    //                ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
+    //            }
+    //        }
+    //    }
+    
+    func createVideoThumbnail(from url: URL) {
         
-        let asset = AVAsset(url: url)
-        let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-        assetImgGenerate.appliesPreferredTrackTransform = true
-        assetImgGenerate.maximumSize = CGSize(width: MINI_MESSAGE_WIDTH * 3, height: MINI_MESSAGE_HEIGHT * 3)
+        guard ImageCache.getImageCache().get(forKey: url.absoluteString) == nil else { return }
         
-        let time = CMTimeMakeWithSeconds(0.0, preferredTimescale: 600)
-        DispatchQueue.global().async {
-            do {
-                let img = try assetImgGenerate.copyCGImage(at: time, actualTime: nil)
-                let thumbnail = UIImage(cgImage: img)
-                ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
-                
-            }
-            catch {
-                print("ERRROR: \(url)"  + error.localizedDescription)
-                ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
-            }
+        do {
+            let asset = AVURLAsset(url: url, options: nil)
+            let imgGenerator = AVAssetImageGenerator(asset: asset)
+            imgGenerator.appliesPreferredTrackTransform = true
+            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+            let thumbnail = UIImage(cgImage: cgImage)
+            ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
+        } catch let error {
+            print("*** Error generating thumbnail: \(error.localizedDescription)")
+            ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
         }
     }
+    
     
     func setConversation(withId id: String, completion: @escaping([String:Any]) -> Void) {
         
@@ -213,9 +226,10 @@ class ConversationGridViewModel: ObservableObject {
         }
     }
     
-    func fetchConversations() {
+    func fetchConversations(updateFriendsView: Bool = false) {
         
         guard let user = AuthViewModel.shared.currentUser else {return}
+        
         var count = 0
         
         user.chats.forEach { chat in
@@ -236,21 +250,30 @@ class ConversationGridViewModel: ObservableObject {
                     self.allChats = self.chats
                     
                     
-//                    if self.chats.count > 0 {
-//                        ConversationViewModel.shared.setChat(chat: self.chats[0])
-//                    }
+                    //                    if self.chats.count > 0 {
+                    //                        ConversationViewModel.shared.setChat(chat: self.chats[0])
+                    //                    }
                     
                     //                    withAnimation {
                     //                        self.chats = chats
                     //                    }
                     
+                    if self.chats.count != self.getCachedChats().count {
+                        ConversationGridViewModel.shared.updateFriendsChats()
+                    }
+                    
                     self.setChatCache()
+                    
                     
                     self.chats.forEach { chat in
                         
                         if !chat.isDm {
                             Messaging.messaging().subscribe(toTopic: chat.id)
                         }
+                    }
+                    
+                    if updateFriendsView {
+                        ConversationGridViewModel.shared.updateFriendsChats()
                     }
                 }
             }
@@ -300,18 +323,23 @@ class ConversationGridViewModel: ObservableObject {
     //        })
     //    }
     
+    func updateFriendsChats() {
+        self.friendsChats = chats.shuffled()
+    }
+    
     func showCachedChats() {
         
         self.chats = getCachedChats()
+        self.setMessages()
         
-//        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-//        let selectedChatId = defaults?.string(forKey: "selectedChatId")
+        //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        //        let selectedChatId = defaults?.string(forKey: "selectedChatId")
         
-//        if let selectedChatId = selectedChatId, let chat = self.chats.first(where: {$0.id == selectedChatId}) {
-//            ConversationViewModel.shared.setChat(chat: chat)
-//        } else if chats.count > 0 {
-//            ConversationViewModel.shared.setChat(chat: chats [0])
-//        }
+        //        if let selectedChatId = selectedChatId, let chat = self.chats.first(where: {$0.id == selectedChatId}) {
+        //            ConversationViewModel.shared.setChat(chat: chat)
+        //        } else if chats.count > 0 {
+        //            ConversationViewModel.shared.setChat(chat: chats [0])
+        //        }
     }
     
     func showChat(chat: Chat) {
@@ -320,9 +348,30 @@ class ConversationGridViewModel: ObservableObject {
         }
         ConversationViewModel.shared.setChat(chat: chat)
         
-//        withAnimation {
-            self.showConversation = true
-//        }
+        //        withAnimation {
+        self.showConversation = true
+        //        }
+    }
+    
+    func setMessages() {
+        
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        
+        let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+        
+        newMessagesArray.forEach { messageData in
+            let id = messageData["id"] as? String ?? ""
+            let message = Message(dictionary: messageData, id: id)
+            
+            let viewModel = ConversationGridViewModel.shared
+            if let index = viewModel.chats.firstIndex(where: {$0.id == message.chatId}), !viewModel.chats[index].messages.contains(where: {$0.id == id}) {
+                viewModel.chats[index].messages.append(message)
+                viewModel.chats[index].setLastMessageIndex()
+            }
+        }
+        
+        defaults?.set([[String:Any]](), forKey: "messages")
+        
     }
     
     func getCachedChats() -> [Chat] {

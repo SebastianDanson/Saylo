@@ -88,6 +88,7 @@ class ConversationViewModel: ObservableObject {
     @Published var showCall = false
     
     
+    var hasUnread = false
     var currentPlayer: AVPlayer?
     
     @Published var scrollToBottom = false
@@ -99,6 +100,8 @@ class ConversationViewModel: ObservableObject {
     private var isUploadingMessage = false
     private var listener: ListenerRegistration?
     
+    var currentMessageId: String = ""
+    var liveUrls = [String]()
     var selectedChat: Chat?
     var hasSelectedAssets = false
     var isShowingReactions = false
@@ -110,19 +113,20 @@ class ConversationViewModel: ObservableObject {
     
     
     func setChat(chat: Chat) {
-        
+        ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
         self.chatId = chat.id
         
+        
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chat.id, forKey: "selectedChatId")
-        self.addListener()
         self.messages = chat.messages
-        self.index = max(0, chat.messages.count - 1)
-        ConversationService.updateLastVisited(forChat: chat)
+        ConversationGridViewModel.shared.setChatCache()
+        self.hasUnread = chat.hasUnreadMessage
+        self.addListener()
         chat.hasUnreadMessage = false
-        print(chat.id, "IDID")
+        
     }
     
     func getSavedPosts() {
@@ -130,7 +134,7 @@ class ConversationViewModel: ObservableObject {
         if ConversationViewModel.shared.savedMessages.count == 0 {
             ConversationViewModel.shared.fetchSavedMessages()
         }
-       
+        
         withAnimation {
             MainViewModel.shared.settingsChat = nil
             ConversationViewModel.shared.showSavedPosts = true
@@ -142,8 +146,10 @@ class ConversationViewModel: ObservableObject {
         
         if let chat = chat {
             ConversationService.updateLastVisited(forChat: chat)
+            ConversationGridViewModel.shared.setChatCache()
             if let index = ConversationGridViewModel.shared.chats.firstIndex(where: {$0.id ==  chat.id}) {
                 ConversationGridViewModel.shared.chats[index].lastReadMessageIndex = chat.messages.count - 1
+                ConversationGridViewModel.shared.chats[index].hasUnreadMessage = false
             }
         }
         
@@ -171,13 +177,11 @@ class ConversationViewModel: ObservableObject {
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = false,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
         
-        
         if let chat = ConversationViewModel.shared.chat {
             ConversationViewModel.shared.isSending = true
         }
         
         let id = NSUUID().uuidString
-        
         let chatId = chatId ?? self.chatId
         
         var dictionary = [
@@ -230,11 +234,11 @@ class ConversationViewModel: ObservableObject {
                 
                 let message = Message(dictionary: dictionary, id: id, exportVideo: shouldExport)
                 message.image = image
-//
-//                if let lastMessage = messages.last {
-//                    message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
-//                    lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
-//                }
+                //
+                //                if let lastMessage = messages.last {
+                //                    message.isSameIdAsPrevMessage = isSameIdAsPrevMessage(prevMessage: lastMessage, currentMessage: message)
+                //                    lastMessage.isSameIdAsNextMessage = message.isSameIdAsPrevMessage
+                //                }
                 
                 
                 DispatchQueue.main.async {
@@ -291,6 +295,28 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func sendChunk(uploadedUrl: String? = nil) {
+        let cameraViewModel = MainViewModel.shared
+        guard let url = cameraViewModel.videoUrl else { return }
+        
+        if currentMessageId.isEmpty {
+            self.currentMessageId = NSUUID().uuidString
+        }
+        
+        if let uploadedUrl = uploadedUrl {
+            self.addLiveUrl(url: uploadedUrl)
+        } else {
+            MediaUploader.shared.uploadVideo(url: url, messageId: currentMessageId, isFromPhotoLibrary: false) { newUrl in
+                self.addLiveUrl(url: newUrl)
+            }
+        }
+    }
+    
+    func addLiveUrl(url: String) {
+        guard let chat = chat else { return }
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["liveUrls":FieldValue.arrayUnion([url])])
+    }
+    
     
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String, hasNotification: Bool) {
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
@@ -313,7 +339,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func uploadMessage(toDocWithId docId: String, hasNotification: Bool) {
-
+        
         if !isUploadingMessage {
             self.isUploadingMessage = true
             let data = uploadQueue[0]
@@ -421,7 +447,7 @@ class ConversationViewModel: ObservableObject {
         guard let chat = chat else { return }
         
         ConversationService.fetchSavedMessages(forDocWithId: chat.id) { messages in
-//            self.setIsSameId(messages: messages)
+            //            self.setIsSameId(messages: messages)
             self.savedMessages = messages
             self.index = messages.count - 1
             self.noSavedMessages = messages.count == 0
@@ -429,7 +455,6 @@ class ConversationViewModel: ObservableObject {
     }
     
     func handleMessagesSet() {
-
         if MainViewModel.shared.selectedView != .Saylo {
             if messages.count > 0, let chat = chat {
                 
@@ -449,8 +474,6 @@ class ConversationViewModel: ObservableObject {
             }
         } else if messages.count == 0 {
             MainViewModel.shared.selectedView = .Video
-        } else {
-            
         }
     }
     
@@ -510,7 +533,7 @@ class ConversationViewModel: ObservableObject {
     
     func removeReactionFromMessage(withId id: String, reaction: Reaction, completion: @escaping(() -> Void)) {
         let messages = showSavedPosts ? savedMessages : messages
-
+        
         if let message = messages.first(where: {$0.id == id}) {
             message.reactions.removeAll(where: {$0.userId == reaction.userId})
             ConversationService.removeReaction(reaction: reaction, chatId: self.chatId) {
@@ -531,25 +554,55 @@ class ConversationViewModel: ObservableObject {
         
         guard !chatId.isEmpty else {return}
         
-        listener = COLLECTION_CONVERSATIONS.document(chatId)
-            .addSnapshotListener { snapshot, _ in
+        if self.hasUnread {
+            
+            COLLECTION_CONVERSATIONS.document(chatId).getDocument { snapshot, _ in
                 
                 if let data = snapshot?.data() {
+                    let chat = Chat(dictionary: data, id: self.chatId)
                     
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.selectedMessageIndexes.append(chat.lastReadMessageIndex)
+                        self.messages = chat.messages
+                        self.showMessage(atIndex: chat.lastReadMessageIndex)
+                        
+                    }
+                }
+                
+                self.hasUnread = false
+                ConversationService.updateLastVisited(forChat: self.chat!)
+            }
+        } else {
+            ConversationService.updateLastVisited(forChat: self.chat!)
+        }
+        
+        listener = COLLECTION_CONVERSATIONS.document(chatId)
+            .addSnapshotListener { snapshot, _ in
+
+                if let data = snapshot?.data() {
+
                     let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
-                    
+
                     self.messages.forEach { message in
                         if let image = message.image {
                             messages.first(where: {$0.id == message.id})?.image = image
                         }
                     }
-                    
-                    
+
                     self.messages = messages
-//                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
-                    
+
+                    //                    if self.hasUnread {
+                    //                        let chat = Chat(dictionary: data, id: self.chatId)
+                    ////                        if self.index != chat.lastReadMessageIndex {
+                    //                            self.showMessage(atIndex: chat.lastReadMessageIndex)
+                    ////                        }
+                    //                        self.hasUnread = false
+                    //                    }
+
+                    //                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
+
                     self.noMessages = messages.count == 0
-                    
+
                     self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                 }
             }
@@ -654,7 +707,6 @@ class ConversationViewModel: ObservableObject {
         
         MainViewModel.shared.selectedView = .Saylo
         showPlaybackControls = false
-        
         self.index = i
         self.isPlaying = true
         
@@ -678,7 +730,7 @@ class ConversationViewModel: ObservableObject {
     func pause() {
         isPlaying = false
         self.currentPlayer?.pause()
-
+        
     }
     
     func play() {
@@ -691,7 +743,7 @@ class ConversationViewModel: ObservableObject {
         let messages = showSavedPosts ? savedMessages : messages
         
         showPlaybackControls = false
-                
+        
         if index == messages.count - 1 {
             self.isPlaying = false
             MainViewModel.shared.selectedView = .Video
@@ -714,7 +766,7 @@ class ConversationViewModel: ObservableObject {
     func setVideoLength() {
         
         let messages = showSavedPosts ? savedMessages : messages
-
+        
         guard index >= 0 && index < messages.count else { return }
         
         let message = messages[index]

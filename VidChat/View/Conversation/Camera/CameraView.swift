@@ -45,7 +45,7 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func addAudio() {
-        cameraViewController.setUpWriter()
+        cameraViewController.setUpWriter(isFirst: true)
         //         cameraViewController.addAudio()
     }
     
@@ -77,7 +77,7 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func setupWriter() {
-        cameraViewController.setUpWriter()
+        cameraViewController.setUpWriter(isFirst: true)
     }
 }
 

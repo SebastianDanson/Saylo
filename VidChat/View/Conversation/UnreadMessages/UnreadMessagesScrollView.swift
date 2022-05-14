@@ -228,7 +228,7 @@ struct UnreadMessagesScrollView: View {
             return thumbnail
         }
         catch {
-            print("ERRROR: \(url)"  + error.localizedDescription)
+            print("ERRRROR: \(url)"  + error.localizedDescription)
             ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
             return nil
         }

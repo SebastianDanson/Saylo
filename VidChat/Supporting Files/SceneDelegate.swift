@@ -51,10 +51,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
         
         
-        if ConversationPlayerViewModel.shared.messages.isEmpty {
-            ConversationPlayerViewModel.shared.setMessages()
-        }
+//        if ConversationPlayerViewModel.shared.messages.isEmpty {
+//            ConversationViewModel.shared.setMessages()
+//        }
         
+
         AuthViewModel.shared.fetchUser {
             ConversationGridViewModel.shared.fetchConversations()
         }
@@ -66,6 +67,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //        MainViewModel.shared.cameraView.setupSession()
         
         ConversationGridViewModel.shared.showCachedChats()
+        ConversationGridViewModel.shared.updateFriendsChats()
+        ConversationGridViewModel.shared.setMessages()
 //        MainViewModel.shared.cameraView.cameraView.setupSession()
 
     }
@@ -89,8 +92,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         defaults?.set([[String:Any]](), forKey: "messages")
         
         
+        ConversationViewModel.shared.removeChat()
         ConversationGridViewModel.shared.showConversation = false
-
     }
     
     

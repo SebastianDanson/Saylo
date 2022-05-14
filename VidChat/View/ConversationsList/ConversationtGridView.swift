@@ -14,6 +14,7 @@ enum ConversationStatus {
 struct ConversationGridView: View {
     
     private let items = [GridItem(), GridItem(), GridItem()]
+
     @State private var text = ""
     @State private var searchText = ""
     @State var selection = 0
@@ -62,8 +63,11 @@ struct ConversationGridView: View {
                     //                            .padding(.top, TOP_PADDING + 56)
                     //                    }
                     
-                    FriendsView()
+
+                    FriendsView(chats: $viewModel.friendsChats)
                         .padding(.top, IS_SMALL_PHONE ? -4 : 0)
+                       
+                    
                     
                     
                     ZStack(alignment: .top) {
@@ -131,44 +135,43 @@ struct ConversationGridView: View {
                                     }
                                 } label: {
                                     CreateChatCell()
+                                        .padding(.bottom, 28)
                                 }
-                                .padding(.bottom, 28)
-                                                              
-
-//                                FindFriendsView()
+                                
+                                
+                                //                                FindFriendsView()
                                 
                             }
+
                         }
                         .padding(.top, IS_SMALL_PHONE ? 68 : 85)
                         
                         //if no friends i.e only has team Saylo chat
                         if viewModel.chats.count == 1 {
                             
-                        VStack {
-                            
-                            Spacer()
-                            
-                            Button {
+                            VStack {
                                 
-                                withAnimation {
-                                    ConversationGridViewModel.shared.showFindFriends = true
-                                    ConversationGridViewModel.shared.showAllFriends = false
-                                }
+                                Spacer()
                                 
-                            } label: {
-                                
-                                Text("Find Friends")
-                                    .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                    .foregroundColor(.systemWhite)
-                                    .padding(.vertical, 12)
-                                    .padding(.horizontal, 24)
-                                    .background(Color.alternateMainBlue)
-                                    .clipShape(Capsule())
-                                    .padding(.bottom, BOTTOM_PADDING + 28)
+                                Button {
                                     
-                                
+                                    withAnimation {
+                                        ConversationGridViewModel.shared.showFindFriends = true
+                                        ConversationGridViewModel.shared.showAllFriends = false
+                                    }
+                                    
+                                } label: {
+                                    
+                                    Text("Find Friends")
+                                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.systemWhite)
+                                        .padding(.vertical, 12)
+                                        .padding(.horizontal, 24)
+                                        .background(Color.alternateMainBlue)
+                                        .clipShape(Capsule())
+                                        .padding(.bottom, BOTTOM_PADDING + 28)
+                                }
                             }
-                        }
                         }
                     }
                     .background(Color.backgroundWhite)
@@ -336,7 +339,7 @@ struct NavView: View {
     @StateObject private var viewModel = ConversationGridViewModel.shared
     //    @StateObject private var conversationViewModel = ConversationViewModel.shared
     //    @StateObject private var cameraViewModel = MainViewModel.shared
-        @StateObject private var authViewModel = AuthViewModel.shared
+    @StateObject private var authViewModel = AuthViewModel.shared
     
     @Binding var searchText: String
     
@@ -345,7 +348,7 @@ struct NavView: View {
     var body: some View {
         
         ZStack(alignment: .center) {
-                        
+            
             VStack {
                 
                 HStack(alignment: .top) {
@@ -408,13 +411,13 @@ struct NavView: View {
                                 .scaledToFit()
                                 .frame(width: 28, height: 28)
                                 .foregroundColor(.white)
-//                                .padding(.trailing, 3)
+                            //                                .padding(.trailing, 3)
                         }
                         
-//                        Text("Saylo")
-//                            .foregroundColor(.white)
-//                            .font(.system(size: IS_SMALL_PHONE ? 28 : 30, weight: .medium, design: .rounded))
-//                            .padding(.top, IS_SMALL_PHONE ? 2 : 7)
+                        //                        Text("Saylo")
+                        //                            .foregroundColor(.white)
+                        //                            .font(.system(size: IS_SMALL_PHONE ? 28 : 30, weight: .medium, design: .rounded))
+                        //                            .padding(.top, IS_SMALL_PHONE ? 2 : 7)
                         
                         Spacer()
                         
@@ -452,20 +455,20 @@ struct NavView: View {
                         
                         Button {
                             withAnimation {
-                                ConversationGridViewModel.shared.showSettingsView = true
+                                ConversationGridViewModel.shared.showAddFriends = true
                             }
                         } label: {
                             
                             ZStack {
-                            Image("plusPerson")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
-                                .foregroundColor(.white)
-                                .padding(.trailing, 3)
-                             
-                                if authViewModel.hasUnseenFriendRequest {
+                                Image("plusPerson")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(.white)
+                                    .padding(.trailing, 3)
                                 
+                                if authViewModel.hasUnseenFriendRequest {
+                                    
                                     VStack {
                                         
                                         HStack {
@@ -604,7 +607,7 @@ struct NavView: View {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
         .frame(width: SCREEN_WIDTH, height: 44)
-//        .padding(TOP_PADDING)
+        //        .padding(TOP_PADDING)
         //        .padding(.top, 8)
         
     }

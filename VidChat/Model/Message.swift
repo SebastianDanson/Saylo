@@ -74,11 +74,11 @@ class Message: ObservableObject {
     var isFromPhotoLibrary: Bool
     var reactions = [Reaction]()
     var isTeamSayloMessage: Bool
-
+    
     //data
     @Published var isSaved: Bool
-//    @Published var isSameIdAsPrevMessage = false
-//    @Published var isSameIdAsNextMessage = false
+    //    @Published var isSameIdAsPrevMessage = false
+    //    @Published var isSameIdAsNextMessage = false
     
     var isFromCurrentUser: Bool
     var savedByCurrentUser: Bool
@@ -98,7 +98,7 @@ class Message: ObservableObject {
         
         //userInfo
         self.userId = dictionary["userId"] as? String ?? ""
-                      
+        
         
         if userId == AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") {
             self.username = "Me"
@@ -120,7 +120,7 @@ class Message: ObservableObject {
         self.text = dictionary["text"] as? String
         
         self.isTeamSayloMessage = dictionary["isTeamSayloMessage"] as? Bool ?? false
-
+        
         self.isFromPhotoLibrary = dictionary["isFromPhotoLibrary"] as? Bool ?? false
         
         self.isSaved = isSaved
@@ -134,12 +134,19 @@ class Message: ObservableObject {
             let storedUrl = dictionary["userStoredUrl"] as? String ?? ""
             self.url = CacheManager.getCachedUrl(url, userStoredURL: URL(string: storedUrl), isVideo: type == .Video).absoluteString
         }
+        
+        
+        
+        if let urlString = url, let url = URL(string: urlString) {
+            ConversationGridViewModel.shared.createVideoThumbnail(from: url)
+        }
+        
     }
     
     
     
     func getDictionary() -> [String:Any] {
-                
+        
         var dictionary = [
             "id":id,
             "userProfileImage":userProfileImage,
@@ -172,7 +179,7 @@ class Message: ObservableObject {
             dictionary["text"] = text
             dictionary["type"] = "text"
         }
-       
+        
         return dictionary
     }
 }

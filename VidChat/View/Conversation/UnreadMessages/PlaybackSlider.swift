@@ -59,7 +59,7 @@ struct PlaybackSlider: View {
                 withAnimation(.linear(duration: 0.01)) {
                     self.sliderValue = value
                 }
-            } else if isPlaying {
+            } else if isPlaying, viewModel.videoLength > 0 {
                 
                 withAnimation(.linear(duration: 0.01)) {
                     self.sliderValue += 0.01 / viewModel.videoLength

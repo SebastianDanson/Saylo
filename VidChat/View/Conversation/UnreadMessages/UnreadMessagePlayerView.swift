@@ -27,7 +27,6 @@ struct UnreadMessagePlayerView: View {
     
     var body: some View {
         
-        
         PlayerView(player: $player, shouldLoop: false)
             .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
             .onAppear {

@@ -48,16 +48,17 @@ class NotificationService: UNNotificationServiceExtension {
         }
         
         
-        
         if let messageData = data?["messageData"] as? [String:Any] {
             
-            let messageUid = data?["userId"] as? String
+            let messageUid = messageData["userId"] as? String
             let uid = defaults?.string(forKey: "userId")
             
             if uid != messageUid {
                 
                 if let urlString = messageData["url"] as? String, let url = URL(string: urlString), let messageId = messageData["id"] as? String {
-                    downloadUrl(url, isVideo: messageData["type"] as? String == "video", fileName: messageId)
+                    DispatchQueue.global().async {
+                        self.downloadUrl(url, isVideo: messageData["type"] as? String == "video", fileName: messageId)
+                    }
                 }
                 
                 newMessagesArray.append(messageData)
@@ -134,7 +135,5 @@ class NotificationService: UNNotificationServiceExtension {
     func sharedDirectoryURL() -> URL {
         let fileManager = FileManager.default
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.SebastianDanson.saylo")!
-        
     }
-    
 }

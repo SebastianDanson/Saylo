@@ -291,7 +291,6 @@ class PlayerUIView: UIView {
         let duration = playerLayer.player?.currentItem?.asset.duration ?? .zero
         
         let targetTime:CMTime = CMTime(seconds: duration.seconds * seconds, preferredTimescale: 1)
-        print(targetTime)
         playerLayer.player?.seek(to: targetTime)
         
         if playerLayer.player?.rate == 0

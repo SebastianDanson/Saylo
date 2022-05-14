@@ -290,6 +290,9 @@ class AuthViewModel: ObservableObject {
     func fetchUser(completion: @escaping(() -> Void)) {
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
+        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        defaults?.set(uid, forKey: "userId")
+        
         COLLECTION_USERS.document(uid).getDocument { snapshot, _ in
             
             if let data = snapshot?.data() {

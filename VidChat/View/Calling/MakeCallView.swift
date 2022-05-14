@@ -35,6 +35,8 @@ struct MakeCallView: View {
                 
                 CallNavView()
                 
+                if ConversationGridViewModel.shared.chats.count > 1 {
+
                 VStack {
                     
                     ScrollView(showsIndicators: false) {
@@ -58,6 +60,12 @@ struct MakeCallView: View {
                     }
                     .background(Color.systemWhite)
                     .transition(.move(edge: .bottom))
+                }
+                } else {
+                    Spacer()
+                    FindFriendsView()
+                    Spacer()
+                    Spacer()
                 }
                 //            }
                 //            else {

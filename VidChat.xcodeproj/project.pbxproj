@@ -15,6 +15,14 @@
 		0616EC0927928978006565FE /* AddedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0827928978006565FE /* AddedChatsView.swift */; };
 		0616EC0B2792899C006565FE /* CreateNewGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0A2792899C006565FE /* CreateNewGroupView.swift */; };
 		0616EC0D27928AD9006565FE /* ChatSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */; };
+		0624661C281B1419000A8838 /* EntryViewStyle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06246615281B1419000A8838 /* EntryViewStyle+Extensions.swift */; };
+		0624661D281B1419000A8838 /* VKPinCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06246616281B1419000A8838 /* VKPinCodeView.swift */; };
+		0624661E281B1419000A8838 /* VKLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06246617281B1419000A8838 /* VKLabel.swift */; };
+		0624661F281B1419000A8838 /* BorderStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06246618281B1419000A8838 /* BorderStyle.swift */; };
+		06246620281B1419000A8838 /* ResetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06246619281B1419000A8838 /* ResetType.swift */; };
+		06246621281B1419000A8838 /* UnderlineStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0624661A281B1419000A8838 /* UnderlineStyle.swift */; };
+		06246622281B1419000A8838 /* EntryViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0624661B281B1419000A8838 /* EntryViewStyle.swift */; };
+		06246624281B147C000A8838 /* PinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06246623281B147C000A8838 /* PinView.swift */; };
 		062480BD279D075200D82E45 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062480BC279D075200D82E45 /* ContactsView.swift */; };
 		062D28DA277AD21E00B25637 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = 062D28D9277AD21E00B25637 /* CropViewController */; };
 		062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062D28DB277AD4C100B25637 /* ImageCropper.swift */; };
@@ -29,6 +37,7 @@
 		063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */; };
 		063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */; };
 		0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0640D63227990FF500D7A244 /* SuggestedChatsView.swift */; };
+		06520C0B282D72E100C8FF1D /* TextColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06520C0A282D72E100C8FF1D /* TextColorView.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */; };
 		065CD73E27F22CCB00F04EB7 /* MessageOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065CD73D27F22CCB00F04EB7 /* MessageOptionsView.swift */; };
@@ -72,6 +81,7 @@
 		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
 		06B6764C2817870400ABBF91 /* UserCallCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B6764B2817870400ABBF91 /* UserCallCell.swift */; };
 		06B6764E2818A74200ABBF91 /* CreateChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B6764D2818A74200ABBF91 /* CreateChatCell.swift */; };
+		06BC289A281A3EFA001EC5ED /* PhotoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BC2899281A3EFA001EC5ED /* PhotoCamera.swift */; };
 		06C8E6AD27CD38CE005CF9BD /* ConversationPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */; };
 		06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */; };
 		06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */; };
@@ -204,6 +214,14 @@
 		0616EC0827928978006565FE /* AddedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddedChatsView.swift; sourceTree = "<group>"; };
 		0616EC0A2792899C006565FE /* CreateNewGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGroupView.swift; sourceTree = "<group>"; };
 		0616EC0C27928AD9006565FE /* ChatSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsViewModel.swift; sourceTree = "<group>"; };
+		06246615281B1419000A8838 /* EntryViewStyle+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "EntryViewStyle+Extensions.swift"; path = "../../../../../Downloads/VKPinCodeView-master/Sources/EntryViewStyle+Extensions.swift"; sourceTree = "<group>"; };
+		06246616281B1419000A8838 /* VKPinCodeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VKPinCodeView.swift; path = "../../../../../Downloads/VKPinCodeView-master/Sources/VKPinCodeView.swift"; sourceTree = "<group>"; };
+		06246617281B1419000A8838 /* VKLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VKLabel.swift; path = "../../../../../Downloads/VKPinCodeView-master/Sources/VKLabel.swift"; sourceTree = "<group>"; };
+		06246618281B1419000A8838 /* BorderStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BorderStyle.swift; path = "../../../../../Downloads/VKPinCodeView-master/Sources/BorderStyle.swift"; sourceTree = "<group>"; };
+		06246619281B1419000A8838 /* ResetType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ResetType.swift; path = "../../../../../Downloads/VKPinCodeView-master/Sources/ResetType.swift"; sourceTree = "<group>"; };
+		0624661A281B1419000A8838 /* UnderlineStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UnderlineStyle.swift; path = "../../../../../Downloads/VKPinCodeView-master/Sources/UnderlineStyle.swift"; sourceTree = "<group>"; };
+		0624661B281B1419000A8838 /* EntryViewStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EntryViewStyle.swift; path = "../../../../../Downloads/VKPinCodeView-master/Sources/EntryViewStyle.swift"; sourceTree = "<group>"; };
+		06246623281B147C000A8838 /* PinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinView.swift; sourceTree = "<group>"; };
 		062480BC279D075200D82E45 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		062D28DB277AD4C100B25637 /* ImageCropper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCropper.swift; sourceTree = "<group>"; };
 		062D28DD277ADCD200B25637 /* ContactUsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsView.swift; sourceTree = "<group>"; };
@@ -217,6 +235,7 @@
 		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
 		063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyPhoneNumberView.swift; sourceTree = "<group>"; };
 		0640D63227990FF500D7A244 /* SuggestedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedChatsView.swift; sourceTree = "<group>"; };
+		06520C0A282D72E100C8FF1D /* TextColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextColorView.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardHeightModifier.swift; sourceTree = "<group>"; };
 		065CD73D27F22CCB00F04EB7 /* MessageOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageOptionsView.swift; sourceTree = "<group>"; };
@@ -260,6 +279,7 @@
 		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
 		06B6764B2817870400ABBF91 /* UserCallCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCallCell.swift; sourceTree = "<group>"; };
 		06B6764D2818A74200ABBF91 /* CreateChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateChatCell.swift; sourceTree = "<group>"; };
+		06BC2899281A3EFA001EC5ED /* PhotoCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCamera.swift; sourceTree = "<group>"; };
 		06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPlayerView.swift; sourceTree = "<group>"; };
 		06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSavedMessagesView.swift; sourceTree = "<group>"; };
 		06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoMessagesView.swift; sourceTree = "<group>"; };
@@ -404,6 +424,21 @@
 				0616EC0627928906006565FE /* NewConversationCell.swift */,
 			);
 			path = NewConversation;
+			sourceTree = "<group>";
+		};
+		06246614281B13F0000A8838 /* PinCodeView */ = {
+			isa = PBXGroup;
+			children = (
+				06246618281B1419000A8838 /* BorderStyle.swift */,
+				0624661B281B1419000A8838 /* EntryViewStyle.swift */,
+				06246615281B1419000A8838 /* EntryViewStyle+Extensions.swift */,
+				06246619281B1419000A8838 /* ResetType.swift */,
+				0624661A281B1419000A8838 /* UnderlineStyle.swift */,
+				06246617281B1419000A8838 /* VKLabel.swift */,
+				06246616281B1419000A8838 /* VKPinCodeView.swift */,
+				06246623281B147C000A8838 /* PinView.swift */,
+			);
+			path = PinCodeView;
 			sourceTree = "<group>";
 		};
 		063CAAB0277B9CE700C84318 /* AddFriends */ = {
@@ -600,6 +635,7 @@
 		3F485D8926FD457A0071532B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				06246614281B13F0000A8838 /* PinCodeView */,
 				069D11EC2798939900988829 /* CountryCodes */,
 				3F7786BB27234E4B005AF9DA /* AudioMessaging */,
 				3F7786BA27234E17005AF9DA /* CallInfo */,
@@ -611,6 +647,7 @@
 				3F485DCB26FE29FB0071532B /* CustomTextField.swift */,
 				3F485DB326FE0DE30071532B /* Extensions.swift */,
 				3F485DBD26FE23AB0071532B /* ImagePicker.swift */,
+				06BC2899281A3EFA001EC5ED /* PhotoCamera.swift */,
 				3F8B029426FF795900841565 /* LazyView.swift */,
 				3F8B027426FEBEEE00841565 /* TextArea.swift */,
 				3F8A7DE2273C72B500A1BDF6 /* CacheManager.swift */,
@@ -828,6 +865,7 @@
 				3F08F27027017A24009E0029 /* Camera */,
 				3F1768262714A5630049ADBA /* MessageCells */,
 				3F2A7EBA2719CE1B00179390 /* Photos */,
+				06520C0A282D72E100C8FF1D /* TextColorView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1008,6 +1046,7 @@
 				3F2A7EBC2719CE3F00179390 /* PhotoPicker.swift in Sources */,
 				3F485DCA26FE289A0071532B /* ResetPasswordView.swift in Sources */,
 				065CD73E27F22CCB00F04EB7 /* MessageOptionsView.swift in Sources */,
+				06246620281B1419000A8838 /* ResetType.swift in Sources */,
 				06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */,
 				06ECD9042815041000870A51 /* FriendsView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
@@ -1016,6 +1055,7 @@
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
 				067FBB60279BB7DE00B2EA04 /* CountriesAdapter.swift in Sources */,
 				06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */,
+				0624661D281B1419000A8838 /* VKPinCodeView.swift in Sources */,
 				0616EC0D27928AD9006565FE /* ChatSettingsViewModel.swift in Sources */,
 				3F112B7127206E3800BA2A73 /* VideoCallViewController.swift in Sources */,
 				3F7786C027245D99005AF9DA /* MakeCallViewModel.swift in Sources */,
@@ -1023,6 +1063,8 @@
 				063CAAB3277B9D0200C84318 /* AddFriendsView.swift in Sources */,
 				3F8B029926FF7DC200841565 /* EditProfileView.swift in Sources */,
 				063CAAB7277BA0C300C84318 /* SettingsView.swift in Sources */,
+				0624661F281B1419000A8838 /* BorderStyle.swift in Sources */,
+				06BC289A281A3EFA001EC5ED /* PhotoCamera.swift in Sources */,
 				0616EBFE279248E5006565FE /* ChatSettingsView.swift in Sources */,
 				3F4C618127402A09003EE726 /* ConversationService.swift in Sources */,
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
@@ -1031,6 +1073,7 @@
 				06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
 				3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */,
+				06246624281B147C000A8838 /* PinView.swift in Sources */,
 				3F112B822720B32700BA2A73 /* CallManager.swift in Sources */,
 				06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */,
 				0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */,
@@ -1061,6 +1104,7 @@
 				3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */,
 				06F1A330277E811800A0F992 /* LandingPageView.swift in Sources */,
 				06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */,
+				06246621281B1419000A8838 /* UnderlineStyle.swift in Sources */,
 				3F2A7EB92718C23A00179390 /* AudioCell.swift in Sources */,
 				069D11E527986D2F00988829 /* ContactCell.swift in Sources */,
 				3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */,
@@ -1083,13 +1127,16 @@
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,
 				0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */,
+				0624661C281B1419000A8838 /* EntryViewStyle+Extensions.swift in Sources */,
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
+				06520C0B282D72E100C8FF1D /* TextColorView.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,
 				06ECD9082815BFE500870A51 /* FriendCell.swift in Sources */,
 				063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */,
 				3F112C592721B4DF00BA2A73 /* NSUserActivity+StartCallConvertible.swift in Sources */,
 				069D11EB279892E000988829 /* Countries.json in Sources */,
+				06246622281B1419000A8838 /* EntryViewStyle.swift in Sources */,
 				0687E9F527949B5C004E1187 /* NameTextField.swift in Sources */,
 				06C8E6AD27CD38CE005CF9BD /* ConversationPlayerView.swift in Sources */,
 				3F485DE626FE38990071532B /* AuthViewModel.swift in Sources */,
@@ -1101,6 +1148,7 @@
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
 				06B6764C2817870400ABBF91 /* UserCallCell.swift in Sources */,
+				0624661E281B1419000A8838 /* VKLabel.swift in Sources */,
 				066FE60F27B62344001B1DC6 /* AllowNotificationsView.swift in Sources */,
 				3F485DBE26FE23AB0071532B /* ImagePicker.swift in Sources */,
 				3F485DC626FE28860071532B /* LoginView.swift in Sources */,
@@ -1155,7 +1203,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.26;
+				MARKETING_VERSION = 1.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1183,7 +1231,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.26;
+				MARKETING_VERSION = 1.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo.NotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1329,7 +1377,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.26;
+				MARKETING_VERSION = 1.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1356,7 +1404,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.26;
+				MARKETING_VERSION = 1.31;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SebastianDanson.saylo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

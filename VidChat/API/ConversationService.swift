@@ -188,7 +188,7 @@ struct ConversationService {
         
         updateSeenLastPost(forChat: chat)
         ConversationViewModel.shared.updateNoticationsArray(chatId: chat.id)
-        
+                
     }
     
     static func removeOldMessages(chatData data: [String:Any], chatId: String) {

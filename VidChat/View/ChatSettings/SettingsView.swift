@@ -46,7 +46,7 @@ struct SettingsView: View {
             } label: {
                 SettingsCell(image: Image(systemName: "person.fill"), imageColor: .mainBlue, title: "Edit Profile Image", leadingPadding: 0, imageDimension: 17)
             }.sheet(isPresented: $showImagePicker, content: {
-                ImagePicker(image: $profileImage, showImageCropper: $showImageCropper)
+                ImagePicker(image: $profileImage, showImageCropper: $showImageCropper, showPhotoLibrary: true)
             })
             
             

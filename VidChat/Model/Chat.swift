@@ -41,8 +41,7 @@ class Chat: ObservableObject {
 //    @Published var hasSent = false
     @Published var hasUnreadMessage = false
 
-    var lastReadMessageIndex = 0 
-    
+    var lastReadMessageIndex = 0
 
     init(dictionary: [String:Any], id: String, shouldRemoveOldMessages: Bool = true) {
 
@@ -117,21 +116,22 @@ class Chat: ObservableObject {
         self.lastReadMessageIndex = getLastReadMessageIndex()
 
         
-        //Add unread messages to player view
-        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {
-            
-            for i in self.lastReadMessageIndex..<self.messages.count {
-                
-                let messages = ConversationPlayerViewModel.shared.messages
-                
-                if !messages.contains(where: {$0.id == self.messages[i].id}), self.messages[i].type != .NewChat {
-                    ConversationPlayerViewModel.shared.addMessage(self.messages[i])
-                }
-            }
-            
-            ConversationPlayerViewModel.shared.addReplyMessages()
-            
-        }        
+//        //Add unread messages to player view
+//        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {
+//
+//            for i in self.lastReadMessageIndex..<self.messages.count {
+//
+//                let messages = ConversationPlayerViewModel.shared.messages
+//
+//                if !messages.contains(where: {$0.id == self.messages[i].id}), self.messages[i].type != .NewChat {
+//                    ConversationPlayerViewModel.shared.addMessage(self.messages[i])
+//                }
+//            }
+//
+//            ConversationPlayerViewModel.shared.addReplyMessages()
+//
+//        }
+        
     }
     
     func getDictionary() -> [String:Any] {
@@ -182,8 +182,12 @@ class Chat: ObservableObject {
                 }
             }
         }
-        
-        return messages.count - 1
+                
+        return max(0,messages.count - 1)
+    }
+    
+    func setLastMessageIndex() {
+        self.lastReadMessageIndex = getLastReadMessageIndex()
     }
     
     

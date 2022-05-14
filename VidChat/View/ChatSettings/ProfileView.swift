@@ -42,7 +42,7 @@ struct ProfileView: View {
             .padding(.top)
             
             if showImageCropper {
-                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker, onDone: {
+                ImageCropper(image: $profileImage, showImageCropper: $showImageCropper, showImagePicker: $showImagePicker, showCamera: .constant(false), onDone: {
                     
                     if let profileImage = profileImage {
                         AuthViewModel.shared.updateProfileImage(image: profileImage)

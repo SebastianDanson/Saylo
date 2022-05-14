@@ -163,8 +163,7 @@ struct VerifyPhoneNumberView: View {
             }
             .navigationBarBackButtonHidden(false)
             
-        }
-        
+        }        
     }
 }
 
@@ -178,37 +177,37 @@ struct SectionedTextField: View {
         
         VStack(spacing: 0) {
             
-            PinCodeTextField(text: $text)
+            PinView(text: $text)
                 .padding(.leading, 16)
                 .frame(width: 266)
             
-            HStack {
-                
-                Rectangle()
-                    .frame(width: width, height: 1)
-                    .foregroundColor(.lightGray)
-                
-                Rectangle()
-                    .frame(width: width, height: 1)
-                    .foregroundColor(.lightGray)
-                
-                Rectangle()
-                    .frame(width: width, height: 1)
-                    .foregroundColor(.lightGray)
-                
-                Rectangle()
-                    .frame(width: width, height: 1)
-                    .foregroundColor(.lightGray)
-                
-                Rectangle()
-                    .frame(width: width, height: 1)
-                    .foregroundColor(.lightGray)
-                
-                Rectangle()
-                    .frame(width: width, height: 1)
-                    .foregroundColor(.lightGray)
-                
-            }.frame(width: 246)
+//            HStack {
+//
+//                Rectangle()
+//                    .frame(width: width, height: 1)
+//                    .foregroundColor(.lightGray)
+//
+//                Rectangle()
+//                    .frame(width: width, height: 1)
+//                    .foregroundColor(.lightGray)
+//
+//                Rectangle()
+//                    .frame(width: width, height: 1)
+//                    .foregroundColor(.lightGray)
+//
+//                Rectangle()
+//                    .frame(width: width, height: 1)
+//                    .foregroundColor(.lightGray)
+//
+//                Rectangle()
+//                    .frame(width: width, height: 1)
+//                    .foregroundColor(.lightGray)
+//
+//                Rectangle()
+//                    .frame(width: width, height: 1)
+//                    .foregroundColor(.lightGray)
+//
+//            }.frame(width: 246)
             
         }.frame(height: 40)
     }
@@ -234,42 +233,47 @@ struct PinCodeTextField: UIViewRepresentable {
         }
         
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            
-            let currentText = textField.text ?? ""
-            guard let stringRange = Range(range, in: currentText) else { return false }
-            let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+            guard let text = textField.text else { return true }
+            let newLength = text.count + string.count - range.length
+            return newLength <= 10
+       }
+//        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
 //
-//            let noSpaceText = updatedText.replacingOccurrences(of: " ", with: "")
+//            let currentText = textField.text ?? ""
+//            guard let stringRange = Range(range, in: currentText) else { return false }
+//            let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+////
+////            let noSpaceText = updatedText.replacingOccurrences(of: " ", with: "")
+////
+////            if updatedText.count < self.text.count {
+////                self.text.removeLast(min(2, self.text.count))
+////                self.text.append(" ")
+////                textField.text = text
+////            } else if noSpaceText.count <= 6 {
+////
+////                self.text = noSpaceText
+////
+////                if noSpaceText.count < 6 {
+////                    self.text.append(" ")
+////                }
+////
+////                textField.text = text
+////            }
+////
+////
+////            return false
 //
-//            if updatedText.count < self.text.count {
-//                self.text.removeLast(min(2, self.text.count))
-//                self.text.append(" ")
-//                textField.text = text
-//            } else if noSpaceText.count <= 6 {
-//
-//                self.text = noSpaceText
-//
-//                if noSpaceText.count < 6 {
-//                    self.text.append(" ")
+//            if updatedText.count > 6{
+//                return false
+//            } else if updatedText.count == 6 {
+//                let arbitraryValue: Int = 4
+//                if let newPosition = textField.position(from: textField.beginningOfDocument, offset: arbitraryValue) {
+//                    textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
 //                }
-//
-//                textField.text = text
 //            }
 //
-//
-//            return false
-            
-            if updatedText.count > 6{
-                return false
-            } else if updatedText.count == 6 {
-                let arbitraryValue: Int = 4
-                if let newPosition = textField.position(from: textField.beginningOfDocument, offset: arbitraryValue) {
-                    textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
-                }
-            }
-            
-            return true
-        }
+//            return true
+//        }
     }
     
     @Binding var text: String

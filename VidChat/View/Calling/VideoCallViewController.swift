@@ -232,8 +232,6 @@ extension VideoCallViewController: CallManagerDelegate {
         collectionView.reloadData()
         shrinkLocalView()
         
-        print(collectionView, "COC 2")
-
         localView.isHidden = true
         if CallManager.shared.remoteUserIDs.count > 0 {
             player?.stop()

@@ -16,8 +16,6 @@ let COLLECTION_SAVED_POSTS = Firestore.firestore().collection("savedMessages")
 let COLLECTION_CONVERSATIONS = Firestore.firestore().collection("conversations")
 let COLLECTION_CONTACTUS = Firestore.firestore().collection("contactUs")
 
-
-
 //Screen
 let SCREEN_HEIGHT = UIScreen.main.bounds.height
 let SCREEN_WIDTH = UIDevice.current.userInterfaceIdiom == .pad ? SCREEN_HEIGHT * 9/16 : UIScreen.main.bounds.width
@@ -56,6 +54,7 @@ let PHOTO_PICKER_SMALL_HEIGHT = SCREEN_WIDTH/4*2 + 20
 
 //Video length
 let MAX_VIDEO_LENGTH = 600 //in seconds
+let CHUNK_TIME = 3.0 //in seconds 
 
 //Call
 let TIMEOUT_DURATION = 20

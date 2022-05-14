@@ -31,7 +31,7 @@ struct ChatImage: View {
             
             self.profileImage1 = chatMembers[0].profileImage
             
-            if chatMembers.count > 1{
+            if chatMembers.count > 1 {
                 self.profileImage2 = chatMembers[1].profileImage
             } else {
                 self.profileImage2 = nil
@@ -48,16 +48,16 @@ struct ChatImage: View {
         if let profileImage2 = profileImage2 {
             
             let smallerWidth = width/1.8 + addedWidth
-
+            
             ZStack {
                 
                 ZStack {
                     
-
+                    
                     Circle()
                         .stroke(Color.lighterGray, lineWidth: addedWidth)
                         .frame(width: smallerWidth, height:  smallerWidth * ratio)
-
+                    
                     KFImage(URL(string: profileImage1))
                         .resizable()
                         .scaledToFill()
@@ -68,7 +68,7 @@ struct ChatImage: View {
                 .padding(.top, width/2.3)
                 .padding(.trailing, width/3.2)
                 .zIndex(2)
-                      
+                
                 KFImage(URL(string: profileImage2))
                     .resizable()
                     .scaledToFill()
@@ -81,8 +81,8 @@ struct ChatImage: View {
             .frame(width: width, height: width * 1.4)
             .background(Color.lighterGray)
             .cornerRadius(width/10)
-//            .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 10, x: 0, y: 2)
-
+            //            .shadow(color: Color(.init(white: 0, alpha: 0.15)), radius: 10, x: 0, y: 2)
+            
             
         } else {
             
@@ -92,8 +92,8 @@ struct ChatImage: View {
                 .background(Color(.systemGray))
                 .frame(width: width, height: width * ratio)
                 .cornerRadius(width/10)
-//                .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 6)
-//                .clipShape(Circle())
+            //                .shadow(color: Color(.init(white: 0, alpha: 0.12)), radius: 10, x: 0, y: 6)
+            //                .clipShape(Circle())
         }
         
     }
@@ -121,7 +121,11 @@ struct ChatImageCircle: View {
             
             chatMembers.removeAll(where: {$0.id == currentUserId})
             
-            self.profileImage1 = chatMembers[0].profileImage
+            if chatMembers.count > 0 {
+                self.profileImage1 = chatMembers[0].profileImage
+            } else {
+                self.profileImage1 = ""
+            }
             
             if chatMembers.count > 1 {
                 self.profileImage2 = chatMembers[1].profileImage

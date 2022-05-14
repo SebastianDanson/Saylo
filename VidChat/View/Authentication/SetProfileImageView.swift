@@ -17,7 +17,7 @@ struct SetProfileImageView: View {
     @State var showActionSheet: Bool = false
     @State var showCamera: Bool = false
     @State private var isLoading = false
-
+    
     let cameraView = MainView()
     
     var body: some View {
@@ -25,17 +25,14 @@ struct SetProfileImageView: View {
         ZStack {
             
             NavigationLink(destination: AllowNotificationsView().navigationBarHidden(true), isActive: $signUpComplete) { EmptyView() }
-
+            
             VStack {
                 
                 Text("Adding a photo helps your friends recognize you")
                     .font(.system(size: 28, weight: .medium))
                 
-                
                 Button {
-                    
                     showActionSheet = true
-                    
                 } label: {
                     
                     if let profileImage = profileImage {
@@ -52,7 +49,6 @@ struct SetProfileImageView: View {
                             .frame(width: 150, height: 150)
                             .padding(.top, 40)
                     }
-                    
                 }
                 .actionSheet(isPresented: $showActionSheet, content: {
                     ActionSheet(title: Text("Select Photo Option"),
@@ -62,15 +58,58 @@ struct SetProfileImageView: View {
                                         showImagePicker = true
                                     },
                                     .default(Text("Take a photo")) {
-//                                        MainViewModel.shared.isTakingPhoto = true
-                                        MainViewModel.shared.cameraView.setupProfileImageCamera()
+                                        //                                        MainViewModel.shared.isTakingPhoto = true
+//                                        MainViewModel.shared.cameraView.setupProfileImageCamera()
                                         showCamera = true
+                                        showImagePicker = true
                                     },
                                     .cancel()
                                 ])
                 })
                 .sheet(isPresented: $showImagePicker, content: {
-                    ImagePicker(image: $profileImage, showImageCropper: $showLibraryImageCropper)
+                    if showCamera {
+                        ZStack {
+                            
+                            PhotoCamera(image: $profileImage, showImageCropper: $showCameraImageCropper, showCamera: $showCamera)
+                              
+                            
+                            VStack {
+                                
+                                HStack {
+                                    
+                                    Button(action: {
+                                        withAnimation {
+                                            showCamera = false
+                                        }
+                                    }, label: {
+                                        
+                                        ZStack {
+                                            
+                                            Circle()
+                                                .foregroundColor(.fadedBlack)
+                                                .frame(width: 36, height: 36)
+                                            
+                                            Image("x")
+                                                .resizable()
+                                                .renderingMode(.template)
+                                                .scaledToFit()
+                                                .foregroundColor(.white)
+                                                .frame(width: 22, height: 22)
+                                            
+                                        }
+                                        .padding(16)
+                                    })
+                                    
+                                    Spacer()
+                                    
+                                }
+                                
+                                Spacer()
+                            }
+                        }
+                    } else {
+                        ImagePicker(image: $profileImage, showImageCropper: $showLibraryImageCropper, showPhotoLibrary: true)
+                    }
                 })
                 
                 
@@ -83,13 +122,13 @@ struct SetProfileImageView: View {
                 Button {
                     
                     if let profileImage = profileImage {
-//                        isLoading = true
+                        //                        isLoading = true
                         AuthViewModel.shared.setProfileImage(image: profileImage) {
-//                            isLoading = false
+                            //                            isLoading = false
                         }
                         
                         signUpComplete = true
-
+                        
                     } else {
                         
                         DispatchQueue.main.async {
@@ -114,66 +153,25 @@ struct SetProfileImageView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .frame(width: 50, height: 50)
                         .padding(.top, -20)
-
+                    
                 }
                 
             }.padding(.bottom, BOTTOM_PADDING + 16)
             
             if showLibraryImageCropper {
-                ImageCropper(image: $profileImage, showImageCropper: $showLibraryImageCropper, showImagePicker: $showImagePicker)
+                ImageCropper(image: $profileImage, showImageCropper: $showLibraryImageCropper, showImagePicker: $showImagePicker, showCamera: $showCamera)
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
                     .ignoresSafeArea()
             } else if showCameraImageCropper {
-                ImageCropper(image: $profileImage, showImageCropper: $showCameraImageCropper, showImagePicker: $showCamera)
+                ImageCropper(image: $profileImage, showImageCropper: $showCameraImageCropper, showImagePicker: $showCamera, showCamera: $showCamera)
                     .zIndex(5)
                     .transition(.move(edge: .bottom))
                     .ignoresSafeArea()
             }
             
             
-            if showCamera {
-                
-                MainViewModel.shared.cameraView
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-                    .zIndex(6)
-                    .overlay(
-                        
-                        VStack {
-                            
-                            HStack {
-                                Spacer()
-                                
-                                Button {
-                                    
-                                    withAnimation {
-                                        showCamera = false
-                                    }
-                                    
-                                } label: {
-                                    CameraOptionView(image: Image("x"), imageDimension: 14).padding()
-                                }
-
-                            }
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                MainViewModel.shared.takePhoto()
-                                setImage()
-                            }, label: {
-                                Circle()
-                                    .foregroundColor(.white)
-                                    .frame(width: 60, height: 60)
-                                    .padding(.bottom)
-                            }) 
-                        }.frame(width: SCREEN_WIDTH, height: SCREEN_WIDTH * 16/9).padding(.top, TOP_PADDING).ignoresSafeArea()
-                        , alignment: .top)
-                
-            }
-            
-            
+           
         }
         .navigationBarBackButtonHidden(true)
     }

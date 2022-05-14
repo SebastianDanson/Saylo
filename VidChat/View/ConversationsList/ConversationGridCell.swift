@@ -87,22 +87,25 @@ struct ConversationGridCell: View {
                             
                             Circle()
                                 .frame(width: 13, height: 13)
-                                .foregroundColor(.mainBackgroundBlue)
+                                .foregroundColor(.alternateMainBlue)
                         }
                         
-                        Button {
+                        if !chat.isTeamSaylo {
                             
-                            withAnimation {
-                                ConversationGridViewModel.shared.selectedSettingsChat = chat
+                            Button {
+                                
+                                withAnimation {
+                                    ConversationGridViewModel.shared.selectedSettingsChat = chat
+                                }
+                                
+                            } label: {
+                                
+                                Image("ChatOptions")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
+                                    .frame(width: 5, height: 20)
                             }
-                            
-                        } label: {
-                            
-                            Image("ChatOptions")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
-                                .frame(width: 5, height: 20)
                         }
                     }
                     

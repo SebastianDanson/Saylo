@@ -335,7 +335,8 @@ struct OptionsView: View {
                                                     .stroke(Color(.systemRed), style: StrokeStyle(lineWidth: 5,
                                                                                                   lineCap: .round,
                                                                                                   lineJoin: .round))
-                                                    .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : Double(MAX_VIDEO_LENGTH)), value: viewModel.audioProgress)
+                                                    .animation(.linear(duration: viewModel.audioProgress == 0 ? 0 : Double(MAX_VIDEO_LENGTH)),
+                                                               value: viewModel.audioProgress)
                                                     .frame(width: 48, height: 48)
                                                     .rotationEffect(Angle(degrees: 270))
                                                 // }

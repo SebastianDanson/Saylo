@@ -255,7 +255,7 @@ class ChatSettingsViewModel: ObservableObject {
 
         AuthViewModel.shared.currentUser?.chats.removeAll(where: {$0.id == chat.id })
         ConversationGridViewModel.shared.chats.removeAll(where: {$0.id == chat.id})
-        
+        ConversationGridViewModel.shared.updateFriendsChats()
         removeUserFromDm(userId: currentUser.id, chat: chat)
         removeUserFromDm(userId: friend.id, chat: chat)
         

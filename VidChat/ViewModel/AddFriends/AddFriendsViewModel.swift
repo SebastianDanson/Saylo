@@ -37,11 +37,21 @@ class AddFriendsViewModel: ObservableObject {
         queryResults(searchText: text.lowercased())
     }
     
-    func setContacts() {
+    func setContacts(count: Int? = nil) {
         guard var contacts =  ContactsViewModel.shared.getPhoneContacts() else {return}
         contacts.removeAll(where: {$0.name == nil || $0.name?.replacingOccurrences(of: " ", with: "") == ""})
-        self.contacts = contacts
-            .sorted(by: { ($0.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "") < ($1.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "")})
+        
+        
+        if let count = count, contacts.count >= count {
+            contacts = contacts.shuffled()
+            self.contacts = [PhoneContact]()
+            for i in 0..<count {
+                self.contacts!.append(contacts[i])
+            }
+        } else {
+            self.contacts = contacts
+                .sorted(by: { ($0.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "") < ($1.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "")})
+        }
         
         self.allContacts = contacts
     }
@@ -81,7 +91,6 @@ class AddFriendsViewModel: ObservableObject {
             let dif = abs(searchResultCount-searchText.count)
             let relevancyNum = Double(relevancy)/Double(dif)
             
-            print(relevancy, dif ,relevancyNum, "NUMMMS")
             
             if relevancyNum > 2.5 {
                 sortedSearch.append(UserSearch(user: searchResults[i], relevancy: relevancy))
@@ -313,13 +322,12 @@ class AddFriendsViewModel: ObservableObject {
         
         
         let chatRef = COLLECTION_CONVERSATIONS.document(chatId)
-        let messageData = ["type":"newChat", "timestamp": Timestamp(date: Date())] as [String : Any]
         
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
-            transaction.updateData(["users":[userData,friendData], "messages": FieldValue.arrayUnion([messageData])], forDocument: chatRef)
+            transaction.updateData(["users":[userData,friendData]], forDocument: chatRef)
             return nil
         }) { (_, error) in
-            ConversationGridViewModel.shared.fetchConversations()
+            ConversationGridViewModel.shared.fetchConversations(updateFriendsView: true)
         }
         
         

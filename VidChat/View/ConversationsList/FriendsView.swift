@@ -10,10 +10,11 @@ import Kingfisher
 
 struct FriendsView: View {
     
-    @State var chats = [Chat]()
+    @Binding var chats: [Chat]
 
-    let dimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 60 : 54) : 66
-    let plusDimension: CGFloat = IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 31 : 28) : 34
+    let dimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 60 : 62) : (IS_SMALL_PHONE ? 64 : 66)
+    let plusDimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 31 : 32) : 34
+    let fontSize: CGFloat = IS_SMALL_WIDTH ? 13:14
 
     var body: some View {
                 
@@ -70,7 +71,7 @@ struct FriendsView: View {
                                 
                                 
                                 Text("Add Friend")
-                                    .font(Font.system(size: 14, weight: .medium))
+                                    .font(Font.system(size: fontSize, weight: .medium))
                                     .foregroundColor(.white)
                             }
                         }
@@ -94,7 +95,7 @@ struct FriendsView: View {
                                             .clipShape(Circle())
                                         
                                         Text(chat.name)
-                                            .font(Font.system(size: 14, weight: .medium, design: .rounded))
+                                            .font(Font.system(size: fontSize, weight: .medium, design: .rounded))
                                             .foregroundColor(.white)
                                     }
                                 }
@@ -106,14 +107,8 @@ struct FriendsView: View {
                 }
             }
         }.onAppear {
-            self.chats = ConversationGridViewModel.shared.chats.shuffled()
+            ConversationGridViewModel.shared.updateFriendsChats()
         }
         .frame(width: SCREEN_WIDTH)
-    }
-}
-
-struct FriendsView_Previews: PreviewProvider {
-    static var previews: some View {
-        FriendsView()
     }
 }

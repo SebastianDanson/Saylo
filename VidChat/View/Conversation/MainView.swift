@@ -22,9 +22,13 @@ struct MainView: View {
     
     var cameraView = CameraView()
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
+    @State private var currentAmount = 0.0
+    @State private var finalAmount = 1.0
+    @State private var offset = CGSize.zero
+    @State private var location: CGPoint = CGPoint(x: SCREEN_WIDTH/2, y: SCREEN_HEIGHT/2)
+    @State private var color: Color = .white
     
     var body: some View {
-        
         
         
         ZStack(alignment: .center) {
@@ -39,6 +43,30 @@ struct MainView: View {
             //Camera view shown when recording video or taking photo
             if viewModel.showCamera() {
                 cameraView.onTapGesture(count: 2, perform: { switchCamera() })
+                Text("Hello, World!")
+                    .foregroundColor(color)
+                    .font(Font.system(size: 64, weight: .semibold, design: .rounded))
+                    .scaleEffect((finalAmount + currentAmount)/2)
+                    .offset(offset)
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { amount in
+                                currentAmount = amount - 1
+                            }
+                            .onEnded { amount in
+                                finalAmount += currentAmount
+                                currentAmount = 0
+                            }
+                            .simultaneously(with:  DragGesture()
+                                .onChanged { value in
+                                    self.offset = value.translation
+                                })
+                    )
+//                    .simultaneousGesture(
+//
+//                    )
+                
+                
             }
             
             // Voice view
@@ -67,6 +95,11 @@ struct MainView: View {
                     
                     UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
                         .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                    
+//                    TextColorView(selectedColor: $color)
+//                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+//                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+
                 }
                 
                 //Camera Flash View
@@ -95,7 +128,7 @@ struct MainView: View {
                             }
                             .overlay(
                                 ZStack {
-                                    if viewModel.isRecording && viewModel.selectedView != .Voice  {
+                                    if viewModel.isRecording && viewModel.selectedView != .Voice {
                                         SwitchCameraView()
                                     }
                                 }
@@ -109,7 +142,14 @@ struct MainView: View {
                             } label: {
                                 PhotoButton(photo: $viewModel.photo)
                             }
-                            .overlay(SwitchCameraView())
+                            .overlay(
+                                ZStack {
+                                    
+                                    if viewModel.photo == nil {
+                                        SwitchCameraView()
+                                    }
+                                }
+                            )
                         }
                         
                         
@@ -125,7 +165,7 @@ struct MainView: View {
                         
                         ZStack {
                             
-                            if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo {
+                            if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo && viewModel.selectedView != .Photo {
                                 
                                 HStack {
                                     //
@@ -162,9 +202,7 @@ struct MainView: View {
                                 .padding(.bottom, bottomPadding + (IS_SMALL_PHONE ? 2 : 0))
                                 
                             }
-                            
-                            
-                            
+                                                        
                             if viewModel.isRecording || viewModel.selectedView == .Photo {
                                 CancelRecordingButton(bottomPadding: bottomPadding)
                                     .zIndex(6)
@@ -188,15 +226,16 @@ struct MainView: View {
                 VStack {
                     
                     ZStack {
-                        if !viewModel.isRecording {
+                        if !viewModel.isRecording && viewModel.selectedView != .Note {
                             
                             HStack {
                                 
                                 let circleDimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 32 : 35) : 39
-
+                                
                                 
                                 if viewModel.selectedView != .Saylo {
                                     Button {
+                                        ConversationViewModel.shared.removeChat()
                                         ConversationGridViewModel.shared.showConversation = false
                                     } label: {
                                         ZStack {
@@ -206,7 +245,7 @@ struct MainView: View {
                                                 .frame(width: circleDimension, height: circleDimension)
                                             
                                             let xDimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 16 : 18) : 20
-
+                                            
                                             Image("x")
                                                 .resizable()
                                                 .scaledToFit()
@@ -245,28 +284,31 @@ struct MainView: View {
                                             }
                                         }
                                         
-                                        Button {
-                                            withAnimation {
-                                                MainViewModel.shared.settingsChat = chat
-                                            }
-                                        } label: {
+                                        if !chat.isTeamSaylo {
                                             
-                                            ZStack {
+                                            Button {
+                                                withAnimation {
+                                                    MainViewModel.shared.settingsChat = chat
+                                                }
+                                            } label: {
                                                 
-                                                Circle()
-                                                    .foregroundColor(.fadedBlack)
-                                                    .frame(width: circleDimension, height: circleDimension)
-                                                
-                                                let chatOptionsDimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 22 : 24) : 26
-
-                                                Image("ChatOptions")
-                                                    .resizable()
-                                                    .renderingMode(.template)
-                                                    .scaledToFit()
-                                                    .frame(width: chatOptionsDimension, height: chatOptionsDimension)
-                                                    .foregroundColor(.white)
-                                                    .rotationEffect(.degrees(90))
-                                                
+                                                ZStack {
+                                                    
+                                                    Circle()
+                                                        .foregroundColor(.fadedBlack)
+                                                        .frame(width: circleDimension, height: circleDimension)
+                                                    
+                                                    let chatOptionsDimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 22 : 24) : 26
+                                                    
+                                                    Image("ChatOptions")
+                                                        .resizable()
+                                                        .renderingMode(.template)
+                                                        .scaledToFit()
+                                                        .frame(width: chatOptionsDimension, height: chatOptionsDimension)
+                                                        .foregroundColor(.white)
+                                                        .rotationEffect(.degrees(90))
+                                                    
+                                                }
                                             }
                                         }
                                         
@@ -289,7 +331,7 @@ struct MainView: View {
                     .padding(.horizontal, 12)
                     .padding(.top, TOP_PADDING + 12)
                     .frame(width: SCREEN_WIDTH)
-
+                    
                     
                     Spacer()
                 }
@@ -297,50 +339,50 @@ struct MainView: View {
             .zIndex(3)
             
             
-            //            Group {
-            //                if viewModel.showAddFriends {
-            //                    AddFriendsView()
-            //                        .zIndex(5)
-            //                        .transition(.move(edge: .bottom))
-            //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-            //                        .cornerRadius(14)
-            //                }
-            //
-            //                if viewModel.showFindFriends {
-            //                    ContactsView()
-            //                        .zIndex(5)
-            //                        .transition(.move(edge: .bottom))
-            //                        .frame(width: SCREEN_WIDTH)
-            //                        .cornerRadius(14)
-            //                }
-            //
-            //                if viewModel.showNewChat {
-            //                    NewConversationView()
-            //                        .zIndex(5)
-            //                        .transition(.move(edge: .bottom))
-            //                        .frame(width: SCREEN_WIDTH)
-            //                        .cornerRadius(14)
-            //                }
-            //
-            
-            
-            if let chat = viewModel.settingsChat {
-                ChatSettingsView(chat: chat)
-                    .zIndex(5)
-                    .navigationBarHidden(true)
-                    .transition(.move(edge: .bottom))
-                    .cornerRadius(14)
+            Group {
+                //                if viewModel.showAddFriends {
+                //                    AddFriendsView()
+                //                        .zIndex(5)
+                //                        .transition(.move(edge: .bottom))
+                //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                //                        .cornerRadius(14)
+                //                }
+                //
+                if viewModel.showFindFriends {
+                    ContactsView()
+                        .zIndex(5)
+                        .transition(.move(edge: .bottom))
+                        .frame(width: SCREEN_WIDTH)
+                        .cornerRadius(14)
+                }
+                //
+                //                if viewModel.showNewChat {
+                //                    NewConversationView()
+                //                        .zIndex(5)
+                //                        .transition(.move(edge: .bottom))
+                //                        .frame(width: SCREEN_WIDTH)
+                //                        .cornerRadius(14)
+                //                }
+                //
                 
+                
+                if let chat = viewModel.settingsChat {
+                    ChatSettingsView(chat: chat)
+                        .zIndex(5)
+                        .navigationBarHidden(true)
+                        .transition(.move(edge: .bottom))
+                        .cornerRadius(14)
+                    
+                }
+                //
+                //                if viewModel.isCalling {
+                //                    MakeCallView()
+                //                        .zIndex(5)
+                //                        .transition(.move(edge: .bottom))
+                //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                //                        .cornerRadius(14)
+                //                }
             }
-            //
-            //                if viewModel.isCalling {
-            //                    MakeCallView()
-            //                        .zIndex(5)
-            //                        .transition(.move(edge: .bottom))
-            //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-            //                        .cornerRadius(14)
-            //                }
-            //            }
             
             if let message = viewModel.selectedMessage {
                 MessageOptionsView(message: message).zIndex(6)
@@ -590,7 +632,7 @@ struct NoteView: View {
                                 .scaledToFit()
                                 .frame(width: 28, height: 28)
                                 .padding(.leading)
-                                .padding(.top, TOP_PADDING + 40 + (IS_SMALL_PHONE ? 50 : 0))
+                                .padding(.top, TOP_PADDING + 48 + (IS_SMALL_PHONE ? 50 : 0))
                         }
                         
                         Spacer()

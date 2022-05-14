@@ -233,7 +233,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         
         if acceptedFriendRequest {
             AuthViewModel.shared.fetchUser {
-                ConversationGridViewModel.shared.fetchConversations()
+                ConversationGridViewModel.shared.fetchConversations(updateFriendsView: true)
             }
         }
     
@@ -266,6 +266,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         let userInfo = response.notification.request.content.userInfo
         
         let data = userInfo["data"] as? [String:Any]
+        let chatId = data?["chatId"] as? String
 //        let chatId = data?["chatId"] as? String
         let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
         
@@ -281,6 +282,32 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         
         if isFriendRequest {
             ConversationGridViewModel.shared.showAddFriends = true
+        }
+        
+        
+        if let chatId = chatId {
+            
+            MainViewModel.shared.selectedView = .Saylo
+            ConversationGridViewModel.shared.showCachedChats()
+            if let updatedChat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId }) {
+                updatedChat.hasUnreadMessage = true
+                ConversationViewModel.shared.setChat(chat: updatedChat)
+                ConversationGridViewModel.shared.showConversation = true
+                
+//                COLLECTION_CONVERSATIONS.document(updatedChat.id).getDocument { snapshot, _ in
+//                    if let data = snapshot?.data() {
+//                        let chat = Chat(dictionary: data, id: updatedChat.id)
+//                        
+//                    }
+//                }
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                    ConversationViewModel.shared.showMessage(atIndex: updatedChat.lastReadMessageIndex)
+//                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId})?.hasUnreadMessage = false
+            }
         }
         
         completionHandler()
