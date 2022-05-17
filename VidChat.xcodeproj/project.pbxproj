@@ -86,6 +86,7 @@
 		06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */; };
 		06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */; };
 		06D027AD27D071A600A26869 /* PlaybackSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D027AC27D071A600A26869 /* PlaybackSlider.swift */; };
+		06DB59982833F57300B295EA /* LiveStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DB59972833F57300B295EA /* LiveStreamView.swift */; };
 		06DEA9CE27C7FEB6000D60B0 /* CameraOptionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */; };
 		06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* Alerts.swift */; };
 		06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CF27739AFD00A8CF0C /* Helpers.swift */; };
@@ -284,6 +285,7 @@
 		06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSavedMessagesView.swift; sourceTree = "<group>"; };
 		06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoMessagesView.swift; sourceTree = "<group>"; };
 		06D027AC27D071A600A26869 /* PlaybackSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSlider.swift; sourceTree = "<group>"; };
+		06DB59972833F57300B295EA /* LiveStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStreamView.swift; sourceTree = "<group>"; };
 		06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOptionViews.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -506,6 +508,7 @@
 				06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */,
 				3F08F27727017D9C009E0029 /* VideoPlayerView.swift */,
 				3FFD034A272CAE6A000BEADE /* VideoHelper.swift */,
+				06DB59972833F57300B295EA /* LiveStreamView.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -1082,6 +1085,7 @@
 				069D11E12797626100988829 /* ContactsViewModel.swift in Sources */,
 				062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */,
 				069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */,
+				06DB59982833F57300B295EA /* LiveStreamView.swift in Sources */,
 				069E4A652772874000996824 /* ImageDetailView.swift in Sources */,
 				3F8B027126FEB10E00841565 /* UserService.swift in Sources */,
 				0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */,

@@ -41,6 +41,5 @@ struct VideoCallView: UIViewControllerRepresentable {
         init(_ agoraRep: VideoCallView) {
             parent = agoraRep
         }
-      
     }
 }

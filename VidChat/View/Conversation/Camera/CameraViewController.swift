@@ -4,7 +4,6 @@
 //
 //  Created by Student on 2021-09-27.
 //
-
 import UIKit
 import AVFoundation
 import SwiftUI
@@ -56,23 +55,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     //    }
     
     var videoWriter: AVAssetWriter!
-    var videoWriter2: AVAssetWriter!
-
     var videoWriterInput: AVAssetWriterInput!
-    var videoWriterInput2: AVAssetWriterInput!
-
     var audioWriterInput: AVAssetWriterInput!
-    var audioWriterInput2: AVAssetWriterInput!
-
     var sessionAtSourceTime: CMTime!
-    var sessionAtSourceTime2: CMTime!
     var audioSessionAtSourceTime: CMTime!
     
     var canRun = true
     var outputURL: URL!
-    var outputURL2: URL!
-
-    var isFirst = true
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -89,13 +78,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         self.previewLayer?.session = captureSession
        
-        if !MainViewModel.shared.getHasCameraAccess() {
-            showAlert(isCameraAlert: true)
-        } else if !MainViewModel.shared.getHasMicAccess() {
-            showAlert(isCameraAlert: false)
-        }
-        
-        self.setUpWriter(isFirst: false)
         
     }
     
@@ -136,7 +118,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func setupAudio() {
-
+        
         guard MainViewModel.shared.getHasMicAccess() else {
             showAlert(isCameraAlert: false)
             return
@@ -175,6 +157,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func setupSession(addAudio: Bool = true) {
+        
         guard MainViewModel.shared.getHasCameraAccess() else {
             showAlert(isCameraAlert: true)
             return
@@ -182,7 +165,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         DispatchQueue.main.async {
             
-            self.setUpWriter(isFirst: self.isFirst)
+            self.setUpWriter()
             
             self.captureSession.beginConfiguration()
             
@@ -217,7 +200,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.videoDataOutput.setSampleBufferDelegate(self, queue: queue)
             
             if self.captureSession.canAddOutput(self.videoDataOutput) {
-                
                 self.captureSession.addOutput(self.videoDataOutput)
                 
                 let connection = self.videoDataOutput.connection(with: AVMediaType.video)
@@ -361,7 +343,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     public func captureMovie() {
         
-        guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
+        guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess(), let chat = ConversationViewModel.shared.chat else {return}
+        
+        ConversationViewModel.shared.setIsLive(chat: chat)
+        ConversationViewModel.shared.sendIsTalkingNotification(chat: chat)
+        
+        
         
         let device = activeInput.device
         
@@ -397,15 +384,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.audioCaptureSession.startRunning()
         }
         
-        Timer.scheduledTimer(withTimeInterval: TimeInterval(3.0), repeats: true) { timer in
-//            ConversationViewModel.shared.sendChunk()
-//            ConversationViewModel.shared.splitVideoIntoChunks()
-//            self.sessionAtSourceTime = nil
-            let isFirst = self.isFirst
-            self.isFirst.toggle()
-            self.sendChunk(isFirst: isFirst)
-            self.setUpWriter(isFirst: isFirst)
-        }
+        
+        sessionAtSourceTime = nil
+        
         
         MainViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(MAX_VIDEO_LENGTH), repeats: false) { timer in
             MainViewModel.shared.stopRecording()
@@ -419,24 +400,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //        movieOutput.startRecording(to: outUrl, recordingDelegate: self)
     }
     
-    
-    func setUpWriter(isFirst: Bool) {
-        
-        var videoWriter: AVAssetWriter!
-        var audioWriterInput: AVAssetWriterInput!
-        var videoWriterInput: AVAssetWriterInput!
-        var outputURL: URL!
+    func setUpWriter() {
         
         do {
             
             let url = getTempUrl()!
             outputURL = url
-
-            MainViewModel.shared.videoUrl = url
             videoWriter = try AVAssetWriter(outputURL: url, fileType: AVFileType.mp4)
-
             videoWriter.shouldOptimizeForNetworkUse = true
-
+            
             // add audio input
             let audioSettings : [String : Any] = [
                 AVFormatIDKey : kAudioFormatMPEG4AAC,
@@ -461,26 +433,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     AVVideoAverageBitRateKey : 1024 * 1024 * 2,
                 ],
             ])
-         
+            
+            
             videoWriterInput.expectsMediaDataInRealTime = true
-
             if videoWriter.canAdd(videoWriterInput) {
                 videoWriter.add(videoWriterInput)
             }
             
             videoWriter.startWriting()
             
-            if isFirst {
-                self.videoWriter = videoWriter
-                self.videoWriterInput = videoWriterInput
-                self.audioWriterInput = audioWriterInput
-                self.outputURL = outputURL
-            } else {
-                self.videoWriter2 = videoWriter
-                self.videoWriterInput2 = videoWriterInput
-                self.audioWriterInput2 = audioWriterInput
-                self.outputURL2 = outputURL
-            }
             
         } catch let error {
             print("ERROR OCCURED SETTING UP WRITER \(error.localizedDescription)")
@@ -488,7 +449,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func canWrite() -> Bool {
-        return videoWriter != nil && videoWriter?.status == .writing && MainViewModel.shared.isRecording 
+        return MainViewModel.shared.isRecording && videoWriter != nil && videoWriter?.status == .writing
     }
     
     
@@ -498,18 +459,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //        DispatchQueue.global().async {
         let writable = self.canWrite()
         
-        if writable, self.sessionAtSourceTime == nil, isFirst {
+        if writable, self.sessionAtSourceTime == nil {
             // start writing
             self.sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             self.videoWriter.startSession(atSourceTime: self.sessionAtSourceTime!)
-//            self.videoWriter2.startSession(atSourceTime: self.sessionAtSourceTime!)
-        }
-        
-        if writable, self.sessionAtSourceTime2 == nil, !isFirst {
-            // start writing
-            self.sessionAtSourceTime2 = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            self.videoWriter2.startSession(atSourceTime: self.sessionAtSourceTime2!)
-//            self.videoWriter2.startSession(atSourceTime: self.sessionAtSourceTime!)
         }
         
 //        if !MainViewModel.shared.isShowingPhotoCamera, output == self.videoDataOutput {
@@ -519,111 +472,43 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //                connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
 //            }
 //        }
+        
+        if writable, ConversationViewModel.shared.presentUsers.count > 1 {
+            print("YESSIR")
+            ConversationViewModel.shared.isLive = true
+        }
 //
         
         if writable, output == self.videoDataOutput,
            (self.videoWriterInput.isReadyForMoreMediaData) {
-//
-//            DispatchQueue.main.async {
-//                if let image = self.imageWith(name: "tester") {
-//                    self.write(image: image, toBuffer: sampleBuffer)
-//                }
-//            }
-            if isFirst {
-                self.videoWriterInput.append(sampleBuffer)
-            } else {
-                self.videoWriterInput2.append(sampleBuffer)
-            }
+            
+            self.videoWriterInput.append(sampleBuffer)
         } else if writable, output == self.audioDataOutput,
                   (self.audioWriterInput.isReadyForMoreMediaData) {
-            
-            if isFirst {
-                self.audioWriterInput.append(sampleBuffer)
-            } else {
-                self.audioWriterInput2.append(sampleBuffer)
-            }
+            self.audioWriterInput.append(sampleBuffer)
         }
+   //        }
+        
+        
     }
     
-    func write(image overlayImage:UIImage, toBuffer sample:CMSampleBuffer){
-        let pixelBuffer = CMSampleBufferGetImageBuffer(sample)
-
-        if let pixelBuffer = pixelBuffer {
-            CVPixelBufferLockBaseAddress(pixelBuffer, [])
-        }
-
-        let eaglContext = EAGLContext(api: .openGLES2)
-        var ciContext: CIContext? = nil
-        if let eaglContext = eaglContext {
-            ciContext = CIContext(eaglContext: eaglContext, options: [
-                CIContextOption.workingColorSpace: NSNull()
-            ])
-        }
-
-        let font = UIFont(name: "Helvetica", size: 40)
-        var attributes: [NSAttributedString.Key : UIFont?]? = nil
-        if let font = font {
-            attributes = [
-                NSAttributedString.Key.font: font,
-//                NSAttributedString.Key.foregroundColor: UIColor.lightText
-            ]
-        }
-
-        let img = image(fromText: "01 - 13/02/2014 15:18:21:654")
-        var filteredImage: CIImage? = nil
-        if let CGImage = img?.cgImage {
-            filteredImage = CIImage(cgImage: CGImage)
-        }
-
-        if let filteredImage = filteredImage, let pixelBuffer = pixelBuffer {
-            ciContext?.render(filteredImage, to: pixelBuffer, bounds: filteredImage.extent ?? CGRect.zero, colorSpace: CGColorSpaceCreateDeviceRGB())
-        }
-
-        if let pixelBuffer = pixelBuffer {
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, [])
-        }
-    }
     
-    func image(fromText text: String?) -> UIImage? {
-        // set the font type and size
-        let font = UIFont.systemFont(ofSize: 20.0)
-        let size = text?.size(withAttributes: [NSAttributedString.Key.font: font])
-
-        // check if UIGraphicsBeginImageContextWithOptions is available (iOS is 4.0+)
-        UIGraphicsBeginImageContextWithOptions(size ?? CGSize.zero, false, 0.0)
-   
-
-        // optional: add a shadow, to avoid clipping the shadow you should make the context size bigger
-        //
-        // CGContextRef ctx = UIGraphicsGetCurrentContext();
-        // CGContextSetShadowWithColor(ctx, CGSizeMake(1.0, 1.0), 5.0, [[UIColor grayColor] CGColor]);
-
-        // draw in context, you can use also drawInRect:withFont:
-        text?.draw(at: CGPoint(x: 0.0, y: 0.0), withAttributes: [.font : font])
-
-        // transfer image
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return image
-    }
-    
-    func imageWith(name: String?) -> UIImage? {
-       
-         let frame = CGRect(x: 100, y: 100, width: 100, height: 100)
-         let nameLabel = UILabel(frame: frame)
-         nameLabel.textAlignment = .center
-         nameLabel.backgroundColor = .lightGray
-         nameLabel.textColor = .white
-         nameLabel.font = UIFont.boldSystemFont(ofSize: 40)
-         nameLabel.text = name
-         UIGraphicsBeginImageContext(frame.size)
-          if let currentContext = UIGraphicsGetCurrentContext() {
-             nameLabel.layer.render(in: currentContext)
-             let nameImage = UIGraphicsGetImageFromCurrentImageContext()
-             return nameImage
-          }
-          return nil
+    func addAudio() {
+        
+        //        let isFirstLoad = CameraViewModel.shared.isFirstLoad
+        
+        
+        
+        //            if isFirstLoad {
+        
+        
+        
+        //            } else {
+        //                self.audioCaptureSession.startRunning()
+        //            }
+        
+        //        CameraViewModel.shared.isFirstLoad = false
+        
     }
     
     public func takePhoto(withFlash hasFlash: Bool) {
@@ -661,39 +546,33 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         present(alert, animated: true, completion: nil)
     }
     
-    func sendChunk(showVideo: Bool = true, isFirst: Bool) {
+    public func stopRecording(showVideo: Bool = true) {
         
-        let videoWriter = isFirst ? self.videoWriter : self.videoWriter2
-        let outputURL = isFirst ? self.outputURL : self.outputURL2
+        guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
         
-        videoWriter!.finishWriting {
-            
-            if isFirst {
-                self.sessionAtSourceTime = nil
-            } else {
-                self.sessionAtSourceTime2 = nil
-            }
-            
+        videoWriterInput.markAsFinished()
+        audioWriterInput.markAsFinished()
+        
+        
+        videoWriter.finishWriting {
+            self.sessionAtSourceTime = nil
             DispatchQueue.main.async {
                 
                 if showVideo {
-                    MainViewModel.shared.videoUrl = outputURL
+                    MainViewModel.shared.videoUrl = self.outputURL
                     //                    MainViewModel.shared.setVideoPlayer()
                     MainViewModel.shared.handleSend()
-                   
                 } else {
                     MainViewModel.shared.videoUrl = nil
                 }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
-//                self.setUpWriter()
+                self.setUpWriter()
                 //  try! AVAudioSession.sharedInstance().setActive(true)
             }
         }
-    }
-    
-    public func stopRecording(showVideo: Bool = true) {
         
-        guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
+        ConversationViewModel.shared.leaveChannel()
+        //TODO when host ends broadcast leave channel on audiences devices
         
         MainViewModel.shared.timer?.invalidate()
         audioCaptureSession.stopRunning()
@@ -756,4 +635,3 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         }
     }
 }
-

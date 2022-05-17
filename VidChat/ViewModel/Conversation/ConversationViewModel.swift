@@ -10,6 +10,7 @@ import Firebase
 import AVFoundation
 import UIKit
 import SwiftUI
+import AgoraRtcKit
 
 struct MessagePlayer {
     var player: AVPlayer
@@ -35,6 +36,7 @@ class ConversationViewModel: ObservableObject {
     @Published var chatId = ""
     @Published var isTyping = false
     var sendingMessageDic = [String:Any]()
+    var agoraKit: AgoraRtcEngineKit?
     
     @Published var messages = [Message]() {
         didSet {
@@ -101,7 +103,13 @@ class ConversationViewModel: ObservableObject {
     private var listener: ListenerRegistration?
     
     var currentMessageId: String = ""
-    var liveUrls = [String]()
+    @Published var liveUsers = [String]()
+    
+    var presentUsers = [String]()
+
+    @Published var isLive = false
+    @Published var currentlyWatchingId: String?
+    
     var selectedChat: Chat?
     var hasSelectedAssets = false
     var isShowingReactions = false
@@ -110,7 +118,11 @@ class ConversationViewModel: ObservableObject {
     private init() {
         CacheManager.removeOldFiles()
     }
+        
     
+    func leaveChannel() {
+        agoraKit?.leaveChannel()
+    }
     
     func setChat(chat: Chat) {
         ConversationViewModel.shared.currentPlayer = nil
@@ -126,7 +138,7 @@ class ConversationViewModel: ObservableObject {
         self.hasUnread = chat.hasUnreadMessage
         self.addListener()
         chat.hasUnreadMessage = false
-        
+        self.setIsOnChat()
     }
     
     func getSavedPosts() {
@@ -284,6 +296,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func sendCameraMessage(chatId: String?, chat: Chat?) {
+        
         let cameraViewModel = MainViewModel.shared
         addMessage(url: cameraViewModel.videoUrl, image: cameraViewModel.photo,
                    type: cameraViewModel.videoUrl == nil ? .Photo : .Video,
@@ -295,26 +308,39 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func sendChunk(uploadedUrl: String? = nil) {
-        let cameraViewModel = MainViewModel.shared
-        guard let url = cameraViewModel.videoUrl else { return }
+    func sendIsTalkingNotification(chat: Chat) {
         
-        if currentMessageId.isEmpty {
-            self.currentMessageId = NSUUID().uuidString
-        }
+        guard let currentUser = AuthViewModel.shared.currentUser else { return }
         
-        if let uploadedUrl = uploadedUrl {
-            self.addLiveUrl(url: uploadedUrl)
+        var data = [String:Any]()
+        
+        let body = currentUser.firstName + " is talking"
+        
+        if chat.isDm {
+            
+            let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id})
+            data["token"] = chatMember?.fcmToken ?? ""
+            data["title"] = ""
+            data["body"] = body
+            
         } else {
-            MediaUploader.shared.uploadVideo(url: url, messageId: currentMessageId, isFromPhotoLibrary: false) { newUrl in
-                self.addLiveUrl(url: newUrl)
-            }
+            
+            data["topic"] = chat.id
+            data["title"] = chat.fullName
+            data["body"] = body
         }
+        
+        Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
-    func addLiveUrl(url: String) {
+    func setIsLive(chat: Chat) {
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["liveUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
+    }
+    
+    func setIsOnChat() {
+        
         guard let chat = chat else { return }
-        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["liveUrls":FieldValue.arrayUnion([url])])
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["presentUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
     }
     
     
@@ -578,19 +604,19 @@ class ConversationViewModel: ObservableObject {
         
         listener = COLLECTION_CONVERSATIONS.document(chatId)
             .addSnapshotListener { snapshot, _ in
-
+                
                 if let data = snapshot?.data() {
-
+                    
                     let messages = ConversationService.getMessagesFromData(data: data, shouldRemoveMessages: false, chatId: self.chatId)
-
+                    
                     self.messages.forEach { message in
                         if let image = message.image {
                             messages.first(where: {$0.id == message.id})?.image = image
                         }
                     }
-
+                    
                     self.messages = messages
-
+                    
                     //                    if self.hasUnread {
                     //                        let chat = Chat(dictionary: data, id: self.chatId)
                     ////                        if self.index != chat.lastReadMessageIndex {
@@ -598,15 +624,19 @@ class ConversationViewModel: ObservableObject {
                     ////                        }
                     //                        self.hasUnread = false
                     //                    }
-
+                    
                     //                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
-
+                    
+                    
+                    self.liveUsers = data["liveUsers"] as? [String] ?? [String]()
+                    self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
+                    
                     self.noMessages = messages.count == 0
-
                     self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                 }
             }
     }
+    
     
     func removeListener() {
         listener?.remove()

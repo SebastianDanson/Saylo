@@ -138,7 +138,9 @@ class Message: ObservableObject {
         
         
         if let urlString = url, let url = URL(string: urlString) {
-            ConversationGridViewModel.shared.createVideoThumbnail(from: url)
+            DispatchQueue.global().async {
+                ConversationGridViewModel.shared.createVideoThumbnail(from: url)
+            }
         }
         
     }

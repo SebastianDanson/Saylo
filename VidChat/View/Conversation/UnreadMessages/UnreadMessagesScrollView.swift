@@ -33,7 +33,9 @@ struct UnreadMessagesScrollView: View {
                     ScrollViewReader { reader in
                         
                         HStack(spacing: IS_SMALL_WIDTH ? 3 : 4) {
-                            
+                         
+                            LiveUsersView(liveUsers: $viewModel.liveUsers)
+
                             ForEach(Array(messages.enumerated()), id: \.1.id) { i, message in
                                 
                                 ZStack {
@@ -211,6 +213,7 @@ struct UnreadMessagesScrollView: View {
     }
     
     
+    
     private func createVideoThumbnail(from url: URL) -> UIImage? {
         
         
@@ -231,6 +234,29 @@ struct UnreadMessagesScrollView: View {
             print("ERRRROR: \(url)"  + error.localizedDescription)
             ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
             return nil
+        }
+    }
+}
+
+struct LiveUsersView: View {
+    
+    @Binding var liveUsers: [String]
+    
+    var body: some View  {
+        
+        ForEach(Array(liveUsers.enumerated()), id: \.1) { i, id in
+            
+            //            if id != AuthViewModel.shared.getUserId() {
+            Rectangle()
+                .foregroundColor(id != AuthViewModel.shared.getUserId() ? .red : .blue)
+                .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                .cornerRadius(6)
+                .onTapGesture {
+                    
+                    ConversationViewModel.shared.currentlyWatchingId = id
+                    ConversationViewModel.shared.isLive = true
+                }
+            //            }
         }
     }
 }

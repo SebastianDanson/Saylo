@@ -94,6 +94,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         ConversationViewModel.shared.removeChat()
         ConversationGridViewModel.shared.showConversation = false
+        
+        ConversationViewModel.shared.leaveChannel()
     }
     
     

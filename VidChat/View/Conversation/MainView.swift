@@ -27,7 +27,8 @@ struct MainView: View {
     @State private var offset = CGSize.zero
     @State private var location: CGPoint = CGPoint(x: SCREEN_WIDTH/2, y: SCREEN_HEIGHT/2)
     @State private var color: Color = .white
-    
+    @State var isFrontFacing = true
+
     var body: some View {
         
         
@@ -42,26 +43,47 @@ struct MainView: View {
             
             //Camera view shown when recording video or taking photo
             if viewModel.showCamera() {
-                cameraView.onTapGesture(count: 2, perform: { switchCamera() })
-                Text("Hello, World!")
-                    .foregroundColor(color)
-                    .font(Font.system(size: 64, weight: .semibold, design: .rounded))
-                    .scaleEffect((finalAmount + currentAmount)/2)
-                    .offset(offset)
-                    .gesture(
-                        MagnificationGesture()
-                            .onChanged { amount in
-                                currentAmount = amount - 1
-                            }
-                            .onEnded { amount in
-                                finalAmount += currentAmount
-                                currentAmount = 0
-                            }
-                            .simultaneously(with:  DragGesture()
-                                .onChanged { value in
-                                    self.offset = value.translation
-                                })
-                    )
+                
+                if conversationViewModel.currentlyWatchingId == nil {
+                    cameraView.onTapGesture(count: 2, perform: { switchCamera() })
+                }
+              
+                VStack {
+                    
+//                    let streamView = LiveStreamView(isFrontFacing: $isFrontFacing)
+
+                    if conversationViewModel.isLive {
+                        LiveStreamView(isFrontFacing: $isFrontFacing, isHost: conversationViewModel.currentlyWatchingId == nil)
+                        .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+                        .cornerRadius(14)
+                        .padding(.top, TOP_PADDING)
+                        .onDisappear {
+                            conversationViewModel.leaveChannel()
+                        }
+                    }
+                    
+                    
+                    Spacer()
+                }
+//                Text("Hello, World!")
+//                    .foregroundColor(color)
+//                    .font(Font.system(size: 64, weight: .semibold, design: .rounded))
+//                    .scaleEffect((finalAmount + currentAmount)/2)
+//                    .offset(offset)
+//                    .gesture(
+//                        MagnificationGesture()
+//                            .onChanged { amount in
+//                                currentAmount = amount - 1
+//                            }
+//                            .onEnded { amount in
+//                                finalAmount += currentAmount
+//                                currentAmount = 0
+//                            }
+//                            .simultaneously(with:  DragGesture()
+//                                .onChanged { value in
+//                                    self.offset = value.translation
+//                                })
+//                    )
 //                    .simultaneousGesture(
 //
 //                    )
