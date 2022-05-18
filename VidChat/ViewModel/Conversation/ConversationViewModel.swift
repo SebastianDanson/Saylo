@@ -124,6 +124,21 @@ class ConversationViewModel: ObservableObject {
         agoraKit?.leaveChannel()
     }
     
+    func pushSampleBuffer(sampleBuffer: CMSampleBuffer) {
+        
+        guard let agoraKit = agoraKit else {
+            return
+        }
+
+        let imageBuffer: CVPixelBuffer = sampleBuffer.imageBuffer!
+        let videoFrame = AgoraVideoFrame()
+    
+        videoFrame.format = 12
+        videoFrame.textureBuf = imageBuffer
+        videoFrame.time = sampleBuffer.outputPresentationTimeStamp
+        agoraKit.pushExternalVideoFrame(videoFrame)
+    }
+    
     func setChat(chat: Chat) {
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()

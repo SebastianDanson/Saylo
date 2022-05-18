@@ -472,17 +472,24 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //                connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
 //            }
 //        }
+    
+         
+         //once we have the video frame, we can push to agora sdk
+//         agoraKit?.pushExternalVideoFrame(videoFrame)
         
-        if writable, ConversationViewModel.shared.presentUsers.count > 1 {
-            print("YESSIR")
-            ConversationViewModel.shared.isLive = true
+        if writable, ConversationViewModel.shared.presentUsers.count > 1, !ConversationViewModel.shared.isLive {
+            DispatchQueue.main.async {
+                ConversationViewModel.shared.isLive = true
+            }
         }
+        //TODO ensure proper channel id for live stream
 //
         
         if writable, output == self.videoDataOutput,
            (self.videoWriterInput.isReadyForMoreMediaData) {
             
             self.videoWriterInput.append(sampleBuffer)
+            ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: sampleBuffer)
         } else if writable, output == self.audioDataOutput,
                   (self.audioWriterInput.isReadyForMoreMediaData) {
             self.audioWriterInput.append(sampleBuffer)

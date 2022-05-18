@@ -86,9 +86,11 @@ class LiveStreamUIView: UIView, AgoraRtcEngineDelegate {
         let options: AgoraClientRoleOptions = AgoraClientRoleOptions()
         options.audienceLatencyLevel = AgoraAudienceLatencyLevelType.lowLatency
         getAgoraEngine().setClientRole(isHost ? .broadcaster : .audience, options: options)
-        
-//        let channelId = isHost ? AuthViewModel.shared.getUserId() : ConversationViewModel.shared.currentlyWatchingId ?? ""
+        getAgoraEngine().setExternalVideoSource(true, useTexture: true, pushMode: true)
+        //        let channelId = isHost ? AuthViewModel.shared.getUserId() : ConversationViewModel.shared.currentlyWatchingId ?? ""
         getAgoraEngine().joinChannel(byToken: nil, channelId: ConversationViewModel.shared.chatId, info: nil, uid: isHost ? 1:0)
+        
+
     }
     
 //    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid: UInt, size: CGSize, elapsed: Int) {
