@@ -113,7 +113,11 @@ class ConversationViewModel: ObservableObject {
     var selectedChat: Chat?
     var hasSelectedAssets = false
     var isShowingReactions = false
+    var didCancelRecording = false
+    
     static let shared = ConversationViewModel()
+    
+    //TODO live for audio messages
     
     private init() {
         CacheManager.removeOldFiles()
@@ -140,6 +144,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func setChat(chat: Chat) {
+        
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
@@ -173,6 +178,8 @@ class ConversationViewModel: ObservableObject {
         
         if let chat = chat {
             ConversationService.updateLastVisited(forChat: chat)
+            ConversationViewModel.shared.setIsNotLive()
+            ConversationViewModel.shared.setIsOffChat()
             ConversationGridViewModel.shared.setChatCache()
             if let index = ConversationGridViewModel.shared.chats.firstIndex(where: {$0.id ==  chat.id}) {
                 ConversationGridViewModel.shared.chats[index].lastReadMessageIndex = chat.messages.count - 1
@@ -182,10 +189,14 @@ class ConversationViewModel: ObservableObject {
         
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
+        self.presentUsers.removeAll()
+        self.liveUsers.removeAll()
+        self.hideLiveView()
         
         //        self.chat = nil
         //        self.chatId = ""
         //        self.messages = [Message]()
+        self.didCancelRecording = false
         self.removeListener()
     }
     
@@ -348,19 +359,31 @@ class ConversationViewModel: ObservableObject {
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
-    func setIsLive(chat: Chat) {
+    func setIsLive() {
+        guard let chat = chat else { return }
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["liveUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
     }
     
+    func setIsNotLive() {
+        guard let chat = chat else { return }
+        isLive = false
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["liveUsers":FieldValue.arrayRemove([AuthViewModel.shared.getUserId()])])
+    }
+    
     func setIsOnChat() {
-        
         guard let chat = chat else { return }
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["presentUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
     }
     
+    func setIsOffChat() {
+        guard let chat = chat else { return }
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["presentUsers":FieldValue.arrayRemove([AuthViewModel.shared.getUserId()])])
+    }
     
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String, hasNotification: Bool) {
+        
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
+        
         if index == 0 {
             uploadMessage(toDocWithId: id, hasNotification: hasNotification)
             return
@@ -583,6 +606,11 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func hideLiveView() {
+        self.isLive = false
+        self.currentlyWatchingId = nil
+    }
+    
     func deleteMessage(message: Message) {
         ConversationService.deleteMessage(toDocWithId: message.chatId, messageId: message.id)
         withAnimation {
@@ -644,6 +672,13 @@ class ConversationViewModel: ObservableObject {
                     
                     
                     self.liveUsers = data["liveUsers"] as? [String] ?? [String]()
+                    
+                    if let currentlyWatchingId = self.currentlyWatchingId {
+                        if !self.liveUsers.contains(currentlyWatchingId) {
+                            self.hideLiveView()
+                        }
+                    }
+                    
                     self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
                     
                     self.noMessages = messages.count == 0

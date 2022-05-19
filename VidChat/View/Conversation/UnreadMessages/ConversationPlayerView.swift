@@ -346,13 +346,7 @@ struct ConversationPlayerView: View {
                         Button {
                             removeView()
                         } label: {
-                            Image("x")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: IS_SMALL_WIDTH ? 24 : 28, height: IS_SMALL_WIDTH ? 24 : 28)
-                                .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
-                                .padding(.leading, 12)
-                                .padding(.top, 12 + TOP_PADDING)
+                            XButton()
                         }
                         
                         Spacer()
@@ -390,6 +384,20 @@ struct ConversationPlayerView: View {
         MainViewModel.shared.selectedView = .Video
         ConversationViewModel.shared.showSavedPosts = false
         ConversationViewModel.shared.savedMessages.removeAll()
+    }
+}
+
+struct XButton: View {
+    
+    var body: some View {
+        
+        Image("x")
+            .resizable()
+            .scaledToFit()
+            .frame(width: IS_SMALL_WIDTH ? 24 : 28, height: IS_SMALL_WIDTH ? 24 : 28)
+            .shadow(color: Color(white: 0, opacity: 0.2), radius: 4, x: 0, y: 4)
+            .padding(.leading, 12)
+            .padding(.top, 12 + TOP_PADDING)
     }
 }
 

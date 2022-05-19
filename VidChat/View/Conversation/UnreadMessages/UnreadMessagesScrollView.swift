@@ -33,9 +33,7 @@ struct UnreadMessagesScrollView: View {
                     ScrollViewReader { reader in
                         
                         HStack(spacing: IS_SMALL_WIDTH ? 3 : 4) {
-                         
-                            LiveUsersView(liveUsers: $viewModel.liveUsers)
-
+                            
                             ForEach(Array(messages.enumerated()), id: \.1.id) { i, message in
                                 
                                 ZStack {
@@ -176,6 +174,9 @@ struct UnreadMessagesScrollView: View {
                                     MainViewModel.shared.selectedMessage = message
                                 }
                             }
+                            
+                            LiveUsersView(liveUsers: $viewModel.liveUsers)
+                            
                         }
                     }
                 }
@@ -208,10 +209,7 @@ struct UnreadMessagesScrollView: View {
             
         }
         .frame(width: SCREEN_WIDTH)
-        
-        
     }
-    
     
     
     private func createVideoThumbnail(from url: URL) -> UIImage? {
@@ -246,9 +244,42 @@ struct LiveUsersView: View {
         
         ForEach(Array(liveUsers.enumerated()), id: \.1) { i, id in
             
-            //            if id != AuthViewModel.shared.getUserId() {
-            Rectangle()
-                .foregroundColor(id != AuthViewModel.shared.getUserId() ? .red : .blue)
+            if id != AuthViewModel.shared.getUserId(), let chatMember = getChatMember(fromId: id) {
+                
+                ZStack {
+                    
+                    Color.init(white: 0.1)
+                    
+                    VStack(spacing: 0) {
+                        
+                        Spacer()
+                        
+                        KFImage(URL(string: chatMember.profileImage))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: MINI_MESSAGE_WIDTH/1.3, height: MINI_MESSAGE_HEIGHT/1.3)
+                            .clipShape(Circle())
+                        
+                        HStack(spacing: 5) {
+                            
+                            Spacer()
+                            
+                            Circle()
+                                .frame(width: 11, height: 11)
+                                .foregroundColor(Color(.systemRed))
+                            
+                            Text("Live")
+                                .foregroundColor(.white)
+                                .font(Font.system(size: 14, weight: .semibold))
+                            
+                            Spacer()
+                            
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                }
                 .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                 .cornerRadius(6)
                 .onTapGesture {
@@ -256,8 +287,15 @@ struct LiveUsersView: View {
                     ConversationViewModel.shared.currentlyWatchingId = id
                     ConversationViewModel.shared.isLive = true
                 }
-            //            }
+                
+            }
         }
+    }
+    
+    func getChatMember(fromId id: String) -> ChatMember? {
+        
+        guard let chat = ConversationViewModel.shared.chat else { return nil }
+        return chat.chatMembers.first(where: {$0.id == id})
     }
 }
 
@@ -377,6 +415,7 @@ struct ReplyView: View {
 }
 
 class ImageCache {
+    
     var cache = NSCache<NSString, UIImage>()
     
     func get(forKey: String) -> UIImage? {

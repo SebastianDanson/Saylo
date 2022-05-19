@@ -42,6 +42,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     public func cancelRecording() {
         cameraViewController.stopRecording(showVideo: false)
+        ConversationViewModel.shared.didCancelRecording = true
     }
     
     public func addAudio() {

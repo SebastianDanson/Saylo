@@ -345,14 +345,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess(), let chat = ConversationViewModel.shared.chat else {return}
         
-        ConversationViewModel.shared.setIsLive(chat: chat)
-        ConversationViewModel.shared.sendIsTalkingNotification(chat: chat)
+        ConversationViewModel.shared.setIsLive()
         
-        
+        if !ConversationViewModel.shared.didCancelRecording {
+            ConversationViewModel.shared.sendIsTalkingNotification(chat: chat)
+        }
         
         let device = activeInput.device
         
         do {
+            
             try device.lockForConfiguration()
             
             if device.isSmoothAutoFocusEnabled {
@@ -477,11 +479,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
          //once we have the video frame, we can push to agora sdk
 //         agoraKit?.pushExternalVideoFrame(videoFrame)
         
-        if writable, ConversationViewModel.shared.presentUsers.count > 1, !ConversationViewModel.shared.isLive {
-            DispatchQueue.main.async {
-                ConversationViewModel.shared.isLive = true
-            }
-        }
         //TODO ensure proper channel id for live stream
 //
         
@@ -490,6 +487,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             
             self.videoWriterInput.append(sampleBuffer)
             ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: sampleBuffer)
+            
+            if ConversationViewModel.shared.presentUsers.count > 1, !ConversationViewModel.shared.isLive {
+                DispatchQueue.main.async {
+                    ConversationViewModel.shared.isLive = true
+                }
+            }
         } else if writable, output == self.audioDataOutput,
                   (self.audioWriterInput.isReadyForMoreMediaData) {
             self.audioWriterInput.append(sampleBuffer)
@@ -554,7 +557,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func stopRecording(showVideo: Bool = true) {
-        
+                
         guard MainViewModel.shared.getHasCameraAccess() && MainViewModel.shared.getHasMicAccess() else {return}
         
         videoWriterInput.markAsFinished()
@@ -569,16 +572,19 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     MainViewModel.shared.videoUrl = self.outputURL
                     //                    MainViewModel.shared.setVideoPlayer()
                     MainViewModel.shared.handleSend()
+                    ConversationViewModel.shared.didCancelRecording = false
                 } else {
                     MainViewModel.shared.videoUrl = nil
                 }
                 //  try! AVAudioSession.sharedInstance().setActive(false)
                 self.setUpWriter()
                 //  try! AVAudioSession.sharedInstance().setActive(true)
+                ConversationViewModel.shared.hideLiveView()
             }
         }
         
         ConversationViewModel.shared.leaveChannel()
+        ConversationViewModel.shared.setIsNotLive()
         //TODO when host ends broadcast leave channel on audiences devices
         
         MainViewModel.shared.timer?.invalidate()

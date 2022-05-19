@@ -343,9 +343,11 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func showChat(chat: Chat) {
-        DispatchQueue.global().async {
+        DispatchQueue(label: "test").async {
             MainViewModel.shared.startRunning()
         }
+//        DispatchQueue.global().async {
+//        }
         ConversationViewModel.shared.setChat(chat: chat)
         
         //        withAnimation {

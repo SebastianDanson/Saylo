@@ -399,7 +399,7 @@ struct VisualEffectView: UIViewRepresentable {
 struct RecordButton: View {
     
     @StateObject var viewModel = MainViewModel.shared
-    let mainDimension: CGFloat = IS_SMALL_WIDTH ? 52 : (IS_SMALL_PHONE ? 56 : 62)
+    let mainDimension: CGFloat = IS_SMALL_WIDTH ? 56 : (IS_SMALL_PHONE ? 60 : 62)
     
     var body: some View {
         
@@ -416,7 +416,7 @@ struct RecordButton: View {
                                    height: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 23 : 27) : 30)
                             .foregroundColor(Color(.systemRed))
                             .transition(.scale)
-                    } else if !IS_SMALL_PHONE {
+                    } else {
                         Blur(style: .light)
                             .foregroundColor(.clear)
                             .frame(width: mainDimension, height: mainDimension)
@@ -472,8 +472,7 @@ struct ChatOptions: View {
                 }
                 
                 Spacer()
-                
-                
+                                
                 if viewModel.chat?.chatMembers.count ?? 1 > 1 {
                     Button {
                         guard let chat = viewModel.chat else { return }
