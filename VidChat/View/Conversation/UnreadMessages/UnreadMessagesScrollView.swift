@@ -175,7 +175,15 @@ struct UnreadMessagesScrollView: View {
                                 }
                             }
                             
-                            LiveUsersView(liveUsers: $viewModel.liveUsers)
+                            //                            if viewModel.liveUsers.count > 0, !viewModel.liveUsers.contains(AuthViewModel.shared.getUserId()) {
+                            LiveUsersView(liveUsers: $viewModel.liveUsers, reader: reader)
+                            
+                            
+                            //                            }
+                            
+                            if !viewModel.sendingLiveRecordingId.isEmpty && viewModel.sendingLiveRecordingId != AuthViewModel.shared.getUserId() {
+                                LoadingVideoView()
+                            }
                             
                         }
                     }
@@ -236,9 +244,54 @@ struct UnreadMessagesScrollView: View {
     }
 }
 
+
+struct CircularLoadingAnimationView: View {
+    
+    @State private var isLoading = false
+    let dimension: CGFloat
+    
+    var body: some View {
+        ZStack {
+            
+//            Circle()
+//                .stroke(Color(.systemGray5), lineWidth: 6)
+//                .frame(width: dimension, height: dimension)
+            
+            Circle()
+                .trim(from: 0, to: 0.2)
+                .stroke(Color.green, lineWidth: 6)
+                .frame(width: dimension, height: dimension)
+                .rotationEffect(Angle(degrees: isLoading ? 360 : 0))
+                .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+                .onAppear() {
+                    self.isLoading = true
+                }
+        }
+    }
+}
+
+struct LoadingVideoView: View {
+    
+    var body: some View {
+        
+        ZStack {
+            
+            Color.init(white: 0.1)
+            
+            CircularLoadingAnimationView(dimension: MINI_MESSAGE_WIDTH / 1.3)
+            
+        }
+        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+        .cornerRadius(6)
+        
+    }
+}
+
+
 struct LiveUsersView: View {
     
     @Binding var liveUsers: [String]
+    var reader: ScrollViewProxy
     
     var body: some View  {
         
@@ -278,16 +331,16 @@ struct LiveUsersView: View {
                         
                         Spacer()
                     }
-                    
                 }
                 .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                 .cornerRadius(6)
                 .onTapGesture {
-                    
                     ConversationViewModel.shared.currentlyWatchingId = id
                     ConversationViewModel.shared.isLive = true
                 }
-                
+                .onAppear {
+                    reader.scrollTo(id, anchor: .trailing)
+                }
             }
         }
     }
@@ -310,8 +363,6 @@ struct MessageSendingView: View {
         ZStack {
             
             //            if i == messages.count - 1 {
-            
-            
             
             
             if hasSent {

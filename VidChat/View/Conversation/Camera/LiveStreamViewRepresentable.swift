@@ -114,7 +114,7 @@ extension LiveStreamUIViewController: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
         leaveChannel()
         ConversationViewModel.shared.hideLiveView()
-        print("YESSIR")
+        
     }
 }
 

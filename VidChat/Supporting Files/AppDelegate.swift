@@ -246,8 +246,15 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                     if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording, ConversationGridViewModel.shared.showConversation {
                         
                         if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId}) {
-                            chat.hasUnreadMessage = true
-                            ConversationViewModel.shared.setChat(chat: chat)
+                            
+                            if ConversationViewModel.shared.lastSendingRecordingId == "" {
+                                chat.hasUnreadMessage = true
+                                ConversationViewModel.shared.setChat(chat: chat)
+                            }
+                            
+                            ConversationViewModel.shared.lastSendingRecordingId = ""
+                            //Todo scroll to the circular loadin animation when waiting for live stream to be uploaded
+                          
                         }
                     }
                 }   

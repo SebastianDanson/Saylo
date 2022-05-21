@@ -573,6 +573,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     //                    MainViewModel.shared.setVideoPlayer()
                     MainViewModel.shared.handleSend()
                     ConversationViewModel.shared.didCancelRecording = false
+                    
+                    if ConversationViewModel.shared.presentUsers.count > 1 {
+                        ConversationViewModel.shared.setSendingLiveRecordingId(AuthViewModel.shared.getUserId())
+                    }
                 } else {
                     MainViewModel.shared.videoUrl = nil
                 }

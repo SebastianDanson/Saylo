@@ -29,7 +29,9 @@ struct ConversationView: View {
                 ZStack {
                     
                     if viewModel.isPlaying {
+                        
                         VStack {
+                            
                             Rectangle()
                                 .frame(width: SCREEN_WIDTH, height: TOP_PADDING)
                                 .foregroundColor(.systemWhite)
@@ -45,8 +47,10 @@ struct ConversationView: View {
                         
                         ConversationFeedView(messages: $viewModel.messages)
                             .overlay(
+                                
                                 VStack {
                                     if viewModel.messages.count == 0 || (viewModel.messages.count == 1 && viewModel.messages[0].type == .NewChat),
+                                       
                                         let chat = viewModel.chat {
                                         
                                         Spacer()
@@ -60,10 +64,11 @@ struct ConversationView: View {
                                     }
                                 }.background(Color.systemWhite)
                             )
-                        
                     }
+                    
                     //Camera
                     if viewModel.showCamera {
+                        
                         MainViewModel.shared.cameraView
                             .ignoresSafeArea()
                             .onDisappear {

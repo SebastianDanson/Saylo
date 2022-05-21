@@ -240,6 +240,14 @@ struct ConversationGridView: View {
                     }
                 }
                 
+                //Todo when user joins stream, upload current vid to firebase storage and when the stream ends show the begining part that they missed in the message scroll view the "new tag" and then once the other one finishes replace that video with the new one
+                
+//                conversationViewModel.combineFiles(fileName1: "gs://vidchat-12c32.appspot.com/videos/0067CAF9-91DA-41AB-ABBD-375D0444D33E",
+//                                                   fileName2: "gs://vidchat-12c32.appspot.com/videos/00CDAE5D-193C-42D5-BC1C-4D609CEF03E3",
+//                                                   destFileName: "combined")
+//
+////                conversationViewModel.downloadTemp()
+                
             })
             .navigationBarHidden(true)
             .zIndex(1)

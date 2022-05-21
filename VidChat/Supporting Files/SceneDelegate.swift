@@ -96,6 +96,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ConversationGridViewModel.shared.showConversation = false
         
         ConversationViewModel.shared.leaveChannel()
+        
+
+        if ConversationViewModel.shared.sendingLiveRecordingId == AuthViewModel.shared.getUserId() {
+            ConversationViewModel.shared.setSendingLiveRecordingId(nil)
+        }
     }
     
     

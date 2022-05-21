@@ -276,6 +276,7 @@ struct ConversationPlayerView: View {
                                     VStack {
                                         
                                         HStack {
+                                            
                                             Spacer()
                                             Text("\(getWatchedVideoLength())/\(getTotalVideoLength())")
                                                 .foregroundColor(.white)
@@ -320,6 +321,7 @@ struct ConversationPlayerView: View {
         .overlay(
             
             ZStack {
+                
                 if viewModel.showSavedPosts, viewModel.savedMessages.count == 0 {
                     
                     VStack(spacing: 0) {

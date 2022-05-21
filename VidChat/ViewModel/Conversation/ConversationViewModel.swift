@@ -95,8 +95,9 @@ class ConversationViewModel: ObservableObject {
     
     @Published var scrollToBottom = false
     @Published var isPlaying = true
-    
+    @Published var sendingLiveRecordingId = ""
     @Published var hideChat = false
+    var lastSendingRecordingId = ""
     
     private var uploadQueue = [[String:Any]]()
     private var isUploadingMessage = false
@@ -340,19 +341,20 @@ class ConversationViewModel: ObservableObject {
         
         var data = [String:Any]()
         
-        let body = currentUser.firstName + " is talking"
+        let content = currentUser.firstName + " is talking to you"
+        let body = "Tap to watch live"
         
         if chat.isDm {
             
             let chatMember = chat.chatMembers.first(where: {$0.id != currentUser.id})
             data["token"] = chatMember?.fcmToken ?? ""
-            data["title"] = ""
+            data["title"] = content
             data["body"] = body
             
         } else {
             
             data["topic"] = chat.id
-            data["title"] = chat.fullName
+            data["title"] = chat.fullName + " - \(content)"
             data["body"] = body
         }
         
@@ -380,6 +382,19 @@ class ConversationViewModel: ObservableObject {
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["presentUsers":FieldValue.arrayRemove([AuthViewModel.shared.getUserId()])])
     }
     
+    func setSendingLiveRecordingId(_ uid: String?) {
+        let id: String = uid == nil ? "" : uid!
+        guard let chat = chat else { return }
+        self.sendingLiveRecordingId = id
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["sendingLiveRecordingId": id])
+    }
+    
+    func combineFiles(fileName1: String, fileName2: String, destFileName: String) {
+       
+        let data = ["file1":fileName1, "file2":fileName2, "destFile":destFileName]
+        Functions.functions().httpsCallable("composeFiles").call(data) { (result, error) in }
+    }
+    
     func atomicallyUploadMessage(toDocWithId id: String, messageId: String, hasNotification: Bool) {
         
         let index = uploadQueue.firstIndex(where:{$0["id"] as? String == messageId})
@@ -393,6 +408,13 @@ class ConversationViewModel: ObservableObject {
             self.atomicallyUploadMessage(toDocWithId: id, messageId: messageId, hasNotification: hasNotification)
         }
     }
+    
+//    func downloadTemp() {
+//        let storage = Storage.storage().reference(forURL: "gs://vidchat-12c32.appspot.com/my-output-folder/sd.mp4")
+//        storage.downloadURL { url, error in
+//            print("URL", url, "ERROR", error)
+//        }
+//    }
     
     func mediaFinishedUploading(chatId: String, messageId: String, newUrl: String) {
         
@@ -424,6 +446,10 @@ class ConversationViewModel: ObservableObject {
                         
                         if hasNotification {
                             self.sendMessageNotification(chat: chat, messageData: data)
+                        }
+                        
+                        if !ConversationViewModel.shared.sendingLiveRecordingId.isEmpty {
+                            ConversationViewModel.shared.setSendingLiveRecordingId(nil)
                         }
                     }
                 }
@@ -634,7 +660,6 @@ class ConversationViewModel: ObservableObject {
                         self.selectedMessageIndexes.append(chat.lastReadMessageIndex)
                         self.messages = chat.messages
                         self.showMessage(atIndex: chat.lastReadMessageIndex)
-                        
                     }
                 }
                 
@@ -658,7 +683,24 @@ class ConversationViewModel: ObservableObject {
                         }
                     }
                     
+
+                    if self.messages.count != messages.count {
+                        
+                        if self.sendingLiveRecordingId != "" {
+                            self.setSendingLiveRecordingId(nil)
+                        }
+                        
+                        self.sendingLiveRecordingId = ""
+                        
+                    } else if self.sendingLiveRecordingId == "" {
+                        self.sendingLiveRecordingId = data["sendingLiveRecordingId"] as? String ?? ""
+                        self.lastSendingRecordingId = self.sendingLiveRecordingId
+                    }
+                    
                     self.messages = messages
+                    
+                    //TOdo don't automatically show message if they watched live
+                    //Todo automatically watch live video so they don;t have to press on the live users view thingy
                     
                     //                    if self.hasUnread {
                     //                        let chat = Chat(dictionary: data, id: self.chatId)
@@ -683,6 +725,8 @@ class ConversationViewModel: ObservableObject {
                     
                     self.noMessages = messages.count == 0
                     self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
+                    
+                    
                 }
             }
     }
