@@ -343,6 +343,7 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func showChat(chat: Chat) {
+        
         DispatchQueue(label: "test").async {
             MainViewModel.shared.startRunning()
         }
@@ -408,6 +409,7 @@ class ConversationGridViewModel: ObservableObject {
         if newMessagesArray.count > 0 {
             self.hasUnreadMessages = true
         }
+        
         
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

@@ -77,7 +77,7 @@ struct ConversationGridView: View {
                             HStack {
                                 
                                 Text("Recent Chats")
-                                    .font(Font.system(size: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 20 : 22) : 24, weight: .medium))
+                                    .font(Font.system(size: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 20 : 22) : 24, weight: .medium, design: .rounded))
                                 
                                 Spacer()
                                 

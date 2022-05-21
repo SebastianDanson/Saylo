@@ -42,7 +42,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         MainViewModel.shared.chatsViewDragOffset = .zero
-        
+        ConversationGridViewModel.shared.showCachedChats()
+
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -66,7 +67,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         //        MainViewModel.shared.cameraView.setupSession()
         
-        ConversationGridViewModel.shared.showCachedChats()
         ConversationGridViewModel.shared.updateFriendsChats()
         ConversationGridViewModel.shared.setMessages()
 //        MainViewModel.shared.cameraView.cameraView.setupSession()
