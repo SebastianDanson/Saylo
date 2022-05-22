@@ -30,305 +30,310 @@ struct MainView: View {
     
     var body: some View {
         
-        
-        ZStack(alignment: .center) {
+        if !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
             
-            Color.black.ignoresSafeArea()
-            
-            //The photo that was just taken
-            if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
-                TakenPhotoView(photo: photo)
-            }
-            
-            //
-            //            if conversationViewModel.isLive {
-            //
-            //
-            //            }
-            LiveView(showStream: $conversationViewModel.isLive)
-            
-            //Camera view shown when recording video or taking photo
-            if viewModel.showCamera() {
+            ZStack(alignment: .center) {
                 
+                Color.black.ignoresSafeArea()
                 
-                
-                if conversationViewModel.currentlyWatchingId == nil {
-                    cameraView
-                        .onTapGesture(count: 2, perform: { switchCamera() })
+                //The photo that was just taken
+                if let photo = viewModel.photo, AuthViewModel.shared.hasCompletedSignUp {
+                    TakenPhotoView(photo: photo)
                 }
-                //                Text("Hello, World!")
-                //                    .foregroundColor(color)
-                //                    .font(Font.system(size: 64, weight: .semibold, design: .rounded))
-                //                    .scaleEffect((finalAmount + currentAmount)/2)
-                //                    .offset(offset)
-                //                    .gesture(
-                //                        MagnificationGesture()
-                //                            .onChanged { amount in
-                //                                currentAmount = amount - 1
-                //                            }
-                //                            .onEnded { amount in
-                //                                finalAmount += currentAmount
-                //                                currentAmount = 0
-                //                            }
-                //                            .simultaneously(with:  DragGesture()
-                //                                .onChanged { value in
-                //                                    self.offset = value.translation
-                //                                })
-                //                    )
-                //                    .simultaneousGesture(
+                
                 //
-                //                    )
+                //            if conversationViewModel.isLive {
+                //
+                //
+                //            }
+                LiveView(showStream: $conversationViewModel.isLive)
                 
-                
-            }
-            
-            // Voice view
-            Group {
-                if viewModel.selectedView == .Voice {
-                    VoiceView()
-                }
-                
-                //Note View
-                if viewModel.selectedView == .Note {
-                    NoteView(noteText: $noteText)
-                }
-                
-                //Saylo View
-                if viewModel.selectedView == .Saylo {
-                    ConversationPlayerView()
-                }
-                
-                if viewModel.showPhotos {
-                    PhotosView()
-                }
-            }
-            
-            ZStack {
-                
-                VStack {
-                    Spacer()
+                //Camera view shown when recording video or taking photo
+                if viewModel.showCamera() {
                     
-                    UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                     
-                    //                    TextColorView(selectedColor: $color)
-                    //                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                    //                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                    
+                    if conversationViewModel.currentlyWatchingId == nil {
+                        cameraView
+                            .onTapGesture(count: 2, perform: { switchCamera() })
+                    }
+                    //                Text("Hello, World!")
+                    //                    .foregroundColor(color)
+                    //                    .font(Font.system(size: 64, weight: .semibold, design: .rounded))
+                    //                    .scaleEffect((finalAmount + currentAmount)/2)
+                    //                    .offset(offset)
+                    //                    .gesture(
+                    //                        MagnificationGesture()
+                    //                            .onChanged { amount in
+                    //                                currentAmount = amount - 1
+                    //                            }
+                    //                            .onEnded { amount in
+                    //                                finalAmount += currentAmount
+                    //                                currentAmount = 0
+                    //                            }
+                    //                            .simultaneously(with:  DragGesture()
+                    //                                .onChanged { value in
+                    //                                    self.offset = value.translation
+                    //                                })
+                    //                    )
+                    //                    .simultaneousGesture(
+                    //
+                    //                    )
+                    
                     
                 }
                 
-                //Camera Flash View
-                if viewModel.isRecording && viewModel.isFrontFacing && viewModel.hasFlash {
-                    FlashView().zIndex(2)
+                // Voice view
+                Group {
+                    if viewModel.selectedView == .Voice {
+                        VoiceView()
+                    }
+                    
+                    //Note View
+                    if viewModel.selectedView == .Note {
+                        NoteView(noteText: $noteText)
+                    }
+                    
+                    //Saylo View
+                    if viewModel.selectedView == .Saylo {
+                        ConversationPlayerView()
+                    }
+                    
+                    if viewModel.showPhotos {
+                        PhotosView()
+                    }
                 }
                 
-                if conversationViewModel.currentlyWatchingId == nil {
-                    //Overlay Buttons
-                    VStack(spacing: 6) {
-                        
-                        
+                ZStack {
+                    
+                    VStack {
                         Spacer()
                         
-                        ZStack {
-                            
-                            //Recording voice or video
-                            if viewModel.showRecordButton() {
-                                Button {
-                                    viewModel.handleRecordButtonTapped()
-                                    
-                                    if viewModel.selectedView == .Voice {
-                                        viewModel.selectedView = .Video
-                                    }
-                                } label: {
-                                    RecordButton()
-                                }
-                                .overlay(
-                                    ZStack {
-                                        if viewModel.isRecording && viewModel.selectedView != .Voice {
-                                            SwitchCameraView()
-                                        }
-                                    }
-                                )
-                            }
-                            
-                            //Taking Photo
-                            if viewModel.selectedView == .Photo {
-                                Button {
-                                    viewModel.handlePhotoButtonTapped()
-                                } label: {
-                                    PhotoButton(photo: $viewModel.photo)
-                                }
-                                .overlay(
-                                    ZStack {
-                                        
-                                        if viewModel.photo == nil {
-                                            SwitchCameraView()
-                                        }
-                                    }
-                                )
-                            }
-                            
-                            
-                            if viewModel.photo != nil {
-                                //The Buttons on either of the photo button
-                                TakenPhotoOptions()
-                            }
-                            
-                        }.padding(.bottom, bottomPadding)
+                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
+                        //                    TextColorView(selectedColor: $color)
+                        //                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                        //                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
-                        VStack(spacing: 0) {
+                    }
+                    
+                    //Camera Flash View
+                    if viewModel.isRecording && viewModel.isFrontFacing && viewModel.hasFlash {
+                        FlashView().zIndex(2)
+                    }
+                    
+                    if conversationViewModel.currentlyWatchingId == nil {
+                        //Overlay Buttons
+                        VStack(spacing: 6) {
+                            
+                            
+                            Spacer()
+                            
+                            //Add message in chat for calls
+                            
+                            if conversationViewModel.presentUsers.count > 1, viewModel.selectedView != .Saylo {
+                                JoinCallSmallView()
+                            }
                             
                             ZStack {
                                 
-                                if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo && viewModel.selectedView != .Photo {
-                                    
-                                    HStack {
-                                        //
-                                        Button {
-                                            viewModel.showPhotos = true
-                                        } label: {
-                                            LastPhotoView()
+                                //Recording voice or video
+                                if viewModel.showRecordButton() {
+                                    Button {
+                                        viewModel.handleRecordButtonTapped()
+                                        
+                                        if viewModel.selectedView == .Voice {
+                                            viewModel.selectedView = .Video
                                         }
-                                        
-                                        Spacer()
-                                        
-                                        if viewModel.selectedView != .Photo {
-                                            MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        Button {
-                                            MainViewModel.shared.cameraView.switchCamera()
-                                        } label: {
-                                            Image(systemName: "arrow.triangle.2.circlepath")
-                                                .resizable()
-                                                .font(Font.title.weight(.semibold))
-                                                .scaledToFit()
-                                                .frame(height: 35)
-                                                .foregroundColor(.white)
-                                                .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                                        }
-                                        .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 35)
-                                        
+                                    } label: {
+                                        RecordButton()
                                     }
-                                    .padding(.horizontal, IS_SMALL_WIDTH ? 12 : 20)
-                                    .frame(width: SCREEN_WIDTH)
-                                    .padding(.bottom, bottomPadding + (IS_SMALL_PHONE ? 2 : 0))
-                                    
+                                    .overlay(
+                                        ZStack {
+                                            if viewModel.isRecording && viewModel.selectedView != .Voice {
+                                                SwitchCameraView()
+                                            }
+                                        }
+                                    )
                                 }
                                 
-                                if viewModel.isRecording || viewModel.selectedView == .Photo {
-                                    CancelRecordingButton(bottomPadding: bottomPadding)
-                                        .zIndex(6)
-                                    
+                                //Taking Photo
+                                if viewModel.selectedView == .Photo {
+                                    Button {
+                                        viewModel.handlePhotoButtonTapped()
+                                    } label: {
+                                        PhotoButton(photo: $viewModel.photo)
+                                    }
+                                    .overlay(
+                                        ZStack {
+                                            
+                                            if viewModel.photo == nil {
+                                                SwitchCameraView()
+                                            }
+                                        }
+                                    )
                                 }
-                            }
+                                
+                                
+                                if viewModel.photo != nil {
+                                    //The Buttons on either of the photo button
+                                    TakenPhotoOptions()
+                                }
+                                
+                            }.padding(.bottom, bottomPadding)
                             
-                            //                        if IS_SMALL_PHONE {
-                            //                            if !viewModel.isRecording && !viewModel.showPhotos {
-                            //                                let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
-                            //                                UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                            //                                    .padding(.bottom, viewModel.selectedView == .Saylo ?
-                            //                                             normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING - (SCREEN_WIDTH < 350 ? 20 : 0) : normalPadding)
-                            //                            }
-                            //                        }
+                            
+                            VStack(spacing: 0) {
+                                
+                                ZStack {
+                                    
+                                    if !viewModel.isRecording && !viewModel.showPhotos && viewModel.selectedView != .Saylo && viewModel.selectedView != .Photo {
+                                        
+                                        HStack {
+                                            //
+                                            Button {
+                                                viewModel.showPhotos = true
+                                            } label: {
+                                                LastPhotoView()
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            if viewModel.selectedView != .Photo {
+                                                MessageOptions(type: $viewModel.selectedView, isRecording: $viewModel.isRecording)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Button {
+                                                MainViewModel.shared.cameraView.switchCamera()
+                                            } label: {
+                                                Image(systemName: "arrow.triangle.2.circlepath")
+                                                    .resizable()
+                                                    .font(Font.title.weight(.semibold))
+                                                    .scaledToFit()
+                                                    .frame(height: 35)
+                                                    .foregroundColor(.white)
+                                                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                                            }
+                                            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 35)
+                                            
+                                        }
+                                        .padding(.horizontal, IS_SMALL_WIDTH ? 12 : 20)
+                                        .frame(width: SCREEN_WIDTH)
+                                        .padding(.bottom, bottomPadding + (IS_SMALL_PHONE ? 2 : 0))
+                                        
+                                    }
+                                    
+                                    if viewModel.isRecording || viewModel.selectedView == .Photo {
+                                        CancelRecordingButton(bottomPadding: bottomPadding)
+                                            .zIndex(6)
+                                        
+                                    }
+                                }
+                                
+                                //                        if IS_SMALL_PHONE {
+                                //                            if !viewModel.isRecording && !viewModel.showPhotos {
+                                //                                let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
+                                //                                UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                                //                                    .padding(.bottom, viewModel.selectedView == .Saylo ?
+                                //                                             normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING - (SCREEN_WIDTH < 350 ? 20 : 0) : normalPadding)
+                                //                            }
+                                //                        }
+                            }
+                        }
+                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
+                        .zIndex(3)
+                        
+                    }
+                    
+                    if !viewModel.isRecording && viewModel.selectedView != .Note && conversationViewModel.currentlyWatchingId == nil {
+                        ChatNavView(selectedView: $viewModel.selectedView, presentUsers: $conversationViewModel.presentUsers)
+                    }
+                }
+                .zIndex(3)
+                
+                if conversationViewModel.joinedCallUsers.count > 0 {
+                    JoinCallLargeView()
+                }
+                
+                Group {
+                    
+                    if viewModel.showFindFriends {
+                        ContactsView()
+                            .zIndex(5)
+                            .transition(.move(edge: .bottom))
+                            .frame(width: SCREEN_WIDTH)
+                            .cornerRadius(14)
+                    }
+                    //
+                    //                if viewModel.showNewChat {
+                    //                    NewConversationView()
+                    //                        .zIndex(5)
+                    //                        .transition(.move(edge: .bottom))
+                    //                        .frame(width: SCREEN_WIDTH)
+                    //                        .cornerRadius(14)
+                    //                }
+                    //
+                    
+                    
+                    if let chat = viewModel.settingsChat {
+                        ChatSettingsView(chat: chat)
+                            .zIndex(5)
+                            .navigationBarHidden(true)
+                            .transition(.move(edge: .bottom))
+                            .cornerRadius(14)
+                        
+                    }
+                    //
+                    //                if viewModel.isCalling {
+                    //                    MakeCallView()
+                    //                        .zIndex(5)
+                    //                        .transition(.move(edge: .bottom))
+                    //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                    //                        .cornerRadius(14)
+                    //                }
+                }
+                
+                if let message = viewModel.selectedMessage {
+                    MessageOptionsView(message: message).zIndex(6)
+                }
+            }
+            .overlay(
+                ZStack {
+                    
+                    
+                    //NavView
+                    //                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
+                    //
+                    //                    VStack {
+                    //                        NavView(searchText: $searchText)
+                    //                        Spacer()
+                    //                    }
+                    //
+                    //                } else
+                    if viewModel.isRecording {
+                        VStack {
+                            RecordTimerView()
+                                .padding(.top, TOP_PADDING_OFFSET + 8)
+                            Spacer()
                         }
                     }
-                    .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
-                    .zIndex(3)
                     
                 }
-                
-                if !viewModel.isRecording && viewModel.selectedView != .Note && conversationViewModel.currentlyWatchingId == nil {
-                    ChatNavView(selectedView: $viewModel.selectedView)
-                }
-            }
-            .zIndex(3)
+            )
+            .navigationBarHidden(true)
+            .ignoresSafeArea(edges: .bottom)
             
+            //        .onAppear {
+            //            cameraView.startRunning()
+            //        }
             
-            Group {
-                //                if viewModel.showAddFriends {
-                //                    AddFriendsView()
-                //                        .zIndex(5)
-                //                        .transition(.move(edge: .bottom))
-                //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                //                        .cornerRadius(14)
-                //                }
-                //
-                if viewModel.showFindFriends {
-                    ContactsView()
-                        .zIndex(5)
-                        .transition(.move(edge: .bottom))
-                        .frame(width: SCREEN_WIDTH)
-                        .cornerRadius(14)
-                }
-                //
-                //                if viewModel.showNewChat {
-                //                    NewConversationView()
-                //                        .zIndex(5)
-                //                        .transition(.move(edge: .bottom))
-                //                        .frame(width: SCREEN_WIDTH)
-                //                        .cornerRadius(14)
-                //                }
-                //
-                
-                
-                if let chat = viewModel.settingsChat {
-                    ChatSettingsView(chat: chat)
-                        .zIndex(5)
-                        .navigationBarHidden(true)
-                        .transition(.move(edge: .bottom))
-                        .cornerRadius(14)
-                    
-                }
-                //
-                //                if viewModel.isCalling {
-                //                    MakeCallView()
-                //                        .zIndex(5)
-                //                        .transition(.move(edge: .bottom))
-                //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                //                        .cornerRadius(14)
-                //                }
-            }
-            
-            if let message = viewModel.selectedMessage {
-                MessageOptionsView(message: message).zIndex(6)
-            }
+        } else {
+            CallView().ignoresSafeArea()
         }
-        .overlay(
-            ZStack {
-                
-                
-                //NavView
-                //                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
-                //
-                //                    VStack {
-                //                        NavView(searchText: $searchText)
-                //                        Spacer()
-                //                    }
-                //
-                //                } else
-                if viewModel.isRecording {
-                    VStack {
-                        RecordTimerView()
-                            .padding(.top, TOP_PADDING_OFFSET + 8)
-                        Spacer()
-                    }
-                }
-                
-            }
-        )
-        .navigationBarHidden(true)
-        .ignoresSafeArea(edges: .bottom)
-        
-        //        .onAppear {
-        //            cameraView.startRunning()
-        //        }
-        
     }
-    
     
     //Camera functions
     
@@ -404,8 +409,8 @@ struct LiveView: View {
                     )
             }
         }
-            
-            //TOdo is talking notification only the first time so if they cancel recording and strat again it doesn't send another notification
+        
+        //TOdo is talking notification only the first time so if they cancel recording and strat again it doesn't send another notification
         
     }
 }
@@ -436,6 +441,7 @@ struct SwitchCameraView: View {
 struct ChatNavView: View {
     
     @Binding var selectedView: MainViewType
+    @Binding var presentUsers: [String]
     
     var body: some View {
         
@@ -527,26 +533,57 @@ struct ChatNavView: View {
                                     }
                                 }
                             }
-                            
                         }
-                        
                     }
                 }
                 
                 HStack {
+                    
                     Spacer()
                     
-                    Text(ConversationViewModel.shared.chat?.name ?? "")
-                        .font(Font.system(size: IS_SMALL_WIDTH ? (IS_SE ? 18 : 20) : 22, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white)
-                        .shadow(color: Color(white: 0, opacity: 0.15), radius: 4, x: 0, y: 4)
+                    VStack(spacing: 4) {
+                        
+                        Text(ConversationViewModel.shared.chat?.name ?? "")
+                            .font(Font.system(size: IS_SMALL_WIDTH ? (IS_SE ? 18 : 20) : 22, weight: .semibold, design: .rounded))
+                            .foregroundColor(.white)
+                            .shadow(color: Color(white: 0, opacity: 0.15), radius: 4, x: 0, y: 4)
+                        
+                        //Todo show all profile images for group members who are there and in the join call view say all the names of ppl who joined the group
+                        
+                        if presentUsers.count > 1 {
+                            
+                            
+                            HStack {
+                                
+                                HStack(spacing: 4) {
+                                    
+                                    ForEach(Array(presentUsers.enumerated()), id: \.1) { i, id in
+                                        
+                                        if id != AuthViewModel.shared.getUserId() {
+                                            KFImage(URL(string: ConversationViewModel.shared.getUserProfileImageFromId(id)))
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 24, height: 24)
+                                                .clipShape(Circle())
+                                        }
+                                    }
+                                }
+                                
+                                Text("\(presentUsers.count > 2 ? "are" : "is") here")
+                                    .font(Font.system(size: IS_SMALL_WIDTH ? (IS_SE ? 14 : 15) : 17, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                            .shadow(color: Color(white: 0, opacity: 0.15), radius: 4, x: 0, y: 4)
+                            
+                        }
+                    }
                     
                     Spacer()
                 }
             }
             
             Spacer()
-
+            
         }
         .padding(.horizontal, 12)
         .padding(.top, TOP_PADDING + 12)
@@ -998,15 +1035,15 @@ struct CancelRecordingButton: View {
 //    }
 
 //    func handleTapGesture(chat: Chat) {
-//        
+//
 //        let delay = MainViewModel.shared.selectedView == .Saylo && chat.messages.isEmpty ? 0.1 : 0.0
-//        
+//
 //        self.conversationViewModel.index = -1
 //        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
 //            conversationViewModel.setChat(chat: chat)
 //            MainViewModel.shared.reset()
 //        }
-//        
+//
 //        withAnimation {
 //            dragOffset = .zero
 //        }
@@ -1039,3 +1076,117 @@ struct RoundedCorner: Shape {
     }
 }
 
+struct JoinCallSmallView: View {
+    
+    var imageName = ConversationViewModel.shared.chat?.profileImage ?? ""
+    let dimension: CGFloat = IS_SMALL_WIDTH ? 44 : (IS_SMALL_PHONE ? 46 : 48)
+    
+    var body: some View {
+        
+        Button {
+            ConversationViewModel.shared.setIsOnCall()
+        } label: {
+            
+            VStack(spacing: 4) {
+                
+                //TODO saylo is sometime slow on iphone 7 see why and optimize where needed
+                
+                KFImage(URL(string: imageName))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: dimension, height: dimension)
+                    .clipShape(Circle())
+                    .overlay(RoundedRectangle(cornerRadius: dimension/2)
+                        .stroke(Color.white, lineWidth: 2))
+                
+                HStack(spacing: 4) {
+                    
+                    Text("Join")
+                        .foregroundColor(.white)
+                        .font(Font.system(size: 13, weight: .semibold, design: .rounded))
+                    
+                    Image("video")
+                        .resizable()
+                        .renderingMode(.template)
+                        .scaledToFit()
+                        .foregroundColor(.white)
+                        .frame(width: dimension/4, height: dimension/4)
+                    
+                }
+            }
+            .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+            .padding(.bottom, 8)
+        }
+    }
+}
+
+struct JoinCallLargeView: View {
+    
+    var imageName = ConversationViewModel.shared.chat?.profileImage ?? ""
+    
+    var body: some View {
+        
+        ZStack {
+            
+            VStack(spacing: 12) {
+                
+                KFImage(URL(string: imageName))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: SCREEN_WIDTH/3, height: SCREEN_WIDTH/3)
+                    .clipShape(Circle())
+                    .overlay(RoundedRectangle(cornerRadius: SCREEN_WIDTH/6)
+                        .stroke(Color.white, lineWidth: 5))
+                
+                
+                Text("Seb joined the call")
+                    .foregroundColor(.white)
+                    .font(Font.system(size: 22, weight: .semibold, design: .rounded))
+                
+                HStack(spacing: 20) {
+                    
+                    Button {
+                        if ConversationViewModel.shared.joinedCallUsers.count < 2 {
+                            //when user is removed send show them a message saying that u didn't wanna join the call
+                            ConversationViewModel.shared.removeAllUsersFromCall()
+                        }
+                    } label: {
+                        ZStack {
+                            
+                            Circle()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(Color(white: 0.73))
+                            
+                            Image("x")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 26, height: 26)
+                        }
+                    }
+
+                    Button {
+                        ConversationViewModel.shared.setIsOnCall()
+                    } label: {
+                        ZStack {
+                            
+                            Circle()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.alternateMainBlue)
+                            
+                            Image("video")
+                                .resizable()
+                                .renderingMode(.template)
+                                .scaledToFit()
+                                .foregroundColor(.white)
+                                .frame(width: 30, height: 30)
+                                .padding(.leading, 1)
+                        }
+                    }
+                }
+            }
+            .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
+            .padding(.bottom, MINI_MESSAGE_HEIGHT)
+        }
+    }
+    
+}

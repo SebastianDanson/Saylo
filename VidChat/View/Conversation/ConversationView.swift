@@ -153,12 +153,12 @@ struct ConversationView: View {
                 }
                 ,alignment: .bottom)
             
-            if viewModel.showConversationPlayer {
+//            if viewModel.showConversationPlayer {
 //                ConversationPlayerView()
 //                    .transition(AnyTransition.asymmetric(insertion: .scale, removal: .move(edge: .bottom)))
 //                    .zIndex(6)
 //                    .ignoresSafeArea()
-            }
+//            }
             
             if viewModel.showImageDetailView {
                 ImageDetailView()

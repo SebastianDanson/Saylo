@@ -106,8 +106,8 @@ class ConversationViewModel: ObservableObject {
     var currentMessageId: String = ""
     @Published var liveUsers = [String]()
     
-    var presentUsers = [String]()
-
+    @Published var presentUsers = [String]()
+    @Published var joinedCallUsers = [String]()
     @Published var isLive = false
     @Published var currentlyWatchingId: String?
     
@@ -380,6 +380,25 @@ class ConversationViewModel: ObservableObject {
     func setIsOffChat() {
         guard let chat = chat else { return }
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["presentUsers":FieldValue.arrayRemove([AuthViewModel.shared.getUserId()])])
+    }
+    
+    func setIsOnCall() {
+        guard let chat = chat else { return }
+        joinedCallUsers.append(AuthViewModel.shared.getUserId())
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
+    }
+    
+    func removeAllUsersFromCall() {
+        guard let chat = chat else { return }
+        joinedCallUsers.removeAll()
+        //Todo add transaction here
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers": []])
+    }
+    
+    func setIsOffCall() {
+        guard let chat = chat else { return }
+        joinedCallUsers.removeAll(where: {AuthViewModel.shared.getUserId() == $0})
+        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers":FieldValue.arrayRemove([AuthViewModel.shared.getUserId()])])
     }
     
     func setSendingLiveRecordingId(_ uid: String?) {
@@ -721,8 +740,11 @@ class ConversationViewModel: ObservableObject {
                         }
                     }
                     
-                    self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
-                    
+                    withAnimation {
+                        self.joinedCallUsers = data["joinedCallUsers"] as? [String] ?? [String]()
+                        self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
+                    }
+
                     self.noMessages = messages.count == 0
                     self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     
@@ -731,6 +753,16 @@ class ConversationViewModel: ObservableObject {
             }
     }
     
+    
+    func getUserProfileImageFromId(_ id: String) -> String {
+        
+        guard let chat = chat, let chatMember = chat.chatMembers.first(where: {$0.id == id}) else {
+            return ""
+        }
+        
+        return chatMember.profileImage
+ 
+    }
     
     func removeListener() {
         listener?.remove()
