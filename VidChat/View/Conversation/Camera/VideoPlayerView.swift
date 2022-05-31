@@ -119,6 +119,7 @@ struct VideoPlayer : UIViewControllerRepresentable {
 struct PlayerView: UIViewRepresentable {
     
     @Binding var player : AVPlayer
+    
     let shouldLoop: Bool
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PlayerView>) {

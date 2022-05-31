@@ -12,6 +12,7 @@ import UIKit
 import SwiftUI
 import AgoraRtcKit
 
+
 struct MessagePlayer {
     var player: AVPlayer
     let messageId: String
@@ -216,7 +217,7 @@ class ConversationViewModel: ObservableObject {
     
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = false,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
         
-        if let chat = ConversationViewModel.shared.chat {
+        if ConversationViewModel.shared.chat != nil {
             ConversationViewModel.shared.isSending = true
         }
         
@@ -226,11 +227,16 @@ class ConversationViewModel: ObservableObject {
         var dictionary = [
             "id":id,
             "chatId": chatId,
-            "userProfileImage":AuthViewModel.shared.currentUser?.profileImage ?? "",
-            "username": isAcceptingFrienRequest ? "" : AuthViewModel.shared.currentUser?.firstName ?? "",
             "timestamp": Timestamp(date: Date()),
-            "userId": isAcceptingFrienRequest ? "" : AuthViewModel.shared.currentUser?.id
         ] as [String: Any]
+        
+        if type != .Call {
+            dictionary["userProfileImage"] = AuthViewModel.shared.currentUser?.profileImage ?? ""
+            dictionary["username"] = isAcceptingFrienRequest ? "" : AuthViewModel.shared.currentUser?.firstName ?? ""
+            dictionary["userId"] = isAcceptingFrienRequest ? "" : AuthViewModel.shared.currentUser?.id
+        } else {
+            dictionary["type"] = "call"
+        }
         
         if let url = url {
             
@@ -312,14 +318,18 @@ class ConversationViewModel: ObservableObject {
                     }
                     
                 }
-            } else if text != nil {
-                self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id, hasNotification: hasNotification)
             } else if let image = image {
                 MediaUploader.uploadImage(image: image, type: .photo, messageId: id) { newURL in
                     self.mediaFinishedUploading(chatId: chatId, messageId: id, newUrl: newURL)
                 }
+            } else {
+                self.atomicallyUploadMessage(toDocWithId: chatId, messageId: id, hasNotification: hasNotification)
             }
         }
+    }
+    
+    func sendCallEndedMessage() {
+        addMessage(type: .Call)
     }
     
     func sendCameraMessage(chatId: String?, chat: Chat?) {
@@ -616,7 +626,7 @@ class ConversationViewModel: ObservableObject {
                 messageType = "text"
             case .Photo:
                 messageType = "photo"
-            case .NewChat:
+            case .NewChat, .Call:
                 break
             }
             
@@ -748,7 +758,9 @@ class ConversationViewModel: ObservableObject {
                     self.noMessages = messages.count == 0
                     self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     
-                    
+                    let chat = Chat(dictionary: data, id: self.chatId)
+                    self.chat?.chatMembers = chat.chatMembers
+                    ConversationGridViewModel.shared.chats.first(where: {$0.id == self.chatId})?.chatMembers = chat.chatMembers
                 }
             }
     }
@@ -940,6 +952,8 @@ class ConversationViewModel: ObservableObject {
             } else {
                 videoLength = 3
             }
+        } else if message.type == .Call {
+            videoLength = 2
         } else {
             videoLength = 4
         }

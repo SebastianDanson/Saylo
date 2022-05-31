@@ -73,11 +73,22 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        callManger.joinChannel()
-        
-        if callManger.remoteUserIDs.count == 0 {
-            playRingTone()
+        if ConversationViewModel.shared.showCall {
+            
+            callManger.joinChannel()
+            
+            if callManger.remoteUserIDs.count == 0 {
+                playRingTone()
+            }
+        } else {
+            callManger.joinChatChannel()
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        callManger.endCalling()
     }
     
     func playRingTone() {

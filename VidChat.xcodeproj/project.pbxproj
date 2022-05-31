@@ -36,6 +36,7 @@
 		063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */; };
 		063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */; };
 		063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */; };
+		063E2D0E283B034400F4B56D /* SampleVideoCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */; };
 		0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0640D63227990FF500D7A244 /* SuggestedChatsView.swift */; };
 		06520C0B282D72E100C8FF1D /* TextColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06520C0A282D72E100C8FF1D /* TextColorView.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
@@ -235,6 +236,7 @@
 		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/View/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
 		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
 		063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyPhoneNumberView.swift; sourceTree = "<group>"; };
+		063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleVideoCallView.swift; sourceTree = "<group>"; };
 		0640D63227990FF500D7A244 /* SuggestedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedChatsView.swift; sourceTree = "<group>"; };
 		06520C0A282D72E100C8FF1D /* TextColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextColorView.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
@@ -869,6 +871,7 @@
 				3F1768262714A5630049ADBA /* MessageCells */,
 				3F2A7EBA2719CE1B00179390 /* Photos */,
 				06520C0A282D72E100C8FF1D /* TextColorView.swift */,
+				063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1036,6 +1039,7 @@
 				3F112B7C2720736400BA2A73 /* CallView.swift in Sources */,
 				3F08F27827017D9C009E0029 /* VideoPlayerView.swift in Sources */,
 				3F2A7EB32718BED400179390 /* AudioRecorder.swift in Sources */,
+				063E2D0E283B034400F4B56D /* SampleVideoCallView.swift in Sources */,
 				06F1A326277CEAE400A0F992 /* SetNameView.swift in Sources */,
 				3F2A7EB127188CD800179390 /* VideoPlayerViewModel.swift in Sources */,
 				3F485DC826FE28920071532B /* RegistrationView.swift in Sources */,

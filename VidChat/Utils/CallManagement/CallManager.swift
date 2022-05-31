@@ -39,7 +39,13 @@ final class CallManager: NSObject, ObservableObject {
     @Published var remoteUserIDs: [UInt] = [] {
         didSet {
             if remoteUserIDs.count == 0 {
-               endCurrentCall()
+                
+                endCurrentCall()
+                
+                if !inCall && ConversationViewModel.shared.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
+                    ConversationViewModel.shared.setIsOffCall()
+                    ConversationViewModel.shared.sendCallEndedMessage()
+                }
             } else {
                 delegate?.remoteUserIDsUpdated()
             }
@@ -58,29 +64,40 @@ final class CallManager: NSObject, ObservableObject {
     }
     
     func endCalling() {
-
-        if let chat = currentChat, !didJoin {
-            if let token = chat.chatMembers.first(where: {$0.id != AuthViewModel.shared.getUserId()})?.fcmToken {
-                ConversationViewModel.shared.sendMissedCallNotification(token: token)
+        
+        if inCall {
+            
+            if let chat = currentChat, !didJoin {
+                if let token = chat.chatMembers.first(where: {$0.id != AuthViewModel.shared.getUserId()})?.fcmToken {
+                    ConversationViewModel.shared.sendMissedCallNotification(token: token)
+                }
+                currentChat = nil
             }
-            currentChat = nil
+            
+            didJoin = false
+            endCurrentCall()
+            removeCurrentCall()
+            
+            self.currentCall = nil
+            self.inCall = false
+            
+            withAnimation {
+                ConversationViewModel.shared.showCall = false
+            }
+            
+        } else {
+            
+            //Todo right here leave call for other person and send notification sayun you did so
+            
+            ConversationViewModel.shared.setIsOffCall()
         }
         
-        didJoin = false
-        endCurrentCall()
-        removeCurrentCall()
+        self.delegate = nil
+        self.remoteUserIDs = [UInt]()
         leaveChannel()
         destroyInstance()
         channelName = nil
         agoraKit = nil
-        self.currentCall = nil
-        self.delegate = nil
-        self.remoteUserIDs = [UInt]()
-        self.inCall = false
-        
-        withAnimation {
-            ConversationViewModel.shared.showCall = false
-        }
     }
     
     // MARK: - Actions
@@ -138,7 +155,7 @@ final class CallManager: NSObject, ObservableObject {
         transaction.addAction(endCallAction)
         
         requestTransaction(transaction, call: call)
-
+        
     }
     
     /// Sets the specified call's on hold status.
@@ -266,7 +283,7 @@ extension CallManager: AgoraRtcEngineDelegate {
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didVideoEnabled enabled: Bool, byUid uid: UInt) {
-
+        
     }
     
     
@@ -289,6 +306,15 @@ extension CallManager: AgoraRtcEngineDelegate {
         }
     }
     
+    func joinChatChannel() {
+        
+        guard let chat = ConversationViewModel.shared.chat else { return }
+        getAgoraEngine().joinChannel(byToken: nil, channelId: chat.id, info: nil, uid: 0)
+        
+    }
+    
+    
+    
     func leaveChannel() {
         agoraKit?.leaveChannel(nil)
     }
@@ -299,11 +325,11 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     func setUpVideo() {
         getAgoraEngine().enableVideo()
-        let configuration = AgoraVideoEncoderConfiguration(size:
-                                                            AgoraVideoDimension1280x720, frameRate: .fps30, bitrate: 1710,
+        let configuration = AgoraVideoEncoderConfiguration(size: CGSize(width: 1080, height: 1920),
+                                                        frameRate: .fps60, bitrate: 6000,
                                                            orientationMode: .fixedPortrait)
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
     
-    
+    //todo if recording and join call then it cancels the recording
 }

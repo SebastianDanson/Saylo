@@ -32,6 +32,17 @@ class MainViewModel: ObservableObject {
     @Published var selectedMessage: Message?
     @Published var settingsChat: Chat?
     @Published var showPhotosAlert = false 
+    @Published var isSaving = false {
+        didSet {
+            if isSaving {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    withAnimation {
+                        self.isSaving = false
+                    }
+                }
+            }
+        }
+    }
 
     var audioRecorder = AudioRecorder()
     var isCameraAlert = false

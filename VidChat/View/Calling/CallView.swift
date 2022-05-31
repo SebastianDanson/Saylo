@@ -16,11 +16,19 @@ struct CallView: View {
     @State private var showCallOptions = true
     
     @StateObject var callsController = CallManager.shared
-    
+    @StateObject var conversationViewModel = ConversationViewModel.shared
+
     var body: some View {
         ZStack(alignment: .top) {
             ZStack(alignment: .bottom) {
                 VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, showCallOptions: $showCallOptions)
+                    .overlay(
+                        ZStack {
+                            if conversationViewModel.joinedCallUsers.count == 1 {
+                                WaitingForUserToJoinCallView()
+                            }
+                        }
+                    )
                 if showCallOptions {
                     CallOptionsView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo)
                 }
@@ -103,7 +111,9 @@ struct DialingView: View {
     let chat: Chat
     
     var body: some View {
+        
         VStack(spacing: 2) {
+            
             VStack(spacing: 8) {
                 
                 ChatImageCircle(chat: chat, diameter: 100)
@@ -118,5 +128,37 @@ struct DialingView: View {
                 .font(.system(size: 15))
             
         }.padding(.top, SCREEN_HEIGHT / 8)
+    }
+}
+
+
+struct WaitingForUserToJoinCallView: View {
+    
+    let chat = ConversationViewModel.shared.chat
+    
+    var body: some View {
+        
+        VStack(spacing: 16) {
+            
+            Spacer()
+            
+            if let chat = chat {
+                
+                KFImage(URL(string: chat.profileImage))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: SCREEN_WIDTH/3.5, height: SCREEN_WIDTH/3.5)
+                    .clipShape(Circle())
+                
+                Text("Waiting for \(chat.isDm ? chat.name : "chat members") to join the call...")
+                    .foregroundColor(.white)
+                    .font(.system(size: 22, weight: .semibold, design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .frame(width: SCREEN_WIDTH - 80)
+            }
+            
+            Spacer()
+            
+        }
     }
 }

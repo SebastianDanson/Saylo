@@ -17,26 +17,14 @@ struct ConversationPlayerView: View {
     
     @State var isFirstReplyOption = true
     @State var showReactions = false
-    @State var showAlert = false
     @State var sliderValue = 0.0
-    
+    @Binding var showAlert: Bool
     //    @State var showPlayerViewTutorial: Bool
     
     //    private var hasSeenPlayerViewTutorial: Bool
-    private var token: NSKeyValueObservation?
-    private var textMessages = [Message]()
+//    private var token: NSKeyValueObservation?
+//    private var textMessages = [Message]()
     
-    //    init() {
-    //
-    //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-    //        hasSeenPlayerViewTutorial = defaults?.bool(forKey: "hasSeenPlayerViewTutorial") ?? false
-    //        self._showPlayerViewTutorial = State(initialValue: !hasSeenPlayerViewTutorial)
-    //        defaults?.set(true, forKey: "hasSeenPlayerViewTutorial")
-    //    }
-    
-    //    init() {
-    //
-    //    }
     
     var body: some View {
         
@@ -93,6 +81,11 @@ struct ConversationPlayerView: View {
                                     .clipped()
                                     .background(Color.black)
                             }
+                        } else if messages[index].type == .Call {
+                            CallEndedView(isLarge: true)
+                                .frame(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+                                .cornerRadius(14)
+
                         }
                         
                         
@@ -162,17 +155,14 @@ struct ConversationPlayerView: View {
                                                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                                     .padding(.bottom, IS_SMALL_WIDTH ? 22 : 27)
                                             }
-                                            .alert(isPresented: $showAlert) {
-                                                savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[viewModel.index].id}), completion: { isSaved in
-                                                    
-                                                })
-                                            }
+                                            
                                             
                                             Button {
                                                 if messages[index].isSaved {
                                                     showAlert = true
                                                 } else {
                                                     ConversationViewModel.shared.updateIsSaved(atIndex: index)
+                                                    MainViewModel.shared.isSaving = true
                                                 }
                                             } label: {
                                                 
@@ -242,7 +232,11 @@ struct ConversationPlayerView: View {
                                         }
                                         
                                     }
-                                    .padding(.trailing, 18)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 6)
+                                    .background(viewModel.showPlaybackControls && !showReactions ? Color.fadedBlack : Color.clear)
+                                    .clipShape(Capsule())
+                                    .padding(.trailing, 8)
                                     .padding(.bottom, IS_SMALL_WIDTH ? 28 : 34)
                                 }
                             }
@@ -274,6 +268,9 @@ struct ConversationPlayerView: View {
                                 if viewModel.showPlaybackControls {
                                     
                                     VStack {
+                                        
+                                        let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[index].isSaved : $viewModel.messages[index].isSaved
+                                        SaveViewPaused(showAlert: $showAlert, isSaved: isSaved, index: index)
                                         
                                         HStack {
                                             
@@ -352,7 +349,6 @@ struct ConversationPlayerView: View {
                         }
                         
                         Spacer()
-                        
                         
                     }
                     

@@ -14,6 +14,7 @@ struct UnreadMessagesScrollView: View {
     @ObservedObject var viewModel = ConversationViewModel.shared
     @Binding var selectedView: MainViewType
     @State var thumbnails = [String:UIImage?]()
+    @Binding var showAlert: Bool
     
     var body: some View {
         
@@ -107,6 +108,9 @@ struct UnreadMessagesScrollView: View {
                                                         .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
                                                         .cornerRadius(6)
                                                 }
+                                            } else if message.type == .Call {
+                                                CallEndedView(isLarge: false)
+                                                    .cornerRadius(6)
                                             }
                                         }
                                         
@@ -155,9 +159,14 @@ struct UnreadMessagesScrollView: View {
                                 .overlay(
                                     
                                     ZStack {
+                                                                                
                                         if i == messages.count - 1 {
                                             MessageSendingView(isSending: $viewModel.isSending, hasSent: $viewModel.hasSent)
                                         }
+                                        
+                                        
+                                        let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[i].isSaved : $viewModel.messages[i].isSaved
+                                        SaveView(showAlert: $showAlert, isSaved: isSaved, index: i)
                                     }
                                     
                                 )
@@ -222,7 +231,6 @@ struct UnreadMessagesScrollView: View {
     
     private func createVideoThumbnail(from url: URL) -> UIImage? {
         
-        
         let asset = AVAsset(url: url)
         let assetImgGenerate = AVAssetImageGenerator(asset: asset)
         assetImgGenerate.appliesPreferredTrackTransform = true
@@ -244,6 +252,33 @@ struct UnreadMessagesScrollView: View {
     }
 }
 
+struct CallEndedView: View {
+    
+    let isLarge: Bool
+    
+    var body: some View {
+        
+        VStack(spacing: isLarge ? 24 : 8){
+            
+            Image("video")
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .foregroundColor(.white)
+                .frame(width: isLarge ? SCREEN_WIDTH/5 : MINI_MESSAGE_WIDTH/3)
+                .padding(.leading, isLarge ? 4 : 1)
+            
+            Text("Ended")
+                .foregroundColor(.white)
+                .font(Font.system(size: isLarge ? 32 : 16, weight: .semibold, design: .rounded))
+            
+        }
+        .frame(width: isLarge ? SCREEN_WIDTH : MINI_MESSAGE_WIDTH, height: isLarge ? MESSAGE_HEIGHT : MINI_MESSAGE_HEIGHT)
+        .background(Color(white: 0.2))
+        
+    }
+}
+
 
 struct CircularLoadingAnimationView: View {
     
@@ -253,9 +288,9 @@ struct CircularLoadingAnimationView: View {
     var body: some View {
         ZStack {
             
-//            Circle()
-//                .stroke(Color(.systemGray5), lineWidth: 6)
-//                .frame(width: dimension, height: dimension)
+            //            Circle()
+            //                .stroke(Color(.systemGray5), lineWidth: 6)
+            //                .frame(width: dimension, height: dimension)
             
             Circle()
                 .trim(from: 0, to: 0.2)
@@ -267,6 +302,148 @@ struct CircularLoadingAnimationView: View {
                     self.isLoading = true
                 }
         }
+    }
+}
+
+struct SaveView: View {
+
+    @Binding var isSaved: Bool
+    @Binding var showAlert: Bool
+    let index: Int
+
+    init(showAlert: Binding<Bool>, isSaved: Binding<Bool>, index: Int) {
+        self._isSaved = isSaved
+        self._showAlert = showAlert
+        self.index = index
+    }
+
+    var body: some View {
+
+        VStack {
+
+            HStack {
+
+                Spacer()
+
+                Button {
+
+                    if !isSaved {
+                        MainViewModel.shared.isSaving = true
+                        ConversationViewModel.shared.updateIsSaved(atIndex: index)
+                    } else {
+                        showAlert = true
+                    }
+                } label: {
+
+                    ZStack {
+
+                        Color.fadedBlack
+
+                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 19, height: 19)
+                            .foregroundColor(Color(.white))
+
+                    }
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+                    .padding(4)
+
+                }
+
+            }
+
+            Spacer()
+        }
+    }
+}
+
+struct SaveViewPaused: View {
+    
+    @Binding var isSaved: Bool
+    @Binding var showAlert: Bool
+    let index: Int
+    
+    init(showAlert: Binding<Bool>, isSaved: Binding<Bool>, index: Int) {
+        self._isSaved = isSaved
+        self._showAlert = showAlert
+        self.index = index
+    }
+    
+    var body: some View {
+        
+        VStack {
+            
+            Button {
+                
+                
+                withAnimation {
+                                        
+                    if !isSaved {
+                        MainViewModel.shared.isSaving = true
+                        ConversationViewModel.shared.updateIsSaved(atIndex: index)
+                    } else {
+                        showAlert = true
+                    }
+                }
+            } label: {
+                
+                ZStack {
+                    
+                    Color.fadedBlack
+                    
+                    VStack(spacing: 3) {
+                        
+                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 26, height: 26)
+                            .foregroundColor(Color(.white))
+                        
+                        Text(self.isSaved ? "Unsave" : "Save")
+                            .foregroundColor(.white)
+                            .font(Font.system(size: 12, weight: .semibold, design: .rounded))
+                        
+                    }
+                    
+                }
+                .frame(width: 64, height: 64)
+                .clipShape(Circle())
+                .padding(4)
+                
+            }
+        }
+    }
+}
+
+struct SavedPopUp: View {
+    
+    var body: some View {
+        
+        ZStack {
+            
+            Color.fadedBlack
+            
+            VStack {
+                
+                
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
+                
+                Text("Saved")
+                    .foregroundColor(.white)
+                    .font(Font.system(size: 20, weight: .semibold, design: .rounded))
+                
+            }
+            
+        }
+        .frame(width: 100, height: 100)
+        .cornerRadius(20)
+        
     }
 }
 

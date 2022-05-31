@@ -43,6 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         MainViewModel.shared.chatsViewDragOffset = .zero
         ConversationGridViewModel.shared.showCachedChats()
+        ConversationGridViewModel.shared.updateFriendsChats()
 
     }
     
@@ -100,6 +101,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if ConversationViewModel.shared.sendingLiveRecordingId == AuthViewModel.shared.getUserId() {
             ConversationViewModel.shared.setSendingLiveRecordingId(nil)
+        }
+        
+        if CallManager.shared.inCall || ConversationViewModel.shared.joinedCallUsers.contains(AuthViewModel.shared.getUserId())  {
+            CallManager.shared.endCalling()
         }
     }
     

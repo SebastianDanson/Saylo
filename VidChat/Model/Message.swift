@@ -17,7 +17,9 @@ enum MainViewType {
 
 enum MessageType {
     
-    case Video, Audio, Text, Photo, NewChat
+    case Video, Audio, Text, Photo, NewChat, Call
+    
+    //TODO ensure newChat message works
     
     static func getType(forString type: String) -> MessageType {
         switch type {
@@ -31,6 +33,8 @@ enum MessageType {
             return .Photo
         case "newChat":
             return .NewChat
+        case "call":
+            return .Call
         default:
             print("DEBUG: ERROR Can't identify message type")
             return .Video
@@ -38,6 +42,7 @@ enum MessageType {
     }
     
     func getString() -> String {
+        
         switch self {
         case .Photo:
             return "photo"
@@ -49,6 +54,8 @@ enum MessageType {
             return "video"
         case .NewChat:
             return "newChat"
+        case .Call:
+            return "call"
         }
     }
 }

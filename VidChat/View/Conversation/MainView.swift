@@ -19,6 +19,7 @@ struct MainView: View {
     @State var isTyping = false
     @State var showAllowAudioAlert = false
     @State var showAllowCameraAccessAlert = false
+    @State var showAlert = false
     
     var cameraView = CameraView()
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
@@ -49,9 +50,7 @@ struct MainView: View {
                 LiveView(showStream: $conversationViewModel.isLive)
                 
                 //Camera view shown when recording video or taking photo
-                if viewModel.showCamera() {
-                    
-                    
+                if viewModel.showCamera() {                    
                     
                     if conversationViewModel.currentlyWatchingId == nil {
                         cameraView
@@ -85,6 +84,7 @@ struct MainView: View {
                 
                 // Voice view
                 Group {
+                    
                     if viewModel.selectedView == .Voice {
                         VoiceView()
                     }
@@ -96,7 +96,7 @@ struct MainView: View {
                     
                     //Saylo View
                     if viewModel.selectedView == .Saylo {
-                        ConversationPlayerView()
+                        ConversationPlayerView(showAlert: $showAlert)
                     }
                     
                     if viewModel.showPhotos {
@@ -109,7 +109,7 @@ struct MainView: View {
                     VStack {
                         Spacer()
                         
-                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
+                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
                             .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
                         //                    TextColorView(selectedColor: $color)
@@ -132,7 +132,7 @@ struct MainView: View {
                             
                             //Add message in chat for calls
                             
-                            if conversationViewModel.presentUsers.count > 1, viewModel.selectedView != .Saylo {
+                            if conversationViewModel.presentUsers.count > 1, viewModel.selectedView != .Saylo, conversationViewModel.joinedCallUsers.count == 0 {
                                 JoinCallSmallView()
                             }
                             
@@ -321,10 +321,21 @@ struct MainView: View {
                         }
                     }
                     
+                    if viewModel.isSaving {
+                        
+                        SavedPopUp()
+                            .padding(.bottom, MINI_MESSAGE_HEIGHT)
+                    }
+         
                 }
             )
             .navigationBarHidden(true)
             .ignoresSafeArea(edges: .bottom)
+            .alert(isPresented: $showAlert) {
+                savedPostAlert(mesageIndex: conversationViewModel.messages.firstIndex(where: {$0.id == conversationViewModel.messages[conversationViewModel.index].id}), completion: { isSaved in
+                    
+                })
+            }
             
             //        .onAppear {
             //            cameraView.startRunning()
@@ -1133,13 +1144,13 @@ struct JoinCallLargeView: View {
                 KFImage(URL(string: imageName))
                     .resizable()
                     .scaledToFill()
-                    .frame(width: SCREEN_WIDTH/3, height: SCREEN_WIDTH/3)
+                    .frame(width: SCREEN_WIDTH/4, height: SCREEN_WIDTH/4)
                     .clipShape(Circle())
-                    .overlay(RoundedRectangle(cornerRadius: SCREEN_WIDTH/6)
-                        .stroke(Color.white, lineWidth: 5))
+                    .overlay(RoundedRectangle(cornerRadius: SCREEN_WIDTH/8)
+                        .stroke(Color.white, lineWidth: 4))
                 
                 
-                Text("Seb joined the call")
+                Text(getJoinedCallString())
                     .foregroundColor(.white)
                     .font(Font.system(size: 22, weight: .semibold, design: .rounded))
                 
@@ -1151,6 +1162,7 @@ struct JoinCallLargeView: View {
                             ConversationViewModel.shared.removeAllUsersFromCall()
                         }
                     } label: {
+                        
                         ZStack {
                             
                             Circle()
@@ -1187,6 +1199,22 @@ struct JoinCallLargeView: View {
             .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
             .padding(.bottom, MINI_MESSAGE_HEIGHT)
         }
+    }
+    
+    func getJoinedCallString() -> String {
+        
+        var joinedCallString = ""
+        
+        guard let chat = ConversationViewModel.shared.chat else { return "" }
+        
+        
+        ConversationViewModel.shared.joinedCallUsers.forEach { uid in
+            if let chatMember = chat.chatMembers.first(where: {$0.id == uid }) {
+                joinedCallString.append(joinedCallString.isEmpty ? "" : ","  + chatMember.firstName)
+            }
+        }
+        
+        return joinedCallString + " joined the call"
     }
     
 }

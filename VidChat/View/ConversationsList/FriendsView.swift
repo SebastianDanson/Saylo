@@ -106,8 +106,6 @@ struct FriendsView: View {
                     
                 }
             }
-        }.onAppear {
-            ConversationGridViewModel.shared.updateFriendsChats()
         }
         .frame(width: SCREEN_WIDTH)
     }
