@@ -92,7 +92,7 @@ class ConversationViewModel: ObservableObject {
     
     
     var hasUnread = false
-    var currentPlayer: AVPlayer?
+    @Published var currentPlayer: AVPlayer?
     
     @Published var scrollToBottom = false
     @Published var isPlaying = true

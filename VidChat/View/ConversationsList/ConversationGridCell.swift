@@ -24,7 +24,6 @@ struct ConversationGridCell: View {
         
         ZStack {
             
-            Color.backgroundWhite.ignoresSafeArea()
             
             HStack(alignment:.top, spacing: 14) {
                 
@@ -63,11 +62,11 @@ struct ConversationGridCell: View {
                     Text(chat.isDm ? chat.fullName : chat.name)
                         .foregroundColor(.systemBlack)
                         .lineLimit(1)
-                        .font(.system(size: IS_SMALL_PHONE ? 17 : 18, weight: .medium))
+                        .font(.system(size: IS_SMALL_PHONE ? 16 : 17, weight: .semibold))
                     
                     Text(getChatText())
                         .foregroundColor(Color(.systemGray))
-                        .font(.system(size: IS_SMALL_PHONE ? 14 : 15, weight: .regular))
+                        .font(.system(size: IS_SMALL_PHONE ? 14 : 15, weight: .medium))
                     
                     Spacer()
                     
@@ -102,8 +101,9 @@ struct ConversationGridCell: View {
                                 
                                 Image("ChatOptions")
                                     .resizable()
+                                    .renderingMode(.template)
                                     .scaledToFit()
-                                    .foregroundColor(Color(red: 192/255, green: 193/255, blue: 199/255, opacity: 1))
+                                    .foregroundColor(Color(.systemGray))
                                     .frame(width: 5, height: 20)
                             }
                         }

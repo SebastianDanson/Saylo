@@ -40,7 +40,7 @@ struct ConversationGridView: View {
             
             ZStack(alignment: .top) {
                 
-                Color.mainBackgroundBlue.ignoresSafeArea()
+                Color.systemWhite.ignoresSafeArea()
                 
                 //                NavigationLink(destination: MainViewModel.shared.cameraView, isActive: $viewModel.showConversation) { EmptyView() }
                 
@@ -63,10 +63,15 @@ struct ConversationGridView: View {
                     //                            .padding(.top, TOP_PADDING + 56)
                     //                    }
                     
+                    ScrollView(showsIndicators: false) {
 
                     FriendsView(chats: $viewModel.friendsChats)
-                        .padding(.top, IS_SMALL_PHONE ? -4 : 0)
-                       
+                        .padding(.top, IS_SMALL_PHONE ? 8 : 12)
+                    
+                    Rectangle()
+                        .foregroundColor(Color(.systemGray5))
+                        .frame(width: SCREEN_WIDTH, height: 1)
+                        .padding(.top, 4)
                     
                     
                     
@@ -76,49 +81,48 @@ struct ConversationGridView: View {
                             
                             HStack {
                                 
-                                Text("Recent Chats")
-                                    .font(Font.system(size: IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 20 : 22) : 24, weight: .medium, design: .rounded))
+                                Text("Chats")
+                                    .font(Font.system(size: IS_SMALL_PHONE ? 17 : 18, weight: .semibold))
                                 
                                 Spacer()
                                 
-                                Button {
-                                    
-                                } label: {
-                                    
-                                    Button {
-                                        withAnimation {
-                                            ConversationGridViewModel.shared.showNewChat = true
-                                        }
-                                    } label: {
-                                        HStack(spacing: 3) {
-                                            
-                                            Image(systemName: "plus")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .foregroundColor(.white)
-                                                .frame(width: IS_SMALL_WIDTH ? 13 : 14, height: IS_SMALL_WIDTH ? 13 : 14)
-                                            
-                                            Text("New chat")
-                                                .foregroundColor(.white)
-                                                .font(Font.system(size: IS_SMALL_WIDTH ? 13 : 14, weight: .medium))
-                                        }
-                                        .frame(width: IS_SMALL_WIDTH ? 96 : 100, height: 32)
-                                        .background(Color.lightBlue)
-                                        .clipShape(Capsule())
-                                    }
-                                    
-                                }
+//                                Button {
+//
+//                                } label: {
+//
+//                                    Button {
+//                                        withAnimation {
+//                                            ConversationGridViewModel.shared.showNewChat = true
+//                                        }
+//                                    } label: {
+//                                        HStack(spacing: 3) {
+//
+//                                            Image(systemName: "plus")
+//                                                .resizable()
+//                                                .scaledToFit()
+//                                                .foregroundColor(.white)
+//                                                .frame(width: IS_SMALL_WIDTH ? 13 : 14, height: IS_SMALL_WIDTH ? 13 : 14)
+//
+//                                            Text("New chat")
+//                                                .foregroundColor(.white)
+//                                                .font(Font.system(size: IS_SMALL_WIDTH ? 13 : 14, weight: .medium))
+//                                        }
+//                                        .frame(width: IS_SMALL_WIDTH ? 96 : 100, height: 32)
+//                                        .background(Color.lightBlue)
+//                                        .clipShape(Capsule())
+//                                    }
+//
+//                                }
                                 
                             }
                             .padding(.horizontal, 22)
-                            .padding(.top, IS_SMALL_PHONE ? 20 : 36)
+//                            .padding(.top, IS_SMALL_PHONE ? 20 : 36)
                             
                             Spacer()
                         }
                         
-                        ScrollView(showsIndicators: false) {
                             
-                            VStack {
+                        VStack(spacing: 4) {
                                 
                                 ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                     
@@ -142,47 +146,48 @@ struct ConversationGridView: View {
                                 //                                FindFriendsView()
                                 
                             }
+                            .padding(.top, IS_SMALL_PHONE ? 30 : 34)
 
-                        }
-                        .padding(.top, IS_SMALL_PHONE ? 68 : 85)
-                        
-                        //if no friends i.e only has team Saylo chat
-                        if viewModel.chats.count == 1 {
-                            
-                            VStack {
-                                
-                                Spacer()
-                                
-                                Button {
-                                    
-                                    withAnimation {
-                                        ConversationGridViewModel.shared.showFindFriends = true
-                                        ConversationGridViewModel.shared.showAllFriends = false
-                                    }
-                                    
-                                } label: {
-                                    
-                                    Text("Find Friends")
-                                        .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.systemWhite)
-                                        .padding(.vertical, 12)
-                                        .padding(.horizontal, 24)
-                                        .background(Color.alternateMainBlue)
-                                        .clipShape(Capsule())
-                                        .padding(.bottom, BOTTOM_PADDING + 28)
-                                }
-                            }
-                        }
+   
+                   
                     }
-                    .background(Color.backgroundWhite)
+//                    .background(Color.backgroundWhite)
                     .frame(width: SCREEN_WIDTH)
-                    .cornerRadius(IS_SMALL_PHONE ? 36 : 44, corners: [.topLeft, .topRight])
+//                    .cornerRadius(IS_SMALL_PHONE ? 36 : 44, corners: [.topLeft, .topRight])
                     .ignoresSafeArea(edges: .bottom)
                     .zIndex(2)
-                    .transition(.move(edge: .bottom))
-                    .padding(.top, IS_SMALL_PHONE ? 8 : 24)
+//                    .transition(.move(edge: .bottom))
+                    .padding(.top, 8)
+                    }
                 }
                 
+                //if no friends i.e only has team Saylo chat
+                if viewModel.chats.count == 1 {
+                    
+                    VStack {
+                        
+                        Spacer()
+                        
+                        Button {
+                            
+                            withAnimation {
+                                ConversationGridViewModel.shared.showFindFriends = true
+                                ConversationGridViewModel.shared.showAllFriends = false
+                            }
+                            
+                        } label: {
+                            
+                            Text("Find Friends")
+                                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                .foregroundColor(.systemWhite)
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 24)
+                                .background(Color.alternateMainBlue)
+                                .clipShape(Capsule())
+                                .padding(.bottom, BOTTOM_PADDING + 16)
+                        }
+                    }
+                }
                 
                 Group {
                     
@@ -363,19 +368,7 @@ struct NavView: View {
                     
                     HStack(spacing: IS_SMALL_WIDTH ? 8 : 10) {
                         
-                        //                        Button {
-                        //                            viewModel.showSettingsView = true
-                        //                        } label: {
-                        //                            KFImage(URL(string: authViewModel.profileImage ?? ""))
-                        //                                .resizable()
-                        //                                .scaledToFill()
-                        //                                .frame(width: toolBarWidth, height: toolBarWidth)
-                        //                                .clipShape(Circle())
-                        //                                .padding(1) // Width of the border
-                        //                                .background(Color.white) // Color of the border
-                        //                                .clipShape(Circle())
-                        //                            //                                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
-                        //                        }
+                            
                         
                         //                        Button {
                         //                            withAnimation {
@@ -413,14 +406,29 @@ struct NavView: View {
                                 ConversationGridViewModel.shared.showSettingsView = true
                             }
                         } label: {
-                            
-                            Image(systemName: "person.crop.circle")
+
+                            KFImage(URL(string: authViewModel.profileImage ?? ""))
                                 .resizable()
-                                .scaledToFit()
-                                .frame(width: 28, height: 28)
-                                .foregroundColor(.white)
+                                .scaledToFill()
+                                .frame(width: 32, height: 32)
+                                .clipShape(Circle())
+//                                .padding(1) // Width of the border
+//                                .background(Color.white) // Color of the border
+//                                .clipShape(Circle())
+//                            Image(systemName: "person.crop.circle")
+//                                .resizable()
+//                                .scaledToFit()
+//                                .frame(width: 28, height: 28)
+//                                .foregroundColor(.systemBlack)
                             //                                .padding(.trailing, 3)
                         }
+                        
+//                        Button {
+//                            viewModel.showSettingsView = true
+//                        } label: {
+//
+//                            //                                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
+//                        }
                         
                         //                        Text("Saylo")
                         //                            .foregroundColor(.white)
@@ -455,27 +463,30 @@ struct NavView: View {
                         } label: {
                             Image(systemName: "phone.fill")
                                 .resizable()
+                                .font(Font.title.weight(.ultraLight))
                                 .scaledToFit()
-                                .frame(width: 21, height: 21)
-                                .foregroundColor(.white)
+                                .frame(width: 22, height: 22)
+                                .foregroundColor(.systemBlack)
                                 .padding(.trailing, 12)
                         }
                         
-                        Button {
-                            withAnimation {
-                                ConversationGridViewModel.shared.showAddFriends = true
-                            }
-                        } label: {
+                        if authViewModel.hasUnseenFriendRequest {
                             
-                            ZStack {
-                                Image("plusPerson")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(.white)
-                                    .padding(.trailing, 3)
-                                
-                                if authViewModel.hasUnseenFriendRequest {
+                            Button {
+                                withAnimation {
+                                    ConversationGridViewModel.shared.showAddFriends = true
+                                }
+                            } label: {
+                                ZStack {
+                                    Image("plusPerson")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundColor(.systemBlack)
+                                        .padding(.trailing, 3)
+                                    
+                                    
                                     
                                     VStack {
                                         
@@ -493,10 +504,60 @@ struct NavView: View {
                                         
                                         Spacer()
                                     }
+                                    
                                 }
+                                .frame(width: 25, height: 25)
                             }
-                            .frame(width: 25, height: 25)
+                            
+                        } else {
+                            Menu {
+                                Button {
+                                    withAnimation {
+                                        ConversationGridViewModel.shared.showNewChat = true
+                                    }
+                                } label: {
+                                    Label("New Chat", systemImage: "plus.message.fill")
+                                }
+                                
+                                Button {
+                                    withAnimation {
+                                        ConversationGridViewModel.shared.showAddFriends = true
+                                    }
+                                } label: {
+                                    Label("Add Friend", systemImage: "person.fill.badge.plus")
+                                }
+                                
+                            } label: {
+                                ZStack {
+                                    Image(systemName: "plus")
+                                        .resizable()
+                                        .font(Font.title.weight(.medium))
+                                        .scaledToFit()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundColor(.systemBlack)
+                                        .padding(.trailing, 3)
+                                    
+                                    
+                                }
+                                .frame(width: 25, height: 25)
+                                
+                            }
                         }
+                        
+                        //                        }
+                        //                        .contextMenu {
+                        //                                Button {
+                        //                                    print("Change country setting")
+                        //                                } label: {
+                        //                                    Label("Choose Country", systemImage: "globe")
+                        //                                }
+                        //
+                        //                                Button {
+                        //                                    print("Enable geolocation")
+                        //                                } label: {
+                        //                                    Label("Detect Location", systemImage: "location.circle")
+                        //                                }
+                        //                            }
                         
                         
                         
@@ -614,7 +675,7 @@ struct NavView: View {
         .sheet(isPresented: $viewModel.showSettingsView) {
             ProfileView(showSettings: $viewModel.showSettingsView)
         }
-        .frame(width: SCREEN_WIDTH, height: 44)
+        .frame(width: SCREEN_WIDTH, height: 32)
         //        .padding(TOP_PADDING)
         //        .padding(.top, 8)
         

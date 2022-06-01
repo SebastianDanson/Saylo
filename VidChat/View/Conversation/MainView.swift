@@ -95,7 +95,7 @@ struct MainView: View {
                     }
                     
                     //Saylo View
-                    if viewModel.selectedView == .Saylo {
+                    if viewModel.selectedView == .Saylo || conversationViewModel.currentPlayer != nil {
                         ConversationPlayerView(showAlert: $showAlert)
                     }
                     

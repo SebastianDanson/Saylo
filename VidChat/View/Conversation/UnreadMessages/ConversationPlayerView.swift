@@ -186,6 +186,7 @@ struct ConversationPlayerView: View {
                                         
                                         
                                         if !viewModel.showSavedPosts {
+                                            
                                             Button {
                                                 withAnimation(.linear(duration: 0.2)) {
                                                     showReactions.toggle()

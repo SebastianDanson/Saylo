@@ -8,6 +8,21 @@ import UIKit
 import AVFoundation
 import SwiftUI
 import PhotosUI
+import CoreImage
+
+extension CIFilter {
+    
+    static func attributedTextImageGenerator(inputText: NSAttributedString, inputScaleFactor: NSNumber = 1) -> CIFilter? {
+            guard let filter = CIFilter(name: "CIAttributedTextImageGenerator") else {
+                return nil
+            }
+            filter.setDefaults()
+            filter.setValue(inputText, forKey: "inputText")
+            filter.setValue(inputScaleFactor, forKey: "inputScaleFactor")
+            return filter
+        }
+    
+}
 
 protocol CameraViewControllerDelegate: AnyObject {
     func setVideo(withUrl url: URL)
@@ -569,14 +584,81 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             DispatchQueue.main.async {
                 
                 if showVideo {
-                    MainViewModel.shared.videoUrl = self.outputURL
-                    //                    MainViewModel.shared.setVideoPlayer()
-                    MainViewModel.shared.handleSend()
-                    ConversationViewModel.shared.didCancelRecording = false
                     
-                    if ConversationViewModel.shared.presentUsers.count > 1 {
-                        ConversationViewModel.shared.setSendingLiveRecordingId(AuthViewModel.shared.getUserId())
+                    
+                    let asset = AVAsset(url: self.outputURL)
+                    let titleComposition = AVMutableVideoComposition(asset: asset) { request in
+                    //Create a white shadow for the text
+                    let whiteShadow = NSShadow()
+                    whiteShadow.shadowBlurRadius = 5
+                    whiteShadow.shadowColor = UIColor.white
+                    let attributes = [
+                      NSAttributedString.Key.foregroundColor : UIColor.blue,
+                      NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16),
+                      NSAttributedString.Key.shadow : whiteShadow
+                    ]
+                    //Create an Attributed String
+                    let waterfallText = NSAttributedString(string: "Waterfall!", attributes: attributes)
+                    //Convert attributed string to a CIImage
+                    let textFilter = CIFilter.attributedTextImageGenerator(inputText: waterfallText)!
+
+                        //Center text and move 200 px from the origin
+                    //source image is 720 x 1280
+                    let positionedText = textFilter.outputImage!.transformed(by: CGAffineTransform(translationX: (request.renderSize.width - textFilter.outputImage!.extent.width)/2, y: 200))
+                    //Compose text over video image
+                    request.finish(with: positionedText.composited(over: request.sourceImage), context: nil)
+                        
+                        
                     }
+                    
+                    guard let export = AVAssetExportSession(
+                      asset: asset,
+                      presetName: AVAssetExportPresetHighestQuality)
+                      else {
+                        print("Cannot create export session.")
+//                        onComplete(nil)
+                        return
+                    }
+                    
+                    export.videoComposition = titleComposition
+                    export.outputFileType = .mov
+                    
+                    let urlNew = self.getTempUrl()!
+                    export.outputURL = urlNew
+                    
+                    export.exportAsynchronously {
+                      DispatchQueue.main.async {
+                        switch export.status {
+                        case .completed:
+                            MainViewModel.shared.videoUrl = urlNew
+                            //                    MainViewModel.shared.setVideoPlayer()
+                            MainViewModel.shared.handleSend()
+                            ConversationViewModel.shared.didCancelRecording = false
+
+                            if ConversationViewModel.shared.presentUsers.count > 1 {
+                                ConversationViewModel.shared.setSendingLiveRecordingId(AuthViewModel.shared.getUserId())
+                            }
+//                          onComplete(exportURL)
+                        default:
+                          print("Something went wrong during export.")
+                          print(export.error ?? "unknown error")
+//                          onComplete(nil)
+                          break
+                        }
+                      }
+                    }
+                    
+//                    let waterFallItem = AVPlayerItem(asset: asset)
+//                    waterFallItem.videoComposition = titleComposition
+//                    let player = AVPlayer(playerItem: waterFallItem)
+//                    ConversationViewModel.shared.currentPlayer = player
+//                    player.play()
+//                    AVAssetExportSession(asset: player.currentItem!.asset, presetName: "test")?.exportAsynchronously {
+                        
+//                    }
+                    
+                    
+                    
                 } else {
                     MainViewModel.shared.videoUrl = nil
                 }

@@ -14,17 +14,17 @@ struct FriendsView: View {
 
     let dimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 60 : 62) : (IS_SMALL_PHONE ? 64 : 66)
     let plusDimension: CGFloat = IS_SMALL_WIDTH ? (IS_SE ? 31 : 32) : 34
-    let fontSize: CGFloat = IS_SMALL_WIDTH ? 13:14
+    let fontSize: CGFloat = 14
 
     var body: some View {
                 
-        VStack(spacing: IS_SMALL_PHONE ? 12 : 24) {
+        VStack(spacing: 20) {
             
             HStack {
                 
                 Text("Friends")
-                    .font(Font.system(size: IS_SMALL_PHONE ? 22 : 24, weight: .medium, design: .rounded))
-                    .foregroundColor(.white)
+                    .font(Font.system(size: IS_SMALL_PHONE ? 17 : 18, weight: .semibold))
+                    .foregroundColor(.systemBlack)
                 
                 Spacer()
                 
@@ -35,7 +35,8 @@ struct FriendsView: View {
                 } label: {
                     Text("See All")
                         .font(Font.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundColor(Color(red: 224/255, green: 224/255, blue: 224/255, opacity: 1))
+                        .foregroundColor(.systemBlack)
+//                        .foregroundColor(Color(red: 224/255, green: 224/255, blue: 224/255, opacity: 1))
                 }
 
             }
@@ -59,20 +60,20 @@ struct FriendsView: View {
                                 ZStack {
                                     
                                     Circle()
-                                        .strokeBorder(Color.white, lineWidth: 4)
+                                        .strokeBorder(Color.alternateMainBlue, lineWidth: 4)
                                         .frame(width: dimension, height: dimension)
                                     
                                     Image(systemName: "plus")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: plusDimension, height: plusDimension)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.alternateMainBlue)
                                 }
                                 
                                 
                                 Text("Add Friend")
-                                    .font(Font.system(size: fontSize, weight: .medium))
-                                    .foregroundColor(.white)
+                                    .font(Font.system(size: fontSize, weight: .regular))
+                                    .foregroundColor(.systemBlack)
                             }
                         }
 
@@ -95,8 +96,8 @@ struct FriendsView: View {
                                             .clipShape(Circle())
                                         
                                         Text(chat.name)
-                                            .font(Font.system(size: fontSize, weight: .medium, design: .rounded))
-                                            .foregroundColor(.white)
+                                            .font(Font.system(size: fontSize, weight: .regular, design: .rounded))
+                                            .foregroundColor(.systemBlack)
                                     }
                                 }
                             }

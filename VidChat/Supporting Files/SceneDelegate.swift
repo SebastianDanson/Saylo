@@ -45,6 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ConversationGridViewModel.shared.showCachedChats()
         ConversationGridViewModel.shared.updateFriendsChats()
 
+
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -68,7 +69,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         //        MainViewModel.shared.cameraView.setupSession()
         
-        ConversationGridViewModel.shared.updateFriendsChats()
         ConversationGridViewModel.shared.setMessages()
 //        MainViewModel.shared.cameraView.cameraView.setupSession()
 
@@ -112,10 +112,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     //    func sceneWillResignActive(_ scene: UIScene) {
     //
     //    }
-    //    func sceneDidEnterBackground(_ scene: UIScene) {
-    //        print("sceneDidEnterBackground")
-    //
-    //        CameraViewModel.shared.cameraView.stopSession()
-    //    }
+//        func sceneDidEnterBackground(_ scene: UIScene) {
+//            ConversationGridViewModel.shared.updateFriendsChats()
+//        }
     
 }
