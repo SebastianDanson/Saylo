@@ -59,6 +59,7 @@
 		0687E9FB2794B9A0004E1187 /* ChatMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9FA2794B9A0004E1187 /* ChatMember.swift */; };
 		06883E642808BE0B00708E42 /* Flurry in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E632808BE0B00708E42 /* Flurry */; };
 		06883E672808BE7100708E42 /* AgoraRtcKit in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E662808BE7100708E42 /* AgoraRtcKit */; };
+		068DA24F284C3AE00034374E /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA24E284C3AE00034374E /* Filters.swift */; };
 		0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29427E38D13007E5A54 /* PlaybackControls.swift */; };
 		0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29627E41406007E5A54 /* RecordTimerView.swift */; };
 		069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11DE2797573F00988829 /* EnableContactsView.swift */; };
@@ -258,6 +259,7 @@
 		0687E9F62794B1E1004E1187 /* ChatMembersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMembersView.swift; sourceTree = "<group>"; };
 		0687E9F82794B38A004E1187 /* ChatMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberCell.swift; sourceTree = "<group>"; };
 		0687E9FA2794B9A0004E1187 /* ChatMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMember.swift; sourceTree = "<group>"; };
+		068DA24E284C3AE00034374E /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
 		0692D29427E38D13007E5A54 /* PlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControls.swift; sourceTree = "<group>"; };
 		0692D29627E41406007E5A54 /* RecordTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimerView.swift; sourceTree = "<group>"; };
 		069D11DE2797573F00988829 /* EnableContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableContactsView.swift; sourceTree = "<group>"; };
@@ -665,6 +667,7 @@
 				0687E9F427949B5C004E1187 /* NameTextField.swift */,
 				069D11E62798775600988829 /* MessageView.swift */,
 				065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */,
+				068DA24E284C3AE00034374E /* Filters.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1105,6 +1108,7 @@
 				3F485DA626FD477B0071532B /* ProfileView.swift in Sources */,
 				069D11EE279893BA00988829 /* CountryCodeViewController.swift in Sources */,
 				063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */,
+				068DA24F284C3AE00034374E /* Filters.swift in Sources */,
 				067FBB5E279BB7B600B2EA04 /* DialCountriesController.swift in Sources */,
 				3F112B852720B34500BA2A73 /* Call.swift in Sources */,
 				3F112BAB2721B04600BA2A73 /* MakeCallView.swift in Sources */,

@@ -484,9 +484,7 @@ struct NavView: View {
                                         .scaledToFit()
                                         .frame(width: 25, height: 25)
                                         .foregroundColor(.systemBlack)
-                                        .padding(.trailing, 3)
-                                    
-                                    
+                                        .padding(.trailing, 3)                                    
                                     
                                     VStack {
                                         

@@ -25,13 +25,16 @@ struct MainView: View {
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
     @State private var currentAmount = 0.0
     @State private var finalAmount = 1.0
-    @State private var offset = CGSize.zero
+//    @State private var offset = CGSize.zero
     @State private var location: CGPoint = CGPoint(x: SCREEN_WIDTH/2, y: SCREEN_HEIGHT/2)
     @State private var color: Color = .white
+    @GestureState private var fingerLocation: CGPoint? = nil
+    @GestureState private var startLocation: CGPoint? = nil // 1
     
     var body: some View {
         
         if !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
+           
             
             ZStack(alignment: .center) {
                 
@@ -50,34 +53,38 @@ struct MainView: View {
                 LiveView(showStream: $conversationViewModel.isLive)
                 
                 //Camera view shown when recording video or taking photo
-                if viewModel.showCamera() {                    
+                if viewModel.showCamera() {
                     
                     if conversationViewModel.currentlyWatchingId == nil {
                         cameraView
                             .onTapGesture(count: 2, perform: { switchCamera() })
                     }
-                    //                Text("Hello, World!")
-                    //                    .foregroundColor(color)
-                    //                    .font(Font.system(size: 64, weight: .semibold, design: .rounded))
-                    //                    .scaleEffect((finalAmount + currentAmount)/2)
-                    //                    .offset(offset)
-                    //                    .gesture(
-                    //                        MagnificationGesture()
-                    //                            .onChanged { amount in
-                    //                                currentAmount = amount - 1
-                    //                            }
-                    //                            .onEnded { amount in
-                    //                                finalAmount += currentAmount
-                    //                                currentAmount = 0
-                    //                            }
-                    //                            .simultaneously(with:  DragGesture()
-                    //                                .onChanged { value in
-                    //                                    self.offset = value.translation
-                    //                                })
-                    //                    )
-                    //                    .simultaneousGesture(
-                    //
-                    //                    )
+                    
+                    Text("Hello, World!")
+                        .foregroundColor(color)
+                        .font(Font.system(size: 64, weight: .semibold, design: .rounded))
+                        .scaleEffect((finalAmount + currentAmount)/2)
+                        .position(location)
+                        .gesture(
+                            MagnificationGesture()
+                                .onChanged { amount in
+                                    currentAmount = amount - 1
+                                }
+                                .onEnded { amount in
+                                    finalAmount += currentAmount
+                                    currentAmount = 0
+                                }
+                                .simultaneously(with:  DragGesture()
+                                    .onChanged { value in
+                                        var newLocation = startLocation ?? location // 3
+                                        newLocation.x += value.translation.width
+                                        newLocation.y += value.translation.height
+                                        self.location = newLocation
+                                    }.updating($startLocation) { (value, startLocation, transaction) in
+                                        startLocation = startLocation ?? location // 2
+                                    })
+                        )
+                    
                     
                     
                 }

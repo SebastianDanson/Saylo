@@ -389,28 +389,28 @@ struct SaveViewPaused: View {
                 }
             } label: {
                 
-                ZStack {
-                    
-                    Color.fadedBlack
-                    
-                    VStack(spacing: 3) {
-                        
-                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 26, height: 26)
-                            .foregroundColor(Color(.white))
-                        
-                        Text(self.isSaved ? "Unsave" : "Save")
-                            .foregroundColor(.white)
-                            .font(Font.system(size: 12, weight: .semibold, design: .rounded))
-                        
-                    }
-                    
-                }
-                .frame(width: 64, height: 64)
-                .clipShape(Circle())
-                .padding(4)
+//                ZStack {
+//
+//                    Color.fadedBlack
+//
+//                    VStack(spacing: 3) {
+//
+//                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 26, height: 26)
+//                            .foregroundColor(Color(.white))
+//
+//                        Text(self.isSaved ? "Unsave" : "Save")
+//                            .foregroundColor(.white)
+//                            .font(Font.system(size: 12, weight: .semibold, design: .rounded))
+//
+//                    }
+//
+//                }
+//                .frame(width: 64, height: 64)
+//                .clipShape(Circle())
+//                .padding(4)
                 
             }
         }
