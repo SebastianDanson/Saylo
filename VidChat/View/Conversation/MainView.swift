@@ -26,7 +26,7 @@ struct MainView: View {
     @State private var currentAmount = 0.0
     @State private var finalAmount = 1.0
 //    @State private var offset = CGSize.zero
-    @State private var location: CGPoint = CGPoint(x: SCREEN_WIDTH/2, y: SCREEN_HEIGHT/2)
+    @State private var location: CGPoint = CGPoint(x: SCREEN_WIDTH/2, y: MESSAGE_HEIGHT/2 + TOP_PADDING_OFFSET)
     @State private var color: Color = .white
     @GestureState private var fingerLocation: CGPoint? = nil
     @GestureState private var startLocation: CGPoint? = nil // 1
@@ -50,7 +50,7 @@ struct MainView: View {
                 //
                 //
                 //            }
-                LiveView(showStream: $conversationViewModel.isLive)
+               LiveView(showStream: $conversationViewModel.isLive)
                 
                 //Camera view shown when recording video or taking photo
                 if viewModel.showCamera() {
@@ -80,6 +80,10 @@ struct MainView: View {
                                         newLocation.x += value.translation.width
                                         newLocation.y += value.translation.height
                                         self.location = newLocation
+                                        conversationViewModel.textLocationOffSet.width = 1 - self.location.x/(SCREEN_WIDTH/2)
+                                        
+                                        let height = MESSAGE_HEIGHT/2 + TOP_PADDING_OFFSET
+                                        conversationViewModel.textLocationOffSet.height = 1 - self.location.y/height
                                     }.updating($startLocation) { (value, startLocation, transaction) in
                                         startLocation = startLocation ?? location // 2
                                     })
@@ -119,9 +123,9 @@ struct MainView: View {
                         UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
                             .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
-                        //                    TextColorView(selectedColor: $color)
-                        //                        .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                        //                        .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+//                                            TextColorView(selectedColor: $color)
+//                                                .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+//                                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
                     }
                     

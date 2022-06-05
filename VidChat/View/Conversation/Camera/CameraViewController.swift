@@ -327,9 +327,22 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
         previewLayer?.isHidden = true
         view.addSubview(imageView)
-        imageView.frame = previewLayer!.frame
+        imageView.setDimensions(height: MESSAGE_HEIGHT, width: SCREEN_WIDTH)
+        imageView.anchor(top: view.topAnchor, left: view.leftAnchor, paddingTop: TOP_PADDING_OFFSET)
         previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-        self.imageView.contentMode = .scaleAspectFit
+//        self.imageView.contentMode = .top
+        self.imageView.contentMode = .scaleAspectFill
+        self.imageView.layer.cornerRadius = 14
+        self.imageView.clipsToBounds = true
+
+        let coverView = UIView()
+        coverView.backgroundColor = .black
+        
+//        self.imageView.addSubview(coverView)
+//        coverView.anchor(bottom: imageView.bottomAnchor)
+//        coverView.centerX(inView: self.imageView)
+//        coverView.setDimensions(height: SCREEN_WIDTH * 16/9 - MESSAGE_HEIGHT, width: SCREEN_WIDTH)
+        
 
         self.view.layer.masksToBounds = true
         self.view.layer.cornerRadius = 14
@@ -521,7 +534,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //            textImageGenerator.
             
             // Text to image
-            let font = UIFont.rounded(ofSize: 94, weight: .semibold)
+            let font = UIFont.rounded(ofSize: 166, weight: .semibold)
 //            let font = Font.system(size: 64, weight: .semibold, design: .rounded)
                 let attributes: [NSAttributedString.Key: Any] = [
                     .font: font,
@@ -531,11 +544,20 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 let attributedQuote = NSAttributedString(string: "Hello, World!", attributes: attributes)
                 let textGenerationFilter = CIFilter(name: "CIAttributedTextImageGenerator")!
                 textGenerationFilter.setValue(attributedQuote, forKey: "inputText")
-            textGenerationFilter.setValue(NSNumber(value: Double(1)), forKey: "inputScaleFactor")
-                var textImage = textGenerationFilter.outputImage!
-            textImage = textImage.transformed(by: CGAffineTransform(translationX: SCREEN_WIDTH*0.7, y: SCREEN_HEIGHT))
+            textGenerationFilter.setValue(NSNumber(value: Double(0.5)), forKey: "inputScaleFactor")
+            var textImage = textGenerationFilter.outputImage!
+            
+            let offset = ConversationViewModel.shared.textLocationOffSet
+//            print(offset)
+            let scaleOffsetX = cameraImage.extent.midX * offset.width
+            let scaleOffsetY = cameraImage.extent.midY * offset.height
+            
+            let translationX = min(abs(cameraImage.extent.midX - textImage.extent.width/2 - scaleOffsetX), abs(cameraImage.extent.width - textImage.extent.width))
 
-                
+            textImage = textImage.transformed(by: CGAffineTransform(translationX: translationX,
+                                                                    y: cameraImage.extent.midY - textImage.extent.height/2 + scaleOffsetY))
+
+            
             let newCiimage = textImage
                     .applyingFilter("CISourceAtopCompositing", parameters: [ kCIInputBackgroundImageKey: cameraImage])
           
@@ -562,8 +584,25 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //            if let newCiimage = newCiimage {
                 let ciContext = CIContext(options: nil)
                 ciContext.render(newCiimage, to: pixelBuffer2)
+            
+            let targetSize = CGSize(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
+            let imageSize = newCiimage.extent.size
+
+            let widthFactor = targetSize.width / imageSize.width
+            let heightFactor = targetSize.height / imageSize.height
+            let scaleFactor = max(widthFactor, heightFactor)
+
+            // scale down, retaining the original's aspect ratio
+            let scaledImage = newCiimage.transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
+
+            // crop the center to match the target size
+            let croppedImage = scaledImage.cropped(to: scaledImage.extent)
+            
                 DispatchQueue.main.async {
-                    self.imageView.image = UIImage(ciImage: newCiimage)
+//                    let context = CIContext()
+//                    let cropped = newCiimage.cropped(to: CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT))
+//                    let final = context.createCGImage(cropped, from: cropped.extent)
+                    self.imageView.image = UIImage(ciImage: croppedImage)
                 }
 //            }
 
