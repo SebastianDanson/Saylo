@@ -60,6 +60,8 @@
 		06883E642808BE0B00708E42 /* Flurry in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E632808BE0B00708E42 /* Flurry */; };
 		06883E672808BE7100708E42 /* AgoraRtcKit in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E662808BE7100708E42 /* AgoraRtcKit */; };
 		068DA24F284C3AE00034374E /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA24E284C3AE00034374E /* Filters.swift */; };
+		068DA251284D96370034374E /* TextOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA250284D96370034374E /* TextOverlayView.swift */; };
+		068DA253284D96690034374E /* TextOverlayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA252284D96690034374E /* TextOverlayViewModel.swift */; };
 		0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29427E38D13007E5A54 /* PlaybackControls.swift */; };
 		0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0692D29627E41406007E5A54 /* RecordTimerView.swift */; };
 		069D11DF2797573F00988829 /* EnableContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069D11DE2797573F00988829 /* EnableContactsView.swift */; };
@@ -260,6 +262,8 @@
 		0687E9F82794B38A004E1187 /* ChatMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberCell.swift; sourceTree = "<group>"; };
 		0687E9FA2794B9A0004E1187 /* ChatMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMember.swift; sourceTree = "<group>"; };
 		068DA24E284C3AE00034374E /* Filters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filters.swift; sourceTree = "<group>"; };
+		068DA250284D96370034374E /* TextOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlayView.swift; sourceTree = "<group>"; };
+		068DA252284D96690034374E /* TextOverlayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlayViewModel.swift; sourceTree = "<group>"; };
 		0692D29427E38D13007E5A54 /* PlaybackControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControls.swift; sourceTree = "<group>"; };
 		0692D29627E41406007E5A54 /* RecordTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTimerView.swift; sourceTree = "<group>"; };
 		069D11DE2797573F00988829 /* EnableContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableContactsView.swift; sourceTree = "<group>"; };
@@ -548,6 +552,7 @@
 				3F1768272714A8080049ADBA /* ConversationViewModel.swift */,
 				3F712479276FC92C00C8457D /* ConversationPlayerViewModel.swift */,
 				060D60F227AD8E2000771977 /* PhotosViewModel.swift */,
+				068DA252284D96690034374E /* TextOverlayViewModel.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -875,6 +880,7 @@
 				3F2A7EBA2719CE1B00179390 /* Photos */,
 				06520C0A282D72E100C8FF1D /* TextColorView.swift */,
 				063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */,
+				068DA250284D96370034374E /* TextOverlayView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1038,6 +1044,7 @@
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
 				06F1A32C277D522300A0F992 /* SetProfileImageView.swift in Sources */,
 				3F08F27627017A5A009E0029 /* MainView.swift in Sources */,
+				068DA251284D96370034374E /* TextOverlayView.swift in Sources */,
 				065971F82776AD1200884420 /* Reaction.swift in Sources */,
 				3F112B7C2720736400BA2A73 /* CallView.swift in Sources */,
 				3F08F27827017D9C009E0029 /* VideoPlayerView.swift in Sources */,
@@ -1079,6 +1086,7 @@
 				3F4C618127402A09003EE726 /* ConversationService.swift in Sources */,
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
 				3F71247A276FC92C00C8457D /* ConversationPlayerViewModel.swift in Sources */,
+				068DA253284D96690034374E /* TextOverlayViewModel.swift in Sources */,
 				069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */,
 				06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,

@@ -117,9 +117,6 @@ class ConversationViewModel: ObservableObject {
     var isShowingReactions = false
     var didCancelRecording = false
     
-    var textLocationOffSet: CGSize = .zero
-    var textMagnification = 1
-    
     static let shared = ConversationViewModel()
     
     //TODO live for audio messages
