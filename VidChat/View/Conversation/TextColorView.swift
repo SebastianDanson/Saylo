@@ -19,16 +19,21 @@ struct TextColorView: View {
             Color.darkgray
             
             VStack {
+                
                 Spacer()
-                ScrollView(.horizontal) {
+                
+                ScrollView(.horizontal, showsIndicators: false) {
                     
                     HStack(spacing: 12) {
+                        
                         ForEach(Array(colors.enumerated()), id: \.1.hashValue) { i, color in
+                            
                             Circle()
                                 .frame(width: 48, height: 48)
                                 .foregroundColor(color)
                                 .onTapGesture {
                                     self.selectedColor = color
+                                    TextOverlayViewModel.shared.fontColor = UIColor(color)
                                 }
                         }
                     }
@@ -42,8 +47,3 @@ struct TextColorView: View {
     }
 }
 
-//struct TextColorView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        TextColorView(selectedColor: <#Binding<Color>#>)
-//    }
-//}

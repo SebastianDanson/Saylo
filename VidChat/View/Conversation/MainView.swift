@@ -20,6 +20,7 @@ struct MainView: View {
     @State var showAllowAudioAlert = false
     @State var showAllowCameraAccessAlert = false
     @State var showAlert = false
+    @State var textColor: Color = .white
     
     var cameraView = CameraView()
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
@@ -55,6 +56,10 @@ struct MainView: View {
         
                 }
                 
+                if viewModel.showCaption {
+                    TextOverlayView(color: $textColor)
+                }
+
                 // Voice view
                 Group {
                     
@@ -68,7 +73,7 @@ struct MainView: View {
                     }
                     
                     //Saylo View
-                    if viewModel.selectedView == .Saylo || conversationViewModel.currentPlayer != nil {
+                    if viewModel.selectedView == .Saylo {
                         ConversationPlayerView(showAlert: $showAlert)
                     }
                     
@@ -82,12 +87,12 @@ struct MainView: View {
                     VStack {
                         Spacer()
                         
-                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
-                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+//                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
+//                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
-//                                            TextColorView(selectedColor: $color)
-//                                                .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
-//                                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                        TextColorView(selectedColor: $textColor)
+                            .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
                         
                     }
                     
@@ -200,9 +205,7 @@ struct MainView: View {
                                     }
                                     
                                     if viewModel.isRecording || viewModel.selectedView == .Photo {
-                                        CancelRecordingButton(bottomPadding: bottomPadding)
-                                            .zIndex(6)
-                                        
+                                        CancelRecordingButton(bottomPadding: bottomPadding).zIndex(6)
                                     }
                                 }
                                 
@@ -274,9 +277,10 @@ struct MainView: View {
                 }
             }
             .overlay(
+                
                 ZStack {
                     
-                    
+                    MessageAdOnsView()
                     //NavView
                     //                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
                     //
@@ -295,7 +299,6 @@ struct MainView: View {
                     }
                     
                     if viewModel.isSaving {
-                        
                         SavedPopUp()
                             .padding(.bottom, MINI_MESSAGE_HEIGHT)
                     }
@@ -694,7 +697,7 @@ struct NoteView: View {
                 }
                 
                 
-                MultilineTextField(text: $noteText, height: MESSAGE_HEIGHT)
+                MultilineTextField(text: $noteText, height: MESSAGE_HEIGHT, fontSize: 28, returnKey: .send)
                     .frame(width: SCREEN_WIDTH - 40)
                 
                 

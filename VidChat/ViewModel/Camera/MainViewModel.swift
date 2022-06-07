@@ -31,7 +31,8 @@ class MainViewModel: ObservableObject {
     @Published var chatsViewDragOffset: CGSize = .zero
     @Published var selectedMessage: Message?
     @Published var settingsChat: Chat?
-    @Published var showPhotosAlert = false 
+    @Published var showPhotosAlert = false
+    @Published var showCaption = false
     @Published var isSaving = false {
         didSet {
             if isSaving {

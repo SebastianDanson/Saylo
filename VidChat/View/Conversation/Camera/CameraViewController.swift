@@ -325,11 +325,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         previewLayer!.cornerRadius = 14
         previewLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        previewLayer?.isHidden = true
+//        previewLayer?.isHidden = true
         view.addSubview(imageView)
-        imageView.setDimensions(height: MESSAGE_HEIGHT, width: SCREEN_WIDTH)
-        imageView.anchor(top: view.topAnchor, left: view.leftAnchor, paddingTop: TOP_PADDING_OFFSET)
-        previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        imageView.frame = previewLayer!.frame
+//        previewLayer!.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
 //        self.imageView.contentMode = .top
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.layer.cornerRadius = 14

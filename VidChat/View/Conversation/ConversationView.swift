@@ -627,83 +627,83 @@ struct AudioOptions: View {
 }
 
 
-struct KeyboardView: View {
-    
-    @StateObject var viewModel = ConversationViewModel.shared
-    @Binding var text: String
-    
-    let authViewModel = AuthViewModel.shared
-    
-    var body: some View {
-        
-        HStack(alignment: .bottom) {
-            
-            Button {
-                
-                UIApplication.shared.endEditing()
-                
-                withAnimation {
-                    viewModel.showKeyboard = false
-                    ConversationGridViewModel.shared.stopSelectingChats()
-                }
-                
-            } label: {
-                
-                Image(systemName: "xmark.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .foregroundColor(Color.bottomGray)
-                    .transition(.move(edge: .trailing))
-                
-                
-            }
-            .padding(.leading, 16)
-            .padding(.bottom, 8)
-            
-            MultilineTextField("Message...",text: $text) {
-                
-            }
-            .padding(.vertical, 5)
-            .padding(.horizontal, 3)
-            
-            Spacer()
-            
-            
-            Button {
-                if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    
-                    withAnimation(.linear(duration: 0.15)) {
-                        
-                        viewModel.sendMessage(text: text, type: .Text)
-                        text = ""
-                    }
-                }
-            } label: {
-                
-                Image(systemName: "arrow.up.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .foregroundColor(Color.mainBlue)
-                    .opacity(getIsSendButtonEnabled() ? 1 : 0.3)
-                    .transition(.move(edge: .trailing))
-                    .disabled(!getIsSendButtonEnabled())
-                
-            }
-            .padding(.trailing, 16)
-            .padding(.bottom, 8)
-        }
-    }
-    
-    func getIsSendButtonEnabled() -> Bool {
-        if ConversationViewModel.shared.chatId.isEmpty {
-            return ConversationGridViewModel.shared.selectedChats.count > 0 && !text.isEmpty
-        }
-        
-        return !text.isEmpty
-    }
-}
+//struct KeyboardView: View {
+//    
+//    @StateObject var viewModel = ConversationViewModel.shared
+//    @Binding var text: String
+//    
+//    let authViewModel = AuthViewModel.shared
+//    
+//    var body: some View {
+//        
+//        HStack(alignment: .bottom) {
+//            
+//            Button {
+//                
+//                UIApplication.shared.endEditing()
+//                
+//                withAnimation {
+//                    viewModel.showKeyboard = false
+//                    ConversationGridViewModel.shared.stopSelectingChats()
+//                }
+//                
+//            } label: {
+//                
+//                Image(systemName: "xmark.circle.fill")
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(width: 32, height: 32)
+//                    .foregroundColor(Color.bottomGray)
+//                    .transition(.move(edge: .trailing))
+//                
+//                
+//            }
+//            .padding(.leading, 16)
+//            .padding(.bottom, 8)
+//            
+//            MultilineTextField("Message...",text: $text, fontSize: 28, returnKey: .send) {
+//                
+//            }
+//            .padding(.vertical, 5)
+//            .padding(.horizontal, 3)
+//            
+//            Spacer()
+//            
+//            
+//            Button {
+//                if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+//                    
+//                    withAnimation(.linear(duration: 0.15)) {
+//                        
+//                        viewModel.sendMessage(text: text, type: .Text)
+//                        text = ""
+//                    }
+//                }
+//            } label: {
+//                
+//                Image(systemName: "arrow.up.circle.fill")
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(width: 32, height: 32)
+//                    .foregroundColor(Color.mainBlue)
+//                    .opacity(getIsSendButtonEnabled() ? 1 : 0.3)
+//                    .transition(.move(edge: .trailing))
+//                    .disabled(!getIsSendButtonEnabled())
+//                
+//            }
+//            .padding(.trailing, 16)
+//            .padding(.bottom, 8)
+//        }
+//    }
+//    
+//    func getIsSendButtonEnabled() -> Bool {
+//        if ConversationViewModel.shared.chatId.isEmpty {
+//            return ConversationGridViewModel.shared.selectedChats.count > 0 && !text.isEmpty
+//        }
+//        
+//        return !text.isEmpty
+//    }
+//}
 
 
 

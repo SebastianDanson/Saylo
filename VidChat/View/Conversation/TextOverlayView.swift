@@ -12,19 +12,20 @@ struct TextOverlayView: View {
     @StateObject var viewModel = TextOverlayViewModel.shared
     @State private var currentAmount = 0.0
     @State private var finalAmount = 1.0
-//    @State private var offset = CGSize.zero
     @State private var location: CGPoint = CGPoint(x: SCREEN_WIDTH/2, y: MESSAGE_HEIGHT/2 + TOP_PADDING_OFFSET)
-    @State private var color: Color = .white
+    @Binding var color: Color
     @GestureState private var fingerLocation: CGPoint? = nil
     @GestureState private var startLocation: CGPoint? = nil // 1
     let maxZoom = IS_SMALL_WIDTH ? 1.7 : 2
     
     var body: some View {
         
-        TextEditor(text: $viewModel.overlayText)
+        
+        MultilineTextField(text: $viewModel.overlayText, color: $color, fontSize: 32, returnKey: .done)
+            .frame(width: SCREEN_WIDTH - 80)
             .foregroundColor(color)
-            .font(Font.system(size: 64, weight: .semibold, design: .rounded))
-            .scaleEffect((finalAmount + currentAmount)/2)
+//            .font(Font.system(size: 64, weight: .semibold, design: .rounded))
+            .scaleEffect(finalAmount + currentAmount)
             .position(location)
             .gesture(
                 MagnificationGesture()
@@ -39,7 +40,7 @@ struct TextOverlayView: View {
                     .onEnded { amount in
                         finalAmount += currentAmount
                         currentAmount = 0
-                        viewModel.textMagnification = (finalAmount + currentAmount)
+                        setTextMagnification()
                     }
                     .simultaneously(with:  DragGesture()
                         .onChanged { value in
@@ -48,10 +49,13 @@ struct TextOverlayView: View {
                             startLocation = startLocation ?? location // 2
                         })
             )
+         
+        
     }
     
     func setTextMagnification() {
-        
+        viewModel.textMagnification = (finalAmount + currentAmount)
+
     }
     
     func updateLocation(dragGesture value: DragGesture.Value) {
@@ -81,11 +85,5 @@ struct TextOverlayView: View {
         
         let height = MESSAGE_HEIGHT/2 + TOP_PADDING_OFFSET
         viewModel.textLocationOffSet.height = 1 - self.location.y/height
-    }
-}
-
-struct TextOverlayView_Previews: PreviewProvider {
-    static var previews: some View {
-        TextOverlayView()
     }
 }

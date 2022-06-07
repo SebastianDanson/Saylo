@@ -12,29 +12,32 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     typealias UIViewType = UITextView
 
     @Binding var text: String
+    @Binding var color: Color
     @Binding var calculatedHeight: CGFloat
+    var fontSize: CGFloat
+    var returnKey: UIReturnKeyType
         
     var onDone: (() -> Void)?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
+        
         let textView = UITextView()
 
         textView.delegate = context.coordinator
 
         textView.isEditable = true
-        textView.font = UIFont.systemFont(ofSize: 16)
         textView.isSelectable = true
         textView.isUserInteractionEnabled = true
         textView.isScrollEnabled = false
         textView.textContainer.lineFragmentPadding = 0
         textView.textAlignment = .center
-//        textView.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
-        textView.returnKeyType = .default
         textView.backgroundColor = .clear
-        textView.font = UIFont.systemFont(ofSize: 28, weight: .medium)
-        textView.textColor = .white
+        textView.font = UIFont.rounded(ofSize: fontSize, weight: .medium)
+        
+        textView.textColor = TextOverlayViewModel.shared.fontColor
         textView.becomeFirstResponder()
-        textView.returnKeyType = .send
+        textView.returnKeyType = returnKey
+        
     
 //        textView.layer.borderColor = UIColor.borderGray.cgColor
 //        textView.layer.borderWidth = 0.9
@@ -58,12 +61,18 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 
     
     func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<UITextViewWrapper>) {
+        
         if uiView.text != self.text {
             uiView.text = self.text
         }
-        if uiView.window != nil, !uiView.isFirstResponder {
+        if uiView.window != nil, !uiView.isFirstResponder, returnKey == .send {
             uiView.becomeFirstResponder()
         }
+        
+        if returnKey == .done {
+            uiView.textColor = TextOverlayViewModel.shared.fontColor
+        }
+        
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
         uiView.centerVertically()
     }
@@ -78,16 +87,19 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(text: $text, height: $calculatedHeight, onDone: onDone)
+        return Coordinator(text: $text, height: $calculatedHeight, returnKey: returnKey, onDone: onDone)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
+        
         var text: Binding<String>
         var calculatedHeight: Binding<CGFloat>
+        var returnKey: UIReturnKeyType
         var onDone: (() -> Void)?
 
-        init(text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil) {
+        init(text: Binding<String>, height: Binding<CGFloat>, returnKey: UIReturnKeyType, onDone: (() -> Void)? = nil) {
             self.text = text
+            self.returnKey = returnKey
             self.calculatedHeight = height
             self.onDone = onDone
         }
@@ -106,6 +118,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
             if text == "\n" {
                 
+                if returnKey == .send {
                 MainViewModel.shared.selectedView = .Video
 
                 if !self.text.wrappedValue.isEmpty {
@@ -113,7 +126,9 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
                 }
                 
                 self.text.wrappedValue = ""
-//                textView.resignFirstResponder()
+                } else {
+                    textView.resignFirstResponder()
+                }
                 return false
             }
             
@@ -142,25 +157,37 @@ struct MultilineTextField: View {
     private var placeholder: String
     private var onCommit: (() -> Void)?
 
-    @Binding private var text: String
     @State private var dynamicHeight: CGFloat
     @State private var showingPlaceholder = false
-    
-    
-    init (_ placeholder: String = "", text: Binding<String>, height: CGFloat = 100, onCommit: (() -> Void)? = nil) {
+    @Binding private var text: String
+    @Binding private var color: Color
+
+    private var fontSize: CGFloat
+    private var returnKey: UIReturnKeyType
+
+    init (_ placeholder: String = "", text: Binding<String>, height: CGFloat = 100, color: Binding<Color> = .constant(.white), fontSize: CGFloat, returnKey: UIReturnKeyType, onCommit: (() -> Void)? = nil) {
         self.placeholder = placeholder
         self.onCommit = onCommit
-        self.dynamicHeight = height
+        self._dynamicHeight = State(initialValue: height)
+        self.fontSize = fontSize
+        self.returnKey = returnKey
         self._text = text
+        self._color = color
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
+    
     var body: some View {
         
-        let textviewwrapper = UITextViewWrapper(text: $text, calculatedHeight: $dynamicHeight, onDone: onCommit)
-           
+        let textviewwrapper = UITextViewWrapper(text: $text,
+                                                color: $color,
+                                                calculatedHeight: $dynamicHeight,
+                                                fontSize: fontSize,
+                                                returnKey: returnKey,
+                                                onDone: onCommit)
+
         textviewwrapper
-            .frame(height: SCREEN_WIDTH * 1.5)
+            .frame(height: self.returnKey == .send ? SCREEN_WIDTH * 1.5:dynamicHeight)
     
     }
 }
