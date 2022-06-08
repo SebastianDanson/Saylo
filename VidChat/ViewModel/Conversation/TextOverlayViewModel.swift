@@ -30,7 +30,7 @@ class TextOverlayViewModel: ObservableObject {
         //            let font = Font.system(size: 64, weight: .semibold, design: .rounded)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: UIColor.white,
+            .foregroundColor: fontColor,
         ]
         
         let attributedQuote = NSAttributedString(string: overlayText, attributes: attributes)

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MessageAdOnsView: View {
     
+    @StateObject var viewModel = MainViewModel.shared
+    
     var body: some View {
         
         HStack {
@@ -17,21 +19,30 @@ struct MessageAdOnsView: View {
                 
                 Spacer()
                 
-                VStack(spacing: 4) {
+                Button {
+                    withAnimation {
+                        MainViewModel.shared.showFilters.toggle()
+                    }
+                } label: {
                     
-                    Image(systemName: "camera.filters")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white)
-                        .frame(width: 25, height: 25)
-                    
-                    Text("Filters")
-                        .foregroundColor(.white)
-                        .font(Font.system(size: 11, weight: .medium))
+                    VStack(spacing: 4) {
+                        
+                        Image(systemName: "camera.filters")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(viewModel.showFilters ? Color(.systemBlue) : .white)
+                            .frame(width: 25, height: 25)
+                        
+                        Text("Filters")
+                            .foregroundColor(viewModel.showFilters ? Color(.systemBlue) : .white)
+                            .font(Font.system(size: 11, weight: .medium))
+                    }
                 }
                 
                 Button {
-                    MainViewModel.shared.showCaption.toggle()
+                    withAnimation {
+                        MainViewModel.shared.showCaption.toggle()
+                    }
                 } label: {
                     
                     VStack(spacing: 4) {
@@ -39,11 +50,11 @@ struct MessageAdOnsView: View {
                         Image(systemName: "character.bubble")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(.white)
+                            .foregroundColor(viewModel.showCaption ? Color(.systemBlue) : .white)
                             .frame(width: 25, height: 25)
                         
                         Text("Caption")
-                            .foregroundColor(.white)
+                            .foregroundColor(viewModel.showCaption ? Color(.systemBlue) : .white)
                             .font(Font.system(size: 11, weight: .medium))
                     }
                 }

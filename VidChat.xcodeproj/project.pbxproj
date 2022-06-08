@@ -48,6 +48,7 @@
 		0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */; };
 		0660EE5A279A0CA700704AFE /* UnreadMessagePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */; };
 		0666AACD27851C7900468D0F /* SelectUsersPopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */; };
+		066D59BE2850418A009A8C61 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066D59BD2850418A009A8C61 /* FiltersView.swift */; };
 		066FE60F27B62344001B1DC6 /* AllowNotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066FE60E27B62344001B1DC6 /* AllowNotificationsView.swift */; };
 		067FBB5E279BB7B600B2EA04 /* DialCountriesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FBB5D279BB7B600B2EA04 /* DialCountriesController.swift */; };
 		067FBB60279BB7DE00B2EA04 /* CountriesAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 067FBB5F279BB7DE00B2EA04 /* CountriesAdapter.swift */; };
@@ -252,6 +253,7 @@
 		0660EE572799F0B500704AFE /* UnreadMessagesScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesScrollView.swift; sourceTree = "<group>"; };
 		0660EE59279A0CA700704AFE /* UnreadMessagePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagePlayerView.swift; sourceTree = "<group>"; };
 		0666AACC27851C7900468D0F /* SelectUsersPopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUsersPopUpView.swift; sourceTree = "<group>"; };
+		066D59BD2850418A009A8C61 /* FiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
 		066FE60D27B621E1001B1DC6 /* Saylo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saylo-Bridging-Header.h"; sourceTree = "<group>"; };
 		066FE60E27B62344001B1DC6 /* AllowNotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowNotificationsView.swift; sourceTree = "<group>"; };
 		067FBB5D279BB7B600B2EA04 /* DialCountriesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialCountriesController.swift; sourceTree = "<group>"; };
@@ -884,6 +886,7 @@
 				06520C0A282D72E100C8FF1D /* TextColorView.swift */,
 				063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */,
 				068DA250284D96370034374E /* TextOverlayView.swift */,
+				066D59BD2850418A009A8C61 /* FiltersView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1135,6 +1138,7 @@
 				06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */,
 				06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */,
 				3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */,
+				066D59BE2850418A009A8C61 /* FiltersView.swift in Sources */,
 				06D027AD27D071A600A26869 /* PlaybackSlider.swift in Sources */,
 				0616EC0727928906006565FE /* NewConversationCell.swift in Sources */,
 				06E387C927EFFE6500D28714 /* LastPhotoView.swift in Sources */,

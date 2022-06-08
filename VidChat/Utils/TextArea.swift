@@ -113,6 +113,12 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 
         func textViewDidBeginEditing(_ textView: UITextView) {
             textView.centerVertically()
+            
+            if returnKey == .done {
+                withAnimation {
+                    MainViewModel.shared.showCaption = true
+                }
+            }
         }
         
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {

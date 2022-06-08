@@ -13,7 +13,8 @@ struct MainView: View {
     
     @StateObject var viewModel = MainViewModel.shared
     @StateObject var conversationViewModel = ConversationViewModel.shared
-    
+    @StateObject var textOverlayViewModel = TextOverlayViewModel.shared
+
     @State private var searchText = ""
     @State private var noteText = ""
     @State var isTyping = false
@@ -28,7 +29,7 @@ struct MainView: View {
     var body: some View {
         
         if !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
-           
+            
             
             ZStack(alignment: .center) {
                 
@@ -44,7 +45,7 @@ struct MainView: View {
                 //
                 //
                 //            }
-               LiveView(showStream: $conversationViewModel.isLive)
+                LiveView(showStream: $conversationViewModel.isLive)
                 
                 //Camera view shown when recording video or taking photo
                 if viewModel.showCamera() {
@@ -53,13 +54,14 @@ struct MainView: View {
                         cameraView
                             .onTapGesture(count: 2, perform: { switchCamera() })
                     }
-        
+                    
                 }
                 
-                if viewModel.showCaption {
+                if viewModel.showCaption || !textOverlayViewModel.overlayText.isEmpty {
                     TextOverlayView(color: $textColor)
                 }
-
+                
+                
                 // Voice view
                 Group {
                     
@@ -87,12 +89,22 @@ struct MainView: View {
                     VStack {
                         Spacer()
                         
-//                        UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
-//                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                        if !viewModel.showFilters && !viewModel.showCaption {
+                            UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
+                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                        }
                         
-                        TextColorView(selectedColor: $textColor)
-                            .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
-                            .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                        if viewModel.showCaption {
+                            TextColorView(selectedColor: $textColor)
+                                .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                        }
+                        
+                        if viewModel.showFilters {
+                            FiltersView()
+                                .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
+                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                        }
                         
                     }
                     
@@ -302,7 +314,7 @@ struct MainView: View {
                         SavedPopUp()
                             .padding(.bottom, MINI_MESSAGE_HEIGHT)
                     }
-         
+                    
                 }
             )
             .navigationBarHidden(true)
@@ -1151,7 +1163,7 @@ struct JoinCallLargeView: View {
                                 .frame(width: 26, height: 26)
                         }
                     }
-
+                    
                     Button {
                         ConversationViewModel.shared.setIsOnCall()
                     } label: {

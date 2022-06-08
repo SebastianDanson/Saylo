@@ -10,11 +10,55 @@ import CoreImage
 import CoreImage.CIFilterBuiltins
 import Vision
 
-enum Filter {
+enum Filter: CaseIterable {
     
-    case blur,  one, two, three, four
+    case blur, one, two, three, four
     
-    func applyFilter(toImage image: CIImage, filter: Filter, sampleBuffer: CMSampleBuffer) -> CIImage? {
+    var name: String {
+        
+        switch self {
+        case .blur:
+            return "blur"
+        case .one:
+            return "one"
+        case .two:
+            return "two"
+        case .three:
+            return "three"
+        case .four:
+            return "four"
+        }
+        
+    }
+    
+    var defaultImage: UIImage? {
+//        switch self {
+//        case .blur:
+//        let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge")
+//        let inputImage = CIImage(image: uiimage!)
+//        print("ciimage1", applyFilter(toImage: inputImage!, filter: .one))
+//        print("ciimage2", applyFilter(toImage: inputImage!, filter: .two))
+//        print("ciimage3", applyFilter(toImage: inputImage!, filter: .three))
+//        print("ciimage4", applyFilter(toImage: inputImage!, filter: .four))
+
+        guard let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge"),
+              let inputImage = CIImage(image: uiimage),
+              let ciimage = applyFilter(toImage: inputImage, filter: .one) else {return nil}
+        
+        return UIImage(ciImage: ciimage)
+        
+//        case .one:
+//            <#code#>
+//        case .two:
+//            <#code#>
+//        case .three:
+//            <#code#>
+//        case .four:
+//            <#code#>
+//        }
+    }
+    
+    func applyFilter(toImage image: CIImage, filter: Filter, sampleBuffer: CMSampleBuffer? = nil) -> CIImage? {
         
         switch filter {
             
@@ -59,10 +103,10 @@ enum Filter {
     }
     
     
-    private func applyBlurFilter(sampleBuffer: CMSampleBuffer) -> CIImage? {
+    private func applyBlurFilter(sampleBuffer: CMSampleBuffer?) -> CIImage? {
         
         
-        guard #available(iOS 15.0, *) else { return nil }
+        guard let sampleBuffer = sampleBuffer, #available(iOS 15.0, *) else { return nil }
         
         lazy var personSegmentationRequest: VNGeneratePersonSegmentationRequest = {
             let request = VNGeneratePersonSegmentationRequest()
