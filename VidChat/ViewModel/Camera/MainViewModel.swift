@@ -34,6 +34,7 @@ class MainViewModel: ObservableObject {
     @Published var showPhotosAlert = false
     @Published var showCaption = false
     @Published var showFilters = true
+    
     @Published var isSaving = false {
         didSet {
             if isSaving {

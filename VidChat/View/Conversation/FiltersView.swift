@@ -17,42 +17,13 @@ struct FiltersView: View {
             Color.darkgray
             
             VStack {
-                
-                HStack {
-                    
-                    Button {
-                        withAnimation {
-                            MainViewModel.shared.showFilters = false
-                        }
-                    } label: {
-                        Text("Clear")
-                            .foregroundColor(.white)
-                            .font(Font.system(size: 15, weight: .regular))
-                    }
-                    
-                    
-                    Spacer()
-                    
-                    Button {
-                        withAnimation {
-                            MainViewModel.shared.showFilters = false
-                        }
-                    } label: {
-                        Text("Done")
-                            .foregroundColor(.white)
-                            .font(Font.system(size: 15, weight: .semibold))
-                    }
-                    
-                }
-                .padding(.horizontal)
-                .padding(.top, 6)
-                
-                
+                                
+                Spacer()
                 
                 //                ScrollView(.horizontal, showsIndicators: false) {
                 
-                let spacing: CGFloat = IS_SMALL_WIDTH ? 12 : 14
-                let offset: CGFloat = CGFloat((filters.count-1)) * spacing + 32
+                let spacing: CGFloat = IS_SMALL_WIDTH ? 10 : 12
+                let offset: CGFloat = CGFloat((filters.count-1)) * spacing + 28
                 let width: CGFloat = (SCREEN_WIDTH - offset)/CGFloat((filters.count))
                 
                 HStack(spacing: spacing) {
@@ -60,19 +31,26 @@ struct FiltersView: View {
                     ForEach(Array(filters.enumerated()), id: \.1.hashValue) { i, filter in
                         
                         
-                        VStack(spacing: 4) {
-                            
-                            Image("filterBackgroundSmall")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: width , height: max(width,MINI_MESSAGE_HEIGHT * 0.55))
-                                .cornerRadius(6)
-                            
-                            Text(filter.name)
-                                .foregroundColor(.white)
-                                .font(Font.system(size: 12, weight: .medium, design: .rounded))
-                            
+                        Button {
+                            ConversationViewModel.shared.selectedFilter = filter
+                        } label: {
+                            VStack(spacing: 4) {
+                                
+                                //todos get rid of clear and done
+                                Image("filterBackgroundSmall")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: width , height: max(width,MINI_MESSAGE_HEIGHT * 0.7))
+                                    .cornerRadius(6)
+                                
+                                Text(filter.name)
+                                    .foregroundColor(.white)
+                                    .font(Font.system(size: 13, weight: .medium, design: .rounded))
+                                
+                            }
                         }
+
+                    
                         
                         
                         //                            Circle()
@@ -84,7 +62,7 @@ struct FiltersView: View {
                         //                                }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 14)
                 //                }
                 
                 Spacer()

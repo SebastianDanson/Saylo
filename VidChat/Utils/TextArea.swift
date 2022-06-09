@@ -117,6 +117,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             if returnKey == .done {
                 withAnimation {
                     MainViewModel.shared.showCaption = true
+                    MainViewModel.shared.showFilters = false
                 }
             }
         }

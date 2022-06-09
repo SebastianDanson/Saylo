@@ -22,6 +22,7 @@ struct MessageAdOnsView: View {
                 Button {
                     withAnimation {
                         MainViewModel.shared.showFilters.toggle()
+                        MainViewModel.shared.showCaption = false
                     }
                 } label: {
                     
@@ -42,6 +43,7 @@ struct MessageAdOnsView: View {
                 Button {
                     withAnimation {
                         MainViewModel.shared.showCaption.toggle()
+                        MainViewModel.shared.showFilters = false
                     }
                 } label: {
                     

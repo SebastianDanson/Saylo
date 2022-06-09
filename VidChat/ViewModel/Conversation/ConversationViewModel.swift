@@ -116,6 +116,7 @@ class ConversationViewModel: ObservableObject {
     var hasSelectedAssets = false
     var isShowingReactions = false
     var didCancelRecording = false
+    var selectedFilter: Filter?
     
     static let shared = ConversationViewModel()
     

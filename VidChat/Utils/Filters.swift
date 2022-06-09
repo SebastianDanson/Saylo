@@ -31,7 +31,7 @@ enum Filter: CaseIterable {
         
     }
     
-    var defaultImage: UIImage? {
+//    var defaultImage: UIImage? {
 //        switch self {
 //        case .blur:
 //        let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge")
@@ -41,11 +41,11 @@ enum Filter: CaseIterable {
 //        print("ciimage3", applyFilter(toImage: inputImage!, filter: .three))
 //        print("ciimage4", applyFilter(toImage: inputImage!, filter: .four))
 
-        guard let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge"),
-              let inputImage = CIImage(image: uiimage),
-              let ciimage = applyFilter(toImage: inputImage, filter: .one) else {return nil}
-        
-        return UIImage(ciImage: ciimage)
+//        guard let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge"),
+//              let inputImage = CIImage(image: uiimage),
+//              let ciimage = applyFilter(toImage: inputImage, filter: .one) else {return nil}
+//
+//        return UIImage(ciImage: ciimage)
         
 //        case .one:
 //            <#code#>
@@ -56,14 +56,14 @@ enum Filter: CaseIterable {
 //        case .four:
 //            <#code#>
 //        }
-    }
+//    }
     
-    func applyFilter(toImage image: CIImage, filter: Filter, sampleBuffer: CMSampleBuffer? = nil) -> CIImage? {
+    static func applyFilter(toImage image: CIImage, filter: Filter, sampleBuffer: CMSampleBuffer? = nil) -> CIImage? {
         
         switch filter {
             
         case .blur:
-           return applyBlurFilter(sampleBuffer: sampleBuffer)
+            return Filter.applyBlurFilter(sampleBuffer: sampleBuffer)
         case .one:
             let vibrance = CIFilter.vibrance()
             vibrance.amount = -0.8
@@ -103,7 +103,7 @@ enum Filter: CaseIterable {
     }
     
     
-    private func applyBlurFilter(sampleBuffer: CMSampleBuffer?) -> CIImage? {
+    static func applyBlurFilter(sampleBuffer: CMSampleBuffer?) -> CIImage? {
         
         
         guard let sampleBuffer = sampleBuffer, #available(iOS 15.0, *) else { return nil }
@@ -119,22 +119,33 @@ enum Filter: CaseIterable {
         let sequenceRequestHandler = VNSequenceRequestHandler()
         try? sequenceRequestHandler.perform([personSegmentationRequest],
                                             on: sampleBuffer,
-                                            orientation: .right)
+                                            orientation: .up)
         
         guard let resultPixelBuffer = personSegmentationRequest.results?.first?.pixelBuffer else { return nil }
         
+        
         let originalImage = CIImage(cvPixelBuffer: sampleBuffer.imageBuffer!)
 
-        var maskImage = CIImage(cvPixelBuffer: resultPixelBuffer).oriented(.left)
+        var maskImage = CIImage(cvPixelBuffer: resultPixelBuffer)
         
         let maxcomp = CIFilter.maximumComponent()
         maxcomp.inputImage = originalImage
         
         
         let filter = CIFilter.gaussianBlur()
-        filter.radius = 10
         filter.inputImage = originalImage
-        let newImage = filter.outputImage
+        var newImage = filter.outputImage
+        
+//        if let image = newImage {
+//            let scaleX = originalImage.extent.size.width / image.extent.size.width
+//            let scaleY = originalImage.extent.size.height / newImage.extent.size.height
+//
+//            let transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+//            newImage = newImage.transformed(by: transform)
+//        }
+     
+        
+        
         
         let scaleXForMask = originalImage.extent.width / maskImage.extent.width
         let scaleYForMask = originalImage.extent.height / maskImage.extent.height

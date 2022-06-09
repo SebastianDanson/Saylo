@@ -20,39 +20,7 @@ struct TextColorView: View {
             
             VStack {
                 
-                HStack {
-                    
-                    Button {
-                        withAnimation {
-                            MainViewModel.shared.showCaption = false
-                        }
-                        selectedColor = .white
-                        TextOverlayViewModel.shared.fontColor = .white
-                        TextOverlayViewModel.shared.overlayText = ""
-                    } label: {
-                        Text("Clear")
-                            .foregroundColor(.white)
-                            .font(Font.system(size: 15, weight: .regular))
-                    }
-
-
-                    Spacer()
-                    
-                    Button {
-                        withAnimation {
-                            MainViewModel.shared.showCaption = false
-                        }
-                    } label: {
-                        Text("Done")
-                            .foregroundColor(.white)
-                            .font(Font.system(size: 15, weight: .semibold))
-                    }
-
-                }
-                .padding(.horizontal)
-                .padding(.top, 6)
-                
-                
+                Spacer()
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     
@@ -71,7 +39,6 @@ struct TextColorView: View {
                     }
                     .padding(.horizontal)
                 }
-                .padding(.top, 4)
                 
                 Spacer()
             }
