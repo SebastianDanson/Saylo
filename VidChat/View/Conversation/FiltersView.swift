@@ -23,10 +23,28 @@ struct FiltersView: View {
                 //                ScrollView(.horizontal, showsIndicators: false) {
                 
                 let spacing: CGFloat = IS_SMALL_WIDTH ? 10 : 12
-                let offset: CGFloat = CGFloat((filters.count-1)) * spacing + 28
-                let width: CGFloat = (SCREEN_WIDTH - offset)/CGFloat((filters.count))
+                let offset: CGFloat = CGFloat((filters.count)) * spacing + 28
+                let width: CGFloat = (SCREEN_WIDTH - offset)/CGFloat((filters.count + 1))
                 
                 HStack(spacing: spacing) {
+                    
+                    Button {
+                        ConversationViewModel.shared.selectedFilter = nil
+                    } label: {
+                        
+                        VStack(spacing: 4) {
+                        
+                        Image("filterBackgroundNormal")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: width , height: max(width,MINI_MESSAGE_HEIGHT * 0.7))
+                            .cornerRadius(6)
+                            
+                            Text("natural")
+                                .foregroundColor(.white)
+                                .font(Font.system(size: 13, weight: .medium, design: .rounded))
+                        }
+                    }
                     
                     ForEach(Array(filters.enumerated()), id: \.1.hashValue) { i, filter in
                         
@@ -35,18 +53,18 @@ struct FiltersView: View {
                             ConversationViewModel.shared.selectedFilter = filter
                         } label: {
                             VStack(spacing: 4) {
-                                
-                                //todos get rid of clear and done
-                                Image("filterBackgroundSmall")
+                                                                
+                                Image(filter.imageName)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: width , height: max(width,MINI_MESSAGE_HEIGHT * 0.7))
                                     .cornerRadius(6)
                                 
+                
                                 Text(filter.name)
                                     .foregroundColor(.white)
                                     .font(Font.system(size: 13, weight: .medium, design: .rounded))
-                                
+//
                             }
                         }
 

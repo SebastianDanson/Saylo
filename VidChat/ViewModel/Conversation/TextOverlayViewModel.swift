@@ -26,7 +26,7 @@ class TextOverlayViewModel: ObservableObject {
         let scale = textMagnification
         
         // Text to image
-        let font = UIFont.rounded(ofSize: 166, weight: .semibold)
+        let font = UIFont.rounded(ofSize: 83, weight: .semibold)
         //            let font = Font.system(size: 64, weight: .semibold, design: .rounded)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,

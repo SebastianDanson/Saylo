@@ -33,7 +33,7 @@ class MainViewModel: ObservableObject {
     @Published var settingsChat: Chat?
     @Published var showPhotosAlert = false
     @Published var showCaption = false
-    @Published var showFilters = true
+    @Published var showFilters = false
     
     @Published var isSaving = false {
         didSet {

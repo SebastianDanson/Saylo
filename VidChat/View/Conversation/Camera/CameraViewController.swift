@@ -56,7 +56,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     var previewLayer: AVCaptureVideoPreviewLayer?
     var activeInput: AVCaptureDeviceInput!
     
-    
+    let context = CIContext(options: nil)
+
     //    let movieOutput = AVCaptureMovieFileOutput()
     //    let audioOutput = AVCaptureMovieFileOutput()
     
@@ -498,112 +499,45 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.videoWriter.startSession(atSourceTime: self.sessionAtSourceTime!)
         }
         
-        //
-        
-        
-        
-        
-        //            if let compositeImage = blend.outputImage {
-        //                DispatchQueue.main.async {
-        //                    self.imageView.image = UIImage(ciImage: blend.outputImage!)
-        //                }
-        //            }
-        
-        
-        
-        //        var filteredImage: UIImage?
         
         var pixelBuffer: CVPixelBuffer?
-        if let filter = ConversationViewModel.shared.selectedFilter {
+        if output == self.videoDataOutput, let filter = ConversationViewModel.shared.selectedFilter {
             
             if let pixelBuffer2 = CMSampleBufferGetImageBuffer(sampleBuffer) {
                 let cameraImage = CIImage(cvPixelBuffer: pixelBuffer2)
                 
                 if let filteredImage = Filter.applyFilter(toImage: cameraImage, filter: filter, sampleBuffer: sampleBuffer) {
-//                    previewLayer?.isHidden = true
                     DispatchQueue.main.async {
                         self.imageView.image = UIImage(ciImage: filteredImage)
                         self.previewLayer!.isHidden = true
                     }
+                    
+                    context.render(filteredImage, to: pixelBuffer2)
+                    pixelBuffer = pixelBuffer2
                 }
-                //            let textImageGenerator = CIFilter.textImageGenerator()
-                //            textImageGenerator.scaleFactor = 1
-                //
-                //
-                //            let attributes: [NSAttributedString.Key: Any] = [
-                //                .font: UIFont.systemFont(ofSize: 64, weight: .semibold),
-                //                .foregroundColor: UIColor.white,
-                //               ]
-                //            textImageGenerator.text = "TESTER"
-                //
-                //            textImageGenerator.
                 
                 
-                
-                
-                //            let attributedQuote = NSAttributedString(string: "General Kenobi", attributes: attributes)
-                //
-                //            textImageGenerator.setValue(attributedQuote, forKeyPath: "inputText")
-                
-                //             = textImageGenerator.outputImage
-                //
-                //            textImage = textImage!.transformed(by: CGAffineTransform(translationX: 200, y: 300))
-                //
-                //            let compose = CIFilter.sourceAtopCompositing()
-                //            compose.inputImage = textImage
-                //            compose.backgroundImage = cameraImage
-                
-                //            let ciimage = CIImage(data: image.TIFFRepresentation!)!
-                //            let uiImage = UIImage(ciImage: cameraImage).addText("HELLO WORLD", atPoint: CGPoint(x: SCREEN_WIDTH/2, y: MESSAGE_HEIGHT/2))
-                //            let newCiimage = textImage
-                //        let comicEffect = CIFilter(name: "CIComicEffect")
-                
-                //        comicEffect!.setValue(cameraImage, forKey: kCIInputImageKey)
-                //            let ciImage = comicEffect!.value(forKey: kCIOutputImageKey)
-                //            if let newCiimage = newCiimage {
-                //                let ciContext = CIContext(options: nil)
-                //                ciContext.render(newCiimage, to: pixelBuffer2)
-                //
-                //            let targetSize = CGSize(width: SCREEN_WIDTH, height: MESSAGE_HEIGHT)
-                //            let imageSize = newCiimage.extent.size
-                //
-                //            let widthFactor = targetSize.width / imageSize.width
-                //            let heightFactor = targetSize.height / imageSize.height
-                //            let scaleFactor = max(widthFactor, heightFactor)
-                //
-                //            // scale down, retaining the original's aspect ratio
-                //            let scaledImage = newCiimage.transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
-                //
-                //            // crop the center to match the target size
-                //            let croppedImage = scaledImage.cropped(to: scaledImage.extent)
-                //
-                //                DispatchQueue.main.async {
-                ////                    let context = CIContext()
-                ////                    let cropped = newCiimage.cropped(to: CGRect(x: 0, y: 0, width: SCREEN_WIDTH, height: MESSAGE_HEIGHT))
-                ////                    let final = context.createCGImage(cropped, from: cropped.extent)
-                //                    self.imageView.image = UIImage(ciImage: croppedImage)
-                //                }
-                ////            }
-                
-                //            if let image = cameraImage.imageBlackAndWhite() {
-                
-                //            }
-                //
-                //
-                //         filteredImage = UIImage(ciImage: comicEffect!.value(forKey: kCIOutputImageKey) as! CIImage)
-                pixelBuffer = pixelBuffer2
                 
             }
         } else {
             DispatchQueue.main.async {
                 self.previewLayer!.isHidden = false
             }
-//            previewLayer?.isHidden = false
+            
+            if !TextOverlayViewModel.shared.overlayText.isEmpty {
+                
+                if let pixelBuffer2 = CMSampleBufferGetImageBuffer(sampleBuffer) {
+                    
+                    let cameraImage = CIImage(cvPixelBuffer: pixelBuffer2)
+                    if let camerImageWithText = TextOverlayViewModel.shared.addText(toImage: cameraImage) {
+                        let context = CIContext(options: nil)
+                        context.render(camerImageWithText, to: pixelBuffer2)
+                        pixelBuffer = pixelBuffer2
+                    }
+                }
+            }
         }
         
-        //        DispatchQueue.main.async {
-        //            self.imageView.image = filteredImage
-        //        }
         
         if !MainViewModel.shared.isShowingPhotoCamera, output == self.videoDataOutput {
             
@@ -703,6 +637,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             kCVPixelBufferHeightKey as String: 160
         ]
         photoSettings.previewPhotoFormat = previewFormat
+        photoSettings.embedsPortraitEffectsMatteInPhoto = true
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
         connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
@@ -742,56 +677,15 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         
         videoWriter.finishWriting {
+            
             self.sessionAtSourceTime = nil
+            
             DispatchQueue.main.async {
                 
                 if showVideo {
                     
                     
-                    //                    let asset = AVAsset(url: self.outputURL)
-                    //                    let titleComposition = AVMutableVideoComposition(asset: asset) { request in
-                    //                    //Create a white shadow for the text
-                    //                    let whiteShadow = NSShadow()
-                    //                    whiteShadow.shadowBlurRadius = 5
-                    //                    whiteShadow.shadowColor = UIColor.white
-                    //                    let attributes = [
-                    //                      NSAttributedString.Key.foregroundColor : UIColor.blue,
-                    //                      NSAttributedString.Key.font : UIFont.systemFont(ofSize: 16),
-                    //                      NSAttributedString.Key.shadow : whiteShadow
-                    //                    ]
-                    //                    //Create an Attributed String
-                    //                    let waterfallText = NSAttributedString(string: "Waterfall!", attributes: attributes)
-                    //                    //Convert attributed string to a CIImage
-                    //                    let textFilter = CIFilter.attributedTextImageGenerator(inputText: waterfallText)!
-                    //
-                    //                        //Center text and move 200 px from the origin
-                    //                    //source image is 720 x 1280
-                    //                    let positionedText = textFilter.outputImage!.transformed(by: CGAffineTransform(translationX: (request.renderSize.width - textFilter.outputImage!.extent.width)/2, y: 200))
-                    //                    //Compose text over video image
-                    //                    request.finish(with: positionedText.composited(over: request.sourceImage), context: nil)
-                    //
-                    //
-                    //                    }
                     
-                    //                    guard let export = AVAssetExportSession(
-                    //                      asset: asset,
-                    //                      presetName: AVAssetExportPresetHighestQuality)
-                    //                      else {
-                    //                        print("Cannot create export session.")
-                    ////                        onComplete(nil)
-                    //                        return
-                    //                    }
-                    //
-                    //                    export.videoComposition = titleComposition
-                    //                    export.outputFileType = .mov
-                    //
-                    //                    let urlNew = self.getTempUrl()!
-                    //                    export.outputURL = urlNew
-                    
-                    //                    export.exportAsynchronously {
-                    //                      DispatchQueue.main.async {
-                    //                        switch export.status {
-                    //                        case .completed:
                     MainViewModel.shared.videoUrl = self.outputURL
                     //                    MainViewModel.shared.setVideoPlayer()
                     MainViewModel.shared.handleSend()
@@ -800,26 +694,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     if ConversationViewModel.shared.presentUsers.count > 1 {
                         ConversationViewModel.shared.setSendingLiveRecordingId(AuthViewModel.shared.getUserId())
                     }
-                    //                          onComplete(exportURL)
-                    //                        default:
-                    //                          print("Something went wrong during export.")
-                    //                          print(export.error ?? "unknown error")
-                    ////                          onComplete(nil)
-                    //                          break
-                    //                        }
-                    //                      }
-                    //                    }
                     
-                    //                    let waterFallItem = AVPlayerItem(asset: asset)
-                    //                    waterFallItem.videoComposition = titleComposition
-                    //                    let player = AVPlayer(playerItem: waterFallItem)
-                    //                    ConversationViewModel.shared.currentPlayer = player
-                    //                    player.play()
-                    //                    AVAssetExportSession(asset: player.currentItem!.asset, presetName: "test")?.exportAsynchronously {
-                    
-                    //                    }
-                    
-                    
+                    withAnimation {
+                        MainViewModel.shared.showCaption = false
+                        MainViewModel.shared.showFilters = false
+                    }
                     
                 } else {
                     MainViewModel.shared.videoUrl = nil
@@ -916,10 +795,18 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        //        MainViewModel.shared.isTakingPhoto = false
+
         if let imageData = photo.fileDataRepresentation() {
+            
             if let uiImage = UIImage(data: imageData){
-                MainViewModel.shared.photo = uiImage
+                
+                if !TextOverlayViewModel.shared.overlayText.isEmpty,
+                   let ciimage = CIImage(data: photo.fileDataRepresentation()!),
+                   let imageWithText = TextOverlayViewModel.shared.addText(toImage: ciimage) {
+                    MainViewModel.shared.photo = UIImage(ciImage: imageWithText)
+                } else {
+                    MainViewModel.shared.photo = uiImage
+                }
             }
         }
     }

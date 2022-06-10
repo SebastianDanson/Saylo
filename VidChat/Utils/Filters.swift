@@ -12,51 +12,40 @@ import Vision
 
 enum Filter: CaseIterable {
     
-    case blur, one, two, three, four
+    case blur, one, two, three
     
     var name: String {
         
         switch self {
         case .blur:
-            return "blur"
+            return "bg blur"
         case .one:
-            return "one"
+            return "vibrant"
         case .two:
-            return "two"
+            return "mello"
         case .three:
-            return "three"
-        case .four:
-            return "four"
+            return "dim"
+//        case .four:
+//            return "four"
         }
         
     }
     
-//    var defaultImage: UIImage? {
-//        switch self {
-//        case .blur:
-//        let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge")
-//        let inputImage = CIImage(image: uiimage!)
-//        print("ciimage1", applyFilter(toImage: inputImage!, filter: .one))
-//        print("ciimage2", applyFilter(toImage: inputImage!, filter: .two))
-//        print("ciimage3", applyFilter(toImage: inputImage!, filter: .three))
-//        print("ciimage4", applyFilter(toImage: inputImage!, filter: .four))
-
-//        guard let uiimage = UIImage(named: IS_SMALL_PHONE ? "filterBackgroundSmall" : "filterBackgroundLarge"),
-//              let inputImage = CIImage(image: uiimage),
-//              let ciimage = applyFilter(toImage: inputImage, filter: .one) else {return nil}
-//
-//        return UIImage(ciImage: ciimage)
+    var imageName: String {
         
-//        case .one:
-//            <#code#>
-//        case .two:
-//            <#code#>
-//        case .three:
-//            <#code#>
-//        case .four:
-//            <#code#>
-//        }
-//    }
+        switch self {
+        case .blur:
+            return "filterBackgroundBlurred"
+        case .one:
+            return "filterBackgroundPositiveVibrance"
+        case .two:
+            return "filterBackgroundGamma"
+        case .three:
+            return "filterBackgroundNegativeVibrance"
+        }
+        
+    }
+    
     
     static func applyFilter(toImage image: CIImage, filter: Filter, sampleBuffer: CMSampleBuffer? = nil) -> CIImage? {
         
@@ -66,7 +55,7 @@ enum Filter: CaseIterable {
             return Filter.applyBlurFilter(sampleBuffer: sampleBuffer)
         case .one:
             let vibrance = CIFilter.vibrance()
-            vibrance.amount = -0.8
+            vibrance.amount = 1
             vibrance.inputImage = image
             return vibrance.outputImage
         case .two:
@@ -75,18 +64,23 @@ enum Filter: CaseIterable {
             gamma.inputImage = image
             return gamma.outputImage
         case .three:
-            let colorControls = CIFilter.colorControls()
-            colorControls.brightness = 0
-            colorControls.contrast = 0.95
-            colorControls.saturation = 1.2
-            colorControls.inputImage = image
-            return colorControls.outputImage
-        case .four:
-            let temperatureAndTint = CIFilter.temperatureAndTint()
-            temperatureAndTint.neutral = CIVector.init(x: 5500, y: 0)
-            temperatureAndTint.targetNeutral = CIVector.init(x: 0, y: 0)
-            temperatureAndTint.inputImage = image
-            return temperatureAndTint.outputImage
+//            let colorControls = CIFilter.colorControls()
+//            colorControls.brightness = 0
+//            colorControls.contrast = 0.95
+//            colorControls.saturation = 1.2
+//            colorControls.inputImage = image
+//            return colorControls.outputImage
+            
+            let vibrance = CIFilter.vibrance()
+            vibrance.amount = -1.5
+            vibrance.inputImage = image
+            return vibrance.outputImage
+//        case .four:
+//            let temperatureAndTint = CIFilter.temperatureAndTint()
+//            temperatureAndTint.neutral = CIVector.init(x: 5500, y: 0)
+//            temperatureAndTint.targetNeutral = CIVector.init(x: 0, y: 0)
+//            temperatureAndTint.inputImage = image
+//            return temperatureAndTint.outputImage
         }
         
 //        let textImageGenerator = CIFilter.textImageGenerator()
@@ -134,7 +128,7 @@ enum Filter: CaseIterable {
         
         let filter = CIFilter.gaussianBlur()
         filter.inputImage = originalImage
-        var newImage = filter.outputImage
+        var newImage = filter.outputImage?.cropped(to: originalImage.extent)
         
 //        if let image = newImage {
 //            let scaleX = originalImage.extent.size.width / image.extent.size.width

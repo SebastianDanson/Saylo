@@ -10,6 +10,7 @@ import SwiftUI
 struct MessageAdOnsView: View {
     
     @StateObject var viewModel = MainViewModel.shared
+    @Binding var selectedFilter: Filter?
     
     var body: some View {
         
@@ -31,11 +32,11 @@ struct MessageAdOnsView: View {
                         Image(systemName: "camera.filters")
                             .resizable()
                             .scaledToFit()
-                            .foregroundColor(viewModel.showFilters ? Color(.systemBlue) : .white)
+                            .foregroundColor(getFilterIconColor())
                             .frame(width: 25, height: 25)
                         
-                        Text("Filters")
-                            .foregroundColor(viewModel.showFilters ? Color(.systemBlue) : .white)
+                        Text(getFilterText())
+                            .foregroundColor(getFilterIconColor())
                             .font(Font.system(size: 11, weight: .medium))
                     }
                 }
@@ -70,10 +71,28 @@ struct MessageAdOnsView: View {
         .padding(.bottom, TOP_PADDING_OFFSET)
         .padding(.trailing, 8)
     }
-}
-
-struct MessageAdOnsView_Previews: PreviewProvider {
-    static var previews: some View {
-        MessageAdOnsView()
+    
+    func getFilterIconColor() -> Color {
+        
+        if viewModel.showFilters {
+            return Color(.systemBlue)
+        }
+        
+        return  selectedFilter == nil ? .white : Color(.systemPurple)
+    }
+    
+    func getFilterText() -> String {
+        
+        if let selectedFilter = selectedFilter {
+            return selectedFilter.name
+        }
+        
+        return "Filters"
     }
 }
+
+//struct MessageAdOnsView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MessageAdOnsView()
+//    }
+//}

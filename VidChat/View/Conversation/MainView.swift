@@ -292,7 +292,7 @@ struct MainView: View {
                 
                 ZStack {
                     
-                    MessageAdOnsView()
+                    MessageAdOnsView(selectedFilter: $conversationViewModel.selectedFilter)
                     //NavView
                     //                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
                     //
