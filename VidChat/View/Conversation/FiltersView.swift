@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FiltersView: View {
     
-    var filters = Filter.allCases
+    var filters = Filter.getAvailableFilters()
     
     var body: some View {
         ZStack {
@@ -48,11 +48,11 @@ struct FiltersView: View {
                     
                     ForEach(Array(filters.enumerated()), id: \.1.hashValue) { i, filter in
                         
-                        
                         Button {
                             ConversationViewModel.shared.selectedFilter = filter
                         } label: {
                             VStack(spacing: 4) {
+                                
                                                                 
                                 Image(filter.imageName)
                                     .resizable()

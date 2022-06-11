@@ -11,7 +11,7 @@ struct MessageAdOnsView: View {
     
     @StateObject var viewModel = MainViewModel.shared
     @Binding var selectedFilter: Filter?
-    
+
     var body: some View {
         
         HStack {
@@ -50,8 +50,9 @@ struct MessageAdOnsView: View {
                     
                     VStack(spacing: 4) {
                         
-                        Image(systemName: "character.bubble")
+                        Image("caption")
                             .resizable()
+                            .renderingMode(.template)
                             .scaledToFit()
                             .foregroundColor(viewModel.showCaption ? Color(.systemBlue) : .white)
                             .frame(width: 25, height: 25)
@@ -78,10 +79,14 @@ struct MessageAdOnsView: View {
             return Color(.systemBlue)
         }
         
-        return  selectedFilter == nil ? .white : Color(.systemPurple)
+        return selectedFilter == nil ? .white : Color(.systemPurple)
     }
     
     func getFilterText() -> String {
+        
+        if viewModel.showFilters {
+            return "Filters"
+        }
         
         if let selectedFilter = selectedFilter {
             return selectedFilter.name

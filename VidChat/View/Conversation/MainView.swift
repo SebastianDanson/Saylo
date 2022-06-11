@@ -292,16 +292,10 @@ struct MainView: View {
                 
                 ZStack {
                     
-                    MessageAdOnsView(selectedFilter: $conversationViewModel.selectedFilter)
-                    //NavView
-                    //                if !viewModel.isRecording && viewModel.selectedView != .Note && viewModel.selectedView != .Photo && viewModel.selectedView != .Saylo && !viewModel.showNewChat && !viewModel.isCalling && !viewModel.showAddFriends && viewModel.settingsChat == nil{
-                    //
-                    //                    VStack {
-                    //                        NavView(searchText: $searchText)
-                    //                        Spacer()
-                    //                    }
-                    //
-                    //                } else
+                    if viewModel.showCamera() {
+                        MessageAdOnsView(selectedFilter: $conversationViewModel.selectedFilter)
+                    }
+        
                     if viewModel.isRecording {
                         VStack {
                             RecordTimerView()

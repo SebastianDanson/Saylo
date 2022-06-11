@@ -14,80 +14,80 @@ import gRPC_Core
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     class var shared: AppDelegate! {
         return UIApplication.shared.delegate as? AppDelegate
     }
-
+    
     let pushRegistry = PKPushRegistry(queue: .main)
     let callManager = CallManager.shared
     var providerDelegate: ProviderDelegate?
-
+    
     // MARK: - UIApplicationDelegate
-
+    
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         pushRegistry.delegate = self
         pushRegistry.desiredPushTypes = [.voIP]
-
+        
         providerDelegate = ProviderDelegate(callManager: callManager)
         
         FirebaseApp.configure()
-  
-        Flurry.startSession("WFHSSXFYSQFPR8SPM3ZQ", with: FlurrySessionBuilder
-           .init()
-           .withCrashReporting(true)
-           .withLogLevel(FlurryLogLevelAll))
         
-//        let audioSession = AVAudioSession.sharedInstance()
-//            do {
-//                // Set the audio session category, mode, and options.
-//                try audioSession.setCategory(.playAndRecord,  options: [.mixWithOthers,.defaultToSpeaker,.allowBluetooth])
-//                try audioSession.setActive(true)
-//            } catch {
-//                print("Failed to set audio session category.")
-//            }
+        Flurry.startSession("WFHSSXFYSQFPR8SPM3ZQ", with: FlurrySessionBuilder
+            .init()
+            .withCrashReporting(true)
+            .withLogLevel(FlurryLogLevelAll))
+        
+        //        let audioSession = AVAudioSession.sharedInstance()
+        //            do {
+        //                // Set the audio session category, mode, and options.
+        //                try audioSession.setCategory(.playAndRecord,  options: [.mixWithOthers,.defaultToSpeaker,.allowBluetooth])
+        //                try audioSession.setActive(true)
+        //            } catch {
+        //                print("Failed to set audio session category.")
+        //            }
         
         if Auth.auth().currentUser != nil {
             askToSendNotifications {}
         }
         
-//        try! Auth.auth().signOut()
+        //        try! Auth.auth().signOut()
         
         return true
     }
-
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        
         guard let handle = url.startCallHandle else {
             print("Could not determine start call handle from URL: \(url)")
             return false
         }
-
+        
         callManager.startCall(handle: handle)
         return true
     }
-
+    
     private func application(_ application: UIApplication,
                              continue userActivity: NSUserActivity,
                              restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-
+        
         guard let handle = userActivity.startCallHandle else {
             print("Could not determine start call handle from user activity: \(userActivity)")
             return false
         }
-
+        
         guard let video = userActivity.video else {
             print("Could not determine video from user activity: \(userActivity)")
             return false
         }
-
+        
         callManager.startCall(handle: handle, video: video)
         return true
     }
-
+    
     // MARK: - UISceneSession Lifecycle
-
+    
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -98,56 +98,56 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return UIInterfaceOrientationMask.portrait
-      }
-
+    }
+    
 }
 
 // MARK: - PKPushRegistryDelegate
 extension AppDelegate: PKPushRegistryDelegate {
-
+    
     func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         let token = credentials.token.map { String(format: "%02.2hhx", $0) }.joined()
         print("voip token = \(token)")
         let uid = Auth.auth().currentUser?.uid
-
+        
         if let uid = uid  {
             COLLECTION_USERS.document(uid).updateData(["pushKitToken" : token])
         }
     }
-
+    
     func pushRegistry(_ registry: PKPushRegistry,
                       didReceiveIncomingPushWith payload: PKPushPayload,
                       for type: PKPushType, completion: @escaping () -> Void) {
-     
+        
         
         let data = payload.dictionaryPayload["data"] as? [String:Any] ?? [String:Any]()
         print(data, "DATA")
         defer {
             completion()
         }
-
-//        guard type == .voIP,
-//            let uuidString = payload.dictionaryPayload["UUID"] as? String,
-//            let handle = payload.dictionaryPayload["handle"] as? String,
-//            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
-//            let uuid = UUID(uuidString: uuidString)
-//            else {
-//                return
-//        }
+        
+        //        guard type == .voIP,
+        //            let uuidString = payload.dictionaryPayload["UUID"] as? String,
+        //            let handle = payload.dictionaryPayload["handle"] as? String,
+        //            let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
+        //            let uuid = UUID(uuidString: uuidString)
+        //            else {
+        //                return
+        //        }
         
         guard type == .voIP,
-            let uuidString = data["UUID"] as? String,
-            let handle = data["handle"] as? String,
-            let hasVideo = data["hasVideo"] as? Bool,
-            let uuid = UUID(uuidString: uuidString)
-            else {
-                return
+              let uuidString = data["UUID"] as? String,
+              let handle = data["handle"] as? String,
+              let hasVideo = data["hasVideo"] as? Bool,
+              let uuid = UUID(uuidString: uuidString)
+        else {
+            return
         }
         //let backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-
-//        AppDelegate.shared.displayIncomingCall(uuid: UUID(), handle: handle, hasVideo: hasVideo) { _ in
-//            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
-//        }
+        
+        //        AppDelegate.shared.displayIncomingCall(uuid: UUID(), handle: handle, hasVideo: hasVideo) { _ in
+        //            UIApplication.shared.endBackgroundTask(backgroundTaskIdentifier)
+        //        }
         displayIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
@@ -156,16 +156,16 @@ extension AppDelegate: PKPushRegistryDelegate {
             }
         }
     }
-
+    
     // MARK: - PKPushRegistryDelegate Helper
-
+    
     /// Display the incoming call to the user.
     func displayIncomingCall(uuid: UUID, handle: String, hasVideo: Bool = false, completion: ((Error?) -> Void)? = nil) {
         providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: completion)
-       
+        
     }
     
-
+    
 }
 
 
@@ -186,7 +186,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
     }
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-
+        
         if let fcmToken = fcmToken {
             
             let dataDict:[String: String] = ["token": fcmToken ?? ""]
@@ -217,7 +217,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         
         let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
         let acceptedFriendRequest = data?["acceptedFriendRequest"] as? Bool ?? false
-
+        
         let fromCurrentUser = AuthViewModel.shared.currentUser?.id == userId
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
@@ -239,7 +239,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                 ConversationGridViewModel.shared.fetchConversations(updateFriendsView: true)
             }
         }
-    
+        
         if !fromCurrentUser {
             
             if let chatId = chatId, !chatId.isEmpty {
@@ -257,10 +257,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                             
                             ConversationViewModel.shared.lastSendingRecordingId = ""
                             //Todo scroll to the circular loadin animation when waiting for live stream to be uploaded
-                          
+                            
                         }
                     }
-                }   
+                }
             }
             
             completionHandler([.badge, .banner])
@@ -277,18 +277,18 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         
         let data = userInfo["data"] as? [String:Any]
         let chatId = data?["chatId"] as? String
-//        let chatId = data?["chatId"] as? String
+        //        let chatId = data?["chatId"] as? String
         let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
         
-//        if let chatid = chatId {
-//
-//            let chats = ConversationGridViewModel.shared.getCachedChats()
-//
-//            if let chat = chats.first(where: { $0.id == chatid }) {
-//                ConversationViewModel.shared.setChat(chat: chat)
-//                ConversationGridViewModel.shared.showConversation = true
-//            }
-//        } else
+        //        if let chatid = chatId {
+        //
+        //            let chats = ConversationGridViewModel.shared.getCachedChats()
+        //
+        //            if let chat = chats.first(where: { $0.id == chatid }) {
+        //                ConversationViewModel.shared.setChat(chat: chat)
+        //                ConversationGridViewModel.shared.showConversation = true
+        //            }
+        //        } else
         
         if isFriendRequest {
             ConversationGridViewModel.shared.showAddFriends = true
@@ -296,27 +296,35 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         
         
         if let chatId = chatId {
-            
-            MainViewModel.shared.selectedView = .Saylo
-            ConversationGridViewModel.shared.showCachedChats()
-            if let updatedChat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId }) {
-                updatedChat.hasUnreadMessage = true
-                ConversationViewModel.shared.setChat(chat: updatedChat)
-                ConversationGridViewModel.shared.showConversation = true
+            DispatchQueue.main.async {
                 
-//                COLLECTION_CONVERSATIONS.document(updatedChat.id).getDocument { snapshot, _ in
-//                    if let data = snapshot?.data() {
-//                        let chat = Chat(dictionary: data, id: updatedChat.id)
-//                        
-//                    }
-//                }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                    ConversationViewModel.shared.showMessage(atIndex: updatedChat.lastReadMessageIndex)
-//                }
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId})?.hasUnreadMessage = false
+                MainViewModel.shared.selectedView = .Saylo
+                ConversationGridViewModel.shared.showCachedChats()
+                
+                if let updatedChat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId }) {
+                    updatedChat.hasUnreadMessage = true
+                    ConversationGridViewModel.shared.showConversation = true
+                    
+                    ConversationViewModel.shared.setChat(chat: updatedChat)
+                    
+                    
+                    
+                    //                COLLECTION_CONVERSATIONS.document(updatedChat.id).getDocument { snapshot, _ in
+                    //                    if let data = snapshot?.data() {
+                    //                        let chat = Chat(dictionary: data, id: updatedChat.id)
+                    //
+                    //                    }
+                    //                }
+                    //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    //                    ConversationViewModel.shared.showMessage(atIndex: updatedChat.lastReadMessageIndex)
+                    //                }
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId})?.hasUnreadMessage = false
+                }
+                
+//                MainViewModel.shared.startRunning()
             }
         }
         

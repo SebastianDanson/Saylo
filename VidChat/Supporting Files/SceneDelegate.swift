@@ -27,6 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.makeKeyAndVisible()
         }
     }
+    
     ////
     func sceneWillEnterForeground(_ scene: UIScene) {
         
@@ -34,7 +35,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
             let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
-            
             
             if newMessagesArray.count > 0 {
                 ConversationGridViewModel.shared.hasUnreadMessages = true
@@ -44,6 +44,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         MainViewModel.shared.chatsViewDragOffset = .zero
         ConversationGridViewModel.shared.showCachedChats()
         ConversationGridViewModel.shared.updateFriendsChats()
+
+        if let selectedFilterName = UserDefaults.standard.string(forKey: "selectedFilter") {
+            ConversationViewModel.shared.selectedFilter = Filter.allCases.first(where: {$0.name == selectedFilterName})
+        }
 
 
     }
@@ -76,22 +80,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func sceneWillResignActive(_ scene: UIScene) {
         
-        if let chat = ConversationViewModel.shared.chat {
-            ConversationService.updateLastVisited(forChat: chat)
-        }
         
         if ConversationViewModel.shared.showCamera {
             MainViewModel.shared.cancelRecording()
         }
-        
-        //        MainViewModel.shared.audioRecorder.s
-        
+                
         ConversationGridViewModel.shared.setChatCache()
         ConversationViewModel.shared.cleanNotificationsArray()
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set([[String:Any]](), forKey: "messages")
-        
         
         ConversationViewModel.shared.removeChat()
         ConversationGridViewModel.shared.showConversation = false
@@ -108,6 +106,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        ConversationViewModel.shared.removeChat()
+    }
     
     //    func sceneWillResignActive(_ scene: UIScene) {
     //

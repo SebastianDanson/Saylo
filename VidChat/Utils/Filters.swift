@@ -12,19 +12,21 @@ import Vision
 
 enum Filter: CaseIterable {
     
-    case blur, one, two, three
+    case blur, positiveVibrance, saturated, gamma, negativeVibrance
     
     var name: String {
         
         switch self {
         case .blur:
             return "bg blur"
-        case .one:
+        case .positiveVibrance:
             return "vibrant"
-        case .two:
+        case .gamma:
             return "mello"
-        case .three:
+        case .negativeVibrance:
             return "dim"
+        case .saturated:
+            return "warm"
 //        case .four:
 //            return "four"
         }
@@ -36,14 +38,29 @@ enum Filter: CaseIterable {
         switch self {
         case .blur:
             return "filterBackgroundBlurred"
-        case .one:
+        case .positiveVibrance:
             return "filterBackgroundPositiveVibrance"
-        case .two:
+        case .gamma:
             return "filterBackgroundGamma"
-        case .three:
+        case .saturated:
+            return "filterBackgroundSaturated"
+        case .negativeVibrance:
             return "filterBackgroundNegativeVibrance"
         }
         
+    }
+    
+    static func getAvailableFilters() -> [Filter] {
+            
+        //The blur filter isn't available unless iOS 15 or later, so if not available add negative vibrance filter instead
+        var filters = Filter.allCases.filter({$0 != Filter.blur && $0 != Filter.negativeVibrance })
+        if #available(iOS 15.0, *){
+            filters.insert(Filter.blur, at: 0)
+        } else {
+            filters.append(Filter.negativeVibrance)
+        }
+        
+        return filters
     }
     
     
@@ -53,26 +70,26 @@ enum Filter: CaseIterable {
             
         case .blur:
             return Filter.applyBlurFilter(sampleBuffer: sampleBuffer)
-        case .one:
+        case .positiveVibrance:
             let vibrance = CIFilter.vibrance()
-            vibrance.amount = 1
+            vibrance.amount = 0.5
             vibrance.inputImage = image
             return vibrance.outputImage
-        case .two:
+        case .gamma:
             let gamma = CIFilter.gammaAdjust()
-            gamma.power = 0.8
+            gamma.power = 0.85
             gamma.inputImage = image
             return gamma.outputImage
-        case .three:
-//            let colorControls = CIFilter.colorControls()
-//            colorControls.brightness = 0
-//            colorControls.contrast = 0.95
-//            colorControls.saturation = 1.2
-//            colorControls.inputImage = image
-//            return colorControls.outputImage
-            
+        case .saturated:
+            let colorControls = CIFilter.colorControls()
+            colorControls.brightness = 0
+            colorControls.contrast = 0.95
+            colorControls.saturation = 1.2
+            colorControls.inputImage = image
+            return colorControls.outputImage
+        case .negativeVibrance:
             let vibrance = CIFilter.vibrance()
-            vibrance.amount = -1.5
+            vibrance.amount = -0.3
             vibrance.inputImage = image
             return vibrance.outputImage
 //        case .four:
@@ -82,17 +99,7 @@ enum Filter: CaseIterable {
 //            temperatureAndTint.inputImage = image
 //            return temperatureAndTint.outputImage
         }
-        
-//        let textImageGenerator = CIFilter.textImageGenerator()
-//        textImageGenerator.text = "TESTER"
-//        textImageGenerator.scaleFactor = 1
-//        textImageGenerator.fontSize = 16
-//        let textImage = textImageGenerator.outputImage
-//        
-//        let compose = CIFilter.sourceAtopCompositing()
-//        compose.inputImage = textImage
-//        compose.backgroundImage = image
-//        return compose.outputImage
+ 
         
     }
     
@@ -128,18 +135,7 @@ enum Filter: CaseIterable {
         
         let filter = CIFilter.gaussianBlur()
         filter.inputImage = originalImage
-        var newImage = filter.outputImage?.cropped(to: originalImage.extent)
-        
-//        if let image = newImage {
-//            let scaleX = originalImage.extent.size.width / image.extent.size.width
-//            let scaleY = originalImage.extent.size.height / newImage.extent.size.height
-//
-//            let transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-//            newImage = newImage.transformed(by: transform)
-//        }
-     
-        
-        
+        let newImage = filter.outputImage?.cropped(to: originalImage.extent)
         
         let scaleXForMask = originalImage.extent.width / maskImage.extent.width
         let scaleYForMask = originalImage.extent.height / maskImage.extent.height

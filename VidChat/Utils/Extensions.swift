@@ -334,13 +334,13 @@ extension TimeInterval {
         String(format:"%d:%02d", minute, second)
     }
     var hour: Int {
-        Int((self/3600).truncatingRemainder(dividingBy: 3600))
+        self == 0 ? 0 : Int((self/3600).truncatingRemainder(dividingBy: 3600))
     }
     var minute: Int {
-        Int((self/60).truncatingRemainder(dividingBy: 60))
+        self == 0 ? 0 : Int((self/60).truncatingRemainder(dividingBy: 60))
     }
     var second: Int {
-        Int(truncatingRemainder(dividingBy: 60))
+        self == 0 ? 0 : Int(truncatingRemainder(dividingBy: 60))
     }
 }
 

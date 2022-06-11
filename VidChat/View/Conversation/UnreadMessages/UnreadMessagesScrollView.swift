@@ -21,7 +21,6 @@ struct UnreadMessagesScrollView: View {
         ZStack(alignment: .top) {
             
             let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
-            
             if messages.count > 0 {
                 //
                 //                if IS_SMALL_PHONE {
@@ -153,20 +152,25 @@ struct UnreadMessagesScrollView: View {
                                         ,alignment: .topLeading
                                     )
                                     .onAppear {
-                                        reader.scrollTo(messages[messages.count - 1].id, anchor: .trailing)
+                                        if messages.count > 0 {
+                                            reader.scrollTo(messages[messages.count - 1].id, anchor: .trailing)
+                                        }
                                     }
                                 }
                                 .overlay(
                                     
                                     ZStack {
-                                                                                
+                                        //
                                         if i == messages.count - 1 {
                                             MessageSendingView(isSending: $viewModel.isSending, hasSent: $viewModel.hasSent)
                                         }
                                         
                                         
-                                        let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[i].isSaved : $viewModel.messages[i].isSaved
-                                        SaveView(showAlert: $showAlert, isSaved: isSaved, index: i)
+//                                        if viewModel.messages.count > 0 {
+//                                            let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[i].isSaved : $viewModel.messages[i].isSaved
+                                        SaveView(showAlert: $showAlert, isSaved: messages[i].isSaved, index: i)
+//                                        }
+                                        
                                     }
                                     
                                 )
@@ -307,12 +311,12 @@ struct CircularLoadingAnimationView: View {
 
 struct SaveView: View {
 
-    @Binding var isSaved: Bool
+    var isSaved: Bool
     @Binding var showAlert: Bool
     let index: Int
 
-    init(showAlert: Binding<Bool>, isSaved: Binding<Bool>, index: Int) {
-        self._isSaved = isSaved
+    init(showAlert: Binding<Bool>, isSaved: Bool, index: Int) {
+        self.isSaved = isSaved
         self._showAlert = showAlert
         self.index = index
     }

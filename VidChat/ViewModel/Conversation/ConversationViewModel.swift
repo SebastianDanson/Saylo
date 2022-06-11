@@ -116,7 +116,11 @@ class ConversationViewModel: ObservableObject {
     var hasSelectedAssets = false
     var isShowingReactions = false
     var didCancelRecording = false
-    var selectedFilter: Filter?
+    var selectedFilter: Filter? {
+        didSet {
+            UserDefaults.standard.set(selectedFilter?.name ?? "", forKey: "selectedFilter")
+        }
+    }
     
     static let shared = ConversationViewModel()
     
@@ -147,7 +151,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func setChat(chat: Chat) {
-        
+        print(chat.id)
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
@@ -190,15 +194,14 @@ class ConversationViewModel: ObservableObject {
             }
         }
         
+        MainViewModel.shared.showFilters = false
+        MainViewModel.shared.showCaption = false
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
         self.presentUsers.removeAll()
         self.liveUsers.removeAll()
         self.hideLiveView()
-        
-        //        self.chat = nil
-        //        self.chatId = ""
-        //        self.messages = [Message]()
+     
         self.didCancelRecording = false
         self.removeListener()
     }
@@ -352,7 +355,7 @@ class ConversationViewModel: ObservableObject {
         
         var data = [String:Any]()
         
-        let content = currentUser.firstName + " is talking to you"
+        let content = currentUser.firstName + " is talking \(chat.isDm ? "to you" :"")"
         let body = "Tap to watch live"
         
         if chat.isDm {
@@ -369,6 +372,9 @@ class ConversationViewModel: ObservableObject {
             data["body"] = body
         }
         
+        data["userId"] = currentUser.id
+        data["metaData"] = ["userId": currentUser.id]
+
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
@@ -668,11 +674,13 @@ class ConversationViewModel: ObservableObject {
     }
     
     func deleteMessage(message: Message) {
+        if ConversationViewModel.shared.messages.count == 1 {
+            MainViewModel.shared.selectedView = .Video
+        }
         ConversationService.deleteMessage(toDocWithId: message.chatId, messageId: message.id)
         withAnimation {
             MainViewModel.shared.selectedMessage = nil
         }
-        self.index -= 1
     }
     
     func addListener() {
@@ -727,7 +735,9 @@ class ConversationViewModel: ObservableObject {
                         self.lastSendingRecordingId = self.sendingLiveRecordingId
                     }
                     
-                    self.messages = messages
+                    DispatchQueue.main.async {
+                        self.messages = messages
+                    }
                     
                     //TOdo don't automatically show message if they watched live
                     //Todo automatically watch live video so they don;t have to press on the live users view thingy

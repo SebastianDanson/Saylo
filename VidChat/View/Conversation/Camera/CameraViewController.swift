@@ -57,12 +57,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     var activeInput: AVCaptureDeviceInput!
     
     let context = CIContext(options: nil)
-
+    
     //    let movieOutput = AVCaptureMovieFileOutput()
     //    let audioOutput = AVCaptureMovieFileOutput()
     
     let photoOutput = AVCapturePhotoOutput()
-    var hasSwitchedCamera = false
     var isVideo: Bool!
     let audioRecorder = AudioRecorder()
     
@@ -507,19 +506,23 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 let cameraImage = CIImage(cvPixelBuffer: pixelBuffer2)
                 
                 if let filteredImage = Filter.applyFilter(toImage: cameraImage, filter: filter, sampleBuffer: sampleBuffer) {
+                    
+                    var textCiImage: CIImage?
+                    
+                    if !TextOverlayViewModel.shared.overlayText.isEmpty, let textImage = TextOverlayViewModel.shared.addText(toImage: filteredImage) {
+                        textCiImage = textImage
+                    }
+                    
                     DispatchQueue.main.async {
                         self.imageView.image = UIImage(ciImage: filteredImage)
                         self.previewLayer!.isHidden = true
+                        self.context.render(textCiImage ?? filteredImage, to: pixelBuffer2)
+                        pixelBuffer = pixelBuffer2
                     }
-                    
-                    context.render(filteredImage, to: pixelBuffer2)
-                    pixelBuffer = pixelBuffer2
                 }
-                
-                
-                
             }
         } else {
+            
             DispatchQueue.main.async {
                 self.previewLayer!.isHidden = false
             }
@@ -554,48 +557,44 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         //TODO ensure proper channel id for live stream
         //
         
-        if writable, output == self.videoDataOutput,
-           (self.videoWriterInput.isReadyForMoreMediaData) {
+        if writable, output == self.videoDataOutput, self.videoWriterInput.isReadyForMoreMediaData {
             
-            if let buffer = pixelBuffer  {
-                //                var newSampleBuffer: CMSampleBuffer? = nil
-                var info = CMSampleTimingInfo()
-                info.presentationTimeStamp = sampleBuffer.presentationTimeStamp
-                info.duration = sampleBuffer.duration
-                info.decodeTimeStamp = sampleBuffer.decodeTimeStamp
-                //
-                //                CMSampleBufferCreateReadyWithImageBuffer(allocator: kCFAllocatorDefault, imageBuffer: buffer, formatDescription: sampleBuffer.formatDescription!, sampleTiming: &info, sampleBufferOut: &newSampleBuffer)
-                //
-                //                print("BUFFER", newSampleBuffer)
+            DispatchQueue.main.async {
                 
-                
-                //                    var info = CMSampleTimingInfo()
-                //                    info.presentationTimeStamp = CMTime.zero
-                //                    info.duration = CMTime.invalid
-                //                    info.decodeTimeStamp = CMTime.invalid
-                
-                var formatDesc: CMFormatDescription?
-                CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                if let buffer = pixelBuffer  {
+                    //                var newSampleBuffer: CMSampleBuffer? = nil
+                    var info = CMSampleTimingInfo()
+                    info.presentationTimeStamp = sampleBuffer.presentationTimeStamp
+                    info.duration = sampleBuffer.duration
+                    info.decodeTimeStamp = sampleBuffer.decodeTimeStamp
+                    
+                    var formatDesc: CMFormatDescription?
+                    CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                                                                 imageBuffer: buffer,
+                                                                 formatDescriptionOut: &formatDesc)
+                    
+                    var newSampleBuffer: CMSampleBuffer?
+                    
+                    CMSampleBufferCreateReadyWithImageBuffer(allocator: kCFAllocatorDefault,
                                                              imageBuffer: buffer,
-                                                             formatDescriptionOut: &formatDesc)
-                
-                var newSampleBuffer: CMSampleBuffer?
-                
-                CMSampleBufferCreateReadyWithImageBuffer(allocator: kCFAllocatorDefault,
-                                                         imageBuffer: buffer,
-                                                         formatDescription: formatDesc!,
-                                                         sampleTiming: &info,
-                                                         sampleBufferOut: &newSampleBuffer)
-                if let newSampleBuffer = newSampleBuffer {
-                    self.videoWriterInput.append(newSampleBuffer)
-                    ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: newSampleBuffer)
+                                                             formatDescription: formatDesc!,
+                                                             sampleTiming: &info,
+                                                             sampleBufferOut: &newSampleBuffer)
+                    if let newSampleBuffer = newSampleBuffer {
+                        if self.videoWriterInput.isReadyForMoreMediaData {
+                            self.videoWriterInput.append(newSampleBuffer)
+                        }
+                        ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: newSampleBuffer)
+                    }
+                    
+                } else {
+                    if self.videoWriterInput.isReadyForMoreMediaData {
+                        self.videoWriterInput.append(sampleBuffer)
+                    }
+                    ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: sampleBuffer)
                 }
-            } else {
-                self.videoWriterInput.append(sampleBuffer)
-                ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: sampleBuffer)
+                
             }
-            
-            
             
             if ConversationViewModel.shared.presentUsers.count > 1, !ConversationViewModel.shared.isLive {
                 DispatchQueue.main.async {
@@ -629,7 +628,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func takePhoto(withFlash hasFlash: Bool) {
+        
         let photoSettings = AVCapturePhotoSettings()
+        
         let previewPixelType = photoSettings.availablePreviewPhotoPixelFormatTypes.first!
         let previewFormat = [
             kCVPixelBufferPixelFormatTypeKey as String: previewPixelType,
@@ -637,7 +638,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             kCVPixelBufferHeightKey as String: 160
         ]
         photoSettings.previewPhotoFormat = previewFormat
-        photoSettings.embedsPortraitEffectsMatteInPhoto = true
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
         connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
@@ -733,6 +733,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     @objc func pinch(_ pinch: UIPinchGestureRecognizer) {
+        
         let device = activeInput.device
         
         // Return zoom value between the minimum and maximum zoom values
@@ -761,54 +762,53 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         default: break
         }
     }
-    
-    
-    func buffer(from image: UIImage) -> CVPixelBuffer? {
-        let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
-        var pixelBuffer : CVPixelBuffer?
-        let status = CVPixelBufferCreate(kCFAllocatorDefault, Int(image.size.width), Int(image.size.height), kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)
-        guard (status == kCVReturnSuccess) else {
-            return nil
-        }
-        
-        CVPixelBufferLockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue: 0))
-        let pixelData = CVPixelBufferGetBaseAddress(pixelBuffer!)
-        
-        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
-        let context = CGContext(data: pixelData, width: Int(image.size.width), height: Int(image.size.height), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer!), space: rgbColorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue)
-        
-        context?.translateBy(x: 0, y: image.size.height)
-        context?.scaleBy(x: 1.0, y: -1.0)
-        
-        UIGraphicsPushContext(context!)
-        image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-        UIGraphicsPopContext()
-        CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue: 0))
-        
-        return pixelBuffer
-    }
-    
-    
 }
 
 
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
+    
+    
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-
+        
         if let imageData = photo.fileDataRepresentation() {
             
-            if let uiImage = UIImage(data: imageData){
+            var outputImage: UIImage?
+            
+            if var ciimage = CIImage(data: imageData) {
                 
-                if !TextOverlayViewModel.shared.overlayText.isEmpty,
-                   let ciimage = CIImage(data: photo.fileDataRepresentation()!),
-                   let imageWithText = TextOverlayViewModel.shared.addText(toImage: ciimage) {
-                    MainViewModel.shared.photo = UIImage(ciImage: imageWithText)
-                } else {
-                    MainViewModel.shared.photo = uiImage
+                ciimage = transformOutputImage(image: ciimage)
+                
+                if !TextOverlayViewModel.shared.overlayText.isEmpty, let imageWithText = TextOverlayViewModel.shared.addText(toImage: ciimage) {
+                    ciimage = imageWithText
+                }
+                
+                if let filter = ConversationViewModel.shared.selectedFilter {
+                    
+                    if filter != .blur, let filteredImage = Filter.applyFilter(toImage: ciimage, filter: filter, sampleBuffer: nil) {
+                        ciimage = filteredImage
+                    }
+                }
+                
+                
+                if let cgimage = CIContext().createCGImage(ciimage, from: ciimage.extent) {
+                    outputImage = UIImage(cgImage: cgimage)
                 }
             }
+            
+            
+            MainViewModel.shared.photo = outputImage ?? UIImage(data: imageData)
+            
         }
+    }
+    
+    func transformOutputImage(image: CIImage) -> CIImage {
+        
+        if MainViewModel.shared.isFrontFacing {
+            return image.oriented(.right).transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -image.extent.width/2, y: 0))
+        }
+        
+        return image.oriented(.right)
     }
 }
 

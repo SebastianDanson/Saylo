@@ -344,9 +344,9 @@ class ConversationGridViewModel: ObservableObject {
     
     func showChat(chat: Chat) {
         
-        DispatchQueue(label: "test").async {
-            MainViewModel.shared.startRunning()
-        }
+//        DispatchQueue(label: "test").async {
+//            MainViewModel.shared.startRunning()
+//        }
 //        DispatchQueue.global().async {
 //        }
         ConversationViewModel.shared.setChat(chat: chat)
