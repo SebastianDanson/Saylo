@@ -23,6 +23,23 @@ struct AudioMessagePlayer {
     let messageId: String
 }
 
+struct UserLastVisitedInfo {
+    
+    var firstName: String
+    var profileImage: String
+    var index: Int
+    var timestamp: Timestamp
+    var id: String
+    
+    init(chatMember: ChatMember, index: Int, timestamp: Timestamp) {
+        self.firstName = chatMember.firstName
+        self.profileImage = chatMember.profileImage
+        self.index = index
+        self.id = chatMember.id
+        self.timestamp = timestamp
+    }
+}
+
 class ConversationViewModel: ObservableObject {
     
     var chat: Chat?
@@ -48,7 +65,8 @@ class ConversationViewModel: ObservableObject {
     @Published var noSavedMessages = false
     @Published var noMessages = false
     @Published var showUnreadMessages = false
-    @Published var seenLastPost = [String]()
+//    @Published var seenLastPost = [String]()
+    @Published var usersLastVisited = [UserLastVisitedInfo]()
     
     @Published var videoLength = 0.0
     @Published var players = [MessagePlayer]()
@@ -151,6 +169,8 @@ class ConversationViewModel: ObservableObject {
     }
     
     func setChat(chat: Chat) {
+        
+        print(chat.id)
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
@@ -617,11 +637,11 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-    func updateLastSeenPost() {
-        
-        guard let chat = chat else {return}
-        ConversationService.updateSeenLastPost(forChat: chat)
-    }
+//    func updateLastSeenPost() {
+//        
+//        guard let chat = chat else {return}
+//        ConversationService.updateSeenLastPost(forChat: chat)
+//    }
     
     func addReactionToMessage(withId id: String, reaction: Reaction) {
         
@@ -749,10 +769,11 @@ class ConversationViewModel: ObservableObject {
                         self.lastSendingRecordingId = self.sendingLiveRecordingId
                     }
                     
-                    DispatchQueue.main.async {
                         self.messages = messages
-                    }
                     
+                    let usersLastVisitedDic = data["usersLastVisited"] as? [String:Timestamp] ?? [String:Timestamp]()
+                    self.chat?.setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
+                    self.usersLastVisited = self.chat?.usersLastVisited ?? [UserLastVisitedInfo]()
                     //TOdo don't automatically show message if they watched live
                     //Todo automatically watch live video so they don;t have to press on the live users view thingy
                     
@@ -781,7 +802,7 @@ class ConversationViewModel: ObservableObject {
                     }
 
                     self.noMessages = messages.count == 0
-                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
+//                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     
                     let chat = Chat(dictionary: data, id: self.chatId)
                     self.chat?.chatMembers = chat.chatMembers
@@ -1005,5 +1026,16 @@ class ConversationViewModel: ObservableObject {
         let messages = showSavedPosts ? savedMessages : messages
         guard index < messages.count && index >= 0 else { return false }
         return messages[index].type == .Video || messages[index].type == .Audio
+    }
+    
+    func setLastSeenPostUsers() {
+        
+        guard let chat = chat else {
+            return
+        }
+
+        let chatmembers = chat.chatMembers
+        
+        
     }
 }

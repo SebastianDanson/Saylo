@@ -226,7 +226,7 @@ struct MessageOptionsView: View {
     }
     
     func getSeenByText() -> String? {
-        
+        //todo update this accordingly for usersLastVisited
         guard let chat = ConversationViewModel.shared.chat else {
             return nil
         }
@@ -239,19 +239,21 @@ struct MessageOptionsView: View {
         
         var isFirst = true
         
-        ConversationViewModel.shared.seenLastPost.forEach { userId in
-            
-            if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
-                
-                if isFirst {
-                    seenText += " \(chatMember.firstName)"
-                } else {
-                    seenText += ", \(chatMember.firstName)"
-                }
-                
-                isFirst = false
-            }
-        }
+        //TODO add some sort of variation of the below
+        
+//        ConversationViewModel.shared.seenLastPost.forEach { userId in
+//
+//            if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
+//
+//                if isFirst {
+//                    seenText += " \(chatMember.firstName)"
+//                } else {
+//                    seenText += ", \(chatMember.firstName)"
+//                }
+//
+//                isFirst = false
+//            }
+//        }
         
         return seenText == "Seen by" ? nil : seenText
     }

@@ -23,28 +23,29 @@ class Chat: ObservableObject {
     var isTeamSaylo: Bool
     
     var messages = [Message]()
-    var seenLastPost: [String]
-
+    //    var seenLastPost: [String]
+    
     //user info
     let userIds: [String]
     var chatMembers = [ChatMember]()
     
     var nameDictionary: [String:Any]?
+    var usersLastVisited = [UserLastVisitedInfo]()
     
     @Published var isSelected = false
-//    @Published var isSending = false {
-//        didSet {
-//            print("")
-//        }
-//    }
-//    @Published var uploadProgress: Double = 0.0 
-//    @Published var hasSent = false
+    //    @Published var isSending = false {
+    //        didSet {
+    //            print("")
+    //        }
+    //    }
+    //    @Published var uploadProgress: Double = 0.0
+    //    @Published var hasSent = false
     @Published var hasUnreadMessage = false
-
+    
     var lastReadMessageIndex = 0
-
+    
     init(dictionary: [String:Any], id: String, shouldRemoveOldMessages: Bool = true) {
-
+        
         
         //Doc info
         self.id = id
@@ -63,14 +64,14 @@ class Chat: ObservableObject {
         self.isTeamSaylo = dictionary["isTeamSaylo"] as? Bool ?? false
         
         //name
-   
+        
         if isDm {
             let customNameArray = dictionary["name"] as? [String:Any]
             let currentUid = AuthViewModel.shared.currentUser?.id ?? Auth.auth().currentUser?.uid ?? ""
             let friend = chatMembers.first(where: {$0.id != currentUid})
             
             let customName = customNameArray?[currentUid] as? String
-
+            
             if let customName = customName {
                 self.name = customName
                 self.fullName = customName
@@ -79,7 +80,7 @@ class Chat: ObservableObject {
                 self.name = friend?.firstName ?? ""
                 self.fullName = self.name + " " + (friend?.lastName ?? "")
             }
-          
+            
             self.profileImage = friend?.profileImage ?? ""
         } else {
             self.name = dictionary["name"] as? String ?? ""
@@ -96,12 +97,12 @@ class Chat: ObservableObject {
         //users
         self.userIds = dictionary["userIds"] as? [String] ?? [String]()
         
-        
-        //Seen last post
-        self.seenLastPost = dictionary["seenLastPost"] as? [String] ?? [String]()
-        
         //messages
         self.messages = ConversationService.getMessagesFromData(data: dictionary, shouldRemoveMessages: shouldRemoveOldMessages, chatId: id)
+        
+        //last seen post
+        let usersLastVisitedDic = dictionary["usersLastVisited"] as? [String:Timestamp] ?? [String:Timestamp]()
+        setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
         
         if self.name.isEmpty {
             self.name = getDefaultChatName()
@@ -111,26 +112,29 @@ class Chat: ObservableObject {
             self.fullName = self.name + ", " + userFullname
         }
         
+        
         self.hasUnreadMessage = getHasUnreadMessage()
         
         self.lastReadMessageIndex = getLastReadMessageIndex()
-
         
-//        //Add unread messages to player view
-//        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {
-//
-//            for i in self.lastReadMessageIndex..<self.messages.count {
-//
-//                let messages = ConversationPlayerViewModel.shared.messages
-//
-//                if !messages.contains(where: {$0.id == self.messages[i].id}), self.messages[i].type != .NewChat {
-//                    ConversationPlayerViewModel.shared.addMessage(self.messages[i])
-//                }
-//            }
-//
-//            ConversationPlayerViewModel.shared.addReplyMessages()
-//
-//        }
+        
+        //        self.usersLastVisited = usersLastVisited
+        
+        //        //Add unread messages to player view
+        //        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {
+        //
+        //            for i in self.lastReadMessageIndex..<self.messages.count {
+        //
+        //                let messages = ConversationPlayerViewModel.shared.messages
+        //
+        //                if !messages.contains(where: {$0.id == self.messages[i].id}), self.messages[i].type != .NewChat {
+        //                    ConversationPlayerViewModel.shared.addMessage(self.messages[i])
+        //                }
+        //            }
+        //
+        //            ConversationPlayerViewModel.shared.addReplyMessages()
+        //
+        //        }
         
     }
     
@@ -141,7 +145,7 @@ class Chat: ObservableObject {
         
         var messages = [[String:Any]]()
         self.messages.forEach({messages.append($0.getDictionary())})
-
+        
         
         var dictionary = [
             "id":id,
@@ -174,7 +178,7 @@ class Chat: ObservableObject {
     
     func getLastReadMessageIndex() -> Int {
         guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}) else {return messages.count - 1}
-
+        
         let lastVisited = chat.lastVisited
         if messages.count > 1 {
             for i in 0..<messages.count - 1 {
@@ -183,7 +187,7 @@ class Chat: ObservableObject {
                 }
             }
         }
-                
+        
         return max(0,messages.count - 1)
     }
     
@@ -191,6 +195,19 @@ class Chat: ObservableObject {
         self.lastReadMessageIndex = getLastReadMessageIndex()
     }
     
+    func setUsersLastVisited(usersLastVisitedDic: [String:Timestamp]) {
+        
+        var usersLastVisited = [UserLastVisitedInfo]()
+        
+        chatMembers.forEach { chatMember in
+            let lastVisited = usersLastVisitedDic[chatMember.id] ?? Timestamp(date: Date().addingTimeInterval(-86400 * 2))
+            usersLastVisited.append(UserLastVisitedInfo(chatMember: chatMember,
+                                                        index: getLastSeenIndex(timestamp: lastVisited),
+                                                        timestamp: lastVisited))
+        }
+        
+        self.usersLastVisited = usersLastVisited
+    }
     
     func getDefaultChatName() -> String {
         
@@ -213,6 +230,12 @@ class Chat: ObservableObject {
         
         return name
     }
-
+    
+    
+    func getLastSeenIndex(timestamp: Timestamp) -> Int {
+        return messages.firstIndex(where: {$0.timestamp.dateValue().timeIntervalSince1970 > $0.timestamp.dateValue().timeIntervalSince1970})
+        ?? messages.count - 1
+    }
+    
 }
 
