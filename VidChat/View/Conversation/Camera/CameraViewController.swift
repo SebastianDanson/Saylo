@@ -549,13 +549,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
             }
         }
-        
-        
-        //once we have the video frame, we can push to agora sdk
-        //         agoraKit?.pushExternalVideoFrame(videoFrame)
-        
-        //TODO ensure proper channel id for live stream
-        //
+
         
         if writable, output == self.videoDataOutput, self.videoWriterInput.isReadyForMoreMediaData {
             
@@ -712,7 +706,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         ConversationViewModel.shared.leaveChannel()
         ConversationViewModel.shared.setIsNotLive()
-        //TODO when host ends broadcast leave channel on audiences devices
         
         MainViewModel.shared.timer?.invalidate()
         audioCaptureSession.stopRunning()

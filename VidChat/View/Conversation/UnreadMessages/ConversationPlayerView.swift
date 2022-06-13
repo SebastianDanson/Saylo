@@ -271,8 +271,8 @@ struct ConversationPlayerView: View {
                                     
                                     VStack {
                                         
-                                        let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[index].isSaved : $viewModel.messages[index].isSaved
-                                        SaveViewPaused(showAlert: $showAlert, isSaved: isSaved, index: index)
+//                                        let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[index].isSaved : $viewModel.messages[index].isSaved
+//                                        SaveViewPaused(showAlert: $showAlert, isSaved: isSaved, index: index)
                                         
                                         HStack {
                                             
@@ -291,7 +291,10 @@ struct ConversationPlayerView: View {
                                     }
                                 }
                                 
-                                PlaybackSlider(sliderValue: $sliderValue, isPlaying: $viewModel.isPlaying, showPlaybackControls: $viewModel.showPlaybackControls)
+                                PlaybackSlider(sliderValue: $sliderValue,
+                                               isPlaying: $viewModel.isPlaying,
+                                               showPlaybackControls: $viewModel.showPlaybackControls,
+                                               showReactions: $showReactions)
                                     .padding(.leading, 20)
                                     .padding(.trailing, 20)
                             }
@@ -324,14 +327,14 @@ struct ConversationPlayerView: View {
             ZStack {
                 
 //                if viewModel.showSavedPosts, viewModel.savedMessages.count == 0 {
-//                    
+//
 //                    VStack(spacing: 0) {
-//                        
+//
 //                        Text("No messages saved in this chat")
 //                            .foregroundColor(.white)
 //                            .font(.system(size: IS_SMALL_PHONE ? 21 : 24, weight: .semibold, design: .rounded))
 //                            .padding(.bottom, 4)
-//                        
+//
 //                        Text("Tap and hold on a message to save it!")
 //                            .foregroundColor(.white)
 //                            .font(.system(size: IS_SMALL_PHONE ? 16 : 18, weight: .regular, design: .rounded))

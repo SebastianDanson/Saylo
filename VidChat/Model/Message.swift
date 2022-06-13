@@ -18,9 +18,7 @@ enum MainViewType {
 enum MessageType {
     
     case Video, Audio, Text, Photo, NewChat, Call
-    
-    //TODO ensure newChat message works
-    
+        
     static func getType(forString type: String) -> MessageType {
         switch type {
         case "video":

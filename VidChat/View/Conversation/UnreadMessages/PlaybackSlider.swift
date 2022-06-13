@@ -14,6 +14,7 @@ struct PlaybackSlider: View {
     @Binding var sliderValue: Double
     @Binding var isPlaying: Bool
     @Binding var showPlaybackControls: Bool
+    @Binding var showReactions: Bool
     @State var showSlider = false
     @State var timer: Timer?
     
@@ -65,7 +66,7 @@ struct PlaybackSlider: View {
                     self.sliderValue += 0.01 / viewModel.videoLength
                 }
                 
-                if sliderValue >= 1 {
+                if sliderValue >= 1, !showReactions {
                     ConversationViewModel.shared.showNextMessage()
                 }
             }

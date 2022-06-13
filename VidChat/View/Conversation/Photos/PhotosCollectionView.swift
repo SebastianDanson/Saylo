@@ -420,12 +420,6 @@ extension PhotosCollectionView {
     }
     
     
-    //TODO
-    //1. show video leng if it's a vide0
-    //2. add drag down bar
-    
-    
-    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < 0 {
             scrollView.contentOffset.y = 0

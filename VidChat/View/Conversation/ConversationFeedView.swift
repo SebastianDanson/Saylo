@@ -205,7 +205,6 @@ struct ConversationFeedView: View {
         
         var isFirst = true
         
-        //TODO add some sort of variation of the below
 
 //        viewModel.seenLastPost.forEach { userId in
 //            

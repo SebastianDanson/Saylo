@@ -86,9 +86,7 @@ final class CallManager: NSObject, ObservableObject {
             }
             
         } else {
-            
-            //Todo right here leave call for other person and send notification sayun you did so
-            
+                        
             ConversationViewModel.shared.setIsOffCall()
         }
         
@@ -331,5 +329,4 @@ extension CallManager: AgoraRtcEngineDelegate {
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
     
-    //todo if recording and join call then it cancels the recording
 }

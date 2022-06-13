@@ -198,7 +198,6 @@ class Chat: ObservableObject {
     func setUsersLastVisited(usersLastVisitedDic: [String:Timestamp]) {
         
         var usersLastVisited = [UserLastVisitedInfo]()
-        
         chatMembers.forEach { chatMember in
             let lastVisited = usersLastVisitedDic[chatMember.id] ?? Timestamp(date: Date().addingTimeInterval(-86400 * 2))
             usersLastVisited.append(UserLastVisitedInfo(chatMember: chatMember,
@@ -233,8 +232,14 @@ class Chat: ObservableObject {
     
     
     func getLastSeenIndex(timestamp: Timestamp) -> Int {
-        return messages.firstIndex(where: {$0.timestamp.dateValue().timeIntervalSince1970 > $0.timestamp.dateValue().timeIntervalSince1970})
-        ?? messages.count - 1
+        
+       let index = messages.firstIndex(where: {$0.timestamp.dateValue().timeIntervalSince1970 > timestamp.dateValue().timeIntervalSince1970})
+        
+        if index != nil {
+            return index! - 1
+        }
+        
+        return messages.count - 1
     }
     
 }

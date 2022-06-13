@@ -141,9 +141,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     static let shared = ConversationViewModel()
-    
-    //TODO live for audio messages
-    
+        
     private init() {
         CacheManager.removeOldFiles()
     }
@@ -175,8 +173,11 @@ class ConversationViewModel: ObservableObject {
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
         self.chatId = chat.id
-        
-        
+        self.usersLastVisited = chat.usersLastVisited
+    
+        chat.usersLastVisited.forEach { userLastVisied in
+            print(userLastVisied.firstName, userLastVisied.index)
+        }
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chat.id, forKey: "selectedChatId")
         self.messages = chat.messages
@@ -433,8 +434,14 @@ class ConversationViewModel: ObservableObject {
     func removeAllUsersFromCall() {
         guard let chat = chat else { return }
         joinedCallUsers.removeAll()
-        //Todo add transaction here
-        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers": []])
+
+        let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["joinedCallUsers": []], forDocument: chatRef)
+            return nil
+        }) { (_, error) in }
+        
+//        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers": []])
     }
     
     func setIsOffCall() {
@@ -774,8 +781,6 @@ class ConversationViewModel: ObservableObject {
                     let usersLastVisitedDic = data["usersLastVisited"] as? [String:Timestamp] ?? [String:Timestamp]()
                     self.chat?.setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
                     self.usersLastVisited = self.chat?.usersLastVisited ?? [UserLastVisitedInfo]()
-                    //TOdo don't automatically show message if they watched live
-                    //Todo automatically watch live video so they don;t have to press on the live users view thingy
                     
                     //                    if self.hasUnread {
                     //                        let chat = Chat(dictionary: data, id: self.chatId)

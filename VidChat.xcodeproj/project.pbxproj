@@ -38,6 +38,17 @@
 		063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */; };
 		063E2D0E283B034400F4B56D /* SampleVideoCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */; };
 		0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0640D63227990FF500D7A244 /* SuggestedChatsView.swift */; };
+		064F5FEC2857859700286A78 /* LastSeenProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FEB2857859700286A78 /* LastSeenProfileImageView.swift */; };
+		064F5FEE285785AD00286A78 /* ViewSavedMessagesButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FED285785AD00286A78 /* ViewSavedMessagesButton.swift */; };
+		064F5FF0285785C100286A78 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FEF285785C100286A78 /* ImageCache.swift */; };
+		064F5FF2285785F000286A78 /* ReplyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FF1285785F000286A78 /* ReplyView.swift */; };
+		064F5FF42857860400286A78 /* MessageSendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FF32857860400286A78 /* MessageSendingView.swift */; };
+		064F5FF62857861600286A78 /* LiveUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FF52857861600286A78 /* LiveUsersView.swift */; };
+		064F5FF82857863400286A78 /* LoadingVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FF72857863400286A78 /* LoadingVideoView.swift */; };
+		064F5FFA2857864300286A78 /* SavedPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FF92857864300286A78 /* SavedPopup.swift */; };
+		064F5FFC2857866100286A78 /* SaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FFB2857866100286A78 /* SaveView.swift */; };
+		064F5FFE2857868100286A78 /* CircularLoadingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FFD2857868100286A78 /* CircularLoadingAnimationView.swift */; };
+		064F60002857869B00286A78 /* CallEndedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064F5FFF2857869B00286A78 /* CallEndedView.swift */; };
 		06520C0B282D72E100C8FF1D /* TextColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06520C0A282D72E100C8FF1D /* TextColorView.swift */; };
 		065971F82776AD1200884420 /* Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065971F72776AD1200884420 /* Reaction.swift */; };
 		065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */; };
@@ -243,6 +254,17 @@
 		063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyPhoneNumberView.swift; sourceTree = "<group>"; };
 		063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleVideoCallView.swift; sourceTree = "<group>"; };
 		0640D63227990FF500D7A244 /* SuggestedChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedChatsView.swift; sourceTree = "<group>"; };
+		064F5FEB2857859700286A78 /* LastSeenProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastSeenProfileImageView.swift; sourceTree = "<group>"; };
+		064F5FED285785AD00286A78 /* ViewSavedMessagesButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSavedMessagesButton.swift; sourceTree = "<group>"; };
+		064F5FEF285785C100286A78 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		064F5FF1285785F000286A78 /* ReplyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyView.swift; sourceTree = "<group>"; };
+		064F5FF32857860400286A78 /* MessageSendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSendingView.swift; sourceTree = "<group>"; };
+		064F5FF52857861600286A78 /* LiveUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveUsersView.swift; sourceTree = "<group>"; };
+		064F5FF72857863400286A78 /* LoadingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingVideoView.swift; sourceTree = "<group>"; };
+		064F5FF92857864300286A78 /* SavedPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPopup.swift; sourceTree = "<group>"; };
+		064F5FFB2857866100286A78 /* SaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveView.swift; sourceTree = "<group>"; };
+		064F5FFD2857868100286A78 /* CircularLoadingAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularLoadingAnimationView.swift; sourceTree = "<group>"; };
+		064F5FFF2857869B00286A78 /* CallEndedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEndedView.swift; sourceTree = "<group>"; };
 		06520C0A282D72E100C8FF1D /* TextColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextColorView.swift; sourceTree = "<group>"; };
 		065971F72776AD1200884420 /* Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reaction.swift; sourceTree = "<group>"; };
 		065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardHeightModifier.swift; sourceTree = "<group>"; };
@@ -678,6 +700,7 @@
 				069D11E62798775600988829 /* MessageView.swift */,
 				065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */,
 				068DA24E284C3AE00034374E /* Filters.swift */,
+				064F5FEF285785C100286A78 /* ImageCache.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -887,6 +910,16 @@
 				063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */,
 				068DA250284D96370034374E /* TextOverlayView.swift */,
 				066D59BD2850418A009A8C61 /* FiltersView.swift */,
+				064F5FEB2857859700286A78 /* LastSeenProfileImageView.swift */,
+				064F5FED285785AD00286A78 /* ViewSavedMessagesButton.swift */,
+				064F5FF1285785F000286A78 /* ReplyView.swift */,
+				064F5FF32857860400286A78 /* MessageSendingView.swift */,
+				064F5FF52857861600286A78 /* LiveUsersView.swift */,
+				064F5FF72857863400286A78 /* LoadingVideoView.swift */,
+				064F5FF92857864300286A78 /* SavedPopup.swift */,
+				064F5FFB2857866100286A78 /* SaveView.swift */,
+				064F5FFD2857868100286A78 /* CircularLoadingAnimationView.swift */,
+				064F5FFF2857869B00286A78 /* CallEndedView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1047,6 +1080,7 @@
 				063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */,
 				3F112C5B2721B4DF00BA2A73 /* URL+StartCallConvertible.swift in Sources */,
 				3F2A7EBE2719CE7C00179390 /* PhotoCell.swift in Sources */,
+				064F5FF82857863400286A78 /* LoadingVideoView.swift in Sources */,
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
 				06F1A32C277D522300A0F992 /* SetProfileImageView.swift in Sources */,
 				3F08F27627017A5A009E0029 /* MainView.swift in Sources */,
@@ -1072,6 +1106,7 @@
 				06246620281B1419000A8838 /* ResetType.swift in Sources */,
 				06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */,
 				06ECD9042815041000870A51 /* FriendsView.swift in Sources */,
+				064F5FF2285785F000286A78 /* ReplyView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				0616EC0927928978006565FE /* AddedChatsView.swift in Sources */,
 				0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */,
@@ -1092,6 +1127,7 @@
 				3F4C618127402A09003EE726 /* ConversationService.swift in Sources */,
 				3F8B02A326FFB33000841565 /* Chat.swift in Sources */,
 				3F71247A276FC92C00C8457D /* ConversationPlayerViewModel.swift in Sources */,
+				064F5FFE2857868100286A78 /* CircularLoadingAnimationView.swift in Sources */,
 				068DA253284D96690034374E /* TextOverlayViewModel.swift in Sources */,
 				069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */,
 				06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */,
@@ -1102,6 +1138,7 @@
 				06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */,
 				0640D63327990FF500D7A244 /* SuggestedChatsView.swift in Sources */,
 				060D60F327AD8E2000771977 /* PhotosViewModel.swift in Sources */,
+				064F5FF42857860400286A78 /* MessageSendingView.swift in Sources */,
 				3F1768282714A8080049ADBA /* ConversationViewModel.swift in Sources */,
 				069D11E12797626100988829 /* ContactsViewModel.swift in Sources */,
 				062D28DC277AD4C100B25637 /* ImageCropper.swift in Sources */,
@@ -1115,12 +1152,14 @@
 				069D11E92798837300988829 /* SetPhoneNumberView.swift in Sources */,
 				3F112B802720B1C200BA2A73 /* ProviderDelegate.swift in Sources */,
 				062D28DE277ADCD200B25637 /* ContactUsView.swift in Sources */,
+				064F60002857869B00286A78 /* CallEndedView.swift in Sources */,
 				3F50C6F4270195B30027D080 /* MainViewModel.swift in Sources */,
 				067FBB62279BB81E00B2EA04 /* Country.swift in Sources */,
 				3F95F44C26FE45BC00F892B7 /* MediaUploader.swift in Sources */,
 				3FDEE7B92721C3E200DF43C6 /* AgoraRTM.swift in Sources */,
 				3F485DA626FD477B0071532B /* ProfileView.swift in Sources */,
 				069D11EE279893BA00988829 /* CountryCodeViewController.swift in Sources */,
+				064F5FFA2857864300286A78 /* SavedPopup.swift in Sources */,
 				063CAABD277C1A8000C84318 /* NewConversationViewModel.swift in Sources */,
 				068DA24F284C3AE00034374E /* Filters.swift in Sources */,
 				067FBB5E279BB7B600B2EA04 /* DialCountriesController.swift in Sources */,
@@ -1158,6 +1197,7 @@
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
 				06520C0B282D72E100C8FF1D /* TextColorView.swift in Sources */,
+				064F5FEE285785AD00286A78 /* ViewSavedMessagesButton.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,
 				06ECD9082815BFE500870A51 /* FriendCell.swift in Sources */,
 				063D3EE9279C830400C21E42 /* VerifyPhoneNumberView.swift in Sources */,
@@ -1171,6 +1211,8 @@
 				3F8B026F26FEAF0500841565 /* ProfileViewModel.swift in Sources */,
 				063CAAB9277BDED900C84318 /* FindFriendsView.swift in Sources */,
 				0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */,
+				064F5FF0285785C100286A78 /* ImageCache.swift in Sources */,
+				064F5FF62857861600286A78 /* LiveUsersView.swift in Sources */,
 				06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
@@ -1185,6 +1227,7 @@
 				06B6764E2818A74200ABBF91 /* CreateChatCell.swift in Sources */,
 				069D11F02798989F00988829 /* CountriesFetcher.swift in Sources */,
 				069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */,
+				064F5FEC2857859700286A78 /* LastSeenProfileImageView.swift in Sources */,
 				3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */,
 				3FB8B5D8270FAACA00355DB9 /* ConversationView.swift in Sources */,
 				06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */,
@@ -1193,6 +1236,7 @@
 				3F112B7E27207AFE00BA2A73 /* VideoCollectionViewCell.swift in Sources */,
 				3F95F44E26FE4B0100F892B7 /* Constants.swift in Sources */,
 				069D11E3279762DC00988829 /* PhoneContact.swift in Sources */,
+				064F5FFC2857866100286A78 /* SaveView.swift in Sources */,
 				0616EC04279288D3006565FE /* AddUserToChatCell.swift in Sources */,
 				3FFD034B272CAE6A000BEADE /* VideoHelper.swift in Sources */,
 				065D2DF52788A8D6002F3816 /* ChatImageCircle.swift in Sources */,

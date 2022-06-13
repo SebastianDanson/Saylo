@@ -274,14 +274,6 @@ struct MainView: View {
                             .cornerRadius(14)
                         
                     }
-                    //
-                    //                if viewModel.isCalling {
-                    //                    MakeCallView()
-                    //                        .zIndex(5)
-                    //                        .transition(.move(edge: .bottom))
-                    //                        .frame(width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
-                    //                        .cornerRadius(14)
-                    //                }
                 }
                 
                 if let message = viewModel.selectedMessage {
@@ -314,7 +306,6 @@ struct MainView: View {
             .navigationBarHidden(true)
             .ignoresSafeArea(edges: .bottom)
             .alert(isPresented: $showAlert) {
-                //TODO deleting messages causes crash
                 let messages = conversationViewModel.showSavedPosts ? conversationViewModel.savedMessages : conversationViewModel.messages
                 return savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[conversationViewModel.saveToggleIndex].id}), completion: { isSaved in
                     
@@ -405,7 +396,6 @@ struct LiveView: View {
             }
         }
         
-        //TOdo is talking notification only the first time so if they cancel recording and strat again it doesn't send another notification
         
     }
 }
@@ -543,7 +533,6 @@ struct ChatNavView: View {
                             .foregroundColor(.white)
                             .shadow(color: Color(white: 0, opacity: 0.15), radius: 4, x: 0, y: 4)
                         
-                        //Todo show all profile images for group members who are there and in the join call view say all the names of ppl who joined the group
                         
                         if presentUsers.count > 1 {
                             
@@ -1083,9 +1072,7 @@ struct JoinCallSmallView: View {
         } label: {
             
             VStack(spacing: 4) {
-                
-                //TODO saylo is sometime slow on iphone 7 see why and optimize where needed
-                
+                                
                 KFImage(URL(string: imageName))
                     .resizable()
                     .scaledToFill()

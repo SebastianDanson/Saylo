@@ -121,7 +121,6 @@ struct MessageOptionsView: View {
                         
                         Button {
                             
-                            //TODO this crashes on save view
                             ConversationViewModel.shared.deleteMessage(message: message)
                             
                         } label: {
@@ -148,7 +147,7 @@ struct MessageOptionsView: View {
                         
                         let messages = ConversationViewModel.shared.showSavedPosts ?
                         ConversationViewModel.shared.savedMessages : ConversationViewModel.shared.messages
-                        //TODO show alert here
+
                         if let index = messages.firstIndex(where: {$0.id == message.id}) {
                                 
                             if self.hasSaved {
@@ -226,7 +225,7 @@ struct MessageOptionsView: View {
     }
     
     func getSeenByText() -> String? {
-        //todo update this accordingly for usersLastVisited
+
         guard let chat = ConversationViewModel.shared.chat else {
             return nil
         }
@@ -238,22 +237,23 @@ struct MessageOptionsView: View {
         var seenText = "Seen by"
         
         var isFirst = true
+                
+        var usersLastVisited = ConversationViewModel.shared.usersLastVisited
+            .filter({$0.timestamp.dateValue().timeIntervalSince1970 > message.timestamp.dateValue().timeIntervalSince1970})
         
-        //TODO add some sort of variation of the below
-        
-//        ConversationViewModel.shared.seenLastPost.forEach { userId in
-//
-//            if let chatMember = chat.chatMembers.first(where: {$0.id == userId}), chatMember.id != uid {
-//
-//                if isFirst {
-//                    seenText += " \(chatMember.firstName)"
-//                } else {
-//                    seenText += ", \(chatMember.firstName)"
-//                }
-//
-//                isFirst = false
-//            }
-//        }
+        usersLastVisited.forEach { userLastVisitedInfo in
+
+            if let chatMember = chat.chatMembers.first(where: {$0.id == userLastVisitedInfo.id}), chatMember.id != uid {
+
+                if isFirst {
+                    seenText += " \(chatMember.firstName)"
+                } else {
+                    seenText += ", \(chatMember.firstName)"
+                }
+
+                isFirst = false
+            }
+        }
         
         return seenText == "Seen by" ? nil : seenText
     }

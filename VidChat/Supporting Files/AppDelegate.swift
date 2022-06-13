@@ -255,9 +255,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                                 ConversationViewModel.shared.setChat(chat: chat)
                             }
                             
-                            ConversationViewModel.shared.lastSendingRecordingId = ""
-                            //Todo scroll to the circular loadin animation when waiting for live stream to be uploaded
-                            
+                            ConversationViewModel.shared.lastSendingRecordingId = ""                            
                         }
                     }
                 }
