@@ -82,6 +82,9 @@ class Message: ObservableObject {
     var reactions = [Reaction]()
     var isTeamSayloMessage: Bool
     
+    //Doesn't get set to "Me"
+    var dictionaryUsername: String
+    
     //data
     @Published var isSaved: Bool
     //    @Published var isSameIdAsPrevMessage = false
@@ -115,6 +118,7 @@ class Message: ObservableObject {
             self.isFromCurrentUser = false
         }
         
+        self.dictionaryUsername = dictionary["username"] as? String ?? ""
         self.userProfileImage = dictionary["userProfileImage"] as? String ?? ""
         
         //content
@@ -149,7 +153,6 @@ class Message: ObservableObject {
                 ConversationGridViewModel.shared.createVideoThumbnail(from: url)
             }
         }
-        
     }
     
     
@@ -159,7 +162,7 @@ class Message: ObservableObject {
         var dictionary = [
             "id":id,
             "userProfileImage":userProfileImage,
-            "username": username,
+            "username": dictionaryUsername,
             "userId":userId,
             "timestamp": Int(timestamp.dateValue().timeIntervalSince1970)
         ] as [String: Any]

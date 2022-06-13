@@ -135,6 +135,7 @@ class Chat: ObservableObject {
     }
     
     func getDictionary() -> [String:Any] {
+        
         var users = [[String:Any]]()
         chatMembers.forEach({users.append($0.dictionary)})
         

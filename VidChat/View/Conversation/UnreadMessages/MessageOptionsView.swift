@@ -16,8 +16,11 @@ struct MessageOptionsView: View {
     @State var reactionString = ""
     @State var hasSaved: Bool
     
-    init(message: Message) {
+    @Binding var showAlert: Bool
+    
+    init(message: Message, showAlert: Binding<Bool>) {
         self.message = message
+        self._showAlert = showAlert
         self._hasSaved = State(initialValue: message.isSaved) 
     }
     
@@ -117,6 +120,8 @@ struct MessageOptionsView: View {
                     if isFromCurrentUser {
                         
                         Button {
+                            
+                            //TODO this crashes on save view
                             ConversationViewModel.shared.deleteMessage(message: message)
                             
                         } label: {
@@ -140,9 +145,19 @@ struct MessageOptionsView: View {
                     Spacer()
                     
                     Button {
-                        if let index = ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}) {
+                        
+                        let messages = ConversationViewModel.shared.showSavedPosts ?
+                        ConversationViewModel.shared.savedMessages : ConversationViewModel.shared.messages
+                        //TODO show alert here
+                        if let index = messages.firstIndex(where: {$0.id == message.id}) {
+                                
+                            if self.hasSaved {
+                                ConversationViewModel.shared.saveToggleIndex = index
+                                showAlert = true
+                            } else {
                             ConversationViewModel.shared.updateIsSaved(atIndex: index)
                             self.hasSaved.toggle()
+                            }
                         }
                     } label: {
                         

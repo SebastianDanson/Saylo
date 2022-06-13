@@ -145,7 +145,9 @@ struct ImageCell: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 18)
                     }.alert(isPresented: $showAlert) {
-                        savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
+                        let messages = ConversationViewModel.shared.showSavedPosts ?
+                                        ConversationViewModel.shared.savedMessages : ConversationViewModel.shared.messages
+                        return savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
                             self.isSaved = isSaved
                         })
                     }

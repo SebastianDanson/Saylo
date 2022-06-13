@@ -285,7 +285,7 @@ struct MainView: View {
                 }
                 
                 if let message = viewModel.selectedMessage {
-                    MessageOptionsView(message: message).zIndex(6)
+                    MessageOptionsView(message: message, showAlert: $showAlert).zIndex(6)
                 }
             }
             .overlay(
@@ -314,7 +314,9 @@ struct MainView: View {
             .navigationBarHidden(true)
             .ignoresSafeArea(edges: .bottom)
             .alert(isPresented: $showAlert) {
-                savedPostAlert(mesageIndex: conversationViewModel.messages.firstIndex(where: {$0.id == conversationViewModel.messages[conversationViewModel.index].id}), completion: { isSaved in
+                //TODO deleting messages causes crash
+                let messages = conversationViewModel.showSavedPosts ? conversationViewModel.savedMessages : conversationViewModel.messages
+                return savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[conversationViewModel.saveToggleIndex].id}), completion: { isSaved in
                     
                 })
             }

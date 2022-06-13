@@ -29,6 +29,8 @@ struct ConversationService {
     
     static func deleteMessage(toDocWithId docId: String, messageId: String) {
         
+        let docId = docId.isEmpty ? ConversationViewModel.shared.chatId:docId
+        
         COLLECTION_CONVERSATIONS.document(docId).getDocument { snapshot, _ in
             
             if let data = snapshot?.data() {
@@ -133,12 +135,21 @@ struct ConversationService {
         
         let data = ["messageId":message.id, "userId":uid]
         
-        if message.isSaved {
+        var messageData = message.getDictionary()
+        messageData.removeValue(forKey: "userStoredUrl")
+        
+        if message.isSaved && !ConversationViewModel.shared.showSavedPosts {
             COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayUnion([data])])
-            COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayUnion([message.getDictionary()])])
+            COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayUnion([messageData])])
         } else {
             COLLECTION_CONVERSATIONS.document(chatId).updateData(["savedMessages": FieldValue.arrayRemove([data])])
-            COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages" : FieldValue.arrayRemove([message.getDictionary()])])
+            COLLECTION_SAVED_POSTS.document(chatId).getDocument { snapshot, _ in
+                if let data = snapshot?.data() {
+                    var messages = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
+                    messages.removeAll(where: {$0["id"] as? String == message.id})
+                    COLLECTION_SAVED_POSTS.document(chatId).updateData(["messages":messages])
+                }
+            }
         }
     }
     

@@ -13,6 +13,7 @@ struct NoSavedMessagesView: View {
         VStack {
             
             Spacer()
+            
             Image(systemName: "bookmark.slash.fill")
                 .resizable()
                 .scaledToFit()
@@ -21,13 +22,30 @@ struct NoSavedMessagesView: View {
             
             Text("No Saved Messages")
                 .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.white)
                 .padding(.top, 16)
                 .padding(.bottom, 1)
 
             
-            Text("Tap the bookmark icon on a message to save it!")
-                .foregroundColor(Color(.systemGray))
-                .font(.system(size: 20, weight: .medium))
+            HStack(spacing: 4) {
+                
+                
+                Text("Tap")
+                    .foregroundColor(.white)
+                    .font(.system(size: 20, weight: .regular, design: .rounded))
+                
+                Image(systemName: "bookmark")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(width: 20, height: 20)
+                
+                Text("on Saylo's you want to save")
+                    .foregroundColor(.white)
+                    .font(.system(size: 20, weight: .regular, design: .rounded))
+                
+            }
+        
             
             Spacer()
         }

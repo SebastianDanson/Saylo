@@ -34,6 +34,10 @@ struct UnreadMessagesScrollView: View {
                         
                         HStack(spacing: IS_SMALL_WIDTH ? 3 : 4) {
                             
+                            if !viewModel.showSavedPosts {
+                                ViewSavedMessagesButton()
+                            }
+
                             ForEach(Array(messages.enumerated()), id: \.1.id) { i, message in
                                 
                                 ZStack {
@@ -160,19 +164,14 @@ struct UnreadMessagesScrollView: View {
                                 .overlay(
                                     
                                     ZStack {
-                                        //
+//
                                         if i == messages.count - 1 {
                                             MessageSendingView(isSending: $viewModel.isSending, hasSent: $viewModel.hasSent)
                                         }
-                                        
-                                        
-//                                        if viewModel.messages.count > 0 {
-//                                            let isSaved = viewModel.showSavedPosts ? $viewModel.savedMessages[i].isSaved : $viewModel.messages[i].isSaved
+
                                         SaveView(showAlert: $showAlert, isSaved: messages[i].isSaved, index: i)
-//                                        }
-                                        
+//
                                     }
-                                    
                                 )
                                 .onTapGesture {
                                     
@@ -188,46 +187,57 @@ struct UnreadMessagesScrollView: View {
                                 }
                             }
                             
-                            //                            if viewModel.liveUsers.count > 0, !viewModel.liveUsers.contains(AuthViewModel.shared.getUserId()) {
                             LiveUsersView(liveUsers: $viewModel.liveUsers, reader: reader)
-                            
-                            
-                            //                            }
                             
                             if !viewModel.sendingLiveRecordingId.isEmpty && viewModel.sendingLiveRecordingId != AuthViewModel.shared.getUserId() {
                                 LoadingVideoView()
                             }
-                            
                         }
                     }
                 }
-                
             } else {
                 
                 if !viewModel.showSavedPosts {
-                    
-                    VStack(spacing: 2) {
+                    HStack {
                         
-                        Text("Record a Saylo for \(viewModel.chat?.name ?? "")")
-                            .foregroundColor(.white)
-                            .font(.system(size: IS_SE ? 18 : (IS_SMALL_WIDTH ? 20 : 22), weight: .semibold, design: .rounded))
-                            .padding(.bottom, 2)
+//                        ViewSavedMessagesButton()
+//                            .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT - 8)
                         
-                        
-                        Text("Unsaved Saylo's dissappear after 48h")
-                            .foregroundColor(.white)
-                            .font(.system(size: IS_SE ? 14 : (IS_SMALL_WIDTH ? 15 : 16), weight: .regular, design: .rounded))
+                        VStack(spacing: 4) {
+                            
+                            Text("Saylo's dissapear after 48h")
+                                .foregroundColor(.white)
+                                .font(.system(size: IS_SE ? 18 : (IS_SMALL_WIDTH ? 20 : 22), weight: .semibold, design: .rounded))
+                                .padding(.bottom, 2)
+                            
+                            HStack(spacing: 4) {
+                                
+                                let size: CGFloat = IS_SE ? 14 : (IS_SMALL_WIDTH ? 15 : 16)
+                                
+                                Text("Tap")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: size, weight: .regular, design: .rounded))
+                                
+                                Image(systemName: "bookmark")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.white)
+                                    .frame(width: size, height: size)
+                                
+                                Text("on Saylo's you want to save")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: IS_SE ? 14 : (IS_SMALL_WIDTH ? 15 : 16), weight: .regular, design: .rounded))
+                                
+                            }
                             .padding(.bottom, IS_SMALL_PHONE ? (IS_SMALL_WIDTH ? 2 : 8) : 6)
-                        
+                            
+                        }
+                        .frame(width: SCREEN_WIDTH - 12, height: MINI_MESSAGE_HEIGHT - 8)
+                        .background(Color(white: 0.1, opacity: 1))
+                        .cornerRadius(8, corners: .allCorners)
                     }
-                    .frame(width: SCREEN_WIDTH - 12, height: MINI_MESSAGE_HEIGHT - 8)
-                    .background(Color(white: 0.1, opacity: 1))
-                    .cornerRadius(8, corners: .allCorners)
-                    
                 }
             }
-            
-            
         }
         .frame(width: SCREEN_WIDTH)
     }
@@ -292,10 +302,6 @@ struct CircularLoadingAnimationView: View {
     var body: some View {
         ZStack {
             
-            //            Circle()
-            //                .stroke(Color(.systemGray5), lineWidth: 6)
-            //                .frame(width: dimension, height: dimension)
-            
             Circle()
                 .trim(from: 0, to: 0.2)
                 .stroke(Color.green, lineWidth: 6)
@@ -310,54 +316,55 @@ struct CircularLoadingAnimationView: View {
 }
 
 struct SaveView: View {
-
+    
     var isSaved: Bool
     @Binding var showAlert: Bool
     let index: Int
-
+    
     init(showAlert: Binding<Bool>, isSaved: Bool, index: Int) {
         self.isSaved = isSaved
         self._showAlert = showAlert
         self.index = index
     }
-
+    
     var body: some View {
-
+        
         VStack {
-
+            
             HStack {
-
+                
                 Spacer()
-
+                
                 Button {
-
+                    
                     if !isSaved {
                         MainViewModel.shared.isSaving = true
                         ConversationViewModel.shared.updateIsSaved(atIndex: index)
                     } else {
+                        ConversationViewModel.shared.saveToggleIndex = index
                         showAlert = true
                     }
                 } label: {
-
+                    
                     ZStack {
-
+                        
                         Color.fadedBlack
-
+                        
                         Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 19, height: 19)
                             .foregroundColor(Color(.white))
-
+                        
                     }
                     .frame(width: 32, height: 32)
                     .clipShape(Circle())
                     .padding(4)
-
+                    
                 }
-
+                
             }
-
+            
             Spacer()
         }
     }
@@ -383,7 +390,7 @@ struct SaveViewPaused: View {
                 
                 
                 withAnimation {
-                                        
+                    
                     if !isSaved {
                         MainViewModel.shared.isSaving = true
                         ConversationViewModel.shared.updateIsSaved(atIndex: index)
@@ -393,28 +400,28 @@ struct SaveViewPaused: View {
                 }
             } label: {
                 
-//                ZStack {
-//
-//                    Color.fadedBlack
-//
-//                    VStack(spacing: 3) {
-//
-//                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .frame(width: 26, height: 26)
-//                            .foregroundColor(Color(.white))
-//
-//                        Text(self.isSaved ? "Unsave" : "Save")
-//                            .foregroundColor(.white)
-//                            .font(Font.system(size: 12, weight: .semibold, design: .rounded))
-//
-//                    }
-//
-//                }
-//                .frame(width: 64, height: 64)
-//                .clipShape(Circle())
-//                .padding(4)
+                //                ZStack {
+                //
+                //                    Color.fadedBlack
+                //
+                //                    VStack(spacing: 3) {
+                //
+                //                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
+                //                            .resizable()
+                //                            .scaledToFit()
+                //                            .frame(width: 26, height: 26)
+                //                            .foregroundColor(Color(.white))
+                //
+                //                        Text(self.isSaved ? "Unsave" : "Save")
+                //                            .foregroundColor(.white)
+                //                            .font(Font.system(size: 12, weight: .semibold, design: .rounded))
+                //
+                //                    }
+                //
+                //                }
+                //                .frame(width: 64, height: 64)
+                //                .clipShape(Circle())
+                //                .padding(4)
                 
             }
         }
@@ -630,7 +637,6 @@ struct ReplyView: View {
                 
                 ZStack {
                     
-                    
                     Image(systemName: "arrowshape.turn.up.left.fill")
                         .resizable()
                         .scaledToFit()
@@ -663,5 +669,34 @@ extension ImageCache {
     private static var imageCache = ImageCache()
     static func getImageCache() -> ImageCache {
         return imageCache
+    }
+}
+
+struct ViewSavedMessagesButton: View {
+    
+    var body: some View {
+        
+        ZStack {
+            
+            Color.init(white: 0.1)
+            
+            VStack(spacing: 8) {
+                
+                Image(systemName: "bookmark")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(width: MINI_MESSAGE_WIDTH/3.5, height: MINI_MESSAGE_HEIGHT/3.5)
+                
+                Text("Saved")
+                    .foregroundColor(.white)
+                    .font(Font.system(size: 16, weight: .medium))
+            }
+        }
+        .frame(width: MINI_MESSAGE_WIDTH, height: MINI_MESSAGE_HEIGHT)
+        .cornerRadius(6)
+        .onTapGesture {
+            ConversationViewModel.shared.getSavedPosts()
+        }
     }
 }

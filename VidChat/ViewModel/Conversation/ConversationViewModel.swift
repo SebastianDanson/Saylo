@@ -38,7 +38,7 @@ class ConversationViewModel: ObservableObject {
     @Published var isTyping = false
     var sendingMessageDic = [String:Any]()
     var agoraKit: AgoraRtcEngineKit?
-    
+    var saveToggleIndex: Int = 0 //the index to update isSasved on the saved alert
     @Published var messages = [Message]() {
         didSet {
             handleMessagesSet()
@@ -151,7 +151,6 @@ class ConversationViewModel: ObservableObject {
     }
     
     func setChat(chat: Chat) {
-        print(chat.id)
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
@@ -184,11 +183,15 @@ class ConversationViewModel: ObservableObject {
     func removeChat() {
         
         if let chat = chat {
+            
             ConversationService.updateLastVisited(forChat: chat)
             ConversationViewModel.shared.setIsNotLive()
             ConversationViewModel.shared.setIsOffChat()
             ConversationGridViewModel.shared.setChatCache()
+            ConversationViewModel.shared.showSavedPosts = false
+            
             if let index = ConversationGridViewModel.shared.chats.firstIndex(where: {$0.id ==  chat.id}) {
+                ConversationGridViewModel.shared.chats[index].messages = messages
                 ConversationGridViewModel.shared.chats[index].lastReadMessageIndex = chat.messages.count - 1
                 ConversationGridViewModel.shared.chats[index].hasUnreadMessage = false
             }
@@ -196,11 +199,13 @@ class ConversationViewModel: ObservableObject {
         
         MainViewModel.shared.showFilters = false
         MainViewModel.shared.showCaption = false
+        
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
         self.presentUsers.removeAll()
         self.liveUsers.removeAll()
         self.hideLiveView()
+        self.messages.removeAll()
      
         self.didCancelRecording = false
         self.removeListener()
@@ -563,9 +568,18 @@ class ConversationViewModel: ObservableObject {
     
     
     func updateIsSaved(atIndex i: Int) {
-        self.messages[i].isSaved.toggle()
-        self.savedMessages.removeAll(where: {$0.id == self.messages[i].id})
-        ConversationService.updateIsSaved(forMessage: self.messages[i], chatId: self.chatId)
+        if !ConversationViewModel.shared.showSavedPosts {
+            self.messages[i].isSaved.toggle()
+            self.savedMessages.removeAll(where: {$0.id == self.messages[i].id})
+            ConversationService.updateIsSaved(forMessage: self.messages[i], chatId: self.chatId)
+        } else {
+            ConversationService.updateIsSaved(forMessage: self.savedMessages[i], chatId: self.chatId)
+            self.savedMessages.remove(at: i)
+            
+            if self.savedMessages.count == 0 {
+                self.showSavedPosts = false
+            }
+        }
     }
     
     fileprivate func fetchSavedMessages() {
@@ -674,7 +688,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func deleteMessage(message: Message) {
-        if ConversationViewModel.shared.messages.count == 1 {
+        if !ConversationViewModel.shared.showSavedPosts, ConversationViewModel.shared.messages.count == 1 {
             MainViewModel.shared.selectedView = .Video
         }
         ConversationService.deleteMessage(toDocWithId: message.chatId, messageId: message.id)

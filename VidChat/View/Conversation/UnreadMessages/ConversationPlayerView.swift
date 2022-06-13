@@ -159,6 +159,7 @@ struct ConversationPlayerView: View {
                                             
                                             Button {
                                                 if messages[index].isSaved {
+                                                    ConversationViewModel.shared.saveToggleIndex = index
                                                     showAlert = true
                                                 } else {
                                                     ConversationViewModel.shared.updateIsSaved(atIndex: index)
@@ -311,6 +312,8 @@ struct ConversationPlayerView: View {
                     
                 }
                 
+            } else if viewModel.showSavedPosts {
+                NoSavedMessagesView()
             }
             
             Spacer()
@@ -320,24 +323,24 @@ struct ConversationPlayerView: View {
             
             ZStack {
                 
-                if viewModel.showSavedPosts, viewModel.savedMessages.count == 0 {
-                    
-                    VStack(spacing: 0) {
-                        
-                        Text("No messages saved in this chat")
-                            .foregroundColor(.white)
-                            .font(.system(size: IS_SMALL_PHONE ? 21 : 24, weight: .semibold, design: .rounded))
-                            .padding(.bottom, 4)
-                        
-                        Text("Tap and hold on a message to save it!")
-                            .foregroundColor(.white)
-                            .font(.system(size: IS_SMALL_PHONE ? 16 : 18, weight: .regular, design: .rounded))
-                            .padding(.bottom, 10)
-                    }
-                    .frame(width: SCREEN_WIDTH - 12, height: 150)
-                    .background(Color.mainBlue)
-                    .cornerRadius(8)
-                }
+//                if viewModel.showSavedPosts, viewModel.savedMessages.count == 0 {
+//                    
+//                    VStack(spacing: 0) {
+//                        
+//                        Text("No messages saved in this chat")
+//                            .foregroundColor(.white)
+//                            .font(.system(size: IS_SMALL_PHONE ? 21 : 24, weight: .semibold, design: .rounded))
+//                            .padding(.bottom, 4)
+//                        
+//                        Text("Tap and hold on a message to save it!")
+//                            .foregroundColor(.white)
+//                            .font(.system(size: IS_SMALL_PHONE ? 16 : 18, weight: .regular, design: .rounded))
+//                            .padding(.bottom, 10)
+//                    }
+//                    .frame(width: SCREEN_WIDTH - 12, height: 150)
+//                    .background(Color.mainBlue)
+//                    .cornerRadius(8)
+//                }
                 
                 VStack {
                     

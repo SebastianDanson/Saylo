@@ -106,7 +106,9 @@ struct TextCell: View {
                             }
                         }
                         .alert(isPresented: $showAlert) {
-                            savedPostAlert(mesageIndex: ConversationViewModel.shared.messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
+                            let messages = ConversationViewModel.shared.showSavedPosts ?
+                                            ConversationViewModel.shared.savedMessages : ConversationViewModel.shared.messages
+                            return savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == message.id}), completion: { isSaved in
                                 withAnimation {
                                     self.isSaved = isSaved
                                     message.isSaved = isSaved
