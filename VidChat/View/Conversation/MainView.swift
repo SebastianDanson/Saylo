@@ -22,13 +22,14 @@ struct MainView: View {
     @State var showAllowCameraAccessAlert = false
     @State var showAlert = false
     @State var textColor: Color = .white
+    @State var hasJoinedCall = false
     
     var cameraView = CameraView()
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
     
     var body: some View {
         
-        if !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
+        if !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) || conversationViewModel.joinedCallUsers.count < 2 {
             
             
             ZStack(alignment: .center) {
@@ -40,11 +41,6 @@ struct MainView: View {
                     TakenPhotoView(photo: photo)
                 }
                 
-                //
-                //            if conversationViewModel.isLive {
-                //
-                //
-                //            }
                 LiveView(showStream: $conversationViewModel.isLive)
                 
                 //Camera view shown when recording video or taking photo
@@ -114,6 +110,7 @@ struct MainView: View {
                     }
                     
                     if conversationViewModel.currentlyWatchingId == nil {
+                        
                         //Overlay Buttons
                         VStack(spacing: 6) {
                             
@@ -122,8 +119,8 @@ struct MainView: View {
                             
                             //Add message in chat for calls
                             
-                            if conversationViewModel.presentUsers.count > 1, viewModel.selectedView != .Saylo, conversationViewModel.joinedCallUsers.count == 0 {
-                                JoinCallSmallView()
+                            if conversationViewModel.presentUsers.count > 1, viewModel.selectedView != .Saylo, conversationViewModel.joinedCallUsers.count == 0, !hasJoinedCall {
+                                JoinCallSmallView(hasJoinedCall: $hasJoinedCall)
                             }
                             
                             ZStack {
@@ -220,15 +217,6 @@ struct MainView: View {
                                         CancelRecordingButton(bottomPadding: bottomPadding).zIndex(6)
                                     }
                                 }
-                                
-                                //                        if IS_SMALL_PHONE {
-                                //                            if !viewModel.isRecording && !viewModel.showPhotos {
-                                //                                let normalPadding = CHATS_VIEW_HEIGHT + MESSAGE_HEIGHT + TOP_PADDING - SCREEN_HEIGHT
-                                //                                UnreadMessagesScrollView(selectedView: $viewModel.selectedView)
-                                //                                    .padding(.bottom, viewModel.selectedView == .Saylo ?
-                                //                                             normalPadding - SMALL_PHONE_SAYLO_HEIGHT - TOP_PADDING - (SCREEN_WIDTH < 350 ? 20 : 0) : normalPadding)
-                                //                            }
-                                //                        }
                             }
                         }
                         .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET)
@@ -242,7 +230,7 @@ struct MainView: View {
                 }
                 .zIndex(3)
                 
-                if conversationViewModel.joinedCallUsers.count > 0 {
+                if conversationViewModel.joinedCallUsers.count > 0 && !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
                     JoinCallLargeView()
                 }
                 
@@ -255,16 +243,7 @@ struct MainView: View {
                             .frame(width: SCREEN_WIDTH)
                             .cornerRadius(14)
                     }
-                    //
-                    //                if viewModel.showNewChat {
-                    //                    NewConversationView()
-                    //                        .zIndex(5)
-                    //                        .transition(.move(edge: .bottom))
-                    //                        .frame(width: SCREEN_WIDTH)
-                    //                        .cornerRadius(14)
-                    //                }
-                    //
-                    
+                         
                     
                     if let chat = viewModel.settingsChat {
                         ChatSettingsView(chat: chat)
@@ -301,6 +280,9 @@ struct MainView: View {
                             .padding(.bottom, MINI_MESSAGE_HEIGHT)
                     }
                     
+                    if hasJoinedCall {
+                        WaitingForUserView(chat: conversationViewModel.chat!, hasJoinedCall: $hasJoinedCall)
+                    }
                 }
             )
             .navigationBarHidden(true)
@@ -1064,10 +1046,14 @@ struct JoinCallSmallView: View {
     
     var imageName = ConversationViewModel.shared.chat?.profileImage ?? ""
     let dimension: CGFloat = IS_SMALL_WIDTH ? 44 : (IS_SMALL_PHONE ? 46 : 48)
+    @Binding var hasJoinedCall: Bool
     
     var body: some View {
         
         Button {
+            withAnimation {
+                hasJoinedCall = true
+            }
             ConversationViewModel.shared.setIsOnCall()
         } label: {
             

@@ -100,6 +100,7 @@
 		06B6764E2818A74200ABBF91 /* CreateChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B6764D2818A74200ABBF91 /* CreateChatCell.swift */; };
 		06BC289A281A3EFA001EC5ED /* PhotoCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BC2899281A3EFA001EC5ED /* PhotoCamera.swift */; };
 		06C8E6AD27CD38CE005CF9BD /* ConversationPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */; };
+		06CD9B1A28582A8000694DB1 /* WaitingForUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CD9B1928582A8000694DB1 /* WaitingForUserView.swift */; };
 		06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */; };
 		06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */; };
 		06D027AD27D071A600A26869 /* PlaybackSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D027AC27D071A600A26869 /* PlaybackSlider.swift */; };
@@ -316,6 +317,7 @@
 		06B6764D2818A74200ABBF91 /* CreateChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateChatCell.swift; sourceTree = "<group>"; };
 		06BC2899281A3EFA001EC5ED /* PhotoCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCamera.swift; sourceTree = "<group>"; };
 		06C8E6AC27CD38CE005CF9BD /* ConversationPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPlayerView.swift; sourceTree = "<group>"; };
+		06CD9B1928582A8000694DB1 /* WaitingForUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingForUserView.swift; sourceTree = "<group>"; };
 		06CFCD6A278CF0AF0059C252 /* NoSavedMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSavedMessagesView.swift; sourceTree = "<group>"; };
 		06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoMessagesView.swift; sourceTree = "<group>"; };
 		06D027AC27D071A600A26869 /* PlaybackSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSlider.swift; sourceTree = "<group>"; };
@@ -920,6 +922,7 @@
 				064F5FFB2857866100286A78 /* SaveView.swift */,
 				064F5FFD2857868100286A78 /* CircularLoadingAnimationView.swift */,
 				064F5FFF2857869B00286A78 /* CallEndedView.swift */,
+				06CD9B1928582A8000694DB1 /* WaitingForUserView.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -1193,6 +1196,7 @@
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,
 				0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */,
+				06CD9B1A28582A8000694DB1 /* WaitingForUserView.swift in Sources */,
 				0624661C281B1419000A8838 /* EntryViewStyle+Extensions.swift in Sources */,
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
