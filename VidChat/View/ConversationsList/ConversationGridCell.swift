@@ -24,7 +24,6 @@ struct ConversationGridCell: View {
         
         ZStack {
             
-            
             HStack(alignment:.top, spacing: 14) {
                 
                 ChatImageCircle(chat: chat, diameter: diameter)
@@ -74,15 +73,13 @@ struct ConversationGridCell: View {
                 
                 Spacer()
                 
-                
-                
                 VStack {
                     
                     Spacer()
                     
                     HStack(spacing: 12) {
                         
-                        if chat.hasUnreadMessage {
+                        if chat.hasUnreadMessage || chat.isLive {
                             
                             Circle()
                                 .frame(width: 13, height: 13)

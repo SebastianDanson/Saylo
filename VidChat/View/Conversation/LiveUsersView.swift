@@ -59,7 +59,9 @@ struct LiveUsersView: View {
                     ConversationViewModel.shared.isLive = true
                 }
                 .onAppear {
-                    reader.scrollTo(id, anchor: .trailing)
+                    withAnimation {
+                        reader.scrollTo(id, anchor: .trailing)
+                    }
                 }
             }
         }

@@ -12,18 +12,20 @@ struct ConversationService {
     
     static func uploadMessage(toDocWithId docId: String, data: [String:Any], completion: @escaping((Error?) -> Void)) {
         
-//        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
-//            return
-//        }
+        //        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
+        //            return
+        //        }
         
-//        let conversationRef = COLLECTION_CONVERSATIONS.document(docId)
+        //        let conversationRef = COLLECTION_CONVERSATIONS.document(docId)
         
-//        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
-        COLLECTION_CONVERSATIONS.document(docId).updateData(["messages": FieldValue.arrayUnion([data])])
-//            return nil
-//        }) { (_, error) in
-//            completion(error)
-//        }
+        //        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+        COLLECTION_CONVERSATIONS.document(docId).updateData(["messages": FieldValue.arrayUnion([data])]) { error in
+            completion(error)
+        }
+        //            return nil
+        //        }) { (_, error) in
+        //            completion(error)
+        //        }
         
     }
     
@@ -36,7 +38,7 @@ struct ConversationService {
             if let data = snapshot?.data() {
                 
                 let messagesDic = data["messages"] as? [[String:Any]] ?? [[String:Any]]()
-            
+                
                 if let messageDic = messagesDic.first(where: {$0["id"] as? String ?? "" == messageId}) {
                     
                     var savedMessages = data["savedMessages"] as? [[String:Any]] ?? [[String:Any]]()
@@ -47,7 +49,7 @@ struct ConversationService {
                     }
                     
                     reactionsDic.removeAll(where: {$0["messageId"] as? String ?? "" == messageId})
-                       
+                    
                     let conversationRef = COLLECTION_CONVERSATIONS.document(docId)
                     
                     Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
@@ -73,7 +75,7 @@ struct ConversationService {
                     let id = message["id"] as? String ?? ""
                     messages.append(Message(dictionary: message, id: id, isSaved: true))
                 }
-//                ConversationViewModel.shared.setIsSameId(messages: messages)
+                //                ConversationViewModel.shared.setIsSameId(messages: messages)
             }
             
             completion(messages)
@@ -171,7 +173,7 @@ struct ConversationService {
         var usersLastVisitedDictionary = [String:Timestamp]()
         
         let usersLastVisited = ConversationViewModel.shared.usersLastVisited
-
+        
         usersLastVisited.forEach { lastVisited in
             usersLastVisitedDictionary[lastVisited.id] = lastVisited.timestamp
         }
@@ -181,22 +183,22 @@ struct ConversationService {
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["usersLastVisited":usersLastVisitedDictionary])
     }
     
-//    static func updateSeenLastPost(forChat chat: Chat) {
-//
-//        //get user id
-//        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
-//            return
-//        }
-//
-//        //ensure the user hasn't already viewed the last post
-//        guard !chat.seenLastPost.contains(uid) else {
-//            return
-//        }
-//
-//        chat.seenLastPost.append(uid)
-//
-//        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["seenLastPost":FieldValue.arrayUnion([uid])])
-//    }
+    //    static func updateSeenLastPost(forChat chat: Chat) {
+    //
+    //        //get user id
+    //        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else {
+    //            return
+    //        }
+    //
+    //        //ensure the user hasn't already viewed the last post
+    //        guard !chat.seenLastPost.contains(uid) else {
+    //            return
+    //        }
+    //
+    //        chat.seenLastPost.append(uid)
+    //
+    //        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["seenLastPost":FieldValue.arrayUnion([uid])])
+    //    }
     
     static func updateLastVisited(forChat chat: Chat) {
         
@@ -216,7 +218,7 @@ struct ConversationService {
         
         updateUsersLastVisited(forChat: chat)
         ConversationViewModel.shared.updateNoticationsArray(chatId: chat.id)
-                
+        
     }
     
     static func removeOldMessages(chatData data: [String:Any], chatId: String) {

@@ -21,7 +21,7 @@ struct UnreadMessagesScrollView: View {
         ZStack(alignment: .top) {
             
             let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
-            if messages.count > 0 {
+            if messages.count > 0 || viewModel.currentlyWatchingId != nil || !viewModel.sendingLiveRecordingId.isEmpty {
             
                 ScrollView(.horizontal, showsIndicators: false) {
                     
@@ -173,11 +173,8 @@ struct UnreadMessagesScrollView: View {
                                         if i == messages.count - 1 {
                                             MessageSendingView(isSending: $viewModel.isSending, hasSent: $viewModel.hasSent)
                                         }
-
                                         
                                         SaveView(showAlert: $showAlert, isSaved: messages[i].isSaved, index: i)
-                                        
-                                        
 //
                                     }
                                 )
@@ -198,7 +195,7 @@ struct UnreadMessagesScrollView: View {
                             LiveUsersView(liveUsers: $viewModel.liveUsers, reader: reader)
                             
                             if !viewModel.sendingLiveRecordingId.isEmpty && viewModel.sendingLiveRecordingId != AuthViewModel.shared.getUserId() {
-                                LoadingVideoView()
+                                LoadingVideoView(reader: reader)
                             }
                         }
                     }
@@ -206,6 +203,7 @@ struct UnreadMessagesScrollView: View {
             } else {
                 
                 if !viewModel.showSavedPosts {
+                    
                     HStack {
    
                         VStack(spacing: 4) {

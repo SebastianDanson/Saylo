@@ -17,7 +17,7 @@ struct CircularLoadingAnimationView: View {
             
             Circle()
                 .trim(from: 0, to: 0.2)
-                .stroke(Color.green, lineWidth: 6)
+                .stroke(Color.mainBlue, lineWidth: 6)
                 .frame(width: dimension, height: dimension)
                 .rotationEffect(Angle(degrees: isLoading ? 360 : 0))
                 .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))

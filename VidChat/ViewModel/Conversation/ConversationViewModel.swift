@@ -65,7 +65,7 @@ class ConversationViewModel: ObservableObject {
     @Published var noSavedMessages = false
     @Published var noMessages = false
     @Published var showUnreadMessages = false
-//    @Published var seenLastPost = [String]()
+    //    @Published var seenLastPost = [String]()
     @Published var usersLastVisited = [UserLastVisitedInfo]()
     
     @Published var videoLength = 0.0
@@ -123,7 +123,11 @@ class ConversationViewModel: ObservableObject {
     private var listener: ListenerRegistration?
     
     var currentMessageId: String = ""
-    @Published var liveUsers = [String]()
+    @Published var liveUsers = [String]() {
+        didSet {
+            handleLiveUsersSet()
+        }
+    }
     
     @Published var presentUsers = [String]()
     @Published var joinedCallUsers = [String]()
@@ -141,11 +145,11 @@ class ConversationViewModel: ObservableObject {
     }
     
     static let shared = ConversationViewModel()
-        
+    
     private init() {
         CacheManager.removeOldFiles()
     }
-        
+    
     
     func leaveChannel() {
         agoraKit?.leaveChannel()
@@ -156,10 +160,10 @@ class ConversationViewModel: ObservableObject {
         guard let agoraKit = agoraKit else {
             return
         }
-
+        
         let imageBuffer: CVPixelBuffer = sampleBuffer.imageBuffer!
         let videoFrame = AgoraVideoFrame()
-    
+        
         videoFrame.format = 12
         videoFrame.textureBuf = imageBuffer
         videoFrame.time = sampleBuffer.outputPresentationTimeStamp
@@ -168,21 +172,18 @@ class ConversationViewModel: ObservableObject {
     
     func setChat(chat: Chat) {
         
-        print(chat.id)
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
         self.chatId = chat.id
         self.usersLastVisited = chat.usersLastVisited
-    
-        chat.usersLastVisited.forEach { userLastVisied in
-            print(userLastVisied.firstName, userLastVisied.index)
-        }
+        
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
         defaults?.set(chat.id, forKey: "selectedChatId")
         self.messages = chat.messages
         ConversationGridViewModel.shared.setChatCache()
         self.hasUnread = chat.hasUnreadMessage
+        chat.isLive = false
         self.addListener()
         chat.hasUnreadMessage = false
         self.setIsOnChat()
@@ -227,7 +228,7 @@ class ConversationViewModel: ObservableObject {
         self.liveUsers.removeAll()
         self.hideLiveView()
         self.messages.removeAll()
-     
+        
         self.didCancelRecording = false
         self.removeListener()
     }
@@ -399,8 +400,8 @@ class ConversationViewModel: ObservableObject {
         }
         
         data["userId"] = currentUser.id
-        data["metaData"] = ["userId": currentUser.id]
-
+        data["metaData"] = ["userId": currentUser.id, "isLive":true, "chatId":chat.id]
+        
         Functions.functions().httpsCallable("sendNotification").call(data) { (result, error) in }
     }
     
@@ -434,14 +435,14 @@ class ConversationViewModel: ObservableObject {
     func removeAllUsersFromCall() {
         guard let chat = chat else { return }
         joinedCallUsers.removeAll()
-
+        
         let chatRef = COLLECTION_CONVERSATIONS.document(chat.id)
         Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
             transaction.updateData(["joinedCallUsers": []], forDocument: chatRef)
             return nil
         }) { (_, error) in }
         
-//        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers": []])
+        //        COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers": []])
     }
     
     func setIsOffCall() {
@@ -458,7 +459,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func combineFiles(fileName1: String, fileName2: String, destFileName: String) {
-       
+        
         let data = ["file1":fileName1, "file2":fileName2, "destFile":destFileName]
         Functions.functions().httpsCallable("composeFiles").call(data) { (result, error) in }
     }
@@ -477,12 +478,12 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-//    func downloadTemp() {
-//        let storage = Storage.storage().reference(forURL: "gs://vidchat-12c32.appspot.com/my-output-folder/sd.mp4")
-//        storage.downloadURL { url, error in
-//            print("URL", url, "ERROR", error)
-//        }
-//    }
+    //    func downloadTemp() {
+    //        let storage = Storage.storage().reference(forURL: "gs://vidchat-12c32.appspot.com/my-output-folder/sd.mp4")
+    //        storage.downloadURL { url, error in
+    //            print("URL", url, "ERROR", error)
+    //        }
+    //    }
     
     func mediaFinishedUploading(chatId: String, messageId: String, newUrl: String) {
         
@@ -504,9 +505,7 @@ class ConversationViewModel: ObservableObject {
                     print("ERROR uploading message \(error.localizedDescription)")
                 } else {
                     
-                    withAnimation {
-                        ConversationGridViewModel.shared.sortChats()
-                    }
+                    ConversationGridViewModel.shared.sortChats()
                     
                     if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == docId}) {
                         
@@ -625,7 +624,7 @@ class ConversationViewModel: ObservableObject {
         if MainViewModel.shared.selectedView != .Saylo {
             if messages.count > 0, let chat = chat {
                 
-                if chat.hasUnreadMessage {
+                if chat.hasUnreadMessage && liveUsers.count == 0 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.showMessage(atIndex: min(chat.lastReadMessageIndex, chat.messages.count - 1))
                     }
@@ -644,11 +643,19 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
-//    func updateLastSeenPost() {
-//        
-//        guard let chat = chat else {return}
-//        ConversationService.updateSeenLastPost(forChat: chat)
-//    }
+    func handleLiveUsersSet() {
+        
+        if liveUsers.count > 0 && !liveUsers.contains(AuthViewModel.shared.getUserId()){
+            ConversationViewModel.shared.currentlyWatchingId = liveUsers[0]
+            ConversationViewModel.shared.isLive = true
+        }
+    }
+    
+    //    func updateLastSeenPost() {
+    //
+    //        guard let chat = chat else {return}
+    //        ConversationService.updateSeenLastPost(forChat: chat)
+    //    }
     
     func addReactionToMessage(withId id: String, reaction: Reaction) {
         
@@ -762,7 +769,7 @@ class ConversationViewModel: ObservableObject {
                         }
                     }
                     
-
+                    
                     if self.messages.count != messages.count {
                         
                         if self.sendingLiveRecordingId != "" {
@@ -776,23 +783,6 @@ class ConversationViewModel: ObservableObject {
                         self.lastSendingRecordingId = self.sendingLiveRecordingId
                     }
                     
-                        self.messages = messages
-                    
-                    let usersLastVisitedDic = data["usersLastVisited"] as? [String:Timestamp] ?? [String:Timestamp]()
-                    self.chat?.setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
-                    self.usersLastVisited = self.chat?.usersLastVisited ?? [UserLastVisitedInfo]()
-                    
-                    //                    if self.hasUnread {
-                    //                        let chat = Chat(dictionary: data, id: self.chatId)
-                    ////                        if self.index != chat.lastReadMessageIndex {
-                    //                            self.showMessage(atIndex: chat.lastReadMessageIndex)
-                    ////                        }
-                    //                        self.hasUnread = false
-                    //                    }
-                    
-                    //                    ConversationViewModel.shared.setIsSameId(messages: self.messages)
-                    
-                    
                     self.liveUsers = data["liveUsers"] as? [String] ?? [String]()
                     
                     if let currentlyWatchingId = self.currentlyWatchingId {
@@ -801,13 +791,23 @@ class ConversationViewModel: ObservableObject {
                         }
                     }
                     
+                    self.messages = messages
+                    
+                    let usersLastVisitedDic = data["usersLastVisited"] as? [String:Timestamp] ?? [String:Timestamp]()
+                    if let chat = self.chat {
+                        chat.setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
+                        self.usersLastVisited = chat.usersLastVisited
+                    }
+                    
+                    
+                    
                     withAnimation {
                         self.joinedCallUsers = data["joinedCallUsers"] as? [String] ?? [String]()
                         self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
                     }
-
+                    
                     self.noMessages = messages.count == 0
-//                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
+                    //                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     
                     let chat = Chat(dictionary: data, id: self.chatId)
                     self.chat?.chatMembers = chat.chatMembers
@@ -824,7 +824,7 @@ class ConversationViewModel: ObservableObject {
         }
         
         return chatMember.profileImage
- 
+        
     }
     
     func removeListener() {
@@ -1033,14 +1033,4 @@ class ConversationViewModel: ObservableObject {
         return messages[index].type == .Video || messages[index].type == .Audio
     }
     
-    func setLastSeenPostUsers() {
-        
-        guard let chat = chat else {
-            return
-        }
-
-        let chatmembers = chat.chatMembers
-        
-        
-    }
 }

@@ -241,7 +241,7 @@ class ConversationGridViewModel: ObservableObject {
                 if count == user.chats.count {
                     
                     
-                    self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+                    self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost() || $0.isLive})
                     
                     if let index = self.chats.firstIndex(where: {$0.isTeamSaylo}) {
                         self.chats.append(self.chats.remove(at: index))
@@ -297,7 +297,7 @@ class ConversationGridViewModel: ObservableObject {
     }
     
     func sortChats(withAnimation: Bool = false) {
-        self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost()})
+        self.chats = self.chats.sorted(by: {$0.getDateOfLastPost() > $1.getDateOfLastPost() || $0.isLive})
         
         if let index = self.chats.firstIndex(where: {$0.isTeamSaylo}) {
             self.chats.append(self.chats.remove(at: index))

@@ -103,10 +103,7 @@ struct ConversationPlayerView: View {
                     .overlay(
                         
                         ZStack {
-                            
-                            
-                            //                            if !viewModel.showPlaybackControls {
-                            
+                       
                             VStack {
                                 
                                 Spacer()
@@ -141,7 +138,6 @@ struct ConversationPlayerView: View {
                                                 .padding(.bottom, 8)
                                             }
                                         } else {
-                                            
                                             
                                             Button {
                                                 removeView()
@@ -180,11 +176,7 @@ struct ConversationPlayerView: View {
                                                     
                                                 })
                                             }
-                                            
-                                            
-                                            
                                         }
-                                        
                                         
                                         if !viewModel.showSavedPosts {
                                             

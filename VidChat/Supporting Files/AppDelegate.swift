@@ -217,7 +217,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         
         let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
         let acceptedFriendRequest = data?["acceptedFriendRequest"] as? Bool ?? false
-        
+        let isLive = data?["isLive"] as? Bool ?? false
+
         let fromCurrentUser = AuthViewModel.shared.currentUser?.id == userId
         
         let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
@@ -246,7 +247,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                 
                 ConversationGridViewModel.shared.fetchConversation(withId: chatId) {
                     
-                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording, ConversationGridViewModel.shared.showConversation {
+                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording, ConversationGridViewModel.shared.showConversation, ConversationViewModel.shared.liveUsers.count == 0 {
                         
                         if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId}) {
                             
@@ -260,6 +261,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                     }
                 }
             }
+            
             
             completionHandler([.badge, .banner])
         } else {

@@ -100,7 +100,6 @@ class LiveStreamUIViewController: UIViewController {
         getAgoraEngine().setClientRole(isHost ? .broadcaster : .audience, options: options)
         getAgoraEngine().setExternalVideoSource(true, useTexture: true, pushMode: true)
         let channelId = isHost ? AuthViewModel.shared.getUserId() : ConversationViewModel.shared.currentlyWatchingId ?? ""
-        print(channelId)
         getAgoraEngine().joinChannel(byToken: nil, channelId: channelId, info: nil, uid: isHost ? 1 : 0)
 //        { [weak self] (sid, uid, elapsed) in
 //            print("SID:", sid, "UID:", uid, "ELAPSED:",elapsed)
@@ -112,9 +111,11 @@ class LiveStreamUIViewController: UIViewController {
 extension LiveStreamUIViewController: AgoraRtcEngineDelegate {
    
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-        leaveChannel()
-        ConversationViewModel.shared.hideLiveView()
         
+        if uid == 1 {
+            leaveChannel()
+            ConversationViewModel.shared.hideLiveView()
+        }
     }
 }
 

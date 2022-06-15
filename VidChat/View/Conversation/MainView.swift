@@ -14,7 +14,7 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel.shared
     @StateObject var conversationViewModel = ConversationViewModel.shared
     @StateObject var textOverlayViewModel = TextOverlayViewModel.shared
-
+    
     @State private var searchText = ""
     @State private var noteText = ""
     @State var isTyping = false
@@ -31,7 +31,6 @@ struct MainView: View {
         
         if !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) || conversationViewModel.joinedCallUsers.count < 2 {
             
-            
             ZStack(alignment: .center) {
                 
                 Color.black.ignoresSafeArea()
@@ -41,7 +40,7 @@ struct MainView: View {
                     TakenPhotoView(photo: photo)
                 }
                 
-                LiveView(showStream: $conversationViewModel.isLive)
+                LiveView(showStream: $conversationViewModel.isLive, currentlyWatchingLiveId: $conversationViewModel.currentlyWatchingId)
                 
                 //Camera view shown when recording video or taking photo
                 if viewModel.showCamera() {
@@ -243,7 +242,7 @@ struct MainView: View {
                             .frame(width: SCREEN_WIDTH)
                             .cornerRadius(14)
                     }
-                         
+                    
                     
                     if let chat = viewModel.settingsChat {
                         ChatSettingsView(chat: chat)
@@ -263,10 +262,10 @@ struct MainView: View {
                 
                 ZStack {
                     
-                    if viewModel.showCamera() {
+                    if viewModel.showCamera() && conversationViewModel.currentlyWatchingId == nil {
                         MessageAdOnsView(selectedFilter: $conversationViewModel.selectedFilter)
                     }
-        
+                    
                     if viewModel.isRecording {
                         VStack {
                             RecordTimerView()
@@ -360,6 +359,7 @@ struct FlashView: View {
 struct LiveView: View {
     
     @Binding var showStream: Bool
+    @Binding var currentlyWatchingLiveId: String?
     
     var body: some View {
         
@@ -368,17 +368,39 @@ struct LiveView: View {
             if showStream {
                 LiveStreamViewRepresentable()
                     .overlay(
-                        Button(action: {
-                            ConversationViewModel.shared.hideLiveView()
-                        }, label: {
-                            XButton()
-                        })
-                        , alignment: .topLeading
+                        ZStack{
+                            Button(action: {
+                                ConversationViewModel.shared.hideLiveView()
+                            }, label: {
+                                VStack {
+                                    HStack {
+                                        XButton()
+                                        Spacer()
+                                    }
+                                    Spacer()
+                                }
+                            })
+                            
+                            if currentlyWatchingLiveId != nil {
+                                VStack {
+                                    
+                                    Spacer()
+                                    
+                                    Text("Live")
+                                        .foregroundColor(.white)
+                                        .font(Font.system(size: 15, weight: .semibold, design: .rounded))
+                                        .frame(width: 50, height: 24)
+                                        .background(Color.mainBlue)
+                                        .cornerRadius(4)
+                                        .padding(.bottom, BOTTOM_PADDING + MINI_MESSAGE_HEIGHT + 20)
+                                    
+                                }
+                            }
+                        }
+                        
                     )
             }
         }
-        
-        
     }
 }
 
@@ -1058,7 +1080,7 @@ struct JoinCallSmallView: View {
         } label: {
             
             VStack(spacing: 4) {
-                                
+                
                 KFImage(URL(string: imageName))
                     .resizable()
                     .scaledToFill()

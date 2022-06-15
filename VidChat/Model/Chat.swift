@@ -32,6 +32,7 @@ class Chat: ObservableObject {
     var nameDictionary: [String:Any]?
     var usersLastVisited = [UserLastVisitedInfo]()
     
+    
     @Published var isSelected = false
     //    @Published var isSending = false {
     //        didSet {
@@ -40,8 +41,15 @@ class Chat: ObservableObject {
     //    }
     //    @Published var uploadProgress: Double = 0.0
     //    @Published var hasSent = false
-    @Published var hasUnreadMessage = false
-    
+    @Published var hasUnreadMessage = false {
+        didSet {
+            if hasUnreadMessage{
+                self.isLive = false
+            }
+        }
+    }
+    @Published var isLive = false
+
     var lastReadMessageIndex = 0
     
     init(dictionary: [String:Any], id: String, shouldRemoveOldMessages: Bool = true) {
@@ -117,7 +125,8 @@ class Chat: ObservableObject {
         
         self.lastReadMessageIndex = getLastReadMessageIndex()
         
-        
+        let liveUsers = dictionary["liveUsers"] as? [String] ?? [String]()
+        self.isLive = liveUsers.count > 0 && !hasUnreadMessage
         //        self.usersLastVisited = usersLastVisited
         
         //        //Add unread messages to player view
