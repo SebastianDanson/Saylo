@@ -299,7 +299,11 @@ struct MainView: View {
             //        }
             
         } else {
-            CallView().ignoresSafeArea()
+            CallView()
+                .ignoresSafeArea()
+                .onAppear {
+                hasJoinedCall = false
+            }
         }
     }
     

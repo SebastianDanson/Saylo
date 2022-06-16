@@ -360,7 +360,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func sendCallEndedMessage() {
-        addMessage(type: .Call)
+        addMessage(type: .Call, hasNotification: false)
     }
     
     func sendCameraMessage(chatId: String?, chat: Chat?) {
