@@ -13,7 +13,7 @@ struct CallView: View {
     @State private var isMuted: Bool = false
     @State private var isFrontFacing: Bool = true
     @State private var showVideo: Bool = true
-    @State private var showCallOptions = true
+//    @State private var showCallOptions = true
     
     @StateObject var callsController = CallManager.shared
     @StateObject var conversationViewModel = ConversationViewModel.shared
@@ -21,20 +21,21 @@ struct CallView: View {
     var body: some View {
         ZStack(alignment: .top) {
             ZStack(alignment: .bottom) {
-                VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo, showCallOptions: $showCallOptions)
-                    .overlay(
-                        ZStack {
-                            if conversationViewModel.joinedCallUsers.count == 1 {
-                                WaitingForUserToJoinCallView()
-                            }
-                        }
-                    )
-                if showCallOptions {
+                VideoCallView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo)
+//                    .overlay(
+//                        ZStack {
+//                            if conversationViewModel.joinedCallUsers.count == 1 {
+//                                WaitingForUserToJoinCallView()
+//                            }
+//                        }
+//                    )
+//                if showCallOptions {
                     CallOptionsView(isMuted: $isMuted, isFrontFacing: $isFrontFacing, showVideo: $showVideo)
-                }
-            }.onTapGesture {
-                showCallOptions.toggle()
+//                }
             }
+//            .onTapGesture {
+//                showCallOptions.toggle()
+//            }
             
             if callsController.remoteUserIDs.count == 0, let chat = CallManager.shared.currentChat {
                 DialingView(chat: chat)

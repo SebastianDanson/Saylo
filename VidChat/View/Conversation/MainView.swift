@@ -23,6 +23,7 @@ struct MainView: View {
     @State var showAlert = false
     @State var textColor: Color = .white
     @State var hasJoinedCall = false
+    @State var hasRejectedCall = false
     
     var cameraView = CameraView()
     let bottomPadding: CGFloat = IS_SMALL_PHONE ? 4 : 8
@@ -229,8 +230,8 @@ struct MainView: View {
                 }
                 .zIndex(3)
                 
-                if conversationViewModel.joinedCallUsers.count > 0 && !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) {
-                    JoinCallLargeView()
+                if conversationViewModel.joinedCallUsers.count > 0 && !conversationViewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) && !hasRejectedCall {
+                    JoinCallLargeView(joinedCallUsers: $conversationViewModel.joinedCallUsers, hasRejectedCall: $hasRejectedCall)
                 }
                 
                 Group {
@@ -1113,87 +1114,141 @@ struct JoinCallSmallView: View {
 struct JoinCallLargeView: View {
     
     var imageName = ConversationViewModel.shared.chat?.profileImage ?? ""
+    @Binding var joinedCallUsers: [String]
+    @Binding var hasRejectedCall: Bool
+    
+    let width = 265
     
     var body: some View {
         
         ZStack {
             
-            VStack(spacing: 12) {
+            Color.init(white: 0, opacity: 0.4)
+            
+            VStack(spacing: 24) {
                 
-                KFImage(URL(string: imageName))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: SCREEN_WIDTH/4, height: SCREEN_WIDTH/4)
-                    .clipShape(Circle())
-                    .overlay(RoundedRectangle(cornerRadius: SCREEN_WIDTH/8)
-                        .stroke(Color.white, lineWidth: 4))
-                
-                
-                Text(getJoinedCallString())
-                    .foregroundColor(.white)
-                    .font(Font.system(size: 22, weight: .semibold, design: .rounded))
-                
-                HStack(spacing: 20) {
-                    
-                    Button {
-                        if ConversationViewModel.shared.joinedCallUsers.count < 2 {
-                            //when user is removed send show them a message saying that u didn't wanna join the call
-                            ConversationViewModel.shared.removeAllUsersFromCall()
-                        }
-                    } label: {
-                        
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(Color(white: 0.73))
-                            
-                            Image("x")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 26, height: 26)
-                        }
-                    }
-                    
-                    Button {
-                        ConversationViewModel.shared.setIsOnCall()
-                    } label: {
-                        ZStack {
-                            
-                            Circle()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.alternateMainBlue)
-                            
-                            Image("video")
-                                .resizable()
-                                .renderingMode(.template)
-                                .scaledToFit()
-                                .foregroundColor(.white)
-                                .frame(width: 30, height: 30)
-                                .padding(.leading, 1)
-                        }
-                    }
+                HStack {
+                    Text(getStartedCallString())
+                        .foregroundColor(.white)
+                        .font(Font.system(size: 23, weight: .medium, design: .rounded))
+                    Spacer()
                 }
+                
+                
+                HStack {
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: -15) {
+                            
+                            ForEach(Array(joinedCallUsers.enumerated()), id: \.1) { i, id in
+                                
+                                if let chatMember = getChatMember(fromId: id) {
+                                    
+                                    KFImage(URL(string: chatMember.profileImage))
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 46, height: 46)
+                                        .clipShape(Circle())
+                                        .overlay(
+                                            ZStack {
+                                                if i > 0 {
+                                                    RoundedRectangle(cornerRadius: 23)
+                                                        .stroke(Color.init(white: 0, opacity: 0.5), lineWidth: 1)
+                                                }
+                                            }
+                                        )
+                                }
+                            }
+                            
+                            
+                        }
+                    }
+                    .frame(width: 120)
+                    
+                    Spacer()
+                    
+                    
+                    JoinCallOptionsView(height: 42, hasRejectedCall: $hasRejectedCall)
+                }
+                
             }
-            .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
-            .padding(.bottom, MINI_MESSAGE_HEIGHT)
+            .padding(.horizontal, 14)
         }
+        .frame(width: 240, height: 125)
+        .cornerRadius(12)
+        
     }
     
-    func getJoinedCallString() -> String {
+    func getStartedCallString() -> String {
         
-        var joinedCallString = ""
+        let joinedCallUsers = ConversationViewModel.shared.joinedCallUsers
+        guard joinedCallUsers.count > 0, let chatMember = getChatMember(fromId: joinedCallUsers[0]) else { return "" }
         
-        guard let chat = ConversationViewModel.shared.chat else { return "" }
         
-        
-        ConversationViewModel.shared.joinedCallUsers.forEach { uid in
-            if let chatMember = chat.chatMembers.first(where: {$0.id == uid }) {
-                joinedCallString.append(joinedCallString.isEmpty ? "" : ","  + chatMember.firstName)
-            }
-        }
-        
-        return joinedCallString + " joined the call"
+        return chatMember.firstName + " started a call"
     }
     
+    
+    func getChatMember(fromId uid: String) -> ChatMember? {
+        guard let chat = ConversationViewModel.shared.chat, let chatMember = chat.chatMembers.first(where: {$0.id == uid})
+        else {
+            return nil
+        }
+        
+        return chatMember
+    }
+}
+
+struct JoinCallOptionsView: View {
+    
+    let height: CGFloat
+    @Binding var hasRejectedCall: Bool
+    
+    var body: some View {
+        
+        HStack {
+            
+            //X Button
+            Button {
+                withAnimation {
+                    hasRejectedCall = true
+                }
+            } label: {
+                
+                ZStack {
+                    
+                    Color.init(white: 170/250)
+                    
+                    Image("x")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: height/2, height: height/2)
+                    
+                }
+                .frame(width: height, height: height)
+                .cornerRadius(5)
+            }
+            
+            //Join Button
+            Button {
+                withAnimation {
+                    ConversationViewModel.shared.setIsOnCall()
+                }
+            } label: {
+                
+                ZStack {
+                    
+                    Color.mainBackgroundBlue
+                    
+                    Text("Join")
+                        .font(Font.system(size: 18, weight: .medium, design: .rounded))
+                        .foregroundColor(.white)
+                    
+                }
+                .frame(width: 48, height: height)
+                .cornerRadius(5)
+            }
+            
+        }
+    }
 }

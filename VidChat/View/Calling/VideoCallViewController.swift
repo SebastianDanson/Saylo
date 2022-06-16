@@ -35,14 +35,13 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         collectionView.delegate = self
         collectionView.register(VideoCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.backgroundColor = .black
-        collectionView.allowsMultipleSelection = true
+//        collectionView.allowsMultipleSelection = true
         
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.frame = view.bounds
-        collectionView.insetsLayoutMarginsFromSafeArea = false
-        collectionView.contentInsetAdjustmentBehavior = .never
-        callManger.getAgoraEngine().setChannelProfile(.communication)
+//        collectionView.insetsLayoutMarginsFromSafeArea = false
+//        collectionView.contentInsetAdjustmentBehavior = .never
         
         callManger.setUpVideo()
         callManger.delegate = self
@@ -65,6 +64,8 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = callManger.callID
         videoCanvas.view = localView
+        videoCanvas.mirrorMode = .auto
+
         callManger.getAgoraEngine().setupLocalVideo(videoCanvas)
         
         localView.isHidden = true
@@ -187,7 +188,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
             let videoCanvas = AgoraRtcVideoCanvas()
             videoCanvas.uid = remoteID
             videoCanvas.view = videoCell.videoView
-            
+            videoCanvas.mirrorMode = .auto
             callManger.getAgoraEngine().setupRemoteVideo(videoCanvas)
         }
         

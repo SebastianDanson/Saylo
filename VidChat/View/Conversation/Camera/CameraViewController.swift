@@ -753,6 +753,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             lastZoomFactor = minMaxZoom(newScaleFactor)
             update(scale: lastZoomFactor)
         default: break
+            
         }
     }
 }

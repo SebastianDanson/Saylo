@@ -16,7 +16,7 @@ struct VideoCallView: UIViewControllerRepresentable {
     @Binding var isMuted: Bool
     @Binding var isFrontFacing: Bool
     @Binding var showVideo: Bool
-    @Binding var showCallOptions: Bool
+//    @Binding var showCallOptions: Bool
     
     @StateObject var callsController = CallManager.shared
     
@@ -29,7 +29,7 @@ struct VideoCallView: UIViewControllerRepresentable {
         uiViewController.didTapMuteButton(isMuted: isMuted)
         uiViewController.didTapSwitchCameraButton(isFrontFacing: isFrontFacing)
         uiViewController.didTapVideoButton(showVideo: showVideo)
-        uiViewController.toggleShowOptions(showOptions: showCallOptions)
+//        uiViewController.toggleShowOptions(showOptions: showCallOptions)
     }
     
     func makeCoordinator() -> Coordinator {

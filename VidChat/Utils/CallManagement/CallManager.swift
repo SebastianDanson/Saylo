@@ -325,7 +325,8 @@ extension CallManager: AgoraRtcEngineDelegate {
         getAgoraEngine().enableVideo()
         let configuration = AgoraVideoEncoderConfiguration(size: CGSize(width: 1080, height: 1920),
                                                         frameRate: .fps60, bitrate: 6000,
-                                                           orientationMode: .fixedPortrait)
+                                                           orientationMode: .adaptative)
+        configuration.mirrorMode = .auto
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
     
