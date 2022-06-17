@@ -70,6 +70,8 @@ class ConversationViewModel: ObservableObject {
     
     @Published var videoLength = 0.0
     @Published var players = [MessagePlayer]()
+    var showVideo = true
+
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
         didSet {
@@ -155,7 +157,7 @@ class ConversationViewModel: ObservableObject {
         agoraKit?.leaveChannel()
     }
     
-    func pushSampleBuffer(sampleBuffer: CMSampleBuffer) {
+    func pushLiveSampleBuffer(sampleBuffer: CMSampleBuffer) {
         
         guard let agoraKit = agoraKit else {
             return
@@ -168,6 +170,26 @@ class ConversationViewModel: ObservableObject {
         videoFrame.textureBuf = imageBuffer
         videoFrame.time = sampleBuffer.outputPresentationTimeStamp
         agoraKit.pushExternalVideoFrame(videoFrame)
+    }
+    
+    func pushVideoCallSampleBuffer(sampleBuffer: CMSampleBuffer) {
+        
+        guard showVideo,
+        ConversationViewModel.shared.joinedCallUsers.count > 1, ConversationViewModel.shared.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) else { return }
+        
+        let agoraKit = CallManager.shared.getAgoraEngine()
+        
+        let imageBuffer: CVPixelBuffer = sampleBuffer.imageBuffer!
+        let videoFrame = AgoraVideoFrame()
+        
+        videoFrame.format = 12
+        videoFrame.textureBuf = imageBuffer
+        videoFrame.time = sampleBuffer.outputPresentationTimeStamp
+        agoraKit.pushExternalVideoFrame(videoFrame)
+        
+        DispatchQueue.main.async {
+            CallManager.shared.localView.image = UIImage(ciImage: CIImage(cvPixelBuffer: imageBuffer))
+        }
     }
     
     func setChat(chat: Chat) {
@@ -428,6 +450,7 @@ class ConversationViewModel: ObservableObject {
     
     func setIsOnCall() {
         guard let chat = chat else { return }
+        MainViewModel.shared.selectedView = .Video
         joinedCallUsers.append(AuthViewModel.shared.getUserId())
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
     }
@@ -620,14 +643,40 @@ class ConversationViewModel: ObservableObject {
         }
     }
     
+    func setMessageToShow() {
+        var index = min(chat!.lastReadMessageIndex, chat!.messages.count - 1)
+        var showMessage = true
+        
+        for i in index..<chat!.messages.count {
+            index = i
+            if chat!.messages[i].type == .Call {
+                showMessage = false
+            } else {
+                showMessage = true
+                break
+            }
+        }
+       
+
+        if showMessage {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.showMessage(atIndex: index)
+            }
+        }
+        
+        self.selectedMessageIndexes.append(index)
+
+    }
+    
     func handleMessagesSet() {
         if MainViewModel.shared.selectedView != .Saylo {
             if messages.count > 0, let chat = chat {
                 
-                if chat.hasUnreadMessage && liveUsers.count == 0 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.showMessage(atIndex: min(chat.lastReadMessageIndex, chat.messages.count - 1))
-                    }
+                if chat.hasUnreadMessage && liveUsers.count == 0  {
+                    
+                    //only show message if it's not a call ended message
+                    setMessageToShow()
+                    
                 } else {
                     DispatchQueue.main.async {
                         self.index = chat.lastReadMessageIndex
@@ -743,9 +792,8 @@ class ConversationViewModel: ObservableObject {
                     let chat = Chat(dictionary: data, id: self.chatId)
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.selectedMessageIndexes.append(chat.lastReadMessageIndex)
                         self.messages = chat.messages
-                        self.showMessage(atIndex: chat.lastReadMessageIndex)
+//                        self.showMessage(atIndex: chat.lastReadMessageIndex)
                     }
                 }
                 

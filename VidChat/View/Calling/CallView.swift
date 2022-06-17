@@ -17,7 +17,7 @@ struct CallView: View {
     
     @StateObject var callsController = CallManager.shared
     @StateObject var conversationViewModel = ConversationViewModel.shared
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             ZStack(alignment: .bottom) {
@@ -59,48 +59,59 @@ struct CallOptionsView: View {
     var body: some View {
         HStack {
             
-            CameraOptionView(image: Image(systemName: showVideo ? "video.fill" : "video.slash.fill"),
-                               imageDimension: 28, circleDimension: 60, color: $videoColor)
-                .onTapGesture {
-                    showVideo.toggle()
-                    videoColor = showVideo ? .white : Color(.systemRed)
-                }
+            Button {
+                showVideo.toggle()
+                ConversationViewModel.shared.showVideo.toggle()
+                videoColor = ConversationViewModel.shared.showVideo ? .white : Color(.systemRed)
+            } label: {
+                CameraOptionView(image: Image(systemName: showVideo ? "video.fill" : "video.slash.fill"),
+                                   imageDimension: 28, circleDimension: 60, color: $videoColor)
+            }
+              
+            Spacer()
+            
+            Button {
+                isFrontFacing.toggle()
+                MainViewModel.shared.cameraView.switchCamera()
+            } label: {
+                CameraOptionView(image: Image(systemName: "arrow.triangle.2.circlepath.camera.fill"),
+                                   imageDimension: 28, circleDimension: 60)
+            }
+
             
             Spacer()
             
-            CameraOptionView(image: Image(systemName: "arrow.triangle.2.circlepath.camera.fill"),
-                               imageDimension: 28, circleDimension: 60)
-                .onTapGesture {isFrontFacing.toggle() }
+            Button {
+                isMuted.toggle()
+                muteColor = isMuted ? Color(.systemRed) : .white
+            } label: {
+                CameraOptionView(image: Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill"),
+                                   imageDimension: 28, circleDimension: 60, color: $muteColor)
+            }
             
             Spacer()
             
-            CameraOptionView(image: Image(systemName: isMuted ? "mic.slash.fill" : "mic.fill"),
-                               imageDimension: 28, circleDimension: 60, color: $muteColor)
-                .onTapGesture {
-                    isMuted.toggle()
-                    muteColor = isMuted ? Color(.systemRed) : .white
+            Button {
+                
+                callsController.endCalling()
+                
+                withAnimation {
+                    ConversationViewModel.shared.showCall = false
                 }
-            
-            Spacer()
-            
-            Circle()
-                .frame(width: 60, height: 60)
-                .foregroundColor(Color(.systemRed.withAlphaComponent(0.85)))
-                .overlay(
-                    Image("x")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24),
-                    alignment: .center
-                )
-                .onTapGesture {
-                    callsController.endCalling()
-                    
-                    
-                    withAnimation {
-                        ConversationViewModel.shared.showCall = false
-                    }
-                }
+            } label: {
+                
+                Circle()
+                    .frame(width: 60, height: 60)
+                    .foregroundColor(Color(.systemRed.withAlphaComponent(0.85)))
+                    .overlay(
+                        Image("x")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24),
+                        alignment: .center
+                    )
+            }
+
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 12 + BOTTOM_PADDING)

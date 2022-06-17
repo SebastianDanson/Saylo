@@ -17,7 +17,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     
     var collectionView: UICollectionView!
     private var reuseIdentifier = "VideoCollectionViewCell"
-    let localView = UIView()
+    let localView = CallManager.shared.localView
     var localViewWidthAnchor: NSLayoutConstraint!
     var localViewHeightAnchor: NSLayoutConstraint!
     var localViewRightAnchor: NSLayoutConstraint!
@@ -35,6 +35,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         collectionView.delegate = self
         collectionView.register(VideoCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.backgroundColor = .black
+        collectionView.isScrollEnabled = false
 //        collectionView.allowsMultipleSelection = true
         
         view.addSubview(collectionView)
@@ -58,15 +59,17 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
         localViewHeightAnchor.isActive = true
         localViewWidthAnchor.isActive = true
         
+        localView.contentMode = .scaleAspectFill
         localView.layer.cornerRadius = 8
         localView.clipsToBounds = true
-                
-        let videoCanvas = AgoraRtcVideoCanvas()
-        videoCanvas.uid = callManger.callID
-        videoCanvas.view = localView
-        videoCanvas.mirrorMode = .auto
+//
+//        let videoCanvas = AgoraRtcVideoCanvas()
+//        videoCanvas.uid = callManger.callID
+//        videoCanvas.view = localView
+//        videoCanvas.mirrorMode = .enabled
 
-        callManger.getAgoraEngine().setupLocalVideo(videoCanvas)
+        callManger.getAgoraEngine().setExternalVideoSource(true, useTexture: true, pushMode: true)
+//        callManger.getAgoraEngine().setupLocalVideo(videoCanvas)
         
         localView.isHidden = true
     }
@@ -149,9 +152,10 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
     }
     
     func didTapVideoButton(showVideo: Bool) {
-        let kit = callManger.getAgoraEngine()
-        showVideo ? kit.enableVideo() : kit.disableVideo()
+//        let kit = callManger.getAgoraEngine()
+//        showVideo ? kit.enableVideo() : kit.disableVideo()
         localView.isHidden = !showVideo
+        ConversationViewModel.shared.showVideo = showVideo
     }
     
     func didTapSwitchCameraButton(isFrontFacing: Bool) {
@@ -188,7 +192,7 @@ class VideoCallViewController: UIViewController, UICollectionViewDelegate, UICol
             let videoCanvas = AgoraRtcVideoCanvas()
             videoCanvas.uid = remoteID
             videoCanvas.view = videoCell.videoView
-            videoCanvas.mirrorMode = .auto
+//            videoCanvas.mirrorMode = .auto
             callManger.getAgoraEngine().setupRemoteVideo(videoCanvas)
         }
         

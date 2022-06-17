@@ -89,7 +89,7 @@ class LiveStreamUIViewController: UIViewController {
 
         let configuration = AgoraVideoEncoderConfiguration(size:
                                                             AgoraVideoDimension1280x720, frameRate: .fps30, bitrate: 1710,
-                                                           orientationMode: .fixedPortrait)
+                                                           orientationMode: .adaptative)
         
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
         

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		060D60F327AD8E2000771977 /* PhotosViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060D60F227AD8E2000771977 /* PhotosViewModel.swift */; };
+		0613DF8A285B862500E4407D /* AgoraRtmKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0613DF89285B862500E4407D /* AgoraRtmKit */; };
+		0613DF8D285B87B600E4407D /* RtcBasic in Frameworks */ = {isa = PBXBuildFile; productRef = 0613DF8C285B87B600E4407D /* RtcBasic */; };
+		0613DF8F285B87B600E4407D /* VirtualBackground in Frameworks */ = {isa = PBXBuildFile; productRef = 0613DF8E285B87B600E4407D /* VirtualBackground */; };
 		0616EBFE279248E5006565FE /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EBFD279248E5006565FE /* ChatSettingsView.swift */; };
 		0616EC0227928808006565FE /* AddUserToGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC0127928808006565FE /* AddUserToGroupView.swift */; };
 		0616EC04279288D3006565FE /* AddUserToChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0616EC03279288D3006565FE /* AddUserToChatCell.swift */; };
@@ -70,7 +73,6 @@
 		0687E9F92794B38A004E1187 /* ChatMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9F82794B38A004E1187 /* ChatMemberCell.swift */; };
 		0687E9FB2794B9A0004E1187 /* ChatMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0687E9FA2794B9A0004E1187 /* ChatMember.swift */; };
 		06883E642808BE0B00708E42 /* Flurry in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E632808BE0B00708E42 /* Flurry */; };
-		06883E672808BE7100708E42 /* AgoraRtcKit in Frameworks */ = {isa = PBXBuildFile; productRef = 06883E662808BE7100708E42 /* AgoraRtcKit */; };
 		068DA24F284C3AE00034374E /* Filters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA24E284C3AE00034374E /* Filters.swift */; };
 		068DA251284D96370034374E /* TextOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA250284D96370034374E /* TextOverlayView.swift */; };
 		068DA253284D96690034374E /* TextOverlayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068DA252284D96690034374E /* TextOverlayViewModel.swift */; };
@@ -193,7 +195,6 @@
 		3FB8B5D8270FAACA00355DB9 /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB8B5D7270FAACA00355DB9 /* ConversationView.swift */; };
 		3FB8B5DA270FB6F800355DB9 /* TextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB8B5D9270FB6F800355DB9 /* TextCell.swift */; };
 		3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7B32721C01600DF43C6 /* SceneDelegate.swift */; };
-		3FDEE7B72721C1EE00DF43C6 /* AgoraRtmKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3FDEE7B62721C1EE00DF43C6 /* AgoraRtmKit */; };
 		3FDEE7B92721C3E200DF43C6 /* AgoraRTM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7B82721C3E200DF43C6 /* AgoraRTM.swift */; };
 		3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7BA2721C41300DF43C6 /* AGEERROR.swift */; };
 		3FDEE7BD2721C43D00DF43C6 /* KeyCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDEE7BC2721C43D00DF43C6 /* KeyCenter.swift */; };
@@ -422,20 +423,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06883E672808BE7100708E42 /* AgoraRtcKit in Frameworks */,
 				06883E642808BE0B00708E42 /* Flurry in Frameworks */,
 				3F1768122713ED550049ADBA /* FirebaseCrashlytics in Frameworks */,
 				3F17680E2713ED550049ADBA /* FirebaseAnalytics in Frameworks */,
+				0613DF8D285B87B600E4407D /* RtcBasic in Frameworks */,
 				062D28DA277AD21E00B25637 /* CropViewController in Frameworks */,
 				3F17681A2713ED550049ADBA /* FirebaseMessaging in Frameworks */,
 				3F17681F2713ED960049ADBA /* Kingfisher in Frameworks */,
+				0613DF8A285B862500E4407D /* AgoraRtmKit in Frameworks */,
 				3F1768102713ED550049ADBA /* FirebaseAuth in Frameworks */,
 				3F7786B827231E8A005AF9DA /* CallKit.framework in Frameworks */,
 				3F1768182713ED550049ADBA /* FirebaseFunctions in Frameworks */,
+				0613DF8F285B87B600E4407D /* VirtualBackground in Frameworks */,
 				3F17681C2713ED550049ADBA /* FirebaseStorage in Frameworks */,
 				3F1768162713ED550049ADBA /* FirebaseFirestore in Frameworks */,
 				3F1768142713ED550049ADBA /* FirebaseDynamicLinks in Frameworks */,
-				3FDEE7B72721C1EE00DF43C6 /* AgoraRtmKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -988,10 +990,11 @@
 				3F1768192713ED550049ADBA /* FirebaseMessaging */,
 				3F17681B2713ED550049ADBA /* FirebaseStorage */,
 				3F17681E2713ED960049ADBA /* Kingfisher */,
-				3FDEE7B62721C1EE00DF43C6 /* AgoraRtmKit */,
 				062D28D9277AD21E00B25637 /* CropViewController */,
 				06883E632808BE0B00708E42 /* Flurry */,
-				06883E662808BE7100708E42 /* AgoraRtcKit */,
+				0613DF89285B862500E4407D /* AgoraRtmKit */,
+				0613DF8C285B87B600E4407D /* RtcBasic */,
+				0613DF8E285B87B600E4407D /* VirtualBackground */,
 			);
 			productName = VideoMessengerApp;
 			productReference = 3F485D7726FD453B0071532B /* Saylo.app */;
@@ -1027,10 +1030,10 @@
 			packageReferences = (
 				3F17680C2713ED550049ADBA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				3F17681D2713ED960049ADBA /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				3FDEE7B52721C1EE00DF43C6 /* XCRemoteSwiftPackageReference "AgoraRtm_iOS" */,
 				062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 				06883E622808BE0B00708E42 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
-				06883E652808BE7100708E42 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */,
+				0613DF88285B862500E4407D /* XCRemoteSwiftPackageReference "AgoraRTM_iOS" */,
+				0613DF8B285B87B600E4407D /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */,
 			);
 			productRefGroup = 3F485D7826FD453B0071532B /* Products */;
 			projectDirPath = "";
@@ -1523,6 +1526,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0613DF88285B862500E4407D /* XCRemoteSwiftPackageReference "AgoraRTM_iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AgoraIO/AgoraRTM_iOS.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
+		0613DF8B285B87B600E4407D /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AgoraIO/AgoraRtcEngine_iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
@@ -1537,14 +1556,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 11.0.0;
-			};
-		};
-		06883E652808BE7100708E42 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AgoraIO/AgoraRtcEngine_iOS.git";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 3.4.5;
 			};
 		};
 		3F17680C2713ED550049ADBA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -1563,17 +1574,24 @@
 				minimumVersion = 7.0.0;
 			};
 		};
-		3FDEE7B52721C1EE00DF43C6 /* XCRemoteSwiftPackageReference "AgoraRtm_iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AgoraIO/AgoraRtm_iOS";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0613DF89285B862500E4407D /* AgoraRtmKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0613DF88285B862500E4407D /* XCRemoteSwiftPackageReference "AgoraRTM_iOS" */;
+			productName = AgoraRtmKit;
+		};
+		0613DF8C285B87B600E4407D /* RtcBasic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0613DF8B285B87B600E4407D /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */;
+			productName = RtcBasic;
+		};
+		0613DF8E285B87B600E4407D /* VirtualBackground */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0613DF8B285B87B600E4407D /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */;
+			productName = VirtualBackground;
+		};
 		062D28D9277AD21E00B25637 /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 062D28D8277AD21E00B25637 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
@@ -1583,11 +1601,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 06883E622808BE0B00708E42 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
 			productName = Flurry;
-		};
-		06883E662808BE7100708E42 /* AgoraRtcKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 06883E652808BE7100708E42 /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */;
-			productName = AgoraRtcKit;
 		};
 		3F17680D2713ED550049ADBA /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1633,11 +1646,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3F17681D2713ED960049ADBA /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
-		};
-		3FDEE7B62721C1EE00DF43C6 /* AgoraRtmKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3FDEE7B52721C1EE00DF43C6 /* XCRemoteSwiftPackageReference "AgoraRtm_iOS" */;
-			productName = AgoraRtmKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

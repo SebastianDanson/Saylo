@@ -9,6 +9,7 @@ import CallKit
 import Combine
 import Firebase
 import AgoraRtcKit
+//import AgoraRtcKit
 import SwiftUI
 
 protocol CallManagerDelegate: AnyObject {
@@ -31,7 +32,7 @@ final class CallManager: NSObject, ObservableObject {
     var currentCall: Call?
     var currentChat: Chat?
     var didJoin = false
-    
+    let localView = UIImageView()
     static var shared = CallManager()
     
     private override init() { }
@@ -323,10 +324,10 @@ extension CallManager: AgoraRtcEngineDelegate {
     
     func setUpVideo() {
         getAgoraEngine().enableVideo()
+        getAgoraEngine().setRemoteRenderMode(0, renderMode: .fill, mirrorMode: .auto)
         let configuration = AgoraVideoEncoderConfiguration(size: CGSize(width: 1080, height: 1920),
                                                         frameRate: .fps60, bitrate: 6000,
                                                            orientationMode: .adaptative)
-        configuration.mirrorMode = .auto
         getAgoraEngine().setVideoEncoderConfiguration(configuration)
     }
     

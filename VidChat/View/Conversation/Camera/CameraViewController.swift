@@ -487,9 +487,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        
-        
-        //        DispatchQueue.global().async {
+                
         let writable = self.canWrite()
         
         if writable, self.sessionAtSourceTime == nil {
@@ -498,6 +496,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.videoWriter.startSession(atSourceTime: self.sessionAtSourceTime!)
         }
         
+
         
         var pixelBuffer: CVPixelBuffer?
         if output == self.videoDataOutput, let filter = ConversationViewModel.shared.selectedFilter {
@@ -542,6 +541,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         
         
+        if let buffer = pixelBuffer,
+            let newSampleBuffer = self.createSampleBuffer(fromPixelBuffer: buffer, originalSampleBuffer: sampleBuffer)   {
+            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: newSampleBuffer)
+        } else {
+            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
+        }
+
         if !MainViewModel.shared.isShowingPhotoCamera, output == self.videoDataOutput {
             
             connection.videoOrientation = .portrait
@@ -556,36 +562,18 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             DispatchQueue.main.async {
                 
                 if let buffer = pixelBuffer  {
-                    //                var newSampleBuffer: CMSampleBuffer? = nil
-                    var info = CMSampleTimingInfo()
-                    info.presentationTimeStamp = sampleBuffer.presentationTimeStamp
-                    info.duration = sampleBuffer.duration
-                    info.decodeTimeStamp = sampleBuffer.decodeTimeStamp
-                    
-                    var formatDesc: CMFormatDescription?
-                    CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault,
-                                                                 imageBuffer: buffer,
-                                                                 formatDescriptionOut: &formatDesc)
-                    
-                    var newSampleBuffer: CMSampleBuffer?
-                    
-                    CMSampleBufferCreateReadyWithImageBuffer(allocator: kCFAllocatorDefault,
-                                                             imageBuffer: buffer,
-                                                             formatDescription: formatDesc!,
-                                                             sampleTiming: &info,
-                                                             sampleBufferOut: &newSampleBuffer)
-                    if let newSampleBuffer = newSampleBuffer {
+                    if let newSampleBuffer = self.createSampleBuffer(fromPixelBuffer: buffer, originalSampleBuffer: sampleBuffer) {
                         if self.videoWriterInput.isReadyForMoreMediaData {
                             self.videoWriterInput.append(newSampleBuffer)
                         }
-                        ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: newSampleBuffer)
+                        ConversationViewModel.shared.pushLiveSampleBuffer(sampleBuffer: newSampleBuffer)
                     }
                     
                 } else {
                     if self.videoWriterInput.isReadyForMoreMediaData {
                         self.videoWriterInput.append(sampleBuffer)
                     }
-                    ConversationViewModel.shared.pushSampleBuffer(sampleBuffer: sampleBuffer)
+                    ConversationViewModel.shared.pushLiveSampleBuffer(sampleBuffer: sampleBuffer)
                 }
                 
             }
@@ -602,22 +590,27 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
     }
     
-    
-    func addAudio() {
+    func createSampleBuffer(fromPixelBuffer pixelBuffer: CVPixelBuffer, originalSampleBuffer sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
         
-        //        let isFirstLoad = CameraViewModel.shared.isFirstLoad
+        var info = CMSampleTimingInfo()
+        info.presentationTimeStamp = sampleBuffer.presentationTimeStamp
+        info.duration = sampleBuffer.duration
+        info.decodeTimeStamp = sampleBuffer.decodeTimeStamp
         
+        var formatDesc: CMFormatDescription?
+        CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                                                     imageBuffer: pixelBuffer,
+                                                     formatDescriptionOut: &formatDesc)
         
+        var newSampleBuffer: CMSampleBuffer?
         
-        //            if isFirstLoad {
+        CMSampleBufferCreateReadyWithImageBuffer(allocator: kCFAllocatorDefault,
+                                                 imageBuffer: pixelBuffer,
+                                                 formatDescription: formatDesc!,
+                                                 sampleTiming: &info,
+                                                 sampleBufferOut: &newSampleBuffer)
         
-        
-        
-        //            } else {
-        //                self.audioCaptureSession.startRunning()
-        //            }
-        
-        //        CameraViewModel.shared.isFirstLoad = false
+        return newSampleBuffer
         
     }
     
