@@ -14,7 +14,7 @@ enum ConversationStatus {
 struct ConversationGridView: View {
     
     private let items = [GridItem(), GridItem(), GridItem()]
-
+    
     @State private var text = ""
     @State private var searchText = ""
     @State var selection = 0
@@ -64,65 +64,65 @@ struct ConversationGridView: View {
                     //                    }
                     
                     ScrollView(showsIndicators: false) {
-
-                    FriendsView(chats: $viewModel.friendsChats)
-                        .padding(.top, IS_SMALL_PHONE ? 8 : 12)
-                    
-                    Rectangle()
-                        .foregroundColor(Color(.systemGray5))
-                        .frame(width: SCREEN_WIDTH, height: 1)
-                        .padding(.top, 4)
-                    
-                    
-                    
-                    ZStack(alignment: .top) {
                         
-                        VStack {
+                        FriendsView(chats: $viewModel.friendsChats)
+                            .padding(.top, IS_SMALL_PHONE ? 8 : 12)
+                        
+                        Rectangle()
+                            .foregroundColor(Color(.systemGray5))
+                            .frame(width: SCREEN_WIDTH, height: 1)
+                            .padding(.top, 4)
+                        
+                        
+                        
+                        ZStack(alignment: .top) {
                             
-                            HStack {
+                            VStack {
                                 
-                                Text("Chats")
-                                    .font(Font.system(size: IS_SMALL_PHONE ? 17 : 18, weight: .semibold))
+                                HStack {
+                                    
+                                    Text("Chats")
+                                        .font(Font.system(size: IS_SMALL_PHONE ? 17 : 18, weight: .semibold))
+                                    
+                                    Spacer()
+                                    
+                                    //                                Button {
+                                    //
+                                    //                                } label: {
+                                    //
+                                    //                                    Button {
+                                    //                                        withAnimation {
+                                    //                                            ConversationGridViewModel.shared.showNewChat = true
+                                    //                                        }
+                                    //                                    } label: {
+                                    //                                        HStack(spacing: 3) {
+                                    //
+                                    //                                            Image(systemName: "plus")
+                                    //                                                .resizable()
+                                    //                                                .scaledToFit()
+                                    //                                                .foregroundColor(.white)
+                                    //                                                .frame(width: IS_SMALL_WIDTH ? 13 : 14, height: IS_SMALL_WIDTH ? 13 : 14)
+                                    //
+                                    //                                            Text("New chat")
+                                    //                                                .foregroundColor(.white)
+                                    //                                                .font(Font.system(size: IS_SMALL_WIDTH ? 13 : 14, weight: .medium))
+                                    //                                        }
+                                    //                                        .frame(width: IS_SMALL_WIDTH ? 96 : 100, height: 32)
+                                    //                                        .background(Color.lightBlue)
+                                    //                                        .clipShape(Capsule())
+                                    //                                    }
+                                    //
+                                    //                                }
+                                    
+                                }
+                                .padding(.horizontal, 22)
+                                //                            .padding(.top, IS_SMALL_PHONE ? 20 : 36)
                                 
                                 Spacer()
-                                
-//                                Button {
-//
-//                                } label: {
-//
-//                                    Button {
-//                                        withAnimation {
-//                                            ConversationGridViewModel.shared.showNewChat = true
-//                                        }
-//                                    } label: {
-//                                        HStack(spacing: 3) {
-//
-//                                            Image(systemName: "plus")
-//                                                .resizable()
-//                                                .scaledToFit()
-//                                                .foregroundColor(.white)
-//                                                .frame(width: IS_SMALL_WIDTH ? 13 : 14, height: IS_SMALL_WIDTH ? 13 : 14)
-//
-//                                            Text("New chat")
-//                                                .foregroundColor(.white)
-//                                                .font(Font.system(size: IS_SMALL_WIDTH ? 13 : 14, weight: .medium))
-//                                        }
-//                                        .frame(width: IS_SMALL_WIDTH ? 96 : 100, height: 32)
-//                                        .background(Color.lightBlue)
-//                                        .clipShape(Capsule())
-//                                    }
-//
-//                                }
-                                
                             }
-                            .padding(.horizontal, 22)
-//                            .padding(.top, IS_SMALL_PHONE ? 20 : 36)
                             
-                            Spacer()
-                        }
-                        
                             
-                        VStack(spacing: 4) {
+                            VStack(spacing: 4) {
                                 
                                 ForEach(Array(viewModel.chats.enumerated()), id: \.1.id) { i, chat in
                                     
@@ -147,17 +147,17 @@ struct ConversationGridView: View {
                                 
                             }
                             .padding(.top, IS_SMALL_PHONE ? 30 : 34)
-
-   
-                   
-                    }
-//                    .background(Color.backgroundWhite)
-                    .frame(width: SCREEN_WIDTH)
-//                    .cornerRadius(IS_SMALL_PHONE ? 36 : 44, corners: [.topLeft, .topRight])
-                    .ignoresSafeArea(edges: .bottom)
-                    .zIndex(2)
-//                    .transition(.move(edge: .bottom))
-                    .padding(.top, 8)
+                            
+                            
+                            
+                        }
+                        //                    .background(Color.backgroundWhite)
+                        .frame(width: SCREEN_WIDTH)
+                        //                    .cornerRadius(IS_SMALL_PHONE ? 36 : 44, corners: [.topLeft, .topRight])
+                        .ignoresSafeArea(edges: .bottom)
+                        .zIndex(2)
+                        //                    .transition(.move(edge: .bottom))
+                        .padding(.top, 8)
                     }
                 }
                 
@@ -359,7 +359,7 @@ struct NavView: View {
                     
                     HStack(spacing: IS_SMALL_WIDTH ? 8 : 10) {
                         
-                            
+                        
                         
                         //                        Button {
                         //                            withAnimation {
@@ -397,29 +397,29 @@ struct NavView: View {
                                 ConversationGridViewModel.shared.showSettingsView = true
                             }
                         } label: {
-
+                            
                             KFImage(URL(string: authViewModel.profileImage ?? ""))
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 32, height: 32)
                                 .clipShape(Circle())
-//                                .padding(1) // Width of the border
-//                                .background(Color.white) // Color of the border
-//                                .clipShape(Circle())
-//                            Image(systemName: "person.crop.circle")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .frame(width: 28, height: 28)
-//                                .foregroundColor(.systemBlack)
+                            //                                .padding(1) // Width of the border
+                            //                                .background(Color.white) // Color of the border
+                            //                                .clipShape(Circle())
+                            //                            Image(systemName: "person.crop.circle")
+                            //                                .resizable()
+                            //                                .scaledToFit()
+                            //                                .frame(width: 28, height: 28)
+                            //                                .foregroundColor(.systemBlack)
                             //                                .padding(.trailing, 3)
                         }
                         
-//                        Button {
-//                            viewModel.showSettingsView = true
-//                        } label: {
-//
-//                            //                                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
-//                        }
+                        //                        Button {
+                        //                            viewModel.showSettingsView = true
+                        //                        } label: {
+                        //
+                        //                            //                                .shadow(color: Color(.init(white: 0, alpha: 0.08)), radius: 12, x: 0, y: 4)
+                        //                        }
                         
                         //                        Text("Saylo")
                         //                            .foregroundColor(.white)
@@ -475,7 +475,7 @@ struct NavView: View {
                                         .scaledToFit()
                                         .frame(width: 25, height: 25)
                                         .foregroundColor(.systemBlack)
-                                        .padding(.trailing, 3)                                    
+                                        .padding(.trailing, 3)
                                     
                                     VStack {
                                         

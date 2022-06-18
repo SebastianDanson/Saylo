@@ -71,7 +71,7 @@ class ConversationViewModel: ObservableObject {
     @Published var videoLength = 0.0
     @Published var players = [MessagePlayer]()
     var showVideo = true
-
+    
     @Published var audioPlayers = [AudioMessagePlayer]()
     @Published var isTwoTimesSpeed = false {
         didSet {
@@ -157,6 +157,14 @@ class ConversationViewModel: ObservableObject {
         agoraKit?.leaveChannel()
     }
     
+    func getIsInVideoCall() -> Bool {
+        
+        let viewModel = ConversationViewModel.shared
+        
+        return showVideo &&
+        (viewModel.joinedCallUsers.count > 1 && viewModel.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) || viewModel.showVideo)
+    }
+    
     func pushLiveSampleBuffer(sampleBuffer: CMSampleBuffer) {
         
         guard let agoraKit = agoraKit else {
@@ -174,21 +182,20 @@ class ConversationViewModel: ObservableObject {
     
     func pushVideoCallSampleBuffer(sampleBuffer: CMSampleBuffer) {
         
-        guard showVideo,
-        ConversationViewModel.shared.joinedCallUsers.count > 1, ConversationViewModel.shared.joinedCallUsers.contains(AuthViewModel.shared.getUserId()) else { return }
         
         let agoraKit = CallManager.shared.getAgoraEngine()
         
-        let imageBuffer: CVPixelBuffer = sampleBuffer.imageBuffer!
-        let videoFrame = AgoraVideoFrame()
-        
-        videoFrame.format = 12
-        videoFrame.textureBuf = imageBuffer
-        videoFrame.time = sampleBuffer.outputPresentationTimeStamp
-        agoraKit.pushExternalVideoFrame(videoFrame)
-        
-        DispatchQueue.main.async {
-            CallManager.shared.localView.image = UIImage(ciImage: CIImage(cvPixelBuffer: imageBuffer))
+        if let imageBuffer: CVPixelBuffer = sampleBuffer.imageBuffer {
+            let videoFrame = AgoraVideoFrame()
+            
+            videoFrame.format = 12
+            videoFrame.textureBuf = imageBuffer
+            videoFrame.time = sampleBuffer.outputPresentationTimeStamp
+            agoraKit.pushExternalVideoFrame(videoFrame)
+            
+            DispatchQueue.main.async {
+                CallManager.shared.localView.image = UIImage(ciImage: CIImage(cvPixelBuffer: imageBuffer))
+            }
         }
     }
     
@@ -656,8 +663,8 @@ class ConversationViewModel: ObservableObject {
                 break
             }
         }
-       
-
+        
+        
         if showMessage {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.showMessage(atIndex: index)
@@ -665,7 +672,7 @@ class ConversationViewModel: ObservableObject {
         }
         
         self.selectedMessageIndexes.append(index)
-
+        
     }
     
     func handleMessagesSet() {
@@ -793,7 +800,7 @@ class ConversationViewModel: ObservableObject {
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.messages = chat.messages
-//                        self.showMessage(atIndex: chat.lastReadMessageIndex)
+                        //                        self.showMessage(atIndex: chat.lastReadMessageIndex)
                     }
                 }
                 

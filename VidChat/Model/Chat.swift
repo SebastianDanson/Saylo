@@ -182,7 +182,7 @@ class Chat: ObservableObject {
     
     func getHasUnreadMessage() -> Bool {
         guard let user = AuthViewModel.shared.currentUser, let chat = user.chats.first(where: {$0.id == id}), let last = messages.last else {return false}
-        return Int(chat.lastVisited.dateValue().timeIntervalSince1970) < getDateOfLastPost() && !last.isFromCurrentUser
+        return Int(chat.lastVisited.dateValue().timeIntervalSince1970) < getDateOfLastPost() && !last.isFromCurrentUser 
     }
     
     func getLastReadMessageIndex() -> Int {

@@ -262,7 +262,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                 }
             }
             
-            
             completionHandler([.badge, .banner])
         } else {
             completionHandler([])

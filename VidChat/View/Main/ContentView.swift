@@ -19,44 +19,53 @@ struct ContentView: View {
             //if not logged in -> show landing page
             // else show main interface
             if !viewModel.isSignedIn || !viewModel.hasCompletedSignUp {
-
+                
                 NavigationView {
                     LandingPageView()
                         .navigationViewStyle(StackNavigationViewStyle())
                 }.navigationViewStyle(StackNavigationViewStyle())
-
-
+                
+                
             } else {
-
+                
                 if conversationViewModel.showCall {
-                    CallView().ignoresSafeArea()
+                    //                    CallView().ignoresSafeArea()
+                    NavigationView {
+                        MainViewModel.shared.cameraView
+                            .ignoresSafeArea()
+                            .navigationBarHidden(true)
+                            .navigationViewStyle(StackNavigationViewStyle())
+                    }
+                    .navigationViewStyle(StackNavigationViewStyle())
+
+                    
                 } else {
-//                    NavigationView {
-//                        MainViewModel.shared.cameraView
-//                            .ignoresSafeArea()
-//                            .navigationBarHidden(true)
-//                            .navigationViewStyle(StackNavigationViewStyle())
-                        ConversationGridView()
-//                            .ignoresSafeArea()
-//                            .navigationBarHidden(true)
-//                            .navigationViewStyle(StackNavigationViewStyle())
-//                    }
-//                    .navigationViewStyle(StackNavigationViewStyle())
+                    //                    NavigationView {
+                    //                        MainViewModel.shared.cameraView
+                    //                            .ignoresSafeArea()
+                    //                            .navigationBarHidden(true)
+                    //                            .navigationViewStyle(StackNavigationViewStyle())
+                    ConversationGridView()
+                    //                            .ignoresSafeArea()
+                    //                            .navigationBarHidden(true)
+                    //                            .navigationViewStyle(StackNavigationViewStyle())
+                    //                    }
+                    //                    .navigationViewStyle(StackNavigationViewStyle())
                 }
             }
             
-//            ConversationGridView()
+            //            ConversationGridView()
             
-//            MainViewModel.shared.cameraView
-//                .ignoresSafeArea()
+            //            MainViewModel.shared.cameraView
+            //                .ignoresSafeArea()
             
-//            VStack {
-//                Spacer()
-//                MessageOptionsView()
-//            }.background(Color.black)
+            //            VStack {
+            //                Spacer()
+            //                MessageOptionsView()
+            //            }.background(Color.black)
             
             
-//            RecordTimerView()
+            //            RecordTimerView()
         }
     }
 }

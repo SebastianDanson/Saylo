@@ -495,7 +495,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             self.sessionAtSourceTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             self.videoWriter.startSession(atSourceTime: self.sessionAtSourceTime!)
         }
-        
 
         
         var pixelBuffer: CVPixelBuffer?
@@ -540,32 +539,38 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
         }
         
-        
-        if let buffer = pixelBuffer,
-            let newSampleBuffer = self.createSampleBuffer(fromPixelBuffer: buffer, originalSampleBuffer: sampleBuffer)   {
-            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: newSampleBuffer)
-        } else {
-            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
+        if ConversationViewModel.shared.getIsInVideoCall() {
+            DispatchQueue.main.async {
+                
+                if let buffer = pixelBuffer,
+                   let newSampleBuffer = self.createSampleBuffer(fromPixelBuffer: buffer, originalSampleBuffer: sampleBuffer) {
+                    ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: newSampleBuffer)
+                } else {
+                    ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
+                }
+            }
         }
 
         if !MainViewModel.shared.isShowingPhotoCamera, output == self.videoDataOutput {
             
             connection.videoOrientation = .portrait
+            
             if connection.isVideoMirroringSupported, MainViewModel.shared.isFrontFacing {
                 connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
             }
         }
 
-        
         if writable, output == self.videoDataOutput, self.videoWriterInput.isReadyForMoreMediaData {
             
             DispatchQueue.main.async {
                 
                 if let buffer = pixelBuffer  {
                     if let newSampleBuffer = self.createSampleBuffer(fromPixelBuffer: buffer, originalSampleBuffer: sampleBuffer) {
+                        
                         if self.videoWriterInput.isReadyForMoreMediaData {
                             self.videoWriterInput.append(newSampleBuffer)
                         }
+                        
                         ConversationViewModel.shared.pushLiveSampleBuffer(sampleBuffer: newSampleBuffer)
                     }
                     
