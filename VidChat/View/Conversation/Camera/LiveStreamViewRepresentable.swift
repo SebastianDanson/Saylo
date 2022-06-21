@@ -37,6 +37,14 @@ class LiveStreamUIViewController: UIViewController {
         setUpVideo()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let vm = ConversationViewModel.shared
+        if let chatId = vm.chat?.id, vm.watchedStreams.contains(chatId) {
+            vm.watchedStreams.append(chatId)
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         leaveChannel()

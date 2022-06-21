@@ -629,6 +629,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             kCVPixelBufferWidthKey as String: 160,
             kCVPixelBufferHeightKey as String: 160
         ]
+        
         photoSettings.previewPhotoFormat = previewFormat
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
@@ -764,16 +765,12 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         
         if let imageData = photo.fileDataRepresentation() {
-            
+                        
             var outputImage: UIImage?
             
             if var ciimage = CIImage(data: imageData) {
                 
                 ciimage = transformOutputImage(image: ciimage)
-                
-                if !TextOverlayViewModel.shared.overlayText.isEmpty, let imageWithText = TextOverlayViewModel.shared.addText(toImage: ciimage) {
-                    ciimage = imageWithText
-                }
                 
                 if let filter = ConversationViewModel.shared.selectedFilter {
                     
@@ -782,6 +779,7 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
                     }
                 }
                 
+                MainViewModel.shared.ciImage = ciimage
                 
                 if let cgimage = CIContext().createCGImage(ciimage, from: ciimage.extent) {
                     outputImage = UIImage(cgImage: cgimage)

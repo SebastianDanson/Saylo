@@ -183,6 +183,17 @@ struct ConversationService {
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["usersLastVisited":usersLastVisitedDictionary])
     }
     
+    
+    static func updateUsersLastVisited(atIndex index: Int) {
+        
+        guard let uid = AuthViewModel.shared.currentUser?.id ?? UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)?.string(forKey: "userId") else { return }
+        
+        if let lastVisited = ConversationViewModel.shared.usersLastVisited.first(where: { $0.id == uid }),
+           lastVisited.index < index, let chat = ConversationViewModel.shared.chat  {
+             updateLastVisited(forChat: chat)
+        }
+    }
+    
     //    static func updateSeenLastPost(forChat chat: Chat) {
     //
     //        //get user id

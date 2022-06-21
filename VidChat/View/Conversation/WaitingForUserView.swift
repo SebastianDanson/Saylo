@@ -27,13 +27,15 @@ struct WaitingForUserView: View {
                     
                     VStack {
                         
-                        KFImage(URL(string: chat.profileImage))
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
+                        ChatImageCircle(chat: chat, diameter: 50)
                             .padding(.top, 4)
-                        
+
+//                        KFImage(URL(string: chat.profileImage))
+//                            .resizable()
+//                            .scaledToFill()
+//                            .frame(width: 50, height: 50)
+//                            .clipShape(Circle())
+//                        
                         VStack(spacing: 6) {
                             VStack(spacing: 0) {
                                 

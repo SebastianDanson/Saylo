@@ -20,7 +20,13 @@ class MainViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var isFrontFacing = true
     @Published var showAlert = false
-    @Published var selectedView: MainViewType = .Video
+    @Published var selectedView: MainViewType = .Video {
+        didSet {
+            if selectedView != .Video {
+                TextOverlayViewModel.shared.overlayText = ""
+            }
+        }
+    }
     @Published var photoBaseHeight = PHOTO_PICKER_SMALL_HEIGHT
     @Published var showPhotos = false
     @Published var showAddFriends: Bool = false
@@ -51,6 +57,7 @@ class MainViewModel: ObservableObject {
     var isCameraAlert = false
     var timer: Timer?
     var cameraView = MainView()
+    var ciImage: CIImage?
     
     static let shared = MainViewModel()
     
@@ -110,6 +117,7 @@ class MainViewModel: ObservableObject {
     
     func sendPhoto() {
         guard photo != nil, videoUrl == nil else { return }
+        
         handleSend()
     }
     

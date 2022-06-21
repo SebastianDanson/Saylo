@@ -107,7 +107,7 @@ extension AppDelegate: PKPushRegistryDelegate {
     
     func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         let token = credentials.token.map { String(format: "%02.2hhx", $0) }.joined()
-        print("voip token = \(token)")
+//        print("voip token = \(token)")
         let uid = Auth.auth().currentUser?.uid
         
         if let uid = uid  {
@@ -121,7 +121,7 @@ extension AppDelegate: PKPushRegistryDelegate {
         
         
         let data = payload.dictionaryPayload["data"] as? [String:Any] ?? [String:Any]()
-        print(data, "DATA")
+//        print(data, "DATA")
         defer {
             completion()
         }
@@ -196,7 +196,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             let token = defaults.string(forKey: "fcmToken")
             defaults.set(fcmToken, forKey: "fcmToken")
             
-            print(token, "TOKEN", fcmToken, "FCM")
+//            print(token, "TOKEN", fcmToken, "FCM")
             
             if token == nil {
                 AuthViewModel.shared.updateTeamSayloChat(fcmToken: fcmToken)
@@ -247,7 +247,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                 
                 ConversationGridViewModel.shared.fetchConversation(withId: chatId) {
                     
-                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording, ConversationGridViewModel.shared.showConversation, ConversationViewModel.shared.liveUsers.count == 0 {
+                  
+                    if MainViewModel.shared.selectedView != .Saylo, !MainViewModel.shared.isRecording, ConversationGridViewModel.shared.showConversation, ConversationViewModel.shared.liveUsers.count == 0,
+                       !ConversationViewModel.shared.watchedStreams.contains(chatId){
                         
                         if let chat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId}) {
                             
@@ -259,6 +261,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
                             ConversationViewModel.shared.lastSendingRecordingId = ""                            
                         }
                     }
+                    
+                    ConversationViewModel.shared.watchedStreams
+                        .removeAll(where: {$0 == chatId})
                 }
             }
             

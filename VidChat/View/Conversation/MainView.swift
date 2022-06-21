@@ -922,7 +922,7 @@ struct RoundedCorner: Shape {
 
 struct JoinCallSmallView: View {
     
-    var imageName = ConversationViewModel.shared.chat?.profileImage ?? ""
+    var chat = ConversationViewModel.shared.chat
     let dimension: CGFloat = IS_SMALL_WIDTH ? 44 : (IS_SMALL_PHONE ? 46 : 48)
     @Binding var hasJoinedCall: Bool
     
@@ -937,13 +937,17 @@ struct JoinCallSmallView: View {
             
             VStack(spacing: 4) {
                 
-                KFImage(URL(string: imageName))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: dimension, height: dimension)
-                    .clipShape(Circle())
-                    .overlay(RoundedRectangle(cornerRadius: dimension/2)
-                        .stroke(Color.white, lineWidth: 2))
+                if let chat = chat {
+                    ChatImageCircle(chat: chat, diameter: dimension)
+                        .overlay(RoundedRectangle(cornerRadius: dimension/2)
+                            .stroke(Color.white, lineWidth: 2))
+                }
+//                KFImage(URL(string: imageName))
+//                    .resizable()
+//                    .scaledToFill()
+//                    .frame(width: dimension, height: dimension)
+//                    .clipShape(Circle())
+                    
                 
                 HStack(spacing: 4) {
                     
@@ -960,8 +964,8 @@ struct JoinCallSmallView: View {
                     
                 }
             }
-            .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
             .padding(.bottom, 8)
+            .shadow(color: Color(.init(white: 0, alpha: 0.06)), radius: 16, x: 0, y: 4)
         }
     }
 }
@@ -993,6 +997,7 @@ struct JoinCallLargeView: View {
                 HStack {
                     
                     ScrollView(.horizontal, showsIndicators: false) {
+                        
                         HStack(spacing: -15) {
                             
                             ForEach(Array(joinedCallUsers.enumerated()), id: \.1) { i, id in
@@ -1014,14 +1019,11 @@ struct JoinCallLargeView: View {
                                         )
                                 }
                             }
-                            
-                            
                         }
                     }
                     .frame(width: 120)
                     
                     Spacer()
-                    
                     
                     JoinCallOptionsView(height: 42, hasRejectedCall: $hasRejectedCall)
                 }

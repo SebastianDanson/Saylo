@@ -136,6 +136,7 @@ class ConversationViewModel: ObservableObject {
     @Published var isLive = false
     @Published var currentlyWatchingId: String?
     
+    var watchedStreams = [String]()
     var selectedChat: Chat?
     var hasSelectedAssets = false
     var isShowingReactions = false
@@ -200,7 +201,6 @@ class ConversationViewModel: ObservableObject {
     }
     
     func setChat(chat: Chat) {
-        
         ConversationViewModel.shared.currentPlayer = nil
         self.selectedMessageIndexes.removeAll()
         self.chat = chat
@@ -251,6 +251,7 @@ class ConversationViewModel: ObservableObject {
         MainViewModel.shared.showFilters = false
         MainViewModel.shared.showCaption = false
         
+        self.watchedStreams.removeAll()
         self.currentPlayer = nil
         self.players = [MessagePlayer]()
         self.presentUsers.removeAll()
@@ -395,7 +396,14 @@ class ConversationViewModel: ObservableObject {
     func sendCameraMessage(chatId: String?, chat: Chat?) {
         
         let cameraViewModel = MainViewModel.shared
-        addMessage(url: cameraViewModel.videoUrl, image: cameraViewModel.photo,
+        
+        var imageToSend = cameraViewModel.photo
+        
+        if !TextOverlayViewModel.shared.overlayText.isEmpty, let captionedImage = addCaptionToTakenImage() {
+            imageToSend = captionedImage
+        }
+        
+        addMessage(url: cameraViewModel.videoUrl, image: imageToSend,
                    type: cameraViewModel.videoUrl == nil ? .Photo : .Video,
                    isFromPhotoLibrary: false, shouldExport: false, chatId: chatId)
         
@@ -404,6 +412,24 @@ class ConversationViewModel: ObservableObject {
             ConversationGridViewModel.shared.isSendingChat(chat: chat, isSending: true)
         }
     }
+    
+    func addCaptionToTakenImage() -> UIImage? {
+        
+        if var ciimage = MainViewModel.shared.ciImage {
+                        
+            if !TextOverlayViewModel.shared.overlayText.isEmpty, let imageWithText = TextOverlayViewModel.shared.addText(toImage: ciimage) {
+                ciimage = imageWithText
+            }
+            
+            if let cgimage = CIContext().createCGImage(ciimage, from: ciimage.extent) {
+                return UIImage(cgImage: cgimage)
+            }
+        }
+        
+        MainViewModel.shared.ciImage = nil
+        return nil
+    }
+    
     
     func sendIsTalkingNotification(chat: Chat) {
         
@@ -458,6 +484,9 @@ class ConversationViewModel: ObservableObject {
     func setIsOnCall() {
         guard let chat = chat else { return }
         MainViewModel.shared.selectedView = .Video
+        if MainViewModel.shared.isRecording {
+            MainViewModel.shared.cancelRecording()
+        }
         joinedCallUsers.append(AuthViewModel.shared.getUserId())
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["joinedCallUsers":FieldValue.arrayUnion([AuthViewModel.shared.getUserId()])])
     }
@@ -800,7 +829,7 @@ class ConversationViewModel: ObservableObject {
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.messages = chat.messages
-                        //                        self.showMessage(atIndex: chat.lastReadMessageIndex)
+       
                     }
                 }
                 
@@ -823,7 +852,6 @@ class ConversationViewModel: ObservableObject {
                             messages.first(where: {$0.id == message.id})?.image = image
                         }
                     }
-                    
                     
                     if self.messages.count != messages.count {
                         
@@ -853,14 +881,13 @@ class ConversationViewModel: ObservableObject {
                         chat.setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
                         self.usersLastVisited = chat.usersLastVisited
                     }
-                    
-                    
+ 
                     
                     withAnimation {
                         self.joinedCallUsers = data["joinedCallUsers"] as? [String] ?? [String]()
                         self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
                     }
-                    
+                                        
                     self.noMessages = messages.count == 0
                     //                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     
@@ -983,7 +1010,7 @@ class ConversationViewModel: ObservableObject {
         showPlaybackControls = false
         self.index = i
         self.isPlaying = true
-        
+        ConversationService.updateUsersLastVisited(atIndex: i)
         if !isPlayable(index: index) {
             setVideoLength()
         }
@@ -1026,6 +1053,7 @@ class ConversationViewModel: ObservableObject {
             if index < messages.count - 1 {
                 
                 index += 1
+                ConversationService.updateUsersLastVisited(atIndex: index)
                 selectedMessageIndexes.append(index)
                 self.isPlaying = true
                 
