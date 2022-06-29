@@ -17,7 +17,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> CameraViewController {
         //  cameraViewController.delegate = context.coordinator
-//        cameraViewController.isVideo = MainViewModel.shared.isRecording
+        //        cameraViewController.isVideo = MainViewModel.shared.isRecording
         return cameraViewController
     }
     
@@ -29,57 +29,57 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func startRecording() {
-        cameraViewController.captureMovie()
+        cameraViewController.startMovieRecording()
     }
     
     public func stopRecording() {
-        cameraViewController.stopRecording()
+        cameraViewController.stopMovieRecording()
     }
     
     public func takephoto(withFlash hasFlash: Bool) {
-        cameraViewController.takePhoto(withFlash: hasFlash)
+        //        cameraViewController.takePhoto(withFlash: hasFlash)
     }
     
     public func cancelRecording() {
-        cameraViewController.stopRecording(showVideo: false)
+        cameraViewController.stopMovieRecording(sendVideo: false)
         ConversationViewModel.shared.didCancelRecording = true
     }
     
-    public func addAudio() {
-        cameraViewController.setUpWriter()
-        //         cameraViewController.addAudio()
-    }
+//    public func addAudio() {
+//        //        cameraViewController.setUpWriter()
+//        //         cameraViewController.addAudio()
+//    }
     
     
     public func setupSession() {
-        cameraViewController.setupSession()
-        cameraViewController.setupPreview()
-//        cameraViewController.startSession()
+        //        cameraViewController.setupSession()
+        //        cameraViewController.setupPreview()
+        //        cameraViewController.startSession()
         //        cameraViewController.setupAudio()
     }
     
     public func setupProfileImageCamera() {
-        cameraViewController.setupSession(addAudio: false)
-        cameraViewController.setupPreview()
-        cameraViewController.startRunning()
+        //        cameraViewController.setupSession(addAudio: false)
+        //        cameraViewController.setupPreview()
+        //        cameraViewController.startRunning()
     }
     
     public func startRunning() {
-        cameraViewController.startRunning()
+        //        cameraViewController.startRunning()
     }
     
     public func stopRunning() {
-        cameraViewController.stopRunning()
+        //        cameraViewController.stopRunning()
     }
     
     
     public func stopSession() {
-//        cameraViewController.stopSession()
+        //        cameraViewController.stopSession()
     }
     
-    public func setupWriter() {
-        cameraViewController.setUpWriter()
-    }
+//    public func setupWriter() {
+        //        cameraViewController.setUpWriter()
+//    }
 }
 
 

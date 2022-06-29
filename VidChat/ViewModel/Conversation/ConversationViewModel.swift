@@ -216,6 +216,7 @@ class ConversationViewModel: ObservableObject {
         self.addListener()
         chat.hasUnreadMessage = false
         self.setIsOnChat()
+        didCancelRecording = false
     }
     
     func getSavedPosts() {
@@ -279,7 +280,9 @@ class ConversationViewModel: ObservableObject {
     func addMessage(url: URL? = nil, text: String? = nil, image: UIImage? = nil, type: MessageType, isFromPhotoLibrary: Bool = false,shouldExport: Bool = true, chatId: String? = nil, hasNotification: Bool = true, isAcceptingFrienRequest: Bool = false) {
         
         if ConversationViewModel.shared.chat != nil {
-            ConversationViewModel.shared.isSending = true
+            DispatchQueue.main.async {
+                ConversationViewModel.shared.isSending = true
+            }
         }
         
         let id = NSUUID().uuidString
@@ -416,7 +419,7 @@ class ConversationViewModel: ObservableObject {
     func addCaptionToTakenImage() -> UIImage? {
         
         if var ciimage = MainViewModel.shared.ciImage {
-                        
+            
             if !TextOverlayViewModel.shared.overlayText.isEmpty, let imageWithText = TextOverlayViewModel.shared.addText(toImage: ciimage) {
                 ciimage = imageWithText
             }
@@ -467,7 +470,9 @@ class ConversationViewModel: ObservableObject {
     
     func setIsNotLive() {
         guard let chat = chat else { return }
-        isLive = false
+        DispatchQueue.main.async {
+            self.isLive = false
+        }
         COLLECTION_CONVERSATIONS.document(chat.id).updateData(["liveUsers":FieldValue.arrayRemove([AuthViewModel.shared.getUserId()])])
     }
     
@@ -802,8 +807,10 @@ class ConversationViewModel: ObservableObject {
     }
     
     func hideLiveView() {
-        self.isLive = false
-        self.currentlyWatchingId = nil
+        DispatchQueue.main.async {
+            self.isLive = false
+            self.currentlyWatchingId = nil
+        }
     }
     
     func deleteMessage(message: Message) {
@@ -829,7 +836,7 @@ class ConversationViewModel: ObservableObject {
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.messages = chat.messages
-       
+                        
                     }
                 }
                 
@@ -881,13 +888,13 @@ class ConversationViewModel: ObservableObject {
                         chat.setUsersLastVisited(usersLastVisitedDic: usersLastVisitedDic)
                         self.usersLastVisited = chat.usersLastVisited
                     }
- 
+                    
                     
                     withAnimation {
                         self.joinedCallUsers = data["joinedCallUsers"] as? [String] ?? [String]()
                         self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
                     }
-                                        
+                    
                     self.noMessages = messages.count == 0
                     //                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     

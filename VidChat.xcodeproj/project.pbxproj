@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		060A89A6286BB8A800B2FBEE /* PassThrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 060A89A5286BB8A800B2FBEE /* PassThrough.metal */; };
+		060A89A8286BB8BB00B2FBEE /* Mixer.metal in Sources */ = {isa = PBXBuildFile; fileRef = 060A89A7286BB8BB00B2FBEE /* Mixer.metal */; };
+		060A89AA286BB8CA00B2FBEE /* PiPMixer.metal in Sources */ = {isa = PBXBuildFile; fileRef = 060A89A9286BB8CA00B2FBEE /* PiPMixer.metal */; };
+		060A89AF286BDACD00B2FBEE /* FilterRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89AE286BDACD00B2FBEE /* FilterRenderer.swift */; };
+		060A89B1286BDAE800B2FBEE /* RosyCIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89B0286BDAE800B2FBEE /* RosyCIRenderer.swift */; };
+		060A89B3286BDB0D00B2FBEE /* VibrantCIFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89B2286BDB0D00B2FBEE /* VibrantCIFilter.swift */; };
+		060A89B5286BDB2C00B2FBEE /* BlurHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89B4286BDB2C00B2FBEE /* BlurHelper.swift */; };
+		060A89B8286BDB9000B2FBEE /* VideoMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89B7286BDB9000B2FBEE /* VideoMixer.swift */; };
+		060A89BA286BDC0600B2FBEE /* PreviewMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89B9286BDC0600B2FBEE /* PreviewMetalView.swift */; };
+		060A89BC286BDCCD00B2FBEE /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89BB286BDCCD00B2FBEE /* PreviewView.swift */; };
+		060A89BE286BDD0900B2FBEE /* PiPVideoMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89BD286BDD0900B2FBEE /* PiPVideoMixer.swift */; };
+		060A89C1286BDD7900B2FBEE /* MovieRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A89C0286BDD7900B2FBEE /* MovieRecorder.swift */; };
 		060D60F327AD8E2000771977 /* PhotosViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060D60F227AD8E2000771977 /* PhotosViewModel.swift */; };
 		0613DF8A285B862500E4407D /* AgoraRtmKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0613DF89285B862500E4407D /* AgoraRtmKit */; };
 		0613DF8D285B87B600E4407D /* RtcBasic in Frameworks */ = {isa = PBXBuildFile; productRef = 0613DF8C285B87B600E4407D /* RtcBasic */; };
@@ -226,6 +238,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		060A89A5286BB8A800B2FBEE /* PassThrough.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PassThrough.metal; sourceTree = "<group>"; };
+		060A89A7286BB8BB00B2FBEE /* Mixer.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Mixer.metal; sourceTree = "<group>"; };
+		060A89A9286BB8CA00B2FBEE /* PiPMixer.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = PiPMixer.metal; sourceTree = "<group>"; };
+		060A89AE286BDACD00B2FBEE /* FilterRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterRenderer.swift; sourceTree = "<group>"; };
+		060A89B0286BDAE800B2FBEE /* RosyCIRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosyCIRenderer.swift; sourceTree = "<group>"; };
+		060A89B2286BDB0D00B2FBEE /* VibrantCIFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibrantCIFilter.swift; sourceTree = "<group>"; };
+		060A89B4286BDB2C00B2FBEE /* BlurHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurHelper.swift; sourceTree = "<group>"; };
+		060A89B7286BDB9000B2FBEE /* VideoMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoMixer.swift; sourceTree = "<group>"; };
+		060A89B9286BDC0600B2FBEE /* PreviewMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewMetalView.swift; sourceTree = "<group>"; };
+		060A89BB286BDCCD00B2FBEE /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		060A89BD286BDD0900B2FBEE /* PiPVideoMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPVideoMixer.swift; sourceTree = "<group>"; };
+		060A89C0286BDD7900B2FBEE /* MovieRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRecorder.swift; sourceTree = "<group>"; };
 		060D60F227AD8E2000771977 /* PhotosViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosViewModel.swift; sourceTree = "<group>"; };
 		0616EBFD279248E5006565FE /* ChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
 		0616EC0127928808006565FE /* AddUserToGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserToGroupView.swift; sourceTree = "<group>"; };
@@ -251,7 +275,7 @@
 		063CAAB6277BA0C300C84318 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		063CAAB8277BDED900C84318 /* FindFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFriendsView.swift; sourceTree = "<group>"; };
 		063CAABA277BEF1900C84318 /* NewConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationView.swift; sourceTree = "<group>"; };
-		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/View/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
+		063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewConversationViewModel.swift; path = VidChat/ViewModel/Conversation/NewConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
 		063CAAC0277C240900C84318 /* AddFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendsViewModel.swift; sourceTree = "<group>"; };
 		063D3EE8279C830400C21E42 /* VerifyPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyPhoneNumberView.swift; sourceTree = "<group>"; };
 		063E2D0D283B034400F4B56D /* SampleVideoCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleVideoCallView.swift; sourceTree = "<group>"; };
@@ -326,7 +350,7 @@
 		06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOptionViews.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
-		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/Utils/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
+		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/ViewModel/Conversation/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
 		06E387C827EFFE6500D28714 /* LastPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastPhotoView.swift; sourceTree = "<group>"; };
 		06ECD9032815041000870A51 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
 		06ECD9052815BD5800870A51 /* AllFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllFriendsView.swift; sourceTree = "<group>"; };
@@ -444,6 +468,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		060A89AD286BDAB500B2FBEE /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				068DA24E284C3AE00034374E /* Filters.swift */,
+				060A89AE286BDACD00B2FBEE /* FilterRenderer.swift */,
+				060A89B0286BDAE800B2FBEE /* RosyCIRenderer.swift */,
+				060A89B2286BDB0D00B2FBEE /* VibrantCIFilter.swift */,
+			);
+			path = Filters;
+			sourceTree = "<group>";
+		};
+		060A89B6286BDB5C00B2FBEE /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				060A89A5286BB8A800B2FBEE /* PassThrough.metal */,
+				060A89A9286BB8CA00B2FBEE /* PiPMixer.metal */,
+				060A89A7286BB8BB00B2FBEE /* Mixer.metal */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
+		060A89BF286BDD4700B2FBEE /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				060A89B4286BDB2C00B2FBEE /* BlurHelper.swift */,
+				060A89B7286BDB9000B2FBEE /* VideoMixer.swift */,
+				060A89C0286BDD7900B2FBEE /* MovieRecorder.swift */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
 		0616EC00279287DC006565FE /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -548,6 +603,9 @@
 				3F08F27727017D9C009E0029 /* VideoPlayerView.swift */,
 				3FFD034A272CAE6A000BEADE /* VideoHelper.swift */,
 				06DB59972833F57300B295EA /* LiveStreamViewRepresentable.swift */,
+				060A89B9286BDC0600B2FBEE /* PreviewMetalView.swift */,
+				060A89BB286BDCCD00B2FBEE /* PreviewView.swift */,
+				060A89BD286BDD0900B2FBEE /* PiPVideoMixer.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -584,6 +642,8 @@
 				3F712479276FC92C00C8457D /* ConversationPlayerViewModel.swift */,
 				060D60F227AD8E2000771977 /* PhotosViewModel.swift */,
 				068DA252284D96690034374E /* TextOverlayViewModel.swift */,
+				06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */,
+				063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */,
 			);
 			path = Conversation;
 			sourceTree = "<group>";
@@ -652,6 +712,7 @@
 			isa = PBXGroup;
 			children = (
 				3F7786AF27225958005AF9DA /* VidChat.entitlements */,
+				060A89B6286BDB5C00B2FBEE /* Shaders */,
 				3F485D8D26FD45880071532B /* Model */,
 				3F485D8C26FD45850071532B /* View */,
 				3F485D8B26FD45810071532B /* ViewModel */,
@@ -678,6 +739,8 @@
 		3F485D8926FD457A0071532B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				060A89BF286BDD4700B2FBEE /* Video */,
+				060A89AD286BDAB500B2FBEE /* Filters */,
 				06246614281B13F0000A8838 /* PinCodeView */,
 				069D11EC2798939900988829 /* CountryCodes */,
 				3F7786BB27234E4B005AF9DA /* AudioMessaging */,
@@ -703,7 +766,6 @@
 				0687E9F427949B5C004E1187 /* NameTextField.swift */,
 				069D11E62798775600988829 /* MessageView.swift */,
 				065CD73B27F1084A00F04EB7 /* KeyBoardHeightModifier.swift */,
-				068DA24E284C3AE00034374E /* Filters.swift */,
 				064F5FEF285785C100286A78 /* ImageCache.swift */,
 			);
 			path = Utils;
@@ -728,9 +790,7 @@
 				3F7786BE27245D86005AF9DA /* Call */,
 				3F50C6F2270195A50027D080 /* Camera */,
 				3F1768242714A3F00049ADBA /* Conversation */,
-				3F8B02A026FF914500841565 /* ConversationsList */,
 				3F485D9A26FD46910071532B /* Settings */,
-				3F8B02A126FF915200841565 /* Search */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -929,22 +989,6 @@
 			path = Conversation;
 			sourceTree = "<group>";
 		};
-		3F8B02A026FF914500841565 /* ConversationsList */ = {
-			isa = PBXGroup;
-			children = (
-				06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */,
-				063CAABC277C1A8000C84318 /* NewConversationViewModel.swift */,
-			);
-			path = ConversationsList;
-			sourceTree = "<group>";
-		};
-		3F8B02A126FF915200841565 /* Search */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Search;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1082,6 +1126,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F3D50E9272204DB0048F5BF /* Audio.swift in Sources */,
+				060A89AA286BB8CA00B2FBEE /* PiPMixer.metal in Sources */,
 				3F485DAC26FD5D4D0071532B /* SearchBar.swift in Sources */,
 				063CAAC1277C240900C84318 /* AddFriendsViewModel.swift in Sources */,
 				3F112C5B2721B4DF00BA2A73 /* URL+StartCallConvertible.swift in Sources */,
@@ -1089,6 +1134,7 @@
 				064F5FF82857863400286A78 /* LoadingVideoView.swift in Sources */,
 				3F8B029526FF795900841565 /* LazyView.swift in Sources */,
 				06F1A32C277D522300A0F992 /* SetProfileImageView.swift in Sources */,
+				060A89A6286BB8A800B2FBEE /* PassThrough.metal in Sources */,
 				3F08F27627017A5A009E0029 /* MainView.swift in Sources */,
 				068DA251284D96370034374E /* TextOverlayView.swift in Sources */,
 				065971F82776AD1200884420 /* Reaction.swift in Sources */,
@@ -1116,6 +1162,7 @@
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
 				0616EC0927928978006565FE /* AddedChatsView.swift in Sources */,
 				0692D29727E41406007E5A54 /* RecordTimerView.swift in Sources */,
+				060A89B1286BDAE800B2FBEE /* RosyCIRenderer.swift in Sources */,
 				3F485DB826FE11740071532B /* ProfileHeaderView.swift in Sources */,
 				067FBB60279BB7DE00B2EA04 /* CountriesAdapter.swift in Sources */,
 				06F1A328277D053600A0F992 /* TermsAndConditionsView.swift in Sources */,
@@ -1135,8 +1182,11 @@
 				3F71247A276FC92C00C8457D /* ConversationPlayerViewModel.swift in Sources */,
 				064F5FFE2857868100286A78 /* CircularLoadingAnimationView.swift in Sources */,
 				068DA253284D96690034374E /* TextOverlayViewModel.swift in Sources */,
+				060A89BC286BDCCD00B2FBEE /* PreviewView.swift in Sources */,
 				069E4A672772A2E100996824 /* ActivityViewController.swift in Sources */,
 				06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */,
+				060A89AF286BDACD00B2FBEE /* FilterRenderer.swift in Sources */,
+				060A89C1286BDD7900B2FBEE /* MovieRecorder.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
 				3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */,
 				06246624281B147C000A8838 /* PinView.swift in Sources */,
@@ -1197,6 +1247,7 @@
 				065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */,
 				06DEA9CE27C7FEB6000D60B0 /* CameraOptionViews.swift in Sources */,
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
+				060A89A8286BB8BB00B2FBEE /* Mixer.metal in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,
 				0660EE582799F0B500704AFE /* UnreadMessagesScrollView.swift in Sources */,
 				06CD9B1A28582A8000694DB1 /* WaitingForUserView.swift in Sources */,
@@ -1204,6 +1255,7 @@
 				0687E9F327949A49004E1187 /* EditChatNameView.swift in Sources */,
 				3F2A7EC22719E53700179390 /* AssetCell.swift in Sources */,
 				06520C0B282D72E100C8FF1D /* TextColorView.swift in Sources */,
+				060A89B5286BDB2C00B2FBEE /* BlurHelper.swift in Sources */,
 				064F5FEE285785AD00286A78 /* ViewSavedMessagesButton.swift in Sources */,
 				3F08F26F2700F768009E0029 /* ConversationGridCell.swift in Sources */,
 				06ECD9082815BFE500870A51 /* FriendCell.swift in Sources */,
@@ -1220,6 +1272,8 @@
 				0692D29527E38D13007E5A54 /* PlaybackControls.swift in Sources */,
 				064F5FF0285785C100286A78 /* ImageCache.swift in Sources */,
 				064F5FF62857861600286A78 /* LiveUsersView.swift in Sources */,
+				060A89BA286BDC0600B2FBEE /* PreviewMetalView.swift in Sources */,
+				060A89BE286BDD0900B2FBEE /* PiPVideoMixer.swift in Sources */,
 				06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */,
 				3F112C5A2721B4DF00BA2A73 /* StartCallConvertible.swift in Sources */,
 				065E93962787755D0025C90C /* AcitivityIndicator.swift in Sources */,
@@ -1235,8 +1289,10 @@
 				069D11F02798989F00988829 /* CountriesFetcher.swift in Sources */,
 				069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */,
 				064F5FEC2857859700286A78 /* LastSeenProfileImageView.swift in Sources */,
+				060A89B3286BDB0D00B2FBEE /* VibrantCIFilter.swift in Sources */,
 				3FDEE7BB2721C41300DF43C6 /* AGEERROR.swift in Sources */,
 				3FB8B5D8270FAACA00355DB9 /* ConversationView.swift in Sources */,
+				060A89B8286BDB9000B2FBEE /* VideoMixer.swift in Sources */,
 				06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */,
 				3F2A7EC02719E4DF00179390 /* PhotosCollectionView.swift in Sources */,
 				3F485DB426FE0DE30071532B /* Extensions.swift in Sources */,

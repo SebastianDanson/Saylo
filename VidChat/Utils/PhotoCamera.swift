@@ -96,11 +96,7 @@ class CustomCameraController: UIViewController, AVCapturePhotoCaptureDelegate {
         takePhotoButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 15, width: 60, height: 60)
         takePhotoButton.layer.cornerRadius = 30
         takePhotoButton.centerX(inView: view)
-       
-//        backButton.anchor(top: view.topAnchor, left: view.leftAnchor, paddingTop: TOP_PADDING, paddingLeft: 15, width: 40, height: 40)
-//        backButton.imageView?.contentMode = .scaleAspectFit
-//        backButton.backgroundColor = .fadedBlack
-//        backButton.layer.cornerRadius = 20
+        
     }
     
     private func openCamera() {

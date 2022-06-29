@@ -52,7 +52,7 @@ class MainViewModel: ObservableObject {
             }
         }
     }
-
+    
     var audioRecorder = AudioRecorder()
     var isCameraAlert = false
     var timer: Timer?
@@ -110,14 +110,18 @@ class MainViewModel: ObservableObject {
                 conversationVM.sendCameraMessage(chatId: chat.id, chat: chat)
             }
             
-            videoUrl = nil
-            photo = nil
+            DispatchQueue.main.async {
+                
+                self.videoUrl = nil
+                self.photo = nil
+                MainViewModel.shared.showCaption = false
+                MainViewModel.shared.showFilters = false
+            }
         }
     }
     
     func sendPhoto() {
         guard photo != nil, videoUrl == nil else { return }
-        
         handleSend()
     }
     
