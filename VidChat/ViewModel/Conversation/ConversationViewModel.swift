@@ -144,6 +144,7 @@ class ConversationViewModel: ObservableObject {
     var selectedFilter: Filter? {
         didSet {
             UserDefaults.standard.set(selectedFilter?.name ?? "", forKey: "selectedFilter")
+            MainViewModel.shared.cameraView.setFilter(selectedFilter)
         }
     }
     

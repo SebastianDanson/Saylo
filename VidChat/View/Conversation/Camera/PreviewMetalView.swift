@@ -84,6 +84,7 @@ class PreviewMetalView: MTKView {
     }
     
     func texturePointForView(point: CGPoint) -> CGPoint? {
+        
         var result: CGPoint?
         guard let transform = textureTranform else {
             return result
@@ -199,6 +200,7 @@ class PreviewMetalView: MTKView {
                 1.0, 1.0
             ]
         }
+        
         textCoordBuffer = device?.makeBuffer(bytes: textData, length: textData.count * MemoryLayout<Float>.size, options: [])
         
         // Calculate the transform from texture coordinates to view coordinates
@@ -361,11 +363,13 @@ class PreviewMetalView: MTKView {
         
         // Create a Metal texture from the image buffer.
         let width = CVPixelBufferGetWidth(previewPixelBuffer)
-        let height = CVPixelBufferGetHeight(previewPixelBuffer)
-        
+        let height = Int(Double(width) * 16/9)
+//        let height = CVPixelBufferGetHeight(previewPixelBuffer)
+                
         if textureCache == nil {
             createTextureCache()
         }
+        
         var cvTextureOut: CVMetalTexture?
         CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                   textureCache!,

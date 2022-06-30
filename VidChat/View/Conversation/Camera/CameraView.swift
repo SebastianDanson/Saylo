@@ -50,6 +50,10 @@ struct CameraView: UIViewControllerRepresentable {
 //        //         cameraViewController.addAudio()
 //    }
     
+    public func setFilter(_ filter: Filter?) {
+        cameraViewController.setVideoFilter(filter)
+    }
+    
     
     public func setupSession() {
         //        cameraViewController.setupSession()

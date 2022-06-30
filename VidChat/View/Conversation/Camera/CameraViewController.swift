@@ -149,8 +149,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         setupMainPreviewView()
         
         view.addSubview(previewView)
-        previewView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor)
-        previewView.setDimensions(height: MESSAGE_HEIGHT, width: SCREEN_WIDTH)
+        previewView.anchor(top: view.topAnchor, left: view.leftAnchor)
+        previewView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
+        
+        self.previewView.layer.cornerRadius = 14
+        self.previewView.layer.masksToBounds = true
         
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
         self.view.addGestureRecognizer(pinchRecognizer)
@@ -223,6 +226,34 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         backCameraVideoPreviewView.layer.cornerRadius = 14
 
         view.sendSubviewToBack(backCameraVideoPreviewView)
+    }
+    
+    func setVideoFilter(_ filter: Filter?) {
+
+        if let filter = filter {
+//            self.videoFilter = RosyCIRenderer()
+//            self.previewView.isHidden = false
+            
+            self.previewView.setBlur(enabled: true)
+            self.isBlurFilterEnabled = true
+//        switch filter {
+//        case .blur:
+//            <#code#>
+//        case .positiveVibrance:
+//            <#code#>
+//        case .saturated:
+//            <#code#>
+//        case .gamma:
+//            <#code#>
+//        case .negativeVibrance:
+//            <#code#>
+//        }
+        } else {
+//            self.previewView.isHidden = true
+            self.isBlurFilterEnabled = false
+            self.previewView.setBlur(enabled: false)
+            self.videoFilter = nil
+        }
     }
     
     @objc // Expose to Objective-C for use with #selector()
@@ -954,7 +985,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         if isBlurFilterEnabled {
             guard let pixelBuffer = sampleBuffer.imageBuffer else { return }
             previewView.currentCIImage = BlurHelper.processVideoFrame(pixelBuffer)
-        } else if canWrite(), let videoDataOutput = output as? AVCaptureVideoDataOutput {
+        } else if let videoDataOutput = output as? AVCaptureVideoDataOutput {
             processVideoSampleBuffer(sampleBuffer, fromOutput: videoDataOutput)
         } else if canWrite(), let audioDataOutput = output as? AVCaptureAudioDataOutput {
             processsAudioSampleBuffer(sampleBuffer, fromOutput: audioDataOutput)

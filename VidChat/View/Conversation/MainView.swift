@@ -358,6 +358,10 @@ struct MainView: View {
         cameraView.stopRunning()
     }
     
+    func setFilter(_ filter: Filter?) {
+        cameraView.setFilter(filter)
+    }
+    
 }
 
 struct FlashView: View {
