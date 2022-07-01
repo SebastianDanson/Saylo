@@ -1,22 +1,21 @@
 //
-//  VibrantCIFilter.swift
+//  DimCIRenderer.swift
 //  Saylo
 //
-//  Created by Sebastian Danson on 2022-06-28.
+//  Created by Sebastian Danson on 2022-07-01.
 //
 
 import CoreMedia
 import CoreVideo
 import CoreImage
 
-class VibrantCIRenderer: FilterRenderer {
+class DimCIRenderer: FilterRenderer {
         
     var isPrepared = false
-    var isPositive: Bool
     
     private var ciContext: CIContext?
     
-    private var vibrantFilter: CIFilter?
+    private var gammaFilter: CIFilter?
     
     private var outputColorSpace: CGColorSpace?
     
@@ -26,14 +25,10 @@ class VibrantCIRenderer: FilterRenderer {
     
     private(set) var inputFormatDescription: CMFormatDescription?
     
-    init(isPositive: Bool) {
-        self.isPositive = isPositive
-    }
-    
     /// - Tag: FilterCoreImageVibrant
     func prepare(with formatDescription: CMFormatDescription, outputRetainedBufferCountHint: Int) {
         reset()
-
+        
         (outputPixelBufferPool,
          outputColorSpace,
          outputFormatDescription) = allocateOutputBufferPool(with: formatDescription,
@@ -43,14 +38,14 @@ class VibrantCIRenderer: FilterRenderer {
         }
         inputFormatDescription = formatDescription
         ciContext = CIContext()
-        vibrantFilter = CIFilter(name: "CIVibrance")
-        vibrantFilter!.setValue(isPositive ? 1.0 : -1.0, forKey: "inputAmount")
+        gammaFilter = CIFilter(name: "CIGammaAdjust")
+        gammaFilter!.setValue(0.85, forKey: "inputPower")
         isPrepared = true
     }
     
     func reset() {
         ciContext = nil
-        vibrantFilter = nil
+        gammaFilter = nil
         outputColorSpace = nil
         outputPixelBufferPool = nil
         outputFormatDescription = nil
@@ -59,8 +54,7 @@ class VibrantCIRenderer: FilterRenderer {
     }
     
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer? {
-
-        guard let vibrantFilter = vibrantFilter,
+        guard let vibrantFilter = gammaFilter,
             let ciContext = ciContext,
             isPrepared else {
                 assertionFailure("Invalid state: Not prepared")

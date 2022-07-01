@@ -63,13 +63,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     private var isMultiCamEnabled = false
     private var isBlurFilterEnabled = false {
         didSet {
-            previewView.setBlur(enabled: isBlurFilterEnabled)
-            previewView.isHidden = !isBlurFilterEnabled
+            previewBlurView.setBlur(enabled: isBlurFilterEnabled)
         }
     }
     private let bottomPadding = CGFloat(TOP_PADDING + CAMERA_HEIGHT - SCREEN_HEIGHT)
     private var videoFilter: FilterRenderer?
     private var previewView = PreviewMetalView()
+    private var previewBlurView = PreviewMetalView()
     private let photoOutput = AVCapturePhotoOutput()
     
     // MARK: View Controller Life Cycle
@@ -152,6 +152,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewView.anchor(top: view.topAnchor, left: view.leftAnchor)
         previewView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
         
+        view.addSubview(previewBlurView)
+        previewBlurView.anchor(top: view.topAnchor, left: view.leftAnchor)
+        previewBlurView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
+        
         self.previewView.layer.cornerRadius = 14
         self.previewView.layer.masksToBounds = true
         
@@ -230,29 +234,34 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     func setVideoFilter(_ filter: Filter?) {
 
+        print(filter?.name, "NAME")
         if let filter = filter {
-//            self.videoFilter = RosyCIRenderer()
-//            self.previewView.isHidden = false
             
-            self.previewView.setBlur(enabled: true)
-            self.isBlurFilterEnabled = true
-//        switch filter {
-//        case .blur:
-//            <#code#>
-//        case .positiveVibrance:
-//            <#code#>
-//        case .saturated:
-//            <#code#>
-//        case .gamma:
-//            <#code#>
-//        case .negativeVibrance:
-//            <#code#>
-//        }
+           
+            switch filter {
+            case .blur:
+                self.videoFilter = nil
+            case .positiveVibrance:
+                self.videoFilter = VibrantCIRenderer(isPositive: true)
+            case .saturated:
+                self.videoFilter = WarmCIRenderer()
+            case .gamma:
+                self.videoFilter = RosyCIRenderer()
+            case .negativeVibrance:
+                self.videoFilter = VibrantCIRenderer(isPositive: false)
+            }
+            
+            self.isBlurFilterEnabled = filter == .blur
+            self.previewView.isHidden = filter == .blur
+            self.previewBlurView.isHidden = filter != .blur
+            self.previewBlurView.backgroundColor = .red
+         
         } else {
-//            self.previewView.isHidden = true
             self.isBlurFilterEnabled = false
-            self.previewView.setBlur(enabled: false)
             self.videoFilter = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.previewView.isHidden = true
+            }
         }
     }
     
@@ -984,7 +993,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if isBlurFilterEnabled {
             guard let pixelBuffer = sampleBuffer.imageBuffer else { return }
-            previewView.currentCIImage = BlurHelper.processVideoFrame(pixelBuffer)
+            previewBlurView.currentCIImage = BlurHelper.processVideoFrame(pixelBuffer)
         } else if let videoDataOutput = output as? AVCaptureVideoDataOutput {
             processVideoSampleBuffer(sampleBuffer, fromOutput: videoDataOutput)
         } else if canWrite(), let audioDataOutput = output as? AVCaptureAudioDataOutput {

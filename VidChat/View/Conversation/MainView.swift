@@ -48,6 +48,18 @@ struct MainView: View {
                     if conversationViewModel.currentlyWatchingId == nil {
                         cameraView
                             .onTapGesture(count: 2, perform: { switchCamera() })
+                            .overlay(
+                                ZStack {
+                                    VStack {
+                                        RoundedRectangle(cornerRadius: 36)
+                                            .stroke(Color.black, lineWidth: TOP_PADDING)
+                                            .frame(width: SCREEN_WIDTH + TOP_PADDING,
+                                                   height: MESSAGE_HEIGHT + TOP_PADDING)
+                                            .padding(.top, TOP_PADDING/2)
+                                        Spacer()
+                                    }
+                                }
+                            )
                     }
                     
                 }
@@ -490,7 +502,7 @@ struct ChatNavView: View {
                                 
                                 ConversationViewModel.shared.removeChat()
                                 ConversationGridViewModel.shared.showConversation = false
-                                 
+                                
                                 withAnimation {
                                     MakeCallViewModel.shared.createNewOutgoingCall(toChat: chat)
                                 }
@@ -946,12 +958,12 @@ struct JoinCallSmallView: View {
                         .overlay(RoundedRectangle(cornerRadius: dimension/2)
                             .stroke(Color.white, lineWidth: 2))
                 }
-//                KFImage(URL(string: imageName))
-//                    .resizable()
-//                    .scaledToFill()
-//                    .frame(width: dimension, height: dimension)
-//                    .clipShape(Circle())
-                    
+                //                KFImage(URL(string: imageName))
+                //                    .resizable()
+                //                    .scaledToFill()
+                //                    .frame(width: dimension, height: dimension)
+                //                    .clipShape(Circle())
+                
                 
                 HStack(spacing: 4) {
                     

@@ -40,7 +40,7 @@ struct FiltersView: View {
                             .frame(width: width , height: max(width,MINI_MESSAGE_HEIGHT * 0.7))
                             .cornerRadius(6)
                             
-                            Text("natural")
+                            Text("no filter")
                                 .foregroundColor(.white)
                                 .font(Font.system(size: 13, weight: .medium, design: .rounded))
                         }

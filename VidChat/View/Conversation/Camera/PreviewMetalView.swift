@@ -426,6 +426,7 @@ class PreviewMetalView: MTKView {
         // Draw to the screen.
         commandBuffer.present(drawable)
         commandBuffer.commit()
+        
     }
 }
     

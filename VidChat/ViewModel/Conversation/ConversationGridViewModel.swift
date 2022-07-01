@@ -189,18 +189,19 @@ class ConversationGridViewModel: ObservableObject {
     
     func createVideoThumbnail(from url: URL) {
         
-        guard ImageCache.getImageCache().get(forKey: url.absoluteString) == nil else { return }
-        
-        do {
-            let asset = AVURLAsset(url: url, options: nil)
-            let imgGenerator = AVAssetImageGenerator(asset: asset)
-            imgGenerator.appliesPreferredTrackTransform = true
-            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
-            let thumbnail = UIImage(cgImage: cgImage)
-            ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
-        } catch let error {
-            print("*** Error generating thumbnail: \(error.localizedDescription)")
-            ImageCache.getImageCache().set(forKey: url.absoluteString, image: UIImage(systemName: "exclamationmark.bubble.fill")!)
+        DispatchQueue(label: "Thumbnail queue").async {
+            
+            guard ImageCache.getImageCache().get(forKey: url.absoluteString) == nil else { return }
+            
+            do {
+                let asset = AVURLAsset(url: url, options: nil)
+                let imgGenerator = AVAssetImageGenerator(asset: asset)
+                imgGenerator.appliesPreferredTrackTransform = true
+                let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+                let thumbnail = UIImage(cgImage: cgImage)
+                ImageCache.getImageCache().set(forKey: url.absoluteString, image: thumbnail)
+            } catch {
+            }
         }
     }
     
@@ -344,11 +345,11 @@ class ConversationGridViewModel: ObservableObject {
     
     func showChat(chat: Chat) {
         
-//        DispatchQueue(label: "test").async {
-//            MainViewModel.shared.startRunning()
-//        }
-//        DispatchQueue.global().async {
-//        }
+        //        DispatchQueue(label: "test").async {
+        //            MainViewModel.shared.startRunning()
+        //        }
+        //        DispatchQueue.global().async {
+        //        }
         ConversationViewModel.shared.setChat(chat: chat)
         
         //        withAnimation {
