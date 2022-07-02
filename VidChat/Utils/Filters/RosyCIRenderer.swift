@@ -39,7 +39,7 @@ class RosyCIRenderer: FilterRenderer {
         inputFormatDescription = formatDescription
         ciContext = CIContext()
         rosyFilter = CIFilter(name: "CIColorMatrix")
-        rosyFilter!.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputGVector")
+        rosyFilter!.setValue(CIVector(x: 0, y: 0.6, z: 0, w: 0), forKey: "inputGVector")
         isPrepared = true
     }
     

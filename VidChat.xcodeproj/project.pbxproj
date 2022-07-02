@@ -107,8 +107,6 @@
 		069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A6A2772D23400996824 /* ConversationFeedView.swift */; };
 		069E95142789376800921593 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E95132789376800921593 /* NotificationService.swift */; };
 		069E95182789376800921593 /* NotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 069E95112789376800921593 /* NotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		069F9AD6286F5F100036AEFC /* MeloCIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069F9AD5286F5F100036AEFC /* MeloCIRenderer.swift */; };
-		069F9ADA286F85AD0036AEFC /* WarmCIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069F9AD9286F85AD0036AEFC /* WarmCIRenderer.swift */; };
 		06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */; };
 		06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDA277F80480030357B /* ContactUsViewModel.swift */; };
 		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
@@ -337,8 +335,6 @@
 		069E95132789376800921593 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		069E95152789376800921593 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		069E951C2789377600921593 /* NotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationServiceExtension.entitlements; sourceTree = "<group>"; };
-		069F9AD5286F5F100036AEFC /* MeloCIRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeloCIRenderer.swift; sourceTree = "<group>"; };
-		069F9AD9286F85AD0036AEFC /* WarmCIRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WarmCIRenderer.swift; sourceTree = "<group>"; };
 		06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackableScrollView.swift; sourceTree = "<group>"; };
 		06A7FEDA277F80480030357B /* ContactUsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewModel.swift; sourceTree = "<group>"; };
 		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
@@ -479,8 +475,6 @@
 				060A89AE286BDACD00B2FBEE /* FilterRenderer.swift */,
 				060A89B0286BDAE800B2FBEE /* RosyCIRenderer.swift */,
 				060A89B2286BDB0D00B2FBEE /* VibrantCIFilter.swift */,
-				069F9AD5286F5F100036AEFC /* MeloCIRenderer.swift */,
-				069F9AD9286F85AD0036AEFC /* WarmCIRenderer.swift */,
 			);
 			path = Filters;
 			sourceTree = "<group>";
@@ -1163,7 +1157,6 @@
 				065CD73E27F22CCB00F04EB7 /* MessageOptionsView.swift in Sources */,
 				06246620281B1419000A8838 /* ResetType.swift in Sources */,
 				06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */,
-				069F9ADA286F85AD0036AEFC /* WarmCIRenderer.swift in Sources */,
 				06ECD9042815041000870A51 /* FriendsView.swift in Sources */,
 				064F5FF2285785F000286A78 /* ReplyView.swift in Sources */,
 				3F1768232714A30C0049ADBA /* VideoCell.swift in Sources */,
@@ -1195,7 +1188,6 @@
 				060A89AF286BDACD00B2FBEE /* FilterRenderer.swift in Sources */,
 				060A89C1286BDD7900B2FBEE /* MovieRecorder.swift in Sources */,
 				3F8B027526FEBEEE00841565 /* TextArea.swift in Sources */,
-				069F9AD6286F5F100036AEFC /* MeloCIRenderer.swift in Sources */,
 				3F17682C2714AB610049ADBA /* MessageCell.swift in Sources */,
 				06246624281B147C000A8838 /* PinView.swift in Sources */,
 				3F112B822720B32700BA2A73 /* CallManager.swift in Sources */,

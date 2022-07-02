@@ -98,6 +98,7 @@ class MovieRecorder {
     }
     
     func recordAudio(sampleBuffer: CMSampleBuffer) {
+
         guard isRecording,
             let assetWriter = assetWriter,
             assetWriter.status == .writing,

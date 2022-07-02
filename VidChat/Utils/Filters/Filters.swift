@@ -12,7 +12,7 @@ import Vision
 
 enum Filter: CaseIterable {
     
-    case blur, positiveVibrance, saturated, gamma, negativeVibrance
+    case blur, positiveVibrance, rosy, negativeVibrance
     
     var name: String {
         
@@ -21,14 +21,10 @@ enum Filter: CaseIterable {
             return "bg blur"
         case .positiveVibrance:
             return "vibrant"
-        case .gamma:
-            return "mello"
         case .negativeVibrance:
-            return "dim"
-        case .saturated:
-            return "warm"
-//        case .four:
-//            return "four"
+            return "mello"
+        case .rosy:
+            return "rosy"
         }
         
     }
@@ -40,112 +36,47 @@ enum Filter: CaseIterable {
             return "filterBackgroundBlurred"
         case .positiveVibrance:
             return "filterBackgroundPositiveVibrance"
-        case .gamma:
-            return "filterBackgroundGamma"
-        case .saturated:
-            return "filterBackgroundSaturated"
         case .negativeVibrance:
             return "filterBackgroundNegativeVibrance"
+        case .rosy:
+            return "filterBackgroundRosy"
         }
-        
     }
     
     static func getAvailableFilters() -> [Filter] {
             
         //The blur filter isn't available unless iOS 15 or later, so if not available add negative vibrance filter instead
-        var filters = Filter.allCases.filter({$0 != Filter.blur && $0 != Filter.negativeVibrance })
+        var filters = Filter.allCases.filter({$0 != Filter.blur })
         if #available(iOS 15.0, *){
             filters.insert(Filter.blur, at: 0)
-        } else {
-            filters.append(Filter.negativeVibrance)
-        }
+        } 
         
         return filters
     }
-    
     
     static func applyFilter(toImage image: CIImage, filter: Filter, sampleBuffer: CMSampleBuffer? = nil) -> CIImage? {
         
         switch filter {
             
         case .blur:
-            return Filter.applyBlurFilter(sampleBuffer: sampleBuffer)
+            return nil
         case .positiveVibrance:
             let vibrance = CIFilter.vibrance()
-            vibrance.amount = 0.5
+            vibrance.amount = 1
             vibrance.inputImage = image
             return vibrance.outputImage
-        case .gamma:
-            let gamma = CIFilter.gammaAdjust()
-            gamma.power = 0.85
-            gamma.inputImage = image
-            return gamma.outputImage
-        case .saturated:
-            let colorControls = CIFilter.colorControls()
-            colorControls.brightness = 0
-            colorControls.contrast = 0.95
-            colorControls.saturation = 1.2
-            colorControls.inputImage = image
-            return colorControls.outputImage
+        case .rosy:
+            let rosy = CIFilter.colorMatrix()
+            rosy.gVector = CIVector(x: 0, y: 0.6, z: 0, w: 0)
+            rosy.inputImage = image
+            return rosy.outputImage
         case .negativeVibrance:
             let vibrance = CIFilter.vibrance()
-            vibrance.amount = -0.3
+            vibrance.amount = -1
             vibrance.inputImage = image
             return vibrance.outputImage
-//        case .four:
-//            let temperatureAndTint = CIFilter.temperatureAndTint()
-//            temperatureAndTint.neutral = CIVector.init(x: 5500, y: 0)
-//            temperatureAndTint.targetNeutral = CIVector.init(x: 0, y: 0)
-//            temperatureAndTint.inputImage = image
-//            return temperatureAndTint.outputImage
         }
- 
-        
-    }
-    
-    
-    static func applyBlurFilter(sampleBuffer: CMSampleBuffer?) -> CIImage? {
-        
-        
-        guard let sampleBuffer = sampleBuffer, #available(iOS 15.0, *) else { return nil }
-        
-        lazy var personSegmentationRequest: VNGeneratePersonSegmentationRequest = {
-            let request = VNGeneratePersonSegmentationRequest()
-            request.qualityLevel = .balanced
-            request.outputPixelFormat = kCVPixelFormatType_OneComponent8
-            return request
-        }()
-        
-        
-        let sequenceRequestHandler = VNSequenceRequestHandler()
-        try? sequenceRequestHandler.perform([personSegmentationRequest],
-                                            on: sampleBuffer,
-                                            orientation: .up)
-        
-        guard let resultPixelBuffer = personSegmentationRequest.results?.first?.pixelBuffer else { return nil }
-        
-        
-        let originalImage = CIImage(cvPixelBuffer: sampleBuffer.imageBuffer!)
-
-        var maskImage = CIImage(cvPixelBuffer: resultPixelBuffer)
-        
-        let maxcomp = CIFilter.maximumComponent()
-        maxcomp.inputImage = originalImage
-        
-        
-        let filter = CIFilter.gaussianBlur()
-        filter.inputImage = originalImage
-        let newImage = filter.outputImage?.cropped(to: originalImage.extent)
-        
-        let scaleXForMask = originalImage.extent.width / maskImage.extent.width
-        let scaleYForMask = originalImage.extent.height / maskImage.extent.height
-        maskImage = maskImage.transformed(by: .init(scaleX: scaleXForMask, y: scaleYForMask))
-        
-        let blend = CIFilter.blendWithMask()
-        blend.backgroundImage = newImage
-        blend.inputImage = originalImage
-        blend.maskImage = maskImage
-        
-        return blend.outputImage
     }
 }
+    
+   
