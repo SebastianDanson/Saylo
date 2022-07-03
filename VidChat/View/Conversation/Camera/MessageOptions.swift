@@ -11,8 +11,8 @@ struct MessageOptions: View {
     @Binding var type: MainViewType
     @Binding var isRecording: Bool
     
-    let dimension: CGFloat = IS_SMALL_WIDTH ? 30 : (IS_SMALL_PHONE ? 32 : 34)
-    let spacing: CGFloat = IS_SMALL_WIDTH ? 24 : 32
+    let dimension: CGFloat = 27
+    let spacing: CGFloat = 5
     
     var body: some View {
         
@@ -23,36 +23,57 @@ struct MessageOptions: View {
                 Button {
                     setMessageType(type: .Photo)
                 } label: {
-                    Image(systemName: "camera")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: dimension, height: dimension)
+//                    Image(systemName: "camera")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(width: dimension, height: dimension)
+//                        .foregroundColor(.white)
+//                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                    Text("Photo")
                         .foregroundColor(.white)
-                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                        .font(Font.system(size: 17, weight: .semibold, design: .rounded))
+                        .frame(width: dimension * 2.2, height: dimension)
+                        .shadow(color: Color(white: 0, opacity: 0.5), radius: 4, x: 0, y: 4)
+                        
                 }
                 
                 Button {
                     setMessageType(type: .Voice)
                     MainViewModel.shared.handleRecordButtonTapped()
                 } label: {
-                    Image(systemName: "waveform")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: dimension, height: dimension)
+                    
+                    Text("Audio")
                         .foregroundColor(.white)
-                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                        .font(Font.system(size: 17, weight: .semibold, design: .rounded))
+                        .frame(width: dimension * 2.2, height: dimension)
+                        .shadow(color: Color(white: 0, opacity: 0.5), radius: 4, x: 0, y: 4)
+
+//                    Image(systemName: "waveform")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(width: dimension, height: dimension)
+//                        .foregroundColor(.white)
+//                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                 }
+                .padding(.leading, 8)
             }
                         
             Button {
                 setMessageType(type: .Note)
             } label: {
-                Image(systemName: "textformat")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: dimension, height: dimension)
+//                Image(systemName: "textformat")
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(width: dimension, height: dimension)
+//                    .foregroundColor(.white)
+//                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                
+                Text("Text")
                     .foregroundColor(.white)
-                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                    .font(Font.system(size: 17, weight: .semibold, design: .rounded))
+                    .frame(width: dimension * 2.2, height: dimension)
+                    .shadow(color: Color(white: 0, opacity: 0.5), radius: 4, x: 0, y: 4)
+
             }
         }
     }

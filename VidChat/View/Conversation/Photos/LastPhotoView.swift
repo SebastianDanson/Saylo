@@ -11,7 +11,7 @@ import PhotosUI
 struct LastPhotoView: View {
     
     @State var selectedImage: UIImage?
-    let dimension: CGFloat = IS_SMALL_WIDTH ? 30 : 35
+    let dimension: CGFloat = IS_SMALL_WIDTH ? 28 : 30
     
     var body: some View {
         

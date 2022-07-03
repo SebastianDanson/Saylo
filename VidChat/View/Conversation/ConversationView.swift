@@ -211,8 +211,6 @@ struct ConversationView: View {
 
 
 
-/* The 5 buttons at the bottom of the chat */
-
 struct OptionsView: View {
     
     

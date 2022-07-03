@@ -107,6 +107,7 @@
 		069E4A6B2772D23400996824 /* ConversationFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E4A6A2772D23400996824 /* ConversationFeedView.swift */; };
 		069E95142789376800921593 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069E95132789376800921593 /* NotificationService.swift */; };
 		069E95182789376800921593 /* NotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 069E95112789376800921593 /* NotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		069F9ADC28713E0C0036AEFC /* CameraOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069F9ADB28713E0C0036AEFC /* CameraOptionsView.swift */; };
 		06A6CA23278BE5520037CF81 /* TrackableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */; };
 		06A7FEDB277F80480030357B /* ContactUsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDA277F80480030357B /* ContactUsViewModel.swift */; };
 		06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */; };
@@ -119,7 +120,7 @@
 		06CFCD6D278CF5C50059C252 /* NoMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */; };
 		06D027AD27D071A600A26869 /* PlaybackSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D027AC27D071A600A26869 /* PlaybackSlider.swift */; };
 		06DB59982833F57300B295EA /* LiveStreamViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DB59972833F57300B295EA /* LiveStreamViewRepresentable.swift */; };
-		06DEA9CE27C7FEB6000D60B0 /* CameraOptionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */; };
+		06DEA9CE27C7FEB6000D60B0 /* MessageOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DEA9CD27C7FEB6000D60B0 /* MessageOptions.swift */; };
 		06DFA9CE27738FD800A8CF0C /* Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CD27738FD800A8CF0C /* Alerts.swift */; };
 		06DFA9D027739AFD00A8CF0C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9CF27739AFD00A8CF0C /* Helpers.swift */; };
 		06DFA9D227742C2A00A8CF0C /* ConversationGridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */; };
@@ -335,6 +336,7 @@
 		069E95132789376800921593 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		069E95152789376800921593 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		069E951C2789377600921593 /* NotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationServiceExtension.entitlements; sourceTree = "<group>"; };
+		069F9ADB28713E0C0036AEFC /* CameraOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOptionsView.swift; sourceTree = "<group>"; };
 		06A6CA22278BE5520037CF81 /* TrackableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackableScrollView.swift; sourceTree = "<group>"; };
 		06A7FEDA277F80480030357B /* ContactUsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsViewModel.swift; sourceTree = "<group>"; };
 		06A7FEDC277FACB50030357B /* LandingPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageViewModel.swift; sourceTree = "<group>"; };
@@ -347,7 +349,7 @@
 		06CFCD6C278CF5C50059C252 /* NoMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoMessagesView.swift; sourceTree = "<group>"; };
 		06D027AC27D071A600A26869 /* PlaybackSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSlider.swift; sourceTree = "<group>"; };
 		06DB59972833F57300B295EA /* LiveStreamViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStreamViewRepresentable.swift; sourceTree = "<group>"; };
-		06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraOptionViews.swift; sourceTree = "<group>"; };
+		06DEA9CD27C7FEB6000D60B0 /* MessageOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageOptions.swift; sourceTree = "<group>"; };
 		06DFA9CD27738FD800A8CF0C /* Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alerts.swift; sourceTree = "<group>"; };
 		06DFA9CF27739AFD00A8CF0C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		06DFA9D127742C2A00A8CF0C /* ConversationGridViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConversationGridViewModel.swift; path = VidChat/ViewModel/Conversation/ConversationGridViewModel.swift; sourceTree = SOURCE_ROOT; };
@@ -598,7 +600,7 @@
 			children = (
 				3F08F27127017A36009E0029 /* CameraView.swift */,
 				3F08F27327017A3D009E0029 /* CameraViewController.swift */,
-				06DEA9CD27C7FEB6000D60B0 /* CameraOptionViews.swift */,
+				06DEA9CD27C7FEB6000D60B0 /* MessageOptions.swift */,
 				068DA254284E669A0034374E /* MessageAdOnsView.swift */,
 				3F08F27727017D9C009E0029 /* VideoPlayerView.swift */,
 				3FFD034A272CAE6A000BEADE /* VideoHelper.swift */,
@@ -606,6 +608,7 @@
 				060A89B9286BDC0600B2FBEE /* PreviewMetalView.swift */,
 				060A89BB286BDCCD00B2FBEE /* PreviewView.swift */,
 				060A89BD286BDD0900B2FBEE /* PiPVideoMixer.swift */,
+				069F9ADB28713E0C0036AEFC /* CameraOptionsView.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -1230,6 +1233,7 @@
 				069D11E527986D2F00988829 /* ContactCell.swift in Sources */,
 				3FDEE7B42721C01600DF43C6 /* SceneDelegate.swift in Sources */,
 				3F112B962720FEB100BA2A73 /* AppDelegate.swift in Sources */,
+				069F9ADC28713E0C0036AEFC /* CameraOptionsView.swift in Sources */,
 				06CFCD6B278CF0AF0059C252 /* NoSavedMessagesView.swift in Sources */,
 				06A7FEDD277FACB50030357B /* LandingPageViewModel.swift in Sources */,
 				3F112B6C271FBA5600BA2A73 /* ImageCell.swift in Sources */,
@@ -1245,7 +1249,7 @@
 				3FB8B5DA270FB6F800355DB9 /* TextCell.swift in Sources */,
 				3F8B027726FEC03100841565 /* Message.swift in Sources */,
 				065CD73C27F1084A00F04EB7 /* KeyBoardHeightModifier.swift in Sources */,
-				06DEA9CE27C7FEB6000D60B0 /* CameraOptionViews.swift in Sources */,
+				06DEA9CE27C7FEB6000D60B0 /* MessageOptions.swift in Sources */,
 				3F8B02A72700EDD100841565 /* ConversationtGridView.swift in Sources */,
 				060A89A8286BB8BB00B2FBEE /* Mixer.metal in Sources */,
 				3F95F45026FE4B9C00F892B7 /* User.swift in Sources */,

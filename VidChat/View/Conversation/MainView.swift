@@ -119,6 +119,8 @@ struct MainView: View {
                             
                             ZStack {
                                 
+                                VideoOptionsView()
+                                
                                 //Recording voice or video
                                 if viewModel.showRecordButton() {
                                     Button {
@@ -194,11 +196,11 @@ struct MainView: View {
                                                     .resizable()
                                                     .font(Font.title.weight(.semibold))
                                                     .scaledToFit()
-                                                    .frame(height: 35)
+                                                    .frame(height: 27)
                                                     .foregroundColor(.white)
                                                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                                             }
-                                            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 35)
+                                            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 27)
                                             
                                         }
                                         .padding(.horizontal, IS_SMALL_WIDTH ? 12 : 20)
