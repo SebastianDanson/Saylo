@@ -8,6 +8,7 @@ import UIKit
 import AVFoundation
 import Photos
 import CoreImage.CIFilterBuiltins
+import SwiftUI
 
 class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     
@@ -61,7 +62,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     private var previewView = PreviewMetalView()
     
     private var blurredBackgroundRenderer: BlurredBackgroundRenderer?
- 
+    
     //Zoom propertis
     private let minimumZoom: CGFloat = 1.0
     private let maximumZoom: CGFloat = 5.0
@@ -78,8 +79,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         setupUI()
         
         // Disable UI. Enable the UI later, if and only if the session starts running.
-        recordButton.isEnabled = false
-        
         // Set up the back and front video preview views.
         backCameraVideoPreviewView.videoPreviewLayer.setSessionWithNoConnection(session)
         frontCameraVideoPreviewView.videoPreviewLayer.setSessionWithNoConnection(session)
@@ -109,7 +108,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         // Keep the screen awake
         UIApplication.shared.isIdleTimerDisabled = true
         
-       
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -154,25 +153,20 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor)
         previewView.setDimensions(height: CAMERA_HEIGHT, width: SCREEN_WIDTH)
         
-        view.addSubview(recordButton)
-        recordButton.centerX(inView: view)
-        recordButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 20)
-        recordButton.addTarget(self, action: #selector(toggleMovieRecording(_:)), for: .touchUpInside)
         
-        //        view.addSubview(previewView)
-        //        previewView.anchor(top: view.topAnchor, left: view.leftAnchor)
-        //        previewView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
-        //
-        //        view.addSubview(previewBlurView)
-        //        previewBlurView.anchor(top: view.topAnchor, left: view.leftAnchor)
-        //        previewBlurView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
-                
-                self.previewView.layer.cornerRadius = 14
-                self.previewView.layer.masksToBounds = true
-     
-        //TODO uncomment this
-//        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
-//               self.view.addGestureRecognizer(pinchRecognizer)
+        view.addSubview(previewView)
+        previewView.anchor(top: view.topAnchor, left: view.leftAnchor)
+        previewView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
+        
+        view.addSubview(previewBlurView)
+        previewBlurView.anchor(top: view.topAnchor, left: view.leftAnchor)
+        previewBlurView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
+        
+        self.previewView.layer.cornerRadius = 14
+        self.previewView.layer.masksToBounds = true
+        
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(pinch(_:)))
+        self.view.addGestureRecognizer(pinchRecognizer)
         
     }
     
@@ -243,45 +237,45 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     func setVideoFilter(_ filter: Filter?) {
-
-            dataOutputQueue.async {
-
-
-                if let filter = filter {
-
-                    switch filter {
-                    case .blur:
-                        self.videoFilter = nil
-                        if self.blurredBackgroundRenderer == nil {
-                            self.blurredBackgroundRenderer = BlurredBackgroundRenderer()
-                        }
-                    case .positiveVibrance:
-                        self.videoFilter = VibrantCIRenderer(isPositive: true)
-                    case .rosy:
-                        self.videoFilter = RosyCIRenderer()
-                    case .negativeVibrance:
-                        self.videoFilter = VibrantCIRenderer(isPositive: false)
-                    }
-
-                    self.isBlurFilterEnabled = filter == .blur
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.previewView.isHidden = filter == .blur
-                        self.previewBlurView.isHidden = filter != .blur
-                    }
-
-                } else {
-                    self.isBlurFilterEnabled = false
+        
+        dataOutputQueue.async {
+            
+            
+            if let filter = filter {
+                
+                switch filter {
+                case .blur:
                     self.videoFilter = nil
-
-                    if self.blurredBackgroundRenderer != nil {
-                        self.blurredBackgroundRenderer = nil
+                    if self.blurredBackgroundRenderer == nil {
+                        self.blurredBackgroundRenderer = BlurredBackgroundRenderer()
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.previewView.isHidden = true
-                    }
+                case .positiveVibrance:
+                    self.videoFilter = VibrantCIRenderer(isPositive: true)
+                case .rosy:
+                    self.videoFilter = RosyCIRenderer()
+                case .negativeVibrance:
+                    self.videoFilter = VibrantCIRenderer(isPositive: false)
+                }
+                
+                self.isBlurFilterEnabled = filter == .blur
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.previewView.isHidden = filter == .blur
+                    self.previewBlurView.isHidden = filter != .blur
+                }
+                
+            } else {
+                self.isBlurFilterEnabled = false
+                self.videoFilter = nil
+                
+                if self.blurredBackgroundRenderer != nil {
+                    self.blurredBackgroundRenderer = nil
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.previewView.isHidden = true
                 }
             }
         }
+    }
     
     @objc // Expose to Objective-C for use with #selector()
     private func didEnterBackground(notification: NSNotification) {
@@ -310,9 +304,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let keyValueObservation = session.observe(\.isRunning, options: .new) { _, change in
             guard let isSessionRunning = change.newValue else { return }
             
-            DispatchQueue.main.async {
-                self.recordButton.isEnabled = isSessionRunning
-            }
         }
         keyValueObservations.append(keyValueObservation)
         
@@ -726,99 +717,135 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     private var backgroundRecordingID: UIBackgroundTaskIdentifier?
     
-    private var recordButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("record", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        return button
-    }()
-    
     private var renderingEnabled = true
     
     private var videoMixer = PiPVideoMixer()
     
     private var videoTrackSourceFormatDescription: CMFormatDescription?
     
-    private func updateRecordButtonWithRecordingState(_ isRecording: Bool) {
-        let color = isRecording ? UIColor.red : UIColor.yellow
-        let title = isRecording ? "Stop" : "Record"
+    
+    func startMovieRecording() {
         
-        recordButton.tintColor = color
-        recordButton.setTitleColor(color, for: .normal)
-        recordButton.setTitle(title, for: .normal)
+        ConversationViewModel.shared.setIsLive()
+        
+        if !ConversationViewModel.shared.didCancelRecording, let chat = ConversationViewModel.shared.chat {
+            ConversationViewModel.shared.sendIsTalkingNotification(chat: chat)
+        }
+        
+        MainViewModel.shared.timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(MAX_VIDEO_LENGTH), repeats: false) { timer in
+            MainViewModel.shared.stopRecording()
+        }
+        
+        
+        if UIDevice.current.isMultitaskingSupported {
+            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+        }
+        
+        guard let audioSettings = self.createAudioSettings() else {
+            print("Could not create audio settings")
+            return
+        }
+        
+        guard let videoSettings = self.createVideoSettings() else {
+            print("Could not create video settings")
+            return
+        }
+        
+        guard let videoTransform = self.createVideoTransform() else {
+            print("Could not create video transform")
+            return
+        }
+        
+        self.movieRecorder = MovieRecorder(audioSettings: audioSettings,
+                                           videoSettings: videoSettings,
+                                           videoTransform: videoTransform)
+        
+        self.movieRecorder?.startRecording()
+        
     }
     
-    @objc private func toggleMovieRecording(_ recordButton: UIButton) {
+    
+    
+    func stopMovieRecording(sendVideo: Bool = true) {
         
-        recordButton.isEnabled = false
-        
-        dataOutputQueue.async {
-            defer {
+        self.movieRecorder?.stopRecording { movieURL in
+            if sendVideo {
+                
                 DispatchQueue.main.async {
-                    recordButton.isEnabled = true
                     
-                    if let recorder = self.movieRecorder {
-                        self.updateRecordButtonWithRecordingState(recorder.isRecording)
+                    MainViewModel.shared.videoUrl = movieURL
+                    //                    MainViewModel.shared.setVideoPlayer()
+                    MainViewModel.shared.handleSend()
+                    ConversationViewModel.shared.didCancelRecording = false
+                    
+                    if ConversationViewModel.shared.presentUsers.count > 1 {
+                        ConversationViewModel.shared.setSendingLiveRecordingId(AuthViewModel.shared.getUserId())
+                    }
+                    
+                    withAnimation {
+                        MainViewModel.shared.showCaption = false
+                        MainViewModel.shared.showFilters = false
                     }
                 }
-            }
-            
-            let isRecording = self.movieRecorder?.isRecording ?? false
-            if !isRecording {
-                if UIDevice.current.isMultitaskingSupported {
-                    self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-                }
-                
-                guard let audioSettings = self.createAudioSettings() else {
-                    print("Could not create audio settings")
-                    return
-                }
-                
-                guard let videoSettings = self.createVideoSettings() else {
-                    print("Could not create video settings")
-                    return
-                }
-                
-                guard let videoTransform = self.createVideoTransform() else {
-                    print("Could not create video transform")
-                    return
-                }
-                
-                self.movieRecorder = MovieRecorder(audioSettings: audioSettings,
-                                                   videoSettings: videoSettings,
-                                                   videoTransform: videoTransform)
-                
-                self.movieRecorder?.startRecording()
             } else {
-                self.movieRecorder?.stopRecording { movieURL in
-
+                DispatchQueue.main.async {
+                    MainViewModel.shared.videoUrl = nil
                 }
             }
         }
+        
+        ConversationViewModel.shared.hideLiveView()
+        
+        ConversationViewModel.shared.leaveChannel()
+        ConversationViewModel.shared.setIsNotLive()
+        
+        MainViewModel.shared.timer?.invalidate()
+        
     }
     
-    @objc private func toggleIsMultiCamEnabled() {
-            self.isMultiCamEnabled.toggle()
-            
-            if self.isMultiCamEnabled {
-                if !MainViewModel.shared.isFrontFacing {
-                    self.switchCameraTapped()
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.addBackCamera()
-                    }
-                } else {
+    private func takePhoto(withFlash hasFlash: Bool) {
+        
+        let photoSettings = AVCapturePhotoSettings()
+        
+        let previewPixelType = photoSettings.availablePreviewPhotoPixelFormatTypes.first!
+        let previewFormat = [
+            kCVPixelBufferPixelFormatTypeKey as String: previewPixelType,
+            kCVPixelBufferWidthKey as String: 160,
+            kCVPixelBufferHeightKey as String: 160
+        ]
+        
+        photoSettings.previewPhotoFormat = previewFormat
+        photoSettings.flashMode = hasFlash ? .on : .off
+        guard let connection = photoOutput.connection(with: .video) else { return }
+        connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
+        self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
+    }
+    
+    
+    public func toggleIsMultiCamEnabled() {
+        self.isMultiCamEnabled.toggle()
+        
+        if self.isMultiCamEnabled {
+            if !MainViewModel.shared.isFrontFacing {
+                self.switchCamera()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.addBackCamera()
                 }
-                
             } else {
-                self.removeBackCamera()
+                self.addBackCamera()
             }
+            
+        } else {
+            self.removeBackCamera()
+        }
     }
     
     public func switchCamera() {
         sessionQueue.async {
-            MainViewModel.shared.isFrontFacing.toggle()
+            DispatchQueue.main.async {
+                MainViewModel.shared.isFrontFacing.toggle()
+            }
             self.configureFrontCamera()
         }
     }
@@ -891,10 +918,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
     }
     
+    func canWrite() -> Bool {
+        return MainViewModel.shared.isRecording
+        //        && videoWriter != nil && videoWriter?.status == .writing
+    }
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        if isBlurFilterEnabled {
-            guard let pixelBuffer = sampleBuffer.imageBuffer else { return }
-            previewView.currentCIImage = BlurHelper.processVideoFrame(pixelBuffer)
+        if isBlurFilterEnabled, output as? AVCaptureVideoDataOutput != nil {
+            blurSampleBuffer(sampleBuffer)
         } else if let videoDataOutput = output as? AVCaptureVideoDataOutput {
             processVideoSampleBuffer(sampleBuffer, fromOutput: videoDataOutput)
         } else if let audioDataOutput = output as? AVCaptureAudioDataOutput {
@@ -902,8 +932,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
     }
     
+    
     // MARK: - Perform Requests
-
+    
     private func processVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer, fromOutput videoDataOutput: AVCaptureVideoDataOutput) {
         
         if videoTrackSourceFormatDescription == nil {
@@ -943,8 +974,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         
         guard let videoPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer),
-            let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer) else {
-                return
+              let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer) else {
+            return
         }
         
         var finalVideoPixelBuffer = videoPixelBuffer
@@ -965,11 +996,34 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             finalVideoPixelBuffer = filteredBuffer
             previewView.pixelBuffer = finalVideoPixelBuffer
         }
-      
         
-        if !isMultiCamEnabled {
-            movieRecorder?.recordVideo(sampleBuffer: fullScreenSampleBuffer)
+        
+        
+        
+        if !isMultiCamEnabled && videoFilter == nil && !isBlurFilterEnabled{
+            if let recorder = movieRecorder,
+               recorder.isRecording {
+                
+                recorder.recordVideo(sampleBuffer: fullScreenSampleBuffer)
+            }
             return
+        }
+        
+        
+        
+        if videoFilter != nil {
+            if let recorder = movieRecorder,
+               recorder.isRecording {
+                
+                guard let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer), let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(finalVideoPixelBuffer,
+                                                                                                                                                                              formatDescription: formatDescription,
+                                                                                                                                                                              presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else {
+                    print("Error: Unable to create sample buffer from pixelbuffer")
+                    return
+                }
+                
+                recorder.recordVideo(sampleBuffer: finalVideoSampleBuffer)
+            }
         }
         
         guard let fullScreenPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer),
@@ -982,27 +1036,28 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return
         }
         
-        if !videoMixer.isPrepared {
-            videoMixer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
-        }
-        
-        videoMixer.pipFrame = normalizedPipFrame
+        //        if !videoMixer.isPrepared {
+        //            videoMixer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+        //        }
+        //
+        //        videoMixer.pipFrame = normalizedPipFrame
         
         // Mix the full screen pixel buffer with the pip pixel buffer
         // When the PIP is the back camera, the primaryPixelBuffer is the front camera
-        guard let mixedPixelBuffer = videoMixer.mix(fullScreenPixelBuffer: fullScreenPixelBuffer,
-                                                    pipPixelBuffer: pipPixelBuffer,
-                                                    fullScreenPixelBufferIsFrontCamera: pipDevicePosition == .back) else {
-            print("Unable to combine video")
-            return
-        }
+        //        guard let mixedPixelBuffer = videoMixer.mix(fullScreenPixelBuffer: fullScreenPixelBuffer,
+        //                                                    pipPixelBuffer: pipPixelBuffer,
+        //                                                    fullScreenPixelBufferIsFrontCamera: pipDevicePosition == .back) else {
+        //            print("Unable to combine video")
+        //            return
+        //        }
         
         guard let outputFormatDescription = videoMixer.outputFormatDescription else { return }
         
         // If we're recording, append this buffer to the movie
         if let recorder = movieRecorder,
            recorder.isRecording {
-            guard let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(mixedPixelBuffer,
+            
+            guard let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(finalVideoPixelBuffer,
                                                                                       formatDescription: outputFormatDescription,
                                                                                       presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else {
                 print("Error: Unable to create sample buffer from pixelbuffer")
@@ -1010,6 +1065,44 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
             
             recorder.recordVideo(sampleBuffer: finalVideoSampleBuffer)
+        }
+    }
+    
+    private func blurSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        dataOutputQueue.async {
+            
+            guard let pixelBuffer = sampleBuffer.imageBuffer, let ciImage = BlurHelper.processVideoFrame(pixelBuffer) else { return }
+            self.previewBlurView.currentCIImage = ciImage
+            
+            guard let blurredBackgroundRenderer = self.blurredBackgroundRenderer else {
+                return
+            }
+            
+            if !blurredBackgroundRenderer.isPrepared {
+                /*
+                 outputRetainedBufferCountHint is the number of pixel buffers the renderer retains. This value informs the renderer
+                 how to size its buffer pool and how many pixel buffers to preallocate. Allow 3 frames of latency to cover the dispatch_async call.
+                 */
+                guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) else { return }
+                blurredBackgroundRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+            }
+            
+            // Send the pixel buffer through the filter
+            guard let blurredBuffer = blurredBackgroundRenderer.render(ciImage: ciImage) else {
+                print("Unable to filter video buffer")
+                return
+            }
+            
+            if let recorder = self.movieRecorder,
+               recorder.isRecording {
+                guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), let finalVideoSampleBuffer = self.createVideoSampleBufferWithPixelBuffer(blurredBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) else {
+                    print("Error: Unable to create sample buffer from pixelbuffer")
+                    return
+                }
+                
+                
+                recorder.recordVideo(sampleBuffer: finalVideoSampleBuffer)
+            }
         }
     }
     
@@ -1022,7 +1115,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     private func processsAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer, fromOutput audioDataOutput: AVCaptureAudioDataOutput) {
-        
         guard (pipDevicePosition == .back && audioDataOutput == backMicrophoneAudioDataOutput) ||
                 (pipDevicePosition == .front && audioDataOutput == frontMicrophoneAudioDataOutput) else {
             // Ignoring audio sample buffer
@@ -1054,6 +1146,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         return sampleBuffer
     }
+    
     
     // MARK: - Session Cost Check
     
@@ -1319,5 +1412,82 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         } else if pressureLevel == .shutdown {
             print("Session stopped running due to system pressure level.")
         }
+    }
+    
+    // MARK: Selectors
+    
+    @objc func pinch(_ pinch: UIPinchGestureRecognizer) {
+        
+        guard let device = frontCameraDeviceInput?.device else { return }
+        
+        // Return zoom value between the minimum and maximum zoom values
+        func minMaxZoom(_ factor: CGFloat) -> CGFloat {
+            return min(min(max(factor, minimumZoom), maximumZoom), device.activeFormat.videoMaxZoomFactor)
+        }
+        
+        func update(scale factor: CGFloat) {
+            do {
+                try device.lockForConfiguration()
+                defer { device.unlockForConfiguration() }
+                device.videoZoomFactor = factor
+            } catch {
+                print("\(error.localizedDescription)")
+            }
+        }
+        
+        let newScaleFactor = minMaxZoom(pinch.scale * lastZoomFactor)
+        
+        switch pinch.state {
+        case .began: fallthrough
+        case .changed: update(scale: newScaleFactor)
+        case .ended:
+            lastZoomFactor = minMaxZoom(newScaleFactor)
+            update(scale: lastZoomFactor)
+        default: break
+            
+        }
+    }
+}
+
+extension CameraViewController: AVCapturePhotoCaptureDelegate {
+    
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        
+        if let imageData = photo.fileDataRepresentation() {
+            
+            var outputImage: UIImage?
+            
+            if var ciimage = CIImage(data: imageData) {
+                
+                ciimage = transformOutputImage(image: ciimage)
+                
+                if let filter = ConversationViewModel.shared.selectedFilter {
+                    
+                    if filter != .blur, let filteredImage = Filter.applyFilter(toImage: ciimage, filter: filter, sampleBuffer: nil) {
+                        ciimage = filteredImage
+                    }
+                }
+                
+                MainViewModel.shared.ciImage = ciimage
+                
+                if let cgimage = CIContext().createCGImage(ciimage, from: ciimage.extent) {
+                    outputImage = UIImage(cgImage: cgimage)
+                }
+            }
+            
+            
+            MainViewModel.shared.photo = outputImage ?? UIImage(data: imageData)
+            
+        }
+    }
+    
+    func transformOutputImage(image: CIImage) -> CIImage {
+        
+        if MainViewModel.shared.isFrontFacing {
+            return image.oriented(.right).transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -image.extent.width/2, y: 0))
+        }
+        
+        return image.oriented(.right)
     }
 }
