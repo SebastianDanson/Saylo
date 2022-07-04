@@ -25,7 +25,7 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func switchCamera() {
-//        cameraViewController.switchCamera()
+        cameraViewController.switchCamera()
     }
     
     public func startRecording() {
@@ -51,7 +51,7 @@ struct CameraView: UIViewControllerRepresentable {
 //    }
     
     public func setFilter(_ filter: Filter?) {
-//        cameraViewController.setVideoFilter(filter)
+        cameraViewController.setVideoFilter(filter)
     }
     
     
