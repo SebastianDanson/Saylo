@@ -25,15 +25,15 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func switchCamera() {
-        cameraViewController.switchCamera()
+//        cameraViewController.switchCamera()
     }
     
     public func startRecording() {
-        cameraViewController.startMovieRecording()
+//        cameraViewController.startMovieRecording()
     }
     
     public func stopRecording() {
-        cameraViewController.stopMovieRecording()
+//        cameraViewController.stopMovieRecording()
     }
     
     public func takephoto(withFlash hasFlash: Bool) {
@@ -41,7 +41,7 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func cancelRecording() {
-        cameraViewController.stopMovieRecording(sendVideo: false)
+//        cameraViewController.stopMovieRecording(sendVideo: false)
         ConversationViewModel.shared.didCancelRecording = true
     }
     
@@ -51,7 +51,7 @@ struct CameraView: UIViewControllerRepresentable {
 //    }
     
     public func setFilter(_ filter: Filter?) {
-        cameraViewController.setVideoFilter(filter)
+//        cameraViewController.setVideoFilter(filter)
     }
     
     
