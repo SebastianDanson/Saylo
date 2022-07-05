@@ -29,26 +29,30 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     public func startRecording() {
-//        cameraViewController.startMovieRecording()
+        cameraViewController.startMovieRecording()
     }
     
     public func stopRecording() {
-//        cameraViewController.stopMovieRecording()
+        cameraViewController.stopMovieRecording()
     }
     
     public func takephoto(withFlash hasFlash: Bool) {
-        //        cameraViewController.takePhoto(withFlash: hasFlash)
+        cameraViewController.takePhoto(withFlash: hasFlash)
     }
     
     public func cancelRecording() {
-//        cameraViewController.stopMovieRecording(sendVideo: false)
+        cameraViewController.stopMovieRecording(sendVideo: false)
         ConversationViewModel.shared.didCancelRecording = true
     }
     
-//    public func addAudio() {
-//        //        cameraViewController.setUpWriter()
-//        //         cameraViewController.addAudio()
-//    }
+    public func toggleMultiCamera() {
+        cameraViewController.toggleIsMultiCamEnabled()
+    }
+    
+    //    public func addAudio() {
+    //        //        cameraViewController.setUpWriter()
+    //        //         cameraViewController.addAudio()
+    //    }
     
     public func setFilter(_ filter: Filter?) {
         cameraViewController.setVideoFilter(filter)
@@ -81,9 +85,9 @@ struct CameraView: UIViewControllerRepresentable {
         //        cameraViewController.stopSession()
     }
     
-//    public func setupWriter() {
-        //        cameraViewController.setUpWriter()
-//    }
+    //    public func setupWriter() {
+    //        cameraViewController.setUpWriter()
+    //    }
 }
 
 

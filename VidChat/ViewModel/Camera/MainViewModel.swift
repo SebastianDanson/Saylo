@@ -20,6 +20,7 @@ class MainViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var isFrontFacing = true
     @Published var showAlert = false
+    @Published var isMultiCamEnabled = false
     @Published var selectedView: MainViewType = .Video {
         didSet {
             if selectedView != .Video {
@@ -34,7 +35,6 @@ class MainViewModel: ObservableObject {
     @Published var showNewChat: Bool = false
     @Published var showSettingsView: Bool = false
     @Published var isCalling: Bool = false
-    @Published var chatsViewDragOffset: CGSize = .zero
     @Published var selectedMessage: Message?
     @Published var settingsChat: Chat?
     @Published var showPhotosAlert = false

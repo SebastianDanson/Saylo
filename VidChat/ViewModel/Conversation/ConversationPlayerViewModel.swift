@@ -55,34 +55,34 @@ class ConversationPlayerViewModel: ObservableObject {
         }
     }
     
-    func addReplyMessages() {
-        
-        self.messages.removeAll(where: { $0.isForTakingVideo })
-        
-        guard self.messages.count > 0 else {return}
-        
-        if messages.count > 1 {
-            
-            for i in 1..<messages.count {
-                
-                if messages[i - 1].chatId != messages[i].chatId && messages[i-1].isForTakingVideo == false {
-                    
-                    let videoMessage = Message(dictionary: ["chatId":messages[i-1].chatId], id: UUID().uuidString, isForTakingVideo: true)
-                    self.messages.insert(videoMessage, at: i)
-                    
-                }
-            }
-        }
-        
-        if let last = messages.last {
-            let endVideoMessage = Message(dictionary: ["chatId":last.chatId], id: UUID().uuidString, isForTakingVideo: true)
-            self.messages.append(endVideoMessage)
-        }
-        
-        if !ConversationGridViewModel.shared.hasUnreadMessages && !ConversationViewModel.shared.showCamera {
-            ConversationGridViewModel.shared.hasUnreadMessages = true
-        }
-    }
+//    func addReplyMessages() {
+//        
+//        self.messages.removeAll(where: { $0.isForTakingVideo })
+//        
+//        guard self.messages.count > 0 else {return}
+//        
+//        if messages.count > 1 {
+//            
+//            for i in 1..<messages.count {
+//                
+//                if messages[i - 1].chatId != messages[i].chatId && messages[i-1].isForTakingVideo == false {
+//                    
+//                    let videoMessage = Message(dictionary: ["chatId":messages[i-1].chatId], id: UUID().uuidString, isForTakingVideo: true)
+//                    self.messages.insert(videoMessage, at: i)
+//                    
+//                }
+//            }
+//        }
+//        
+//        if let last = messages.last {
+//            let endVideoMessage = Message(dictionary: ["chatId":last.chatId], id: UUID().uuidString, isForTakingVideo: true)
+//            self.messages.append(endVideoMessage)
+//        }
+//        
+//        if !ConversationGridViewModel.shared.hasUnreadMessages && !ConversationViewModel.shared.showCamera {
+//            ConversationGridViewModel.shared.hasUnreadMessages = true
+//        }
+//    }
     
 //    func showNextMessage() {
 //        

@@ -9,43 +9,50 @@ import SwiftUI
 
 struct VideoOptionsView: View {
     
+    @Binding var isMultiCamEnabled: Bool
+    
     var body: some View {
         
         HStack {
             
-            
-            Button {
-
-            } label: {
-                Image(systemName: "bolt.slash")
-                    .resizable()
-                    .font(Font.title.weight(.semibold))
-                    .scaledToFit()
-                    .frame(height: 28)
-                    .foregroundColor(.white)
-                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+            if !isMultiCamEnabled {
+                
+                Button {
+                    
+                } label: {
+                    Image(systemName: "bolt.slash")
+                        .resizable()
+                        .font(Font.title.weight(.semibold))
+                        .scaledToFit()
+                        .frame(height: 28)
+                        .foregroundColor(.white)
+                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                        .padding(.horizontal, 10)
+                }
+                .padding(.horizontal, 10)
+//                .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 31)
+                
             }
-            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 31)
             
             Spacer()
             
             
             Button {
-                MainViewModel.shared.cameraView.switchCamera()
+                MainViewModel.shared.cameraView.toggleMultiCamera()
             } label: {
                 Image("multiCam")
                     .resizable()
-                    .font(Font.title.weight(.semibold))
+                    .renderingMode(.template)
                     .scaledToFit()
                     .frame(height: 31)
-                    .foregroundColor(.white)
+                    .foregroundColor(isMultiCamEnabled ? Color(.systemBlue) : .white)
                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+                    .padding(.horizontal, 10)
             }
-            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 31)
-            .padding(.trailing, 1)
+//            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 31)
             
         }
-        .frame(width: 180)
+        .frame(width: 200)
         
         
     }

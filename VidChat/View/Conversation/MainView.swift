@@ -119,7 +119,7 @@ struct MainView: View {
                             
                             ZStack {
                                 
-                                VideoOptionsView()
+                                VideoOptionsView(isMultiCamEnabled: $viewModel.isMultiCamEnabled)
                                 
                                 //Recording voice or video
                                 if viewModel.showRecordButton() {
@@ -370,6 +370,10 @@ struct MainView: View {
     
     func stopRunning() {
         cameraView.stopRunning()
+    }
+    
+    func toggleMultiCamera() {
+        cameraView.toggleMultiCamera()
     }
     
     func setFilter(_ filter: Filter?) {

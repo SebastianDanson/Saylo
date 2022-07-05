@@ -31,51 +31,52 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ////
     func sceneWillEnterForeground(_ scene: UIScene) {
         
-        DispatchQueue.main.async {
-            
-            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-            let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
-            
-            if newMessagesArray.count > 0 {
-                ConversationGridViewModel.shared.hasUnreadMessages = true
-            }
+        //        DispatchQueue.main.async {
+        //
+        //            let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        //            let newMessagesArray = defaults?.object(forKey: "messages") as? [[String:Any]] ?? [[String:Any]]()
+        //
+        //            if newMessagesArray.count > 0 {
+        //                ConversationGridViewModel.shared.hasUnreadMessages = true
+        //            }
+        //        }
+        
+        DispatchQueue(label: "cache").async {
+            ConversationGridViewModel.shared.showCachedChats()
+            ConversationGridViewModel.shared.updateFriendsChats()
         }
         
-        MainViewModel.shared.chatsViewDragOffset = .zero
-        ConversationGridViewModel.shared.showCachedChats()
-        ConversationGridViewModel.shared.updateFriendsChats()
-
+        
         if let selectedFilterName = UserDefaults.standard.string(forKey: "selectedFilter") {
             ConversationViewModel.shared.selectedFilter = Filter.allCases.first(where: {$0.name == selectedFilterName})
         }
-
-
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
         
-        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
-        let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
+        //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)
+        //        let hasCompletedSignUp = defaults?.bool(forKey: "hasCompletedSignUp")
         
         
-//        if ConversationPlayerViewModel.shared.messages.isEmpty {
-//            ConversationViewModel.shared.setMessages()
-//        }
+        //        if ConversationPlayerViewModel.shared.messages.isEmpty {
+        //            ConversationViewModel.shared.setMessages()
+        //        }
         
-
-        AuthViewModel.shared.fetchUser {
-            ConversationGridViewModel.shared.fetchConversations()
+        
+        DispatchQueue(label: "api").async {
+            AuthViewModel.shared.fetchUser {
+                ConversationGridViewModel.shared.fetchConversations()
+            }
         }
         
-        if AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
-            MainViewModel.shared.cameraView.setupSession()
-        }
+        //        if AuthViewModel.shared.isSignedIn, hasCompletedSignUp ?? false {
+        //            MainViewModel.shared.cameraView.setupSession()
+        //        }
         
         //        MainViewModel.shared.cameraView.setupSession()
         
-        ConversationGridViewModel.shared.setMessages()
-//        MainViewModel.shared.cameraView.cameraView.setupSession()
-
+        //        MainViewModel.shared.cameraView.cameraView.setupSession()
+        
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
@@ -84,7 +85,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if ConversationViewModel.shared.showCamera {
             MainViewModel.shared.cancelRecording()
         }
-                
+        
         ConversationGridViewModel.shared.setChatCache()
         ConversationViewModel.shared.cleanNotificationsArray()
         
@@ -96,7 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         ConversationViewModel.shared.leaveChannel()
         
-
+        
         if ConversationViewModel.shared.sendingLiveRecordingId == AuthViewModel.shared.getUserId() {
             ConversationViewModel.shared.setSendingLiveRecordingId(nil)
         }
@@ -113,8 +114,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     //    func sceneWillResignActive(_ scene: UIScene) {
     //
     //    }
-//        func sceneDidEnterBackground(_ scene: UIScene) {
-//            ConversationGridViewModel.shared.updateFriendsChats()
-//        }
+    //        func sceneDidEnterBackground(_ scene: UIScene) {
+    //            ConversationGridViewModel.shared.updateFriendsChats()
+    //        }
     
 }

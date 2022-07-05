@@ -214,8 +214,8 @@ class ConversationViewModel: ObservableObject {
         ConversationGridViewModel.shared.setChatCache()
         self.hasUnread = chat.hasUnreadMessage
         chat.isLive = false
-        self.addListener()
         chat.hasUnreadMessage = false
+        self.addListener()
         self.setIsOnChat()
         didCancelRecording = false
     }

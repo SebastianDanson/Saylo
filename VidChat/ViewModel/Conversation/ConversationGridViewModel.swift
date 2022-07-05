@@ -27,7 +27,7 @@ class ConversationGridViewModel: ObservableObject {
     @Published var showConversation = false
     @Published var isCalling = false
     @Published var temp = false
-    @Published var hasUnreadMessages = false
+//    @Published var hasUnreadMessages = false
     @Published var showAllFriends = false
     @Published var selectedSettingsChat: Chat?
     @Published var friendsChats = [Chat]()
@@ -251,14 +251,6 @@ class ConversationGridViewModel: ObservableObject {
                     self.allChats = self.chats
                     
                     
-                    //                    if self.chats.count > 0 {
-                    //                        ConversationViewModel.shared.setChat(chat: self.chats[0])
-                    //                    }
-                    
-                    //                    withAnimation {
-                    //                        self.chats = chats
-                    //                    }
-                    
                     if self.chats.count != self.getCachedChats().count {
                         ConversationGridViewModel.shared.updateFriendsChats()
                     }
@@ -407,9 +399,9 @@ class ConversationGridViewModel: ObservableObject {
             //            ConversationPlayerViewModel.shared.addMessage(message)
         }
         
-        if newMessagesArray.count > 0 {
-            self.hasUnreadMessages = true
-        }
+//        if newMessagesArray.count > 0 {
+//            self.hasUnreadMessages = true
+//        }
         
         
         

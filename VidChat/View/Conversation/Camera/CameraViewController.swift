@@ -49,9 +49,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     private var previewViewWidthAnchor: NSLayoutConstraint!
     private var previewViewHeightAnchor: NSLayoutConstraint!
     private var previewViewTrailingAnchor: NSLayoutConstraint!
-    private var previewViewBottomAnchor: NSLayoutConstraint!
+    private var previewViewTopAnchor: NSLayoutConstraint!
     
-    private var isMultiCamEnabled = false
+    //Back Camera Preview view constraints
+    private var backPreviewViewWidthAnchor: NSLayoutConstraint!
+    private var backPreviewViewHeightAnchor: NSLayoutConstraint!
+    private var backPreviewViewTrailingAnchor: NSLayoutConstraint!
+    private var backPreviewViewTopAnchor: NSLayoutConstraint!
+    
     private var isBlurFilterEnabled = false {
         didSet {
             previewBlurView.setBlur(enabled: isBlurFilterEnabled)
@@ -77,6 +82,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         super.viewDidLoad()
         
         setupUI()
+        setNoramlizedPipFrame()
         
         // Disable UI. Enable the UI later, if and only if the session starts running.
         // Set up the back and front video preview views.
@@ -107,7 +113,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         // Keep the screen awake
         UIApplication.shared.isIdleTimerDisabled = true
-        
         
     }
     
@@ -150,11 +155,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         setupMainPreviewView()
         
         view.addSubview(previewView)
-        previewView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor)
-        previewView.setDimensions(height: CAMERA_HEIGHT, width: SCREEN_WIDTH)
-        
-        
-        view.addSubview(previewView)
         previewView.anchor(top: view.topAnchor, left: view.leftAnchor)
         previewView.setDimensions(height: SCREEN_WIDTH * 16/9, width: SCREEN_WIDTH)
         
@@ -176,27 +176,55 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         let height = MESSAGE_HEIGHT/4
         previewViewWidthAnchor.constant = width
         previewViewHeightAnchor.constant = height
-        previewViewBottomAnchor.constant -= 20
+        previewViewTopAnchor.constant += 20
         previewViewTrailingAnchor.constant = -20
         
-        UIView.animate(withDuration: 0.2) {
-            self.view.layoutIfNeeded()
-        }
+//        UIView.animate(withDuration: 0.2) {
+//            self.view.layoutIfNeeded()
+//        }
+    }
+    
+    private func setBackPreviewViewPiP() {
+        
+        let width = SCREEN_WIDTH/4
+        let height = MESSAGE_HEIGHT/4
+        backPreviewViewWidthAnchor.constant = width
+        backPreviewViewHeightAnchor.constant = height
+        backPreviewViewTopAnchor.constant += 20
+        backPreviewViewTrailingAnchor.constant = -20
+        
+//        UIView.animate(withDuration: 0.2) {
+//            self.view.layoutIfNeeded()
+//        }
     }
     
     private func setMainPreviewViewFull() {
-        
-        let width = SCREEN_WIDTH
-        let height = MESSAGE_HEIGHT
-        
-        previewViewWidthAnchor.constant = width
-        previewViewHeightAnchor.constant = height
-        previewViewBottomAnchor.constant = bottomPadding
+    
+        previewViewWidthAnchor.constant = SCREEN_WIDTH
+        previewViewHeightAnchor.constant = MESSAGE_HEIGHT
+        previewViewTopAnchor.constant = 0
         previewViewTrailingAnchor.constant = 0
         
-        UIView.animate(withDuration: 0.2) {
-            self.view.layoutIfNeeded()
-        }
+//        UIView.animate(withDuration: 0.2) {
+//            self.view.layoutIfNeeded()
+//        }
+        
+        view.sendSubviewToBack(frontCameraVideoPreviewView)
+    }
+    
+    private func setBackPreviewViewFull() {
+    
+        backPreviewViewWidthAnchor.constant = SCREEN_WIDTH
+        backPreviewViewHeightAnchor.constant = MESSAGE_HEIGHT
+        backPreviewViewTopAnchor.constant = 0
+        backPreviewViewTrailingAnchor.constant = 0
+        
+//        UIView.animate(withDuration: 0.2) {
+//            self.view.layoutIfNeeded()
+//        }
+        
+        view.sendSubviewToBack(backCameraVideoPreviewView)
+
     }
     
     private func setupMainPreviewView() {
@@ -212,12 +240,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewViewHeightAnchor = frontCameraVideoPreviewView.heightAnchor.constraint(equalToConstant: height)
         previewViewHeightAnchor.isActive = true
         
-        previewViewBottomAnchor = frontCameraVideoPreviewView.bottomAnchor.constraint(equalTo: view.bottomAnchor,
-                                                                                      constant: bottomPadding)
-        previewViewBottomAnchor.isActive = true
+        previewViewTopAnchor = frontCameraVideoPreviewView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        previewViewTopAnchor.isActive = true
         
-        previewViewTrailingAnchor = frontCameraVideoPreviewView.rightAnchor.constraint(equalTo: view.rightAnchor,
-                                                                                       constant: 0)
+        previewViewTrailingAnchor = frontCameraVideoPreviewView.rightAnchor.constraint(equalTo: view.rightAnchor)
         previewViewTrailingAnchor.isActive = true
         
         frontCameraVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
@@ -229,11 +255,47 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         view.addSubview(backCameraVideoPreviewView)
         
-        backCameraVideoPreviewView.setDimensions(height: MESSAGE_HEIGHT, width: SCREEN_WIDTH)
-        backCameraVideoPreviewView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor)
+        let width = SCREEN_WIDTH
+        let height = MESSAGE_HEIGHT
+        
+        backPreviewViewWidthAnchor = backCameraVideoPreviewView.widthAnchor.constraint(equalToConstant: width)
+        backPreviewViewWidthAnchor.isActive = true
+        
+        backPreviewViewHeightAnchor = backCameraVideoPreviewView.heightAnchor.constraint(equalToConstant: height)
+        backPreviewViewHeightAnchor.isActive = true
+        
+        backPreviewViewTopAnchor = backCameraVideoPreviewView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        backPreviewViewTopAnchor.isActive = true
+        
+        backPreviewViewTrailingAnchor = backCameraVideoPreviewView.rightAnchor.constraint(equalTo: view.rightAnchor)
+        backPreviewViewTrailingAnchor.isActive = true
+        
+        backCameraVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
         backCameraVideoPreviewView.videoPreviewLayer.videoGravity = .resizeAspectFill
         backCameraVideoPreviewView.layer.cornerRadius = 14
+    
         view.sendSubviewToBack(backCameraVideoPreviewView)
+    }
+    
+    private func togglePip() {
+        
+        DispatchQueue.main.async {
+            
+            
+            if self.pipDevicePosition == .front {
+                self.setBackPreviewViewPiP()
+                self.setMainPreviewViewFull()
+                self.pipDevicePosition = .back
+            } else {
+                self.setMainPreviewViewPiP()
+                self.setBackPreviewViewFull()
+                self.pipDevicePosition = .front
+            }
+            
+            UIView.animate(withDuration: 0.2) {
+                self.view.layoutIfNeeded()
+            }
+        }
     }
     
     func setVideoFilter(_ filter: Filter?) {
@@ -301,10 +363,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     private var keyValueObservations = [NSKeyValueObservation]()
     
     private func addObservers() {
-        let keyValueObservation = session.observe(\.isRunning, options: .new) { _, change in
-            guard let isSessionRunning = change.newValue else { return }
-            
-        }
+        let keyValueObservation = session.observe(\.isRunning, options: .new) { _, change in  }
+        
         keyValueObservations.append(keyValueObservation)
         
         let systemPressureStateObservation = observe(\.self.backCameraDeviceInput?.device.systemPressureState, options: .new) { _, change in
@@ -383,6 +443,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
     }
     
+    private func setNoramlizedPipFrame() {
+        let padding: CGFloat = 20
+        let pipRatio: CGFloat = 0.25
+        let xPos: CGFloat = 1 - pipRatio - padding/SCREEN_WIDTH // (Screen width - pip width - padding left) / screen width
+        let yPos: CGFloat = (TOP_PADDING + padding) / SCREEN_HEIGHT
+        self.normalizedPipFrame = CGRect(x: xPos, y: yPos, width: pipRatio, height: pipRatio)
+    }
+    
     private func addBackCamera() {
         
         guard AVCaptureMultiCamSession.isMultiCamSupported else { return }
@@ -405,6 +473,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         DispatchQueue.main.async {
             self.addBackCameraVideoPreviewView()
             self.setMainPreviewViewPiP()
+            
+            UIView.animate(withDuration: 0.2) {
+                self.view.layoutIfNeeded()
+            }
         }
     }
     
@@ -737,9 +809,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         
         
-        if UIDevice.current.isMultitaskingSupported {
-            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-        }
+//        if UIDevice.current.isMultitaskingSupported {
+//            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+//        }
         
         guard let audioSettings = self.createAudioSettings() else {
             print("Could not create audio settings")
@@ -803,7 +875,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
     }
     
-    private func takePhoto(withFlash hasFlash: Bool) {
+    public func takePhoto(withFlash hasFlash: Bool) {
         
         let photoSettings = AVCapturePhotoSettings()
         
@@ -823,9 +895,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     
     public func toggleIsMultiCamEnabled() {
-        self.isMultiCamEnabled.toggle()
+        withAnimation {
+            MainViewModel.shared.isMultiCamEnabled.toggle()
+        }
         
-        if self.isMultiCamEnabled {
+        if MainViewModel.shared.isMultiCamEnabled {
             if !MainViewModel.shared.isFrontFacing {
                 self.switchCamera()
                 
@@ -842,12 +916,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func switchCamera() {
-        sessionQueue.async {
-            DispatchQueue.main.async {
-                MainViewModel.shared.isFrontFacing.toggle()
-            }
-            self.configureFrontCamera()
-        }
+        togglePip()
+//        sessionQueue.async {
+//            DispatchQueue.main.async {
+//                MainViewModel.shared.isFrontFacing.toggle()
+//                self.configureFrontCamera()
+//            }
+//        }
     }
     
     private func createAudioSettings() -> [String: NSObject]? {
@@ -873,7 +948,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         var backCameraVideoSettings: [String:NSObject]?
         
-        if isMultiCamEnabled {
+        if MainViewModel.shared.isMultiCamEnabled {
             guard let backCameraVideoSettingsMultiCam = backCameraVideoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mov) as? [String: NSObject] else {
                 print("Could not get back camera video settings")
                 return nil
@@ -887,7 +962,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return nil
         }
         
-        if isMultiCamEnabled {
+        if MainViewModel.shared.isMultiCamEnabled {
             if let backCameraVideoSettings = backCameraVideoSettings, backCameraVideoSettings == frontCameraVideoSettings {
                 // The front and back camera video settings are equal, so return either one
                 return backCameraVideoSettings
@@ -947,7 +1022,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         var fullScreenSampleBuffer: CMSampleBuffer?
         var pipSampleBuffer: CMSampleBuffer?
         
-        if !isMultiCamEnabled {
+        if !MainViewModel.shared.isMultiCamEnabled {
             fullScreenSampleBuffer = sampleBuffer
         } else if pipDevicePosition == .back && videoDataOutput == backCameraVideoDataOutput {
             pipSampleBuffer = sampleBuffer
@@ -1000,7 +1075,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         
         
-        if !isMultiCamEnabled && videoFilter == nil && !isBlurFilterEnabled{
+        if !MainViewModel.shared.isMultiCamEnabled && videoFilter == nil && !isBlurFilterEnabled{
             if let recorder = movieRecorder,
                recorder.isRecording {
                 
@@ -1024,6 +1099,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 
                 recorder.recordVideo(sampleBuffer: finalVideoSampleBuffer)
             }
+            
+            return
         }
         
         guard let fullScreenPixelBuffer = CMSampleBufferGetImageBuffer(fullScreenSampleBuffer),
@@ -1036,20 +1113,20 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return
         }
         
-        //        if !videoMixer.isPrepared {
-        //            videoMixer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
-        //        }
-        //
-        //        videoMixer.pipFrame = normalizedPipFrame
+        if !videoMixer.isPrepared {
+            videoMixer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+        }
         
-        // Mix the full screen pixel buffer with the pip pixel buffer
-        // When the PIP is the back camera, the primaryPixelBuffer is the front camera
-        //        guard let mixedPixelBuffer = videoMixer.mix(fullScreenPixelBuffer: fullScreenPixelBuffer,
-        //                                                    pipPixelBuffer: pipPixelBuffer,
-        //                                                    fullScreenPixelBufferIsFrontCamera: pipDevicePosition == .back) else {
-        //            print("Unable to combine video")
-        //            return
-        //        }
+        videoMixer.pipFrame = normalizedPipFrame
+        
+        //  Mix the full screen pixel buffer with the pip pixel buffer
+        //  When the PIP is the back camera, the primaryPixelBuffer is the front camera
+        guard let mixedPixelBuffer = videoMixer.mix(fullScreenPixelBuffer: fullScreenPixelBuffer,
+                                                    pipPixelBuffer: pipPixelBuffer,
+                                                    fullScreenPixelBufferIsFrontCamera: pipDevicePosition == .back) else {
+            print("Unable to combine video")
+            return
+        }
         
         guard let outputFormatDescription = videoMixer.outputFormatDescription else { return }
         
@@ -1057,7 +1134,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         if let recorder = movieRecorder,
            recorder.isRecording {
             
-            guard let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(finalVideoPixelBuffer,
+            guard let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(mixedPixelBuffer,
                                                                                       formatDescription: outputFormatDescription,
                                                                                       presentationTime: CMSampleBufferGetPresentationTimeStamp(fullScreenSampleBuffer)) else {
                 print("Error: Unable to create sample buffer from pixelbuffer")
