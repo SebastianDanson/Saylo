@@ -317,12 +317,16 @@ class ConversationGridViewModel: ObservableObject {
     //    }
     
     func updateFriendsChats() {
-        self.friendsChats = chats.shuffled()
+        DispatchQueue.main.async {
+            self.friendsChats = self.chats.shuffled()
+        }
     }
     
     func showCachedChats() {
+        DispatchQueue.main.async {
+            self.chats = self.getCachedChats()
+        }
         
-        self.chats = getCachedChats()
         self.setMessages()
         
         //        let defaults = UserDefaults.init(suiteName: SERVICE_EXTENSION_SUITE_NAME)

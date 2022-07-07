@@ -75,6 +75,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     private var previewBlurView = PreviewMetalView()
     private let photoOutput = AVCapturePhotoOutput()
+    private var captureNextFrame = false
     
     // MARK: View Controller Life Cycle
     
@@ -281,7 +282,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         DispatchQueue.main.async {
             
-            
             if self.pipDevicePosition == .front {
                 self.setBackPreviewViewPiP()
                 self.setMainPreviewViewFull()
@@ -334,6 +334,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.previewView.isHidden = true
+                    self.previewBlurView.isHidden = true
                 }
             }
         }
@@ -441,6 +442,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             setupResult = .configurationFailed
             return
         }
+        
+        configurePhotoOutput()
     }
     
     private func setNoramlizedPipFrame() {
@@ -677,6 +680,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         return true
     }
     
+    private func configurePhotoOutput() {
+        if session.canAddOutput(photoOutput) {
+            session.addOutput(photoOutput)
+            
+            photoOutput.isHighResolutionCaptureEnabled = true
+        } else {
+            print("ERROR: Could not add photo output")
+        }
+    }
+    
     private func configureMicrophone() -> Bool {
         session.beginConfiguration()
         defer {
@@ -876,6 +889,12 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func takePhoto(withFlash hasFlash: Bool) {
+
+        if MainViewModel.shared.isMultiCamEnabled {
+            captureNextFrame = true
+            return
+        }
+        
         
         let photoSettings = AVCapturePhotoSettings()
         
@@ -889,6 +908,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         photoSettings.previewPhotoFormat = previewFormat
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
+
         connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
@@ -916,14 +936,14 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func switchCamera() {
-        togglePip()
-//        sessionQueue.async {
-//            DispatchQueue.main.async {
-//                MainViewModel.shared.isFrontFacing.toggle()
-//                self.configureFrontCamera()
-//            }
-//        }
+        sessionQueue.async {
+            DispatchQueue.main.async {
+                MainViewModel.shared.isFrontFacing.toggle()
+                self.configureFrontCamera()
+            }
+        }
     }
+    
     
     private func createAudioSettings() -> [String: NSObject]? {
         guard let backMicrophoneAudioSettings = backMicrophoneAudioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mov) as? [String: NSObject] else {
@@ -1078,9 +1098,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         if !MainViewModel.shared.isMultiCamEnabled && videoFilter == nil && !isBlurFilterEnabled{
             if let recorder = movieRecorder,
                recorder.isRecording {
-                
-                recorder.recordVideo(sampleBuffer: fullScreenSampleBuffer)
+                if MainViewModel.shared.isRecording, !TextOverlayViewModel.shared.overlayText.isEmpty, let textBuffer = addTextToSampleBuffer(fullScreenSampleBuffer) {
+                    recorder.recordVideo(sampleBuffer: textBuffer)
+                } else {
+                    recorder.recordVideo(sampleBuffer: fullScreenSampleBuffer)
+                }
             }
+            
             return
         }
         
@@ -1126,6 +1150,19 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                                                     fullScreenPixelBufferIsFrontCamera: pipDevicePosition == .back) else {
             print("Unable to combine video")
             return
+        }
+        
+        if captureNextFrame {
+            
+            let ciimage = CIImage(cvImageBuffer: mixedPixelBuffer)
+            MainViewModel.shared.ciImage = ciimage
+            if let cgimage = CIContext().createCGImage(ciimage, from: ciimage.extent) {
+                DispatchQueue.main.async {
+                    MainViewModel.shared.photo = UIImage(cgImage: cgimage)
+                }
+            }
+        
+            captureNextFrame = false
         }
         
         guard let outputFormatDescription = videoMixer.outputFormatDescription else { return }
@@ -1224,6 +1261,25 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         return sampleBuffer
     }
     
+    private func addTextToSampleBuffer(_ sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        
+        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+            let cameraImage = CIImage(cvPixelBuffer: pixelBuffer)
+            if let camerImageWithText = TextOverlayViewModel.shared.addText(toImage: cameraImage) {
+                let context = CIContext(options: nil)
+                context.render(camerImageWithText, to: pixelBuffer)
+               
+                guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), let finalVideoSampleBuffer = self.createVideoSampleBufferWithPixelBuffer(pixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) else {
+                    print("Error: Unable to create sample buffer from pixelbuffer")
+                    return nil
+                }
+                
+                return finalVideoSampleBuffer
+            }
+        }
+        
+        return nil
+    }
     
     // MARK: - Session Cost Check
     
@@ -1530,7 +1586,7 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
     
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        
+
         if let imageData = photo.fileDataRepresentation() {
             
             var outputImage: UIImage?

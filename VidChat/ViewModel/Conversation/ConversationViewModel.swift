@@ -133,7 +133,7 @@ class ConversationViewModel: ObservableObject {
     
     @Published var presentUsers = [String]()
     @Published var joinedCallUsers = [String]()
-    @Published var isLive = false
+    @Published var isLive = false 
     @Published var currentlyWatchingId: String?
     
     var watchedStreams = [String]()
@@ -168,7 +168,7 @@ class ConversationViewModel: ObservableObject {
     }
     
     func pushLiveSampleBuffer(sampleBuffer: CMSampleBuffer) {
-        
+                
         guard let agoraKit = agoraKit else {
             return
         }
@@ -179,6 +179,7 @@ class ConversationViewModel: ObservableObject {
         videoFrame.format = 12
         videoFrame.textureBuf = imageBuffer
         videoFrame.time = sampleBuffer.outputPresentationTimeStamp
+        print("PUSHH")
         agoraKit.pushExternalVideoFrame(videoFrame)
     }
     

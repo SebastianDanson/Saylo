@@ -43,7 +43,7 @@ struct MainView: View {
                 LiveView(showStream: $conversationViewModel.isLive, currentlyWatchingLiveId: $conversationViewModel.currentlyWatchingId)
                 
                 //Camera view shown when recording video or taking photo
-                if viewModel.showCamera() {
+                if viewModel.showCamera() || viewModel.selectedView == .Voice {
                     
                     if conversationViewModel.currentlyWatchingId == nil {
                         cameraView
@@ -61,7 +61,6 @@ struct MainView: View {
                                 }
                             )
                     }
-                    
                 }
                 
                 // Voice view
@@ -119,7 +118,10 @@ struct MainView: View {
                             
                             ZStack {
                                 
-                                VideoOptionsView(isMultiCamEnabled: $viewModel.isMultiCamEnabled)
+                                
+                                if viewModel.selectedView == .Video || viewModel.selectedView == .Photo && viewModel.photo == nil {
+                                    VideoOptionsView(isMultiCamEnabled: $viewModel.isMultiCamEnabled)
+                                }
                                 
                                 //Recording voice or video
                                 if viewModel.showRecordButton() {
@@ -298,6 +300,7 @@ struct MainView: View {
                     .ignoresSafeArea()
                     .onAppear {
                         hasJoinedCall = false
+                        UIApplication.shared.isIdleTimerDisabled = true
                     }
                     .onDisappear {
                         conversationViewModel.joinedCallUsers.removeAll()
@@ -694,7 +697,7 @@ struct PhotosView: View {
                             
                             Circle()
                                 .frame(width: 56, height: 56)
-                                .foregroundColor(Color(white: 0, opacity: 0.5))
+                                .foregroundColor(Color(white: 0, opacity: 0.8))
                             
                             Image("x")
                                 .resizable()

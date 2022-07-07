@@ -35,6 +35,7 @@ class LiveStreamUIViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpVideo()
+        print("VIDE APPEARING")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -88,6 +89,7 @@ class LiveStreamUIViewController: UIViewController {
         videoCanvas.view = localView
         
         if isHost {
+            print("YESSIR")
             getAgoraEngine().setupLocalVideo(videoCanvas)
         } else {
             getAgoraEngine().setupRemoteVideo(videoCanvas)

@@ -104,6 +104,7 @@ class BlurredBackgroundRenderer {
     }
     
     func render(ciImage: CIImage) -> CVPixelBuffer? {
+        var ciImage = ciImage
         guard let ciContext = ciContext, isPrepared else {
                 assertionFailure("Invalid state: Not prepared")
                 return nil
@@ -114,6 +115,10 @@ class BlurredBackgroundRenderer {
         guard let outputPixelBuffer = pbuf else {
             print("Allocation failure")
             return nil
+        }
+        
+        if MainViewModel.shared.isRecording, !TextOverlayViewModel.shared.overlayText.isEmpty, let textImage = TextOverlayViewModel.shared.addText(toImage: ciImage) {
+            ciImage = textImage
         }
         
         // Render the filtered image out to a pixel buffer (no locking needed, as CIContext's render method will do that)

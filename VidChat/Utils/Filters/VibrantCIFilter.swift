@@ -70,7 +70,7 @@ class VibrantCIRenderer: FilterRenderer {
         let sourceImage = CIImage(cvImageBuffer: pixelBuffer)
         vibrantFilter.setValue(sourceImage, forKey: kCIInputImageKey)
         
-        guard let filteredImage = vibrantFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
+        guard var filteredImage = vibrantFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
             print("CIFilter failed to render image")
             return nil
         }
@@ -80,6 +80,10 @@ class VibrantCIRenderer: FilterRenderer {
         guard let outputPixelBuffer = pbuf else {
             print("Allocation failure")
             return nil
+        }
+        
+        if MainViewModel.shared.isRecording, !TextOverlayViewModel.shared.overlayText.isEmpty, let textImage = TextOverlayViewModel.shared.addText(toImage: filteredImage) {
+            filteredImage = textImage
         }
         
         // Render the filtered image out to a pixel buffer (no locking needed, as CIContext's render method will do that)

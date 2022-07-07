@@ -25,4 +25,5 @@ protocol FilterRenderer: class {
     
     // Render the pixel buffer.
     func render(pixelBuffer: CVPixelBuffer) -> CVPixelBuffer?
+    
 }

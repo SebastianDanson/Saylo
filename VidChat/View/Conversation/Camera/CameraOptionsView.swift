@@ -10,29 +10,29 @@ import SwiftUI
 struct VideoOptionsView: View {
     
     @Binding var isMultiCamEnabled: Bool
-    
+//    @Binding var isRecording: Bool
+
     var body: some View {
         
         HStack {
             
-            if !isMultiCamEnabled {
+//            if !isMultiCamEnabled && !isRecording {
                 
-                Button {
-                    
-                } label: {
-                    Image(systemName: "bolt.slash")
-                        .resizable()
-                        .font(Font.title.weight(.semibold))
-                        .scaledToFit()
-                        .frame(height: 28)
-                        .foregroundColor(.white)
-                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
-                        .padding(.horizontal, 10)
-                }
-                .padding(.horizontal, 10)
-//                .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 31)
+//                Button {
+//
+//                } label: {
+//                    Image(systemName: "bolt.slash")
+//                        .resizable()
+//                        .font(Font.title.weight(.semibold))
+//                        .scaledToFit()
+//                        .frame(height: 28)
+//                        .foregroundColor(.white)
+//                        .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
+//                        .padding(.horizontal, 10)
+//                }
+//                .padding(.horizontal, 10)
                 
-            }
+//            }
             
             Spacer()
             
@@ -49,12 +49,8 @@ struct VideoOptionsView: View {
                     .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: 0, y: 4)
                     .padding(.horizontal, 10)
             }
-//            .frame(width: IS_SMALL_WIDTH ? 30 : 36, height: 31)
-            
         }
-        .frame(width: 200)
-        
+        .frame(width: 180)
         
     }
-    
 }

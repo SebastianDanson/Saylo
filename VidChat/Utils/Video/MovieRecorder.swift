@@ -80,22 +80,33 @@ class MovieRecorder {
     
     func recordVideo(sampleBuffer: CMSampleBuffer) {
         
+        
         guard isRecording,
-            let assetWriter = assetWriter else {
-                return
+              let assetWriter = assetWriter else {
+            return
         }
-                
+        
         if assetWriter.status == .unknown {
-            print("START WRITING")
             assetWriter.startWriting()
             assetWriter.startSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
-        } else if assetWriter.status == .writing {
+        }
+        
+         if assetWriter.status == .writing {
+            
+            
             if let input = assetWriterVideoInput,
-                input.isReadyForMoreMediaData {
+               input.isReadyForMoreMediaData {
                 input.append(sampleBuffer)
             }
         }
+        
+        ConversationViewModel.shared.pushLiveSampleBuffer(sampleBuffer: sampleBuffer)
+
+        if ConversationViewModel.shared.getIsInVideoCall() {
+            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
+        }
     }
+    
     
     func recordAudio(sampleBuffer: CMSampleBuffer) {
 
