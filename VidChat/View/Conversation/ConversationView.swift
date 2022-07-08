@@ -75,7 +75,6 @@ struct ConversationView: View {
                                     
                                     DispatchQueue.main.async {
                                         viewModel.currentPlayer?.pause()
-                                        viewModel.scrollToBottomOfFeed()
                                     }
                                 
                             }
@@ -132,26 +131,26 @@ struct ConversationView: View {
                 
                 
             }
-            .overlay(
-                ZStack {
-                    
-                    if !viewModel.showSavedPosts {
-                        
-                        VStack {
-                            
-//                            if !viewModel.showCamera {
-//                                ChatOptions(showSettings: $showSettings)
+//            .overlay(
+//                ZStack {
+//
+//                    if !viewModel.showSavedPosts {
+//
+//                        VStack {
+//
+////                            if !viewModel.showCamera {
+////                                ChatOptions(showSettings: $showSettings)
+////                            }
+//
+//                            Spacer()
+//
+//                            if !viewModel.showKeyboard {
+//                                OptionsView()
 //                            }
-                            
-                            Spacer()
-                            
-                            if !viewModel.showKeyboard {
-                                OptionsView()
-                            }
-                        }
-                    }
-                }
-                ,alignment: .bottom)
+//                        }
+//                    }
+//                }
+//                ,alignment: .bottom)
             
 //            if viewModel.showConversationPlayer {
 //                ConversationPlayerView()
@@ -355,10 +354,6 @@ struct OptionsView: View {
                                             
                                             if viewModel.chatId.isEmpty {
                                                 ConversationGridViewModel.shared.isSelectingChats = true
-                                            } else {
-                                                withAnimation {
-                                                    viewModel.scrollToBottomOfFeed()
-                                                }
                                             }
                                         }
                                     }, label: {

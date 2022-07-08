@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ActivityIndicator: View {
-        
+    
     @State private var isCircleRotating = true
     @State private var animateStart = false
     @State private var animateEnd = true
@@ -17,7 +17,7 @@ struct ActivityIndicator: View {
     @StateObject var viewModel = ConversationViewModel.shared
     
     let diameter: CGFloat
-
+    
     var body: some View {
         
         ZStack {
@@ -32,7 +32,7 @@ struct ActivityIndicator: View {
                 .stroke(Color.mainBlue, style: StrokeStyle(lineWidth: max(diameter/20, 4), lineCap: .round, lineJoin: .round))
                 .rotationEffect(.degrees(-90))
                 .frame(width: diameter, height: diameter)
-               
+            
         }
     }
     
@@ -43,20 +43,53 @@ struct ActivityIndicatorRectangle: View {
     
     @StateObject var viewModel = ConversationViewModel.shared
     let width: CGFloat
-
-       var body: some View {
-           ZStack(alignment: .leading) {
     
-               RoundedRectangle(cornerRadius: 2)
-                   .stroke(Color(.systemGray5), lineWidth: 2)
-                   .frame(width: width, height: 2)
-    
-               RoundedRectangle(cornerRadius: 2)
-                   .stroke(Color.mainBlue, lineWidth: 2)
-                   .frame(width: width * viewModel.uploadProgress, height: 2)
-                   .animation(.linear)
-
-           }
-       }
+    var body: some View {
+        ZStack(alignment: .leading) {
+            
+            RoundedRectangle(cornerRadius: 2)
+                .stroke(Color(.systemGray5), lineWidth: 2)
+                .frame(width: width, height: 2)
+            
+            RoundedRectangle(cornerRadius: 2)
+                .stroke(Color.mainBlue, lineWidth: 2)
+                .frame(width: width * viewModel.uploadProgress, height: 2)
+                .animation(.linear)
+            
+        }
+    }
 }
 
+struct CircularLoadingIndicator: View {
+    
+    @State private var isCircleRotating = true
+ 
+    var body: some View {
+        
+        ZStack {
+            
+            Color.init(white: 0.2, opacity: 1)
+            
+            Circle()
+                .stroke(lineWidth: 8)
+                .fill(Color.init(red: 0.96, green: 0.96, blue: 0.96))
+                .frame(width: 100, height: 100)
+            
+            Circle()
+                .trim(from: 1/3, to: 4/7)
+                .stroke(lineWidth: 8)
+                .rotationEffect(.degrees(isCircleRotating ? 360 : 0))
+                .frame(width: 100, height: 100)
+                .foregroundColor(Color.blue)
+                .onAppear() {
+                    withAnimation(Animation
+                        .linear(duration: 1)
+                        .repeatForever(autoreverses: false)) {
+                            self.isCircleRotating.toggle()
+                        }
+                }
+        }
+        .frame(width: 150, height: 150)
+        .cornerRadius(12)
+    }
+}

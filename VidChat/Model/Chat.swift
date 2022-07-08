@@ -127,7 +127,7 @@ class Chat: ObservableObject {
         
         let liveUsers = dictionary["liveUsers"] as? [String] ?? [String]()
         self.isLive = liveUsers.count > 0 && !hasUnreadMessage
-        //        self.usersLastVisited = usersLastVisited
+    //        self.usersLastVisited = usersLastVisited
         
         //        //Add unread messages to player view
         //        if self.hasUnreadMessage && ConversationViewModel.shared.chatId != id && isTeamSaylo == false {

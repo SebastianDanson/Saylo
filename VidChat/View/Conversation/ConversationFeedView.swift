@@ -149,15 +149,15 @@ struct ConversationFeedView: View {
                         
                         
                     })
-                    .onChange(of: viewModel.scrollToBottom) { newValue in
-                        if let last = messages.last {
-                            if viewModel.showKeyboard {
-                                reader.scrollTo(last.id, anchor: .bottom)
-                            } else {
-                                reader.scrollTo(last.id, anchor: .center)
-                            }
-                        }
-                    }
+//                    .onChange(of: viewModel.scrollToBottom) { newValue in
+//                        if let last = messages.last {
+//                            if viewModel.showKeyboard {
+//                                reader.scrollTo(last.id, anchor: .bottom)
+//                            } else {
+//                                reader.scrollTo(last.id, anchor: .center)
+//                            }
+//                        }
+//                    }
             }
             .padding(.top, !viewModel.showKeyboard && !viewModel.showPhotos ? 72 + BOTTOM_PADDING : -20)
             .padding(.bottom, 100)

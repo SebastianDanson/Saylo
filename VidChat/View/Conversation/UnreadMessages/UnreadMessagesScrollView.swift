@@ -20,10 +20,12 @@ struct UnreadMessagesScrollView: View {
         
         ZStack(alignment: .top) {
             
+            
             let messages = viewModel.showSavedPosts ? viewModel.savedMessages : viewModel.messages
             if messages.count > 0 || viewModel.currentlyWatchingId != nil || !viewModel.sendingLiveRecordingId.isEmpty {
             
                 ScrollView(.horizontal, showsIndicators: false) {
+                    
                     
                     ScrollViewReader { reader in
                         
@@ -244,6 +246,8 @@ struct UnreadMessagesScrollView: View {
             }
         }
         .frame(width: SCREEN_WIDTH)
+        .ignoresSafeArea()
+        .background(Color.black)
         .onDisappear {
             viewModel.isSending = false
             viewModel.hasSent = false

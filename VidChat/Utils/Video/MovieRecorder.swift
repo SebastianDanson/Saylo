@@ -102,9 +102,9 @@ class MovieRecorder {
         
         ConversationViewModel.shared.pushLiveSampleBuffer(sampleBuffer: sampleBuffer)
 
-        if ConversationViewModel.shared.getIsInVideoCall() {
-            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
-        }
+//        if ConversationViewModel.shared.getIsInVideoCall() {
+//            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
+//        }
     }
     
     

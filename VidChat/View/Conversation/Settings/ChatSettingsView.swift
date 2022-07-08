@@ -67,7 +67,7 @@ struct ChatSettingsView: View {
                     
                     withAnimation {
                         MainViewModel.shared.settingsChat = nil
-                        ConversationViewModel.shared.hideChat = true
+//                        ConversationViewModel.shared.hideChat = true
                         ConversationGridViewModel.shared.showConversation = false
                         ConversationGridViewModel.shared.selectedSettingsChat = nil
                     }

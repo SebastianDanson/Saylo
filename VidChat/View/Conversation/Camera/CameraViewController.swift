@@ -14,8 +14,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     // MARK: Properties
     
-    private let session = AVCaptureMultiCamSession()
-    
+    private let session = AVCaptureMultiCamSession.isMultiCamSupported ? AVCaptureMultiCamSession() : AVCaptureSession()
+    private let supportsMultiCam = AVCaptureMultiCamSession.isMultiCamSupported
+
     private var isSessionRunning = false
     private let sessionQueue = DispatchQueue(label: "session queue") // Communicate with the session and other session objects on this queue.
     
@@ -421,7 +422,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         if !AVCaptureMultiCamSession.isMultiCamSupported {
             print("MultiCam not supported on this device")
-            setupResult = .multiCamNotSupported
+//            setupResult = .multiCamNotSupported
         }
         
         // When using AVCaptureMultiCamSession, it is best to manually add connections from AVCaptureInputs to AVCaptureOutputs
@@ -438,9 +439,13 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             return
         }
         
-        guard configureMicrophone() else {
+        if supportsMultiCam {
+        guard configureMultiCamMicrophone() else {
             setupResult = .configurationFailed
             return
+        }
+        } else {
+            configureMicrophone()
         }
         
         configurePhotoOutput()
@@ -690,7 +695,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
     }
     
-    private func configureMicrophone() -> Bool {
+    private func configureMultiCamMicrophone() -> Bool {
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
@@ -770,6 +775,42 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         return true
     }
     
+    private func configureMicrophone() {
+        
+        guard MainViewModel.shared.getHasMicAccess() else {
+            //            showAlert(isCameraAlert: false)
+            return
+        }
+        
+        
+        guard let mic = AVCaptureDevice.default(for: .audio) else {
+            return
+        }
+        
+        self.session.beginConfiguration()
+        
+        do {
+            
+            let audioInput = try AVCaptureDeviceInput(device: mic)
+            
+            if self.session.canAddInput(audioInput) {
+                self.session.addInput(audioInput)
+            }
+            
+        } catch {
+            print("ERROR could not add microphone")
+        }
+        
+        self.frontMicrophoneAudioDataOutput.setSampleBufferDelegate(self, queue: dataOutputQueue)
+        
+        if self.session.canAddOutput(self.frontMicrophoneAudioDataOutput) {
+            self.session.addOutput(self.frontMicrophoneAudioDataOutput)
+        }
+        
+        self.session.commitConfiguration()
+        
+    }
+    
     @objc // Expose to Objective-C for use with #selector()
     private func sessionRuntimeError(notification: NSNotification) {
         guard let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else {
@@ -826,9 +867,23 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
 //            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 //        }
         
-        guard let audioSettings = self.createAudioSettings() else {
-            print("Could not create audio settings")
-            return
+        var audioSettings: [String:Any]!
+        
+        if supportsMultiCam {
+            
+            guard let multiCamAudioSettings = self.createAudioSettings() else {
+                print("Could not create audio settings")
+                return
+            }
+            
+            audioSettings = multiCamAudioSettings
+        } else {
+            audioSettings = [
+                AVFormatIDKey : kAudioFormatMPEG4AAC,
+                AVSampleRateKey : 44100,
+                AVEncoderBitRateKey : 64000,
+                AVNumberOfChannelsKey: 1
+            ]
         }
         
         guard let videoSettings = self.createVideoSettings() else {
@@ -1292,6 +1347,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     //TODO don't let multi cam option if it's not allowed on device
     func checkSystemCost() {
+        guard let session = session as? AVCaptureMultiCamSession else { return }
         var exceededSessionCosts: ExceededCaptureSessionCosts = []
         
         if session.systemPressureCost > 1.0 {

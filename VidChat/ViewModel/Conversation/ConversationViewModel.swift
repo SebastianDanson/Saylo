@@ -44,11 +44,7 @@ class ConversationViewModel: ObservableObject {
     
     var chat: Chat?
     
-    @Published var index: Int = 0 {
-        didSet {
-            self.hasChanged.toggle()
-        }
-    }
+    @Published var index: Int = 0
     
     @Published var hasChanged = false
     @Published var chatId = ""
@@ -114,10 +110,10 @@ class ConversationViewModel: ObservableObject {
     var hasUnread = false
     @Published var currentPlayer: AVPlayer?
     
-    @Published var scrollToBottom = false
+//    @Published var scrollToBottom = false
     @Published var isPlaying = true
     @Published var sendingLiveRecordingId = ""
-    @Published var hideChat = false
+//    @Published var hideChat = false
     var lastSendingRecordingId = ""
     
     private var uploadQueue = [[String:Any]]()
@@ -677,12 +673,16 @@ class ConversationViewModel: ObservableObject {
     fileprivate func fetchSavedMessages() {
         
         guard let chat = chat else { return }
+        MainViewModel.shared.areSavedPostsLoading = true
         
         ConversationService.fetchSavedMessages(forDocWithId: chat.id) { messages in
-            //            self.setIsSameId(messages: messages)
+            
             self.savedMessages = messages
             self.index = messages.count - 1
             self.noSavedMessages = messages.count == 0
+            
+            MainViewModel.shared.areSavedPostsLoading = false
+            
         }
     }
     
@@ -989,9 +989,9 @@ class ConversationViewModel: ObservableObject {
         
     }
     
-    func scrollToBottomOfFeed() {
-        scrollToBottom.toggle()
-    }
+//    func scrollToBottomOfFeed() {
+//        scrollToBottom.toggle()
+//    }
     
     func updatePlayer(index: Int) {
         

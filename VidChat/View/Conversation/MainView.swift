@@ -51,11 +51,18 @@ struct MainView: View {
                             .overlay(
                                 ZStack {
                                     VStack {
-                                        RoundedRectangle(cornerRadius: 36)
-                                            .stroke(Color.black, lineWidth: TOP_PADDING)
-                                            .frame(width: SCREEN_WIDTH + TOP_PADDING,
-                                                   height: MESSAGE_HEIGHT + TOP_PADDING)
-                                            .padding(.top, TOP_PADDING/2)
+                                        ZStack {
+                                            Rectangle()
+                                                .stroke(Color.black, lineWidth: TOP_PADDING)
+                                                .frame(width: SCREEN_WIDTH + TOP_PADDING,
+                                                       height: MESSAGE_HEIGHT + TOP_PADDING)
+                                                .padding(.top, TOP_PADDING/2)
+                                            RoundedRectangle(cornerRadius: 36)
+                                                .stroke(Color.black, lineWidth: TOP_PADDING)
+                                                .frame(width: SCREEN_WIDTH + TOP_PADDING,
+                                                       height: MESSAGE_HEIGHT + TOP_PADDING)
+                                                .padding(.top, TOP_PADDING/2)
+                                        }
                                         Spacer()
                                     }
                                 }
@@ -92,7 +99,7 @@ struct MainView: View {
                         
                         if !viewModel.showFilters && !viewModel.showCaption {
                             UnreadMessagesScrollView(selectedView: $viewModel.selectedView, showAlert: $showAlert)
-                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                                .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : IS_SMALL_PHONE ? 5 : 4))
                         }
                         
                     }
@@ -119,7 +126,7 @@ struct MainView: View {
                             ZStack {
                                 
                                 
-                                if viewModel.selectedView == .Video || viewModel.selectedView == .Photo && viewModel.photo == nil {
+                                if AVCaptureMultiCamSession.isMultiCamSupported && (viewModel.selectedView == .Video || viewModel.selectedView == .Photo && viewModel.photo == nil) {
                                     VideoOptionsView(isMultiCamEnabled: $viewModel.isMultiCamEnabled)
                                 }
                                 
@@ -320,14 +327,20 @@ struct MainView: View {
                 }
                 
                 if viewModel.showFilters {
+                    ZStack {
                     FiltersView()
                         .frame(width: SCREEN_WIDTH, height: MINI_MESSAGE_HEIGHT)
                         .padding(.bottom, SCREEN_HEIGHT - MESSAGE_HEIGHT - TOP_PADDING_OFFSET - MINI_MESSAGE_HEIGHT - (IS_SMALL_WIDTH ? 3 : 4))
+                    }.background(Color.black)
                 }
             }
             
             if viewModel.showCaption || !textOverlayViewModel.overlayText.isEmpty {
                 TextOverlayView(color: $textColor)
+            }
+            
+            if viewModel.areSavedPostsLoading {
+                CircularLoadingIndicator()
             }
         }
     }

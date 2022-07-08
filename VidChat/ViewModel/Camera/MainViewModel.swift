@@ -40,7 +40,8 @@ class MainViewModel: ObservableObject {
     @Published var showPhotosAlert = false
     @Published var showCaption = false
     @Published var showFilters = false
-    
+    @Published var areSavedPostsLoading = false
+
     @Published var isSaving = false {
         didSet {
             if isSaving {

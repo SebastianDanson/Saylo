@@ -35,7 +35,6 @@ class LiveStreamUIViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setUpVideo()
-        print("VIDE APPEARING")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -70,7 +69,7 @@ class LiveStreamUIViewController: UIViewController {
     }
     
     func setUpVideo() {
-        
+        print("SETTING UP VIDEO")
         localView.removeFromSuperview()
         
         let isHost = ConversationViewModel.shared.currentlyWatchingId == nil
@@ -87,7 +86,7 @@ class LiveStreamUIViewController: UIViewController {
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = uid
         videoCanvas.view = localView
-        
+        print("ISHOST", isHost)
         if isHost {
             print("YESSIR")
             getAgoraEngine().setupLocalVideo(videoCanvas)
