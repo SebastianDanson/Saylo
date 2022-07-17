@@ -14,9 +14,11 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     
     // MARK: Properties
     
-    private let session = AVCaptureMultiCamSession.isMultiCamSupported ? AVCaptureMultiCamSession() : AVCaptureSession()
-    private let supportsMultiCam = AVCaptureMultiCamSession.isMultiCamSupported
-
+    //    private let session = AVCaptureMultiCamSession.isMultiCamSupported ? AVCaptureMultiCamSession() : AVCaptureSession()
+    //    private let supportsMultiCam = AVCaptureMultiCamSession.isMultiCamSupported
+    
+    private let session = AVCaptureSession()
+    private let supportsMultiCam = false
     private var isSessionRunning = false
     private let sessionQueue = DispatchQueue(label: "session queue") // Communicate with the session and other session objects on this queue.
     
@@ -128,9 +130,23 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 self.addObservers()
                 self.session.startRunning()
                 self.isSessionRunning = self.session.isRunning
+                self.initMovieRecorder()
             default:
                 print("Something went wrong")
             }
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard MainViewModel.shared.getHasCameraAccess() else {
+            showAlert(isCameraAlert: true)
+            return
+        }
+        
+        guard MainViewModel.shared.getHasMicAccess() else {
+            showAlert(isCameraAlert: false)
+            return
         }
     }
     
@@ -181,9 +197,9 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewViewTopAnchor.constant += 20
         previewViewTrailingAnchor.constant = -20
         
-//        UIView.animate(withDuration: 0.2) {
-//            self.view.layoutIfNeeded()
-//        }
+        //        UIView.animate(withDuration: 0.2) {
+        //            self.view.layoutIfNeeded()
+        //        }
     }
     
     private func setBackPreviewViewPiP() {
@@ -195,38 +211,38 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         backPreviewViewTopAnchor.constant += 20
         backPreviewViewTrailingAnchor.constant = -20
         
-//        UIView.animate(withDuration: 0.2) {
-//            self.view.layoutIfNeeded()
-//        }
+        //        UIView.animate(withDuration: 0.2) {
+        //            self.view.layoutIfNeeded()
+        //        }
     }
     
     private func setMainPreviewViewFull() {
-    
+        
         previewViewWidthAnchor.constant = SCREEN_WIDTH
         previewViewHeightAnchor.constant = MESSAGE_HEIGHT
         previewViewTopAnchor.constant = 0
         previewViewTrailingAnchor.constant = 0
         
-//        UIView.animate(withDuration: 0.2) {
-//            self.view.layoutIfNeeded()
-//        }
+        //        UIView.animate(withDuration: 0.2) {
+        //            self.view.layoutIfNeeded()
+        //        }
         
         view.sendSubviewToBack(frontCameraVideoPreviewView)
     }
     
     private func setBackPreviewViewFull() {
-    
+        
         backPreviewViewWidthAnchor.constant = SCREEN_WIDTH
         backPreviewViewHeightAnchor.constant = MESSAGE_HEIGHT
         backPreviewViewTopAnchor.constant = 0
         backPreviewViewTrailingAnchor.constant = 0
         
-//        UIView.animate(withDuration: 0.2) {
-//            self.view.layoutIfNeeded()
-//        }
+        //        UIView.animate(withDuration: 0.2) {
+        //            self.view.layoutIfNeeded()
+        //        }
         
         view.sendSubviewToBack(backCameraVideoPreviewView)
-
+        
     }
     
     private func setupMainPreviewView() {
@@ -245,7 +261,8 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         previewViewTopAnchor = frontCameraVideoPreviewView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         previewViewTopAnchor.isActive = true
         
-        previewViewTrailingAnchor = frontCameraVideoPreviewView.rightAnchor.constraint(equalTo: view.rightAnchor)
+        let consant = UIDevice.current.userInterfaceIdiom == .pad ? (UIScreen.main.bounds.width - SCREEN_WIDTH) / 2:0
+        previewViewTrailingAnchor = frontCameraVideoPreviewView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -consant)
         previewViewTrailingAnchor.isActive = true
         
         frontCameraVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
@@ -275,7 +292,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         backCameraVideoPreviewView.translatesAutoresizingMaskIntoConstraints = false
         backCameraVideoPreviewView.videoPreviewLayer.videoGravity = .resizeAspectFill
         backCameraVideoPreviewView.layer.cornerRadius = 14
-    
+        
         view.sendSubviewToBack(backCameraVideoPreviewView)
     }
     
@@ -416,13 +433,33 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     
+    func showAlert(isCameraAlert: Bool) {
+        let title = "Enable \(isCameraAlert ? "Camera" : "Microphone") Access"
+        let messsage = "You must enable \(isCameraAlert ? "camera" : "microphone") access to send Saylo's"
+        
+        let alert = UIAlertController(title: title, message: messsage, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
+            withAnimation {
+                MainViewModel.shared.reset()
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Enable", style: .default, handler: { _ in
+            PhotosViewModel.shared.openSettings()
+        }))
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     // Must be called on the session queue
     private func configureSession() {
+      
         guard setupResult == .success else { return }
         
         if !AVCaptureMultiCamSession.isMultiCamSupported {
             print("MultiCam not supported on this device")
-//            setupResult = .multiCamNotSupported
+            //            setupResult = .multiCamNotSupported
         }
         
         // When using AVCaptureMultiCamSession, it is best to manually add connections from AVCaptureInputs to AVCaptureOutputs
@@ -440,10 +477,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         
         if supportsMultiCam {
-        guard configureMultiCamMicrophone() else {
-            setupResult = .configurationFailed
-            return
-        }
+            guard configureMultiCamMicrophone() else {
+                setupResult = .configurationFailed
+                return
+            }
         } else {
             configureMicrophone()
         }
@@ -778,7 +815,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     private func configureMicrophone() {
         
         guard MainViewModel.shared.getHasMicAccess() else {
-            //            showAlert(isCameraAlert: false)
+            showAlert(isCameraAlert: false)
             return
         }
         
@@ -863,10 +900,16 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         }
         
         
-//        if UIDevice.current.isMultitaskingSupported {
-//            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-//        }
+        //        if UIDevice.current.isMultitaskingSupported {
+        //            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+        //        }
         
+        initMovieRecorder()
+        self.movieRecorder?.startRecording()
+        
+    }
+    
+    func initMovieRecorder() {
         var audioSettings: [String:Any]!
         
         if supportsMultiCam {
@@ -899,8 +942,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         self.movieRecorder = MovieRecorder(audioSettings: audioSettings,
                                            videoSettings: videoSettings,
                                            videoTransform: videoTransform)
-        
-        self.movieRecorder?.startRecording()
         
     }
     
@@ -944,7 +985,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
     }
     
     public func takePhoto(withFlash hasFlash: Bool) {
-
+        
         if MainViewModel.shared.isMultiCamEnabled {
             captureNextFrame = true
             return
@@ -963,7 +1004,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         photoSettings.previewPhotoFormat = previewFormat
         photoSettings.flashMode = hasFlash ? .on : .off
         guard let connection = photoOutput.connection(with: .video) else { return }
-
+        
         connection.isVideoMirrored = MainViewModel.shared.isFrontFacing
         self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
@@ -1147,13 +1188,10 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             previewView.pixelBuffer = finalVideoPixelBuffer
         }
         
-        
-        
-        
         if !MainViewModel.shared.isMultiCamEnabled && videoFilter == nil && !isBlurFilterEnabled{
             if let recorder = movieRecorder,
-               recorder.isRecording {
-                if MainViewModel.shared.isRecording, !TextOverlayViewModel.shared.overlayText.isEmpty, let textBuffer = addTextToSampleBuffer(fullScreenSampleBuffer) {
+               recorder.pushBuffer() {
+                if !TextOverlayViewModel.shared.overlayText.isEmpty, let textBuffer = addTextToSampleBuffer(fullScreenSampleBuffer) {
                     recorder.recordVideo(sampleBuffer: textBuffer)
                 } else {
                     recorder.recordVideo(sampleBuffer: fullScreenSampleBuffer)
@@ -1167,7 +1205,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         if videoFilter != nil {
             if let recorder = movieRecorder,
-               recorder.isRecording {
+               recorder.pushBuffer() {
                 
                 guard let formatDescription = CMSampleBufferGetFormatDescription(fullScreenSampleBuffer), let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(finalVideoPixelBuffer,
                                                                                                                                                                               formatDescription: formatDescription,
@@ -1216,7 +1254,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                     MainViewModel.shared.photo = UIImage(cgImage: cgimage)
                 }
             }
-        
+            
             captureNextFrame = false
         }
         
@@ -1224,7 +1262,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         // If we're recording, append this buffer to the movie
         if let recorder = movieRecorder,
-           recorder.isRecording {
+           recorder.pushBuffer() {
             
             guard let finalVideoSampleBuffer = createVideoSampleBufferWithPixelBuffer(mixedPixelBuffer,
                                                                                       formatDescription: outputFormatDescription,
@@ -1263,7 +1301,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             }
             
             if let recorder = self.movieRecorder,
-               recorder.isRecording {
+               recorder.pushBuffer() {
                 guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), let finalVideoSampleBuffer = self.createVideoSampleBufferWithPixelBuffer(blurredBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) else {
                     print("Error: Unable to create sample buffer from pixelbuffer")
                     return
@@ -1292,7 +1330,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         
         // If we're recording, append this buffer to the movie
         if let recorder = movieRecorder,
-           recorder.isRecording {
+           recorder.pushBuffer() {
             recorder.recordAudio(sampleBuffer: sampleBuffer)
         }
     }
@@ -1323,7 +1361,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
             if let camerImageWithText = TextOverlayViewModel.shared.addText(toImage: cameraImage) {
                 let context = CIContext(options: nil)
                 context.render(camerImageWithText, to: pixelBuffer)
-               
+                
                 guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), let finalVideoSampleBuffer = self.createVideoSampleBufferWithPixelBuffer(pixelBuffer, formatDescription: formatDescription, presentationTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) else {
                     print("Error: Unable to create sample buffer from pixelbuffer")
                     return nil
@@ -1345,7 +1383,6 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
         static let hardwareCost = ExceededCaptureSessionCosts(rawValue: 1 << 1)
     }
     
-    //TODO don't let multi cam option if it's not allowed on device
     func checkSystemCost() {
         guard let session = session as? AVCaptureMultiCamSession else { return }
         var exceededSessionCosts: ExceededCaptureSessionCosts = []
@@ -1576,6 +1613,7 @@ class CameraViewController: UIViewController, AVCaptureAudioDataOutputSampleBuff
                 }
             }
         }
+        
         return result
     }
     
@@ -1642,7 +1680,7 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
     
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-
+        
         if let imageData = photo.fileDataRepresentation() {
             
             var outputImage: UIImage?

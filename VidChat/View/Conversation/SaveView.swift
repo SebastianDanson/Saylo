@@ -46,11 +46,11 @@ struct SaveView: View {
                         Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 19, height: 19)
+                            .frame(width: IS_SMALL_WIDTH ? 16 : 19, height:  IS_SMALL_WIDTH ? 16 : 19)
                             .foregroundColor(Color(.white))
                         
                     }
-                    .frame(width: 32, height: 32)
+                    .frame(width:  IS_SMALL_WIDTH ? 28:32, height:  IS_SMALL_WIDTH ? 28:32)
                     .clipShape(Circle())
                     .padding(4)
                     

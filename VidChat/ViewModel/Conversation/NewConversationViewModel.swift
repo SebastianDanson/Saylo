@@ -142,6 +142,12 @@ class NewConversationViewModel: ObservableObject {
             chatMembers.forEach { chatMember in
                 COLLECTION_USERS.document(chatMember.id).updateData(["conversations": FieldValue.arrayUnion([groupData])])
             }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                AuthViewModel.shared.fetchUser {
+                    ConversationGridViewModel.shared.fetchConversations()
+                }
+            }
         }
     }
     

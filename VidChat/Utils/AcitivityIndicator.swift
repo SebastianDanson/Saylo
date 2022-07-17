@@ -62,32 +62,15 @@ struct ActivityIndicatorRectangle: View {
 
 struct CircularLoadingIndicator: View {
     
-    @State private var isCircleRotating = true
  
     var body: some View {
         
         ZStack {
             
             Color.init(white: 0.2, opacity: 1)
-            
-            Circle()
-                .stroke(lineWidth: 8)
-                .fill(Color.init(red: 0.96, green: 0.96, blue: 0.96))
-                .frame(width: 100, height: 100)
-            
-            Circle()
-                .trim(from: 1/3, to: 4/7)
-                .stroke(lineWidth: 8)
-                .rotationEffect(.degrees(isCircleRotating ? 360 : 0))
-                .frame(width: 100, height: 100)
-                .foregroundColor(Color.blue)
-                .onAppear() {
-                    withAnimation(Animation
-                        .linear(duration: 1)
-                        .repeatForever(autoreverses: false)) {
-                            self.isCircleRotating.toggle()
-                        }
-                }
+            Text("Loading...")
+                .foregroundColor(.white)
+                .font(Font.system(size: 22, weight: .semibold, design: .rounded))
         }
         .frame(width: 150, height: 150)
         .cornerRadius(12)

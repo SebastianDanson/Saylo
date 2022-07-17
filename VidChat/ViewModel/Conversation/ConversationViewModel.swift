@@ -54,7 +54,7 @@ class ConversationViewModel: ObservableObject {
     var saveToggleIndex: Int = 0 //the index to update isSasved on the saved alert
     @Published var messages = [Message]() {
         didSet {
-            handleMessagesSet()
+            self.handleMessagesSet()
         }
     }
     @Published var savedMessages = [Message]()
@@ -175,7 +175,6 @@ class ConversationViewModel: ObservableObject {
         videoFrame.format = 12
         videoFrame.textureBuf = imageBuffer
         videoFrame.time = sampleBuffer.outputPresentationTimeStamp
-        print("PUSHH")
         agoraKit.pushExternalVideoFrame(videoFrame)
     }
     
@@ -213,8 +212,18 @@ class ConversationViewModel: ObservableObject {
         chat.isLive = false
         chat.hasUnreadMessage = false
         self.addListener()
-        self.setIsOnChat()
+//        self.setIsOnChat()
         didCancelRecording = false
+        clearPresentUsers()
+    }
+    
+    func clearPresentUsers() {
+        guard !chatId.isEmpty else { return }
+        let chatRef = COLLECTION_CONVERSATIONS.document(chatId)
+        Firestore.firestore().runTransaction({ (transaction, errorPointer) -> Any? in
+            transaction.updateData(["presentUsers": [AuthViewModel.shared.getUserId()]], forDocument: chatRef)
+            return nil
+        }) { (_, error) in }
     }
     
     func getSavedPosts() {
@@ -897,6 +906,10 @@ class ConversationViewModel: ObservableObject {
                         self.presentUsers = data["presentUsers"] as? [String] ?? [String]()
                     }
                     
+                    if !self.presentUsers.contains(AuthViewModel.shared.getUserId()) {
+                        self.setIsOnChat()
+                    }
+                    
                     self.noMessages = messages.count == 0
                     //                    self.seenLastPost = data["seenLastPost"] as? [String] ?? [String]()
                     
@@ -1019,7 +1032,10 @@ class ConversationViewModel: ObservableObject {
         showPlaybackControls = false
         self.index = i
         self.isPlaying = true
-        ConversationService.updateUsersLastVisited(atIndex: i)
+        if !showSavedPosts {
+            ConversationService.updateUsersLastVisited(atIndex: i)
+        }
+
         if !isPlayable(index: index) {
             setVideoLength()
         }
@@ -1100,7 +1116,7 @@ class ConversationViewModel: ObservableObject {
         } else {
             videoLength = 4
         }
-        
+                
     }
     
     func showPreviousMessage() {

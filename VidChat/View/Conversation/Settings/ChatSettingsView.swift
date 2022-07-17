@@ -16,18 +16,20 @@ struct ChatSettingsView: View {
     @State var isEditingName = false
     @State var showGroupMembers = false
     @State var showMuteOptions = false
-    @State var showRemoveGroupAlert = false
     
     @State var name: String
     @State var isMuted: Bool
     @Environment(\.presentationMode) var mode
+
+    @Binding var showAlert: Bool
+    @Binding var showRemoveGroupAlert: Bool
 
     let viewModel = ChatSettingsViewModel.shared
     let chat: Chat
     let username: String?
     
     
-    init(chat: Chat) {
+    init(chat: Chat, showAlert: Binding<Bool>, showRemoveGroupAlert: Binding<Bool>) {
         self.chat = chat
         self._name = State(initialValue: chat.fullName)
         self._isMuted = State(initialValue: chat.mutedUsers.contains(AuthViewModel.shared.getUserId()))
@@ -41,39 +43,12 @@ struct ChatSettingsView: View {
         }
         
         self.username = username
-        
+        self._showAlert = showAlert
+        self._showRemoveGroupAlert = showRemoveGroupAlert
     }
     
     var body: some View {
         
-        let removeGroupAlert = Alert(
-            title: Text("Are you sure you want to \(chat.isDm ? "remove" : "leave") \(chat.name)?"),
-            message: nil,
-            primaryButton: .default(
-                Text("Cancel"),
-                action: {
-                    
-                }
-            ),
-            secondaryButton: .destructive(
-                Text("Leave"),
-                action: {
-                    
-                    if chat.isDm {
-                        viewModel.removeFriend(inChat: chat)
-                    } else {
-                        viewModel.leaveGroup(chat: chat)
-                    }
-                    
-                    withAnimation {
-                        MainViewModel.shared.settingsChat = nil
-//                        ConversationViewModel.shared.hideChat = true
-                        ConversationGridViewModel.shared.showConversation = false
-                        ConversationGridViewModel.shared.selectedSettingsChat = nil
-                    }
-                }
-            )
-        )
         
 //        NavigationView {
             
@@ -182,6 +157,7 @@ struct ChatSettingsView: View {
                             Button {
                                 withAnimation {
                                     showRemoveGroupAlert = true
+                                    showAlert = true
                                 }
                             } label: {
                                 SettingsCell(image: chat.isDm ?  Image(systemName: "person.fill.badge.minus") : Image("leave"),
@@ -216,9 +192,9 @@ struct ChatSettingsView: View {
                 }
                 
             }
-            .alert(isPresented: $showRemoveGroupAlert) {
-                removeGroupAlert
-            }
+//            .alert(isPresented: $showRemoveGroupAlert) {
+//                removeGroupAlert
+//            }
             .ignoresSafeArea()
 //        }
         

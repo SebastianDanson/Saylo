@@ -16,7 +16,7 @@ struct CreateChatCell: View {
         
         ZStack {
             
-            Color.backgroundWhite.ignoresSafeArea()
+            Color.systemWhite.ignoresSafeArea()
             
             HStack(alignment:.top, spacing: 14) {
                 

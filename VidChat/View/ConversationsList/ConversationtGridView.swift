@@ -26,8 +26,8 @@ struct ConversationGridView: View {
     
     @State var contentOffset: CGFloat = 0
     @State var initialOffset: CGFloat = 0
-    @State var showPhotoPickerAlert = false
-    
+    @State var showAlert = false
+
     var body: some View {
         
         //        let photoPicker = PhotoPickerView(baseHeight: conversationViewModel.photoBaseHeight,
@@ -222,7 +222,7 @@ struct ConversationGridView: View {
                     }
                     
                     if let chat = viewModel.selectedSettingsChat {
-                        ChatSettingsView(chat: chat)
+                        ChatSettingsView(chat: chat, showAlert: $showAlert, showRemoveGroupAlert: $showAlert)
                             .zIndex(3)
                             .transition(.move(edge: .bottom))
                     }
@@ -250,7 +250,9 @@ struct ConversationGridView: View {
             
         }
         .navigationViewStyle(StackNavigationViewStyle())
-        
+        .alert(isPresented: $showAlert) {
+                return removeGroupAlert()
+        }
     }
     
     //    func getConversationGridPadding() -> CGFloat {

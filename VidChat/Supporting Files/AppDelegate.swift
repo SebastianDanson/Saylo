@@ -283,7 +283,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
         let chatId = data?["chatId"] as? String
         //        let chatId = data?["chatId"] as? String
         let isFriendRequest = data?["isSentFriendRequest"] as? Bool ?? false
-        
         //        if let chatid = chatId {
         //
         //            let chats = ConversationGridViewModel.shared.getCachedChats()
@@ -298,31 +297,31 @@ extension AppDelegate: UNUserNotificationCenterDelegate, MessagingDelegate {
             ConversationGridViewModel.shared.showAddFriends = true
         }
         
-        
         if let chatId = chatId {
             DispatchQueue.main.async {
-                
-                MainViewModel.shared.selectedView = .Saylo
+
                 ConversationGridViewModel.shared.showCachedChats()
                 
-                if let updatedChat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId }) {
-                    updatedChat.hasUnreadMessage = true
-                    ConversationGridViewModel.shared.showConversation = true
-                    
-                    ConversationViewModel.shared.setChat(chat: updatedChat)
-                    
-                    
-                    
-                    //                COLLECTION_CONVERSATIONS.document(updatedChat.id).getDocument { snapshot, _ in
-                    //                    if let data = snapshot?.data() {
-                    //                        let chat = Chat(dictionary: data, id: updatedChat.id)
-                    //
-                    //                    }
-                    //                }
-                    //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    //                    ConversationViewModel.shared.showMessage(atIndex: updatedChat.lastReadMessageIndex)
-                    //                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    if let updatedChat = ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId }) {
+                        updatedChat.hasUnreadMessage = true
+                        ConversationViewModel.shared.setChat(chat: updatedChat)
+                        ConversationGridViewModel.shared.showConversation = true
+
+                        
+                        
+                        //                COLLECTION_CONVERSATIONS.document(updatedChat.id).getDocument { snapshot, _ in
+                        //                    if let data = snapshot?.data() {
+                        //                        let chat = Chat(dictionary: data, id: updatedChat.id)
+                        //
+                        //                    }
+                        //                }
+                        //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        //                    ConversationViewModel.shared.showMessage(atIndex: updatedChat.lastReadMessageIndex)
+                        //                }
+                    } 
                 }
+                
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     ConversationGridViewModel.shared.chats.first(where: {$0.id == chatId})?.hasUnreadMessage = false

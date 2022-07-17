@@ -65,6 +65,10 @@ class MovieRecorder {
         isRecording = true
     }
     
+    func pushBuffer() -> Bool {
+        return isRecording || ConversationViewModel.shared.getIsInVideoCall()
+    }
+    
     func stopRecording(completion: @escaping (URL) -> Void) {
         guard let assetWriter = assetWriter else {
             return
@@ -79,7 +83,9 @@ class MovieRecorder {
     }
     
     func recordVideo(sampleBuffer: CMSampleBuffer) {
-        
+        if ConversationViewModel.shared.getIsInVideoCall() {
+            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
+        }
         
         guard isRecording,
               let assetWriter = assetWriter else {
@@ -102,9 +108,7 @@ class MovieRecorder {
         
         ConversationViewModel.shared.pushLiveSampleBuffer(sampleBuffer: sampleBuffer)
 
-//        if ConversationViewModel.shared.getIsInVideoCall() {
-//            ConversationViewModel.shared.pushVideoCallSampleBuffer(sampleBuffer: sampleBuffer)
-//        }
+
     }
     
     

@@ -7,6 +7,41 @@
 
 import SwiftUI
 
+func removeGroupAlert() -> Alert {
+    let chat: Chat = ConversationViewModel.shared.chat ?? ConversationGridViewModel.shared.selectedSettingsChat!
+    let viewModel = ChatSettingsViewModel.shared
+    
+    let removeGroupAlert = Alert(
+        title: Text("Are you sure you want to \(chat.isDm ? "remove" : "leave") \(chat.name)?"),
+        message: nil,
+        primaryButton: .default(
+            Text("Cancel"),
+            action: {
+                
+            }
+        ),
+        secondaryButton: .destructive(
+            Text("Leave"),
+            action: {
+                
+                if chat.isDm {
+                    viewModel.removeFriend(inChat: chat)
+                } else {
+                    viewModel.leaveGroup(chat: chat)
+                }
+                
+                withAnimation {
+                    MainViewModel.shared.settingsChat = nil
+//                        ConversationViewModel.shared.hideChat = true
+                    ConversationGridViewModel.shared.showConversation = false
+                    ConversationGridViewModel.shared.selectedSettingsChat = nil
+                }
+            }
+        )
+    )
+    
+    return removeGroupAlert
+}
 func savedPostAlert(mesageIndex i: Int?, completion: @escaping((Bool) -> Void)) -> Alert {
     return Alert(
         title: Text(ConversationViewModel.shared.showSavedPosts ? "Delete Message?" : "Unsave Message?"),

@@ -20,6 +20,7 @@ struct MainView: View {
     @State var isTyping = false
     @State var showAllowAudioAlert = false
     @State var showAllowCameraAccessAlert = false
+    @State var showRemoveGroupAlert = false
     @State var showAlert = false
     @State var textColor: Color = .white
     @State var hasJoinedCall = false
@@ -40,7 +41,9 @@ struct MainView: View {
                     TakenPhotoView(photo: photo)
                 }
                 
-                LiveView(showStream: $conversationViewModel.isLive, currentlyWatchingLiveId: $conversationViewModel.currentlyWatchingId)
+                LiveView(presentUsers: $conversationViewModel.presentUsers,
+                         isRecording: $viewModel.isRecording,
+                         currentlyWatchingLiveId: $conversationViewModel.currentlyWatchingId)
                 
                 //Camera view shown when recording video or taking photo
                 if viewModel.showCamera() || viewModel.selectedView == .Voice {
@@ -126,9 +129,9 @@ struct MainView: View {
                             ZStack {
                                 
                                 
-                                if AVCaptureMultiCamSession.isMultiCamSupported && (viewModel.selectedView == .Video || viewModel.selectedView == .Photo && viewModel.photo == nil) {
-                                    VideoOptionsView(isMultiCamEnabled: $viewModel.isMultiCamEnabled)
-                                }
+//                                if AVCaptureMultiCamSession.isMultiCamSupported && (viewModel.selectedView == .Video || viewModel.selectedView == .Photo && viewModel.photo == nil) {
+//                                    VideoOptionsView(isMultiCamEnabled: $viewModel.isMultiCamEnabled)
+//                                }
                                 
                                 //Recording voice or video
                                 if viewModel.showRecordButton() {
@@ -251,7 +254,7 @@ struct MainView: View {
                     
                     
                     if let chat = viewModel.settingsChat {
-                        ChatSettingsView(chat: chat)
+                        ChatSettingsView(chat: chat, showAlert: $showAlert, showRemoveGroupAlert: $showRemoveGroupAlert)
                             .zIndex(5)
                             .navigationBarHidden(true)
                             .transition(.move(edge: .bottom))
@@ -289,10 +292,14 @@ struct MainView: View {
             .navigationBarHidden(true)
             .ignoresSafeArea(edges: .bottom)
             .alert(isPresented: $showAlert) {
+                if showRemoveGroupAlert {
+                    return removeGroupAlert()
+                } else {
                 let messages = conversationViewModel.showSavedPosts ? conversationViewModel.savedMessages : conversationViewModel.messages
                 return savedPostAlert(mesageIndex: messages.firstIndex(where: {$0.id == messages[conversationViewModel.saveToggleIndex].id}), completion: { isSaved in
                     
                 })
+                }
             }
             
             //        .onAppear {
@@ -314,7 +321,7 @@ struct MainView: View {
                     }
             }
             
-            if viewModel.showCamera() && conversationViewModel.currentlyWatchingId == nil {
+            if viewModel.showCamera() && conversationViewModel.currentlyWatchingId == nil && viewModel.settingsChat == nil {
                 MessageAdOnsView(selectedFilter: $conversationViewModel.selectedFilter)
             }
             
@@ -409,14 +416,15 @@ struct FlashView: View {
 
 struct LiveView: View {
     
-    @Binding var showStream: Bool
+    @Binding var presentUsers: [String]
+    @Binding var isRecording: Bool
     @Binding var currentlyWatchingLiveId: String?
     
     var body: some View {
         
         ZStack {
             
-            if showStream {
+            if (presentUsers.contains(where: {$0 != AuthViewModel.shared.getUserId()}) && (isRecording)) || currentlyWatchingLiveId != nil {
                 LiveStreamViewRepresentable()
                     .overlay(
                         ZStack{

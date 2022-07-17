@@ -132,7 +132,7 @@ struct SetProfileImageView: View {
                     } else {
                         
                         DispatchQueue.main.async {
-                            self.showActionSheet = true
+                            self.showImagePicker = true
                         }
                     }
                     
